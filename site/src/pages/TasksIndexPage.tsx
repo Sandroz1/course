@@ -1,82 +1,100 @@
 import { useMemo, useState } from "react";
 import { TaskListPage } from "../components/TaskListPage";
-import { tasks } from "../data/tasks";
+import { tasks, type TaskLevel } from "../data/tasks";
+
+type LevelFilter = "all" | TaskLevel;
+
+const levelLabels: Record<LevelFilter, string> = {
+  all: "все",
+  easy: "легко",
+  medium: "средне",
+  hard: "сложно",
+};
 
 export function TasksIndexPage() {
-  const [levelFilter, setLevelFilter] = useState<"all" | "easy" | "medium" | "hard">("all");
+  const [query, setQuery] = useState("");
+  const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
   const [sectionFilter, setSectionFilter] = useState("all");
-  const [topicFilter, setTopicFilter] = useState("all");
 
   const sections = useMemo(() => Array.from(new Set(tasks.map((task) => task.section))), []);
-  const topics = useMemo(
-    () => Array.from(new Set(tasks.flatMap((task) => task.topics))).sort(),
-    [],
-  );
 
-  const filteredTasks = useMemo(
-    () =>
-      tasks.filter((task) => {
-        const levelOk = levelFilter === "all" || task.level === levelFilter;
-        const sectionOk = sectionFilter === "all" || task.section === sectionFilter;
-        const topicOk = topicFilter === "all" || task.topics.includes(topicFilter);
-        return levelOk && sectionOk && topicOk;
-      }),
-    [levelFilter, sectionFilter, topicFilter],
-  );
+  const filteredTasks = useMemo(() => {
+    const search = query.trim().toLowerCase();
+
+    return tasks.filter((task) => {
+      const levelOk = levelFilter === "all" || task.level === levelFilter;
+      const sectionOk = sectionFilter === "all" || task.section === sectionFilter;
+      const text = [task.title, task.section, task.topics.join(" "), task.files.map((file) => file.fileName).join(" ")]
+        .join(" ")
+        .toLowerCase();
+      const searchOk = !search || text.includes(search);
+
+      return levelOk && sectionOk && searchOk;
+    });
+  }, [levelFilter, query, sectionFilter]);
 
   const visibleSections = Array.from(new Set(filteredTasks.map((task) => task.section)));
 
   return (
-    <article className="reading-page">
+    <article className="reading-page tasks-page">
       <h1>Задачи</h1>
       <p className="lead">
-        Задачи сгруппированы по темам. Открывайте их после соответствующего раздела курса:
-        на странице задачи есть цель, файлы, каркас, план, подсказки и самопроверка.
+        Выбери тему, открой задачу, скопируй каркас и пиши решение локально.
       </p>
 
-      <section className="panel">
-        <h2>Фильтры</h2>
-        <div className="filters-row">
-          <label>
-            Уровень
-            <select value={levelFilter} onChange={(event) => setLevelFilter(event.target.value as "all" | "easy" | "medium" | "hard")}>
-              <option value="all">все</option>
-              <option value="easy">легко</option>
-              <option value="medium">средне</option>
-              <option value="hard">сложно</option>
-            </select>
-          </label>
-          <label>
-            Раздел
-            <select value={sectionFilter} onChange={(event) => setSectionFilter(event.target.value)}>
-              <option value="all">все</option>
-              {sections.map((section) => (
-                <option key={section} value={section}>
-                  {section}
-                </option>
-              ))}
-            </select>
-          </label>
-          <label>
-            Тема
-            <select value={topicFilter} onChange={(event) => setTopicFilter(event.target.value)}>
-              <option value="all">все</option>
-              {topics.map((topic) => (
-                <option key={topic} value={topic}>
-                  {topic}
-                </option>
-              ))}
-            </select>
-          </label>
-        </div>
+      <section className="panel filters-panel">
+        <label className="field">
+          Поиск
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Название, тема или файл"
+          />
+        </label>
+        <label className="field">
+          Раздел
+          <select value={sectionFilter} onChange={(event) => setSectionFilter(event.target.value)}>
+            <option value="all">все разделы</option>
+            {sections.map((section) => (
+              <option key={section} value={section}>
+                {section}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="field">
+          Сложность
+          <select
+            value={levelFilter}
+            onChange={(event) => setLevelFilter(event.target.value as LevelFilter)}
+          >
+            {Object.entries(levelLabels).map(([value, label]) => (
+              <option key={value} value={value}>
+                {label}
+              </option>
+            ))}
+          </select>
+        </label>
       </section>
 
-      {visibleSections.map((section) => (
-        <section key={section}>
-          <h2>{section}</h2>
-          <TaskListPage section={section} sourceTasks={filteredTasks} />
+      {visibleSections.length === 0 && (
+        <section className="panel">
+          <p>Задачи не найдены. Измени фильтры или поисковый запрос.</p>
         </section>
-      ))}
+      )}
+
+      {visibleSections.map((section) => {
+        const count = filteredTasks.filter((task) => task.section === section).length;
+        return (
+          <section className="task-section" key={section}>
+            <div className="section-heading">
+              <h2>{section}</h2>
+              <span>{count} задач</span>
+            </div>
+            <TaskListPage section={section} sourceTasks={filteredTasks} />
+          </section>
+        );
+      })}
     </article>
   );
 }

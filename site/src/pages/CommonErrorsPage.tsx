@@ -1,3 +1,4 @@
+import { useMemo, useState } from "react";
 import { CodeBlock } from "../components/CodeBlock";
 
 const errors = [
@@ -108,31 +109,70 @@ const errors = [
 ];
 
 export function CommonErrorsPage() {
+  const [query, setQuery] = useState("");
+  const filteredErrors = useMemo(() => {
+    const value = query.trim().toLowerCase();
+    if (!value) return errors;
+    return errors.filter((error) =>
+      [error.title, error.symptom, error.why, error.remember]
+        .join(" ")
+        .toLowerCase()
+        .includes(value),
+    );
+  }, [query]);
+
   return (
-    <article className="reading-page">
+    <article className="reading-page compact-page">
       <p className="eyebrow">Справочник</p>
-      <h1>Частые ошибки новичков</h1>
+      <h1>Частые ошибки</h1>
       <p className="lead">
-        Эта страница нужна не для заучивания, а для быстрой диагностики: как выглядит ошибка,
-        почему она возникает и как её исправить.
+        Найди похожую ошибку, сравни плохой код с исправленным и вернись к задаче.
       </p>
 
-      {errors.map((error) => (
-        <section className="panel error-panel" key={error.title}>
-          <h2>{error.title}</h2>
-          <h3>Как выглядит</h3>
-          <p>{error.symptom}</p>
-          <h3>Почему возникает</h3>
-          <p>{error.why}</p>
-          <h3>Неправильно</h3>
-          <CodeBlock code={error.bad} language="cpp" />
-          <h3>Исправление</h3>
-          <CodeBlock code={error.fixed} language="cpp" />
-          <p>
-            <strong>Как запомнить:</strong> {error.remember}
-          </p>
+      <section className="panel filters-panel">
+        <label className="field">
+          Поиск ошибки
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder="Например: vector, include, catch"
+          />
+        </label>
+      </section>
+
+      <div className="error-list">
+        {filteredErrors.map((error) => (
+          <details className="panel error-card" key={error.title}>
+            <summary>
+              <strong>{error.title}</strong>
+              <span>{error.symptom}</span>
+            </summary>
+            <div className="error-card__body">
+              <h3>Что означает</h3>
+              <p>{error.why}</p>
+              <div className="example-pair">
+                <section className="example-box example-box--bad">
+                  <h3>Ошибка</h3>
+                  <CodeBlock code={error.bad} language="cpp" />
+                </section>
+                <section className="example-box example-box--good">
+                  <h3>Правильно</h3>
+                  <CodeBlock code={error.fixed} language="cpp" />
+                </section>
+              </div>
+              <p className="remember-note">
+                <strong>Как запомнить:</strong> {error.remember}
+              </p>
+            </div>
+          </details>
+        ))}
+      </div>
+
+      {filteredErrors.length === 0 && (
+        <section className="panel">
+          <p>Ничего не найдено. Попробуй другое слово из сообщения компилятора.</p>
         </section>
-      ))}
+      )}
     </article>
   );
 }

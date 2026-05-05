@@ -3,22 +3,25 @@ import { toPath } from "../utils/slug";
 
 export function CourseIndexPage() {
   return (
-    <article className="reading-page">
+    <article className="reading-page compact-page">
       <h1>Курс</h1>
       <p className="lead">
-        Это полноценный учебник для новичка: подробные объяснения, примеры,
-        антипримеры, частые ошибки и набор задач после каждой темы.
+        Иди по разделам сверху вниз: сначала базовый C++, затем структуры,
+        классы и большие задачи.
       </p>
-      <div className="card-list">
+
+      <div className="course-list">
         {courseSections.map((section) => (
           <a
-            className="panel card-link"
+            className="panel course-row"
             key={section.slug}
             href={toPath(`/course/${section.slug}`)}
           >
-            <span className="eyebrow">Раздел {section.number}</span>
-            <h2>{section.title}</h2>
-            <p>{section.description}</p>
+            <span className="course-row__number">{section.number}</span>
+            <span>
+              <strong>{section.title}</strong>
+              <small>{section.topics.slice(0, 5).join(", ")}</small>
+            </span>
           </a>
         ))}
       </div>

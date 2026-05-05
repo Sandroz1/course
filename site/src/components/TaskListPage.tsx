@@ -22,10 +22,16 @@ export function TaskListPage({
             <strong>{task.title}</strong>
             <ProgressBadge level={task.level} />
           </div>
-          <p>{task.goal}</p>
-          <span className="path-label">
-            {task.files.length > 1 ? "Многофайловая задача" : task.files[0]?.fileName}
-          </span>
+          <div className="topic-list topic-list--compact">
+            {task.topics.slice(0, 4).map((topic) => (
+              <span key={topic}>{topic}</span>
+            ))}
+          </div>
+          <div className="task-card__meta">
+            <span>{task.files.length} файл(а)</span>
+            <span>{task.files.length > 1 ? "многофайловая" : "один файл"}</span>
+          </div>
+          <span className="button button--small">Открыть</span>
         </a>
       ))}
     </div>

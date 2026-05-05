@@ -24,13 +24,14 @@ export function SearchBox() {
         value={query}
         onChange={(event) => setQuery(event.target.value)}
         placeholder="Поиск задачи или темы"
+        aria-label="Поиск задачи или темы"
       />
       {results.length > 0 && (
         <div className="search__results">
           {results.map((task) => (
             <a key={task.id} href={toPath(`/tasks/${task.id}`)}>
               <strong>{task.title}</strong>
-              <span>{task.files.length > 1 ? "Многофайловая задача" : task.files[0].fileName}</span>
+              <span>{task.section}</span>
             </a>
           ))}
         </div>
