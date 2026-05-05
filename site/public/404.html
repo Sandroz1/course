@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Redirecting...</title>
+    <script>
+      (function () {
+        var segments = window.location.pathname.split("/").filter(Boolean);
+        var repo = segments[0] || "course";
+        var route = "/" + segments.slice(1).join("/");
+
+        if (route === "/") {
+          route = "/";
+        }
+
+        window.location.replace("/" + repo + "/#" + route + window.location.search);
+      })();
+    </script>
+  </head>
+  <body></body>
+</html>

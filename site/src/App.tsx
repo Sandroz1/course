@@ -43,15 +43,22 @@ export default function App() {
 
       const url = new URL(link.href);
       if (url.origin !== window.location.origin) return;
+      if (url.hash && !url.hash.startsWith("#/")) return;
 
       event.preventDefault();
-      window.history.pushState({}, "", url.pathname);
+      window.history.pushState({}, "", `${url.pathname}${url.search}${url.hash}`);
       setPath(currentPath());
       window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     document.addEventListener("click", onClick);
     return () => document.removeEventListener("click", onClick);
+  }, []);
+
+  useEffect(() => {
+    const onHashChange = () => setPath(currentPath());
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
   return <Layout>{renderRoute(path)}</Layout>;
