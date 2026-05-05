@@ -544,33 +544,48 @@ summary code,
 
 .lesson-toc {
   display: grid;
-  gap: 9px;
-  border-top: 1px solid rgba(214, 212, 202, 0.12);
-  border-bottom: 1px solid rgba(214, 212, 202, 0.12);
-  padding: 12px 0;
+  gap: 10px;
+  border: 1px solid rgba(214, 212, 202, 0.14);
+  border-left: 2px solid rgba(88, 199, 194, 0.55);
+  border-radius: 8px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.018));
+  padding: 14px 16px;
 }
 
 .lesson-toc strong {
-  color: var(--muted);
-  font-size: 13px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--soft);
+  font-size: 14px;
   font-weight: 700;
+}
+
+.lesson-toc strong::before {
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: var(--accent);
+  content: "";
 }
 
 .lesson-toc div {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 10px;
+  gap: 6px 8px;
 }
 
 .lesson-toc a {
-  border-bottom: 1px solid transparent;
+  border: 1px solid transparent;
+  border-radius: 999px;
   color: var(--muted);
   font-size: 13px;
-  padding: 2px 0;
+  padding: 4px 8px;
 }
 
 .lesson-toc a:hover {
-  border-bottom-color: var(--accent);
+  border-color: rgba(88, 199, 194, 0.3);
+  background: rgba(88, 199, 194, 0.08);
   color: var(--text);
 }
 
