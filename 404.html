@@ -14,7 +14,8 @@
           route = "/";
         }
 
-        window.location.replace("/" + repo + "/#" + route + window.location.search);
+        window.sessionStorage.setItem("spa-redirect", route + window.location.search + window.location.hash);
+        window.location.replace("/" + repo + "/");
       })();
     </script>
   </head>
