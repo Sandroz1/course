@@ -46,7 +46,7 @@ export default function App() {
       if (url.hash && !url.hash.startsWith("#/")) return;
 
       event.preventDefault();
-      window.history.pushState({}, "", `${url.pathname}${url.search}${url.hash}`);
+      window.history.pushState({}, "", `${url.pathname}${url.search}`);
       setPath(currentPath());
       window.scrollTo({ top: 0, behavior: "smooth" });
     };

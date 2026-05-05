@@ -4,6 +4,29 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ООП C++ — курс и практика</title>
+    <script>
+      (function () {
+        var redirect = window.sessionStorage.getItem("spa-redirect");
+
+        if (redirect) {
+          window.sessionStorage.removeItem("spa-redirect");
+          var segments = window.location.pathname.split("/").filter(Boolean);
+          var base = segments.length > 0 ? "/" + segments[0] + "/" : "/";
+          var cleanPath = redirect === "/" ? base : base + redirect.replace(/^\//, "");
+          window.history.replaceState(null, "", cleanPath);
+          return;
+        }
+
+        if (window.location.hash.startsWith("#/")) {
+          var route = window.location.hash.slice(1);
+          var basePath = window.location.pathname.endsWith("/")
+            ? window.location.pathname
+            : window.location.pathname + "/";
+          var nextPath = route === "/" ? basePath : basePath + route.replace(/^\//, "");
+          window.history.replaceState(null, "", nextPath + window.location.search);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>
