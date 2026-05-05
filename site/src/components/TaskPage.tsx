@@ -27,11 +27,6 @@ export function TaskPage({ taskId }: { taskId: string }) {
 
       <div className="task-summary">
         <ProgressBadge level={task.level} />
-        <div className="topic-list topic-list--compact">
-          {task.topics.map((topic) => (
-            <span key={topic}>{topic}</span>
-          ))}
-        </div>
       </div>
 
       <section className="panel important-panel">

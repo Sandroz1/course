@@ -20,7 +20,6 @@ export function CourseIndexPage() {
             <span className="course-row__number">{section.number}</span>
             <span>
               <strong>{section.title}</strong>
-              <small>{section.topics.slice(0, 5).join(", ")}</small>
             </span>
           </a>
         ))}

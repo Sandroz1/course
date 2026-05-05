@@ -4,6 +4,13 @@ import { tasks } from "../data/tasks";
 import { toPath } from "../utils/slug";
 import { CodeBlock } from "./CodeBlock";
 
+type TocItem = {
+  title: string;
+  id: string;
+};
+
+const MAX_TOC_ITEMS = 7;
+
 function renderInline(text: string) {
   const parts = text.split(/(`[^`]+`)/g);
   return parts.map((part, index) => {
@@ -19,17 +26,6 @@ function headingId(text: string) {
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, "-")
     .replace(/^-|-$/g, "");
-}
-
-function headingKind(text: string) {
-  const lower = text.toLowerCase();
-  if (lower.includes("важно") || lower.includes("зачем")) return "important";
-  if (lower.includes("синтаксис")) return "syntax";
-  if (lower.includes("пример")) return lower.includes("плох") ? "error" : "example";
-  if (lower.includes("ошиб")) return "error";
-  if (lower.includes("провер")) return "check";
-  if (lower.includes("задач")) return "tasks";
-  return "default";
 }
 
 function flushList(nodes: ReactNode[], list: string[], ordered: boolean) {
@@ -123,7 +119,7 @@ function renderContent(content: string) {
         const title = trimmed.slice(3);
         nodes.push(
           <h2
-            className={`lesson-heading lesson-heading--${headingKind(title)}`}
+            className="lesson-heading"
             id={headingId(title)}
             key={`h2-${nodes.length}`}
           >
@@ -186,6 +182,73 @@ function collectHeadings(content: string) {
     });
 }
 
+const tocRules: Array<{ title: string; patterns: RegExp[] }> = [
+  {
+    title: "Зачем нужна тема",
+    patterns: [/простое объяснение/i, /проблема/i, /зачем/i, /почему/i],
+  },
+  {
+    title: "Основные понятия",
+    patterns: [/что такое/i, /класс и объект/i, /поле/i, /метод/i],
+  },
+  {
+    title: "Синтаксис",
+    patterns: [/синтаксис/i, /private/i, /public/i, /const/i],
+  },
+  {
+    title: "Как читать код",
+    patterns: [/как читать/i, /разбор/i],
+  },
+  {
+    title: "Как написать самому",
+    patterns: [/как написать/i, /самому/i, /алгоритм/i],
+  },
+  {
+    title: "Пример из задачи",
+    patterns: [/пример/i, /задач[аиуы]/i],
+  },
+  {
+    title: "Частые ошибки",
+    patterns: [/ошиб/i],
+  },
+  {
+    title: "Самопроверка",
+    patterns: [/провер/i],
+  },
+  {
+    title: "Задачи после темы",
+    patterns: [/задачи после темы/i],
+  },
+];
+
+function collectTocItems(content: string) {
+  const headings = collectHeadings(content);
+  const used = new Set<string>();
+  const toc: TocItem[] = [];
+
+  tocRules.forEach((rule) => {
+    const heading = headings.find(
+      (item) =>
+        !used.has(item.id) &&
+        rule.patterns.some((pattern) => pattern.test(item.title)),
+    );
+
+    if (heading) {
+      used.add(heading.id);
+      toc.push({ title: rule.title, id: heading.id });
+    }
+  });
+
+  if (toc.length < 4) {
+    headings
+      .filter((item) => !used.has(item.id))
+      .slice(0, 6 - toc.length)
+      .forEach((item) => toc.push(item));
+  }
+
+  return toc.slice(0, MAX_TOC_ITEMS);
+}
+
 export function CoursePage({ slug }: { slug: string }) {
   const normalizedSlug = slug === "structs" ? "struct" : slug;
   const section = courseSections.find((item) => item.slug === normalizedSlug);
@@ -200,27 +263,32 @@ export function CoursePage({ slug }: { slug: string }) {
   const relatedTasks = tasks.filter((task) =>
     section.relatedTaskIds.includes(task.id),
   );
-  const headings = collectHeadings(section.content);
+  const tocItems = collectTocItems(section.content);
 
   return (
     <article className="reading-page lesson-page">
-      <p className="eyebrow">Раздел {section.number}</p>
-      <h1>{section.title}</h1>
-      <p className="lead">{section.description}</p>
+      <header className="lesson-header">
+        <a className="back-link" href={toPath("/course")}>
+          К курсу
+        </a>
+        <p className="eyebrow">Раздел {section.number}</p>
+        <h1>{section.title}</h1>
+        <p className="lead">{section.description}</p>
 
-      <div className="topic-list">
-        {section.topics.map((topic) => (
-          <span key={topic}>{topic}</span>
-        ))}
-      </div>
+        <div className="topic-list topic-list--quiet">
+          {section.topics.slice(0, 4).map((topic) => (
+            <span key={topic}>{topic}</span>
+          ))}
+        </div>
+      </header>
 
-      {headings.length > 6 && (
-        <nav className="panel lesson-toc" aria-label="Содержание раздела">
-          <strong>Содержание</strong>
+      {tocItems.length > 3 && (
+        <nav className="lesson-toc" aria-label="Содержание раздела">
+          <strong>В этом разделе</strong>
           <div>
-            {headings.map((heading) => (
-              <a href={`#${heading.id}`} key={heading.id}>
-                {heading.title}
+            {tocItems.map((item) => (
+              <a href={`#${item.id}`} key={item.id}>
+                {item.title}
               </a>
             ))}
           </div>
@@ -232,15 +300,12 @@ export function CoursePage({ slug }: { slug: string }) {
       <section className="related-tasks">
         <div className="section-heading">
           <h2>Задачи после темы</h2>
-          <span>{relatedTasks.length} задач</span>
         </div>
-        <div className="task-grid task-grid--compact">
+        <div className="related-task-list">
           {relatedTasks.map((task) => (
-            <a className="task-card" key={task.id} href={toPath(`/tasks/${task.id}`)}>
+            <a className="related-task-link" key={task.id} href={toPath(`/tasks/${task.id}`)}>
               <strong>{task.title}</strong>
-              <span className="task-card__meta">
-                {task.files.length > 1 ? "многофайловая" : "один файл"}
-              </span>
+              <span>Открыть</span>
             </a>
           ))}
         </div>

@@ -4,7 +4,6 @@ export function HomePage() {
   return (
     <article className="home-page">
       <section className="home-hero">
-        <p className="eyebrow">Курс и практика</p>
         <h1>ООП C++ с нуля</h1>
         <p className="lead">
           Курс с теорией, задачами и каркасами кода. Читаешь тему,
@@ -38,12 +37,10 @@ export function HomePage() {
 
       <section className="quick-start">
         <a className="panel quick-card" href={toPath("/course/basics")}>
-          <span className="eyebrow">Сначала</span>
           <h2>Подготовка</h2>
           <p>Минимальная программа, ввод, вывод, условия и циклы.</p>
         </a>
         <a className="panel quick-card" href={toPath("/tasks/00-01-minimal-program")}>
-          <span className="eyebrow">Первая задача</span>
           <h2>Минимальная программа</h2>
           <p>Открой каркас и напиши первый рабочий `main`.</p>
         </a>
