@@ -234,6 +234,10 @@ summary code,
   text-wrap: balance;
 }
 
+.home-hero h1 {
+  font-size: clamp(32px, 4vw, 46px);
+}
+
 .lead {
   max-width: 760px;
   color: var(--soft);
@@ -303,6 +307,45 @@ summary code,
   width: fit-content;
   font-size: 14px;
   padding: 8px 11px;
+}
+
+.start-list {
+  display: grid;
+  gap: 6px;
+  max-width: 680px;
+  margin: 18px 0 0;
+  padding-left: 22px;
+  color: var(--soft);
+}
+
+.study-flow {
+  display: grid;
+  gap: 14px;
+}
+
+.flow-steps {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.flow-steps div {
+  display: grid;
+  gap: 5px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-2);
+  padding: 12px;
+}
+
+.flow-steps strong {
+  color: var(--text);
+}
+
+.flow-steps span {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .quick-start {
@@ -937,6 +980,7 @@ pre:not(.code-block__pre) code {
   }
 
   .quick-start,
+  .flow-steps,
   .filters-panel {
     grid-template-columns: 1fr;
   }
