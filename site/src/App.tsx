@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { Layout } from "./components/Layout";
 import { CoursePage } from "./components/CoursePage";
 import { HomePage } from "./pages/HomePage";
+import { BaseCppCoursePage } from "./pages/BaseCppCoursePage";
 import { CourseIndexPage } from "./pages/CourseIndexPage";
+import { CoursesPage } from "./pages/CoursesPage";
 import { TasksIndexPage } from "./pages/TasksIndexPage";
 import { TaskDetailsPage } from "./pages/TaskDetailsPage";
 import { SelfCheckPage } from "./pages/SelfCheckPage";
@@ -12,6 +14,9 @@ import { currentPath } from "./utils/slug";
 
 function renderRoute(path: string) {
   if (path === "/") return <HomePage />;
+  if (path === "/courses") return <CoursesPage />;
+  if (path === "/courses/base-cpp") return <BaseCppCoursePage />;
+  if (path === "/courses/oop-cpp") return <CourseIndexPage />;
   if (path === "/course") return <CourseIndexPage />;
   if (path.startsWith("/course/")) {
     return <CoursePage slug={path.replace("/course/", "")} />;

@@ -122,14 +122,16 @@ export function CommonErrorsPage() {
   }, [query]);
 
   return (
-    <article className="reading-page compact-page">
-      <p className="eyebrow">Справочник</p>
-      <h1>Частые ошибки</h1>
-      <p className="lead">
-        Найди похожую ошибку, сравни плохой код с исправленным и вернись к задаче.
-      </p>
+    <article className="reading-page compact-page errors-page">
+      <header className="page-header">
+        <p className="eyebrow">Справочник</p>
+        <h1>Частые ошибки</h1>
+        <p className="lead">
+          Найди похожую ошибку, сравни плохой код с исправленным и вернись к задаче.
+        </p>
+      </header>
 
-      <section className="panel filters-panel">
+      <section className="panel filters-panel filters-panel--single">
         <label className="field">
           Поиск ошибки
           <input
@@ -138,6 +140,7 @@ export function CommonErrorsPage() {
             placeholder="Например: vector, include, catch"
           />
         </label>
+        <span className="filter-count">{filteredErrors.length} найдено</span>
       </section>
 
       <div className="error-list">

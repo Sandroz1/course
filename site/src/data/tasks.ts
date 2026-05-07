@@ -1,3 +1,6 @@
+import type { CourseId } from "./courses";
+import type { ContentStatus } from "./status";
+
 export type TaskLevel = "easy" | "medium" | "hard";
 
 export type TaskFile = {
@@ -8,9 +11,14 @@ export type TaskFile = {
 
 export type Task = {
   id: string;
+  courseId: CourseId;
+  topicId?: string;
+  lessonSlug?: string;
   title: string;
   section: string;
   level: TaskLevel;
+  difficulty?: TaskLevel;
+  status?: ContentStatus;
   topics: string[];
   theorySlug: string;
   goal: string;
@@ -35,6 +43,19 @@ int main() {
 }
 `;
 
+const readyTheorySlugs = new Set([
+  "basics",
+  "oop",
+  "struct",
+  "classes",
+  "constructors-destructors",
+  "this",
+]);
+
+function taskStatusForTheory(theorySlug: string): ContentStatus {
+  return readyTheorySlugs.has(theorySlug) ? "available" : "needs-theory";
+}
+
 const hppStarter = (name: string) => `#pragma once
 
 #ifndef ${name.toUpperCase()}_HPP
@@ -58,9 +79,14 @@ function singleTask(
 ): Task {
   return {
     id,
+    courseId: "oop-cpp",
+    topicId: theorySlug,
+    lessonSlug: theorySlug,
     title,
     section,
     level,
+    difficulty: level,
+    status: taskStatusForTheory(theorySlug),
     topics,
     theorySlug,
     goal,
@@ -114,9 +140,14 @@ function multiTask(
 ): Task {
   return {
     id,
+    courseId: "oop-cpp",
+    topicId: theorySlug,
+    lessonSlug: theorySlug,
     title,
     section,
     level,
+    difficulty: level,
+    status: taskStatusForTheory(theorySlug),
     topics,
     theorySlug,
     goal,

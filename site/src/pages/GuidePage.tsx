@@ -55,17 +55,18 @@ const guideSections = [
 
 export function GuidePage() {
   return (
-    <article className="reading-page compact-page">
-      <p className="eyebrow">Методика</p>
-      <h1>Как учиться</h1>
-      <p className="lead">
-        Главный принцип: сначала понять идею, потом написать код самой,
-        и только после этого смотреть подсказки.
-      </p>
+    <article className="reading-page compact-page guide-page">
+      <header className="page-header">
+        <p className="eyebrow">Методика</p>
+        <h1>Как учиться</h1>
+        <p className="lead">
+          Сначала разбери пример, потом напиши код сама. Подсказки открывай после первой попытки.
+        </p>
+      </header>
 
-      <div className="guide-grid">
+      <div className="guide-list">
         {guideSections.map((section) => (
-          <section className="panel" key={section.title}>
+          <section className="guide-section" key={section.title}>
             <h2>{section.title}</h2>
             <ul>
               {section.items.map((item) => (

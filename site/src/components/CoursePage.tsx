@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
-import { courseSections } from "../data/courseSections";
+import { courseSections, isCourseSectionReady } from "../data/courseSections";
+import { statusMeta } from "../data/status";
 import { tasks } from "../data/tasks";
 import { toPath } from "../utils/slug";
 import { CodeBlock } from "./CodeBlock";
@@ -252,11 +253,45 @@ function collectTocItems(content: string) {
 export function CoursePage({ slug }: { slug: string }) {
   const normalizedSlug = slug === "structs" ? "struct" : slug;
   const section = courseSections.find((item) => item.slug === normalizedSlug);
+  const sectionIndex = courseSections.findIndex((item) => item.slug === normalizedSlug);
+  const previousSection = sectionIndex > 0 ? courseSections[sectionIndex - 1] : undefined;
+  const nextSection =
+    sectionIndex >= 0 && sectionIndex < courseSections.length - 1
+      ? courseSections[sectionIndex + 1]
+      : undefined;
+
   if (!section) {
     return (
       <div className="panel">
         <h1>Раздел не найден</h1>
       </div>
+    );
+  }
+
+  if (!isCourseSectionReady(section)) {
+    return (
+      <article className="reading-page lesson-page">
+        <section className="panel section-placeholder">
+          <p className="eyebrow">Раздел {section.number}</p>
+          <span className={`status-badge status-badge--${statusMeta[section.status].tone}`}>
+            {statusMeta[section.status].label}
+          </span>
+          <h1>Раздел на доработке</h1>
+          <p>
+            Тема пока закрыта, чтобы не показывать недоработанное объяснение.
+            Сейчас готовы разделы 0–5.
+          </p>
+
+          <div className="actions">
+            <a className="button button--primary" href={toPath("/course")}>
+              Вернуться к курсу
+            </a>
+            <a className="button" href={toPath("/tasks")}>
+              Открыть задачи
+            </a>
+          </div>
+        </section>
+      </article>
     );
   }
 
@@ -273,6 +308,12 @@ export function CoursePage({ slug }: { slug: string }) {
         </a>
         <p className="eyebrow">Раздел {section.number}</p>
         <h1>{section.title}</h1>
+        <div className="lesson-header__meta">
+          <span className="status-badge status-badge--success">{statusMeta.ready.label}</span>
+          <span>
+            Урок {sectionIndex + 1} из {courseSections.length}
+          </span>
+        </div>
         <p className="lead">{section.description}</p>
 
         <div className="topic-list topic-list--quiet">
@@ -296,6 +337,36 @@ export function CoursePage({ slug }: { slug: string }) {
       )}
 
       <section className="panel lesson-content">{renderContent(section.content)}</section>
+
+      {(previousSection || nextSection) && (
+        <nav className="lesson-nav" aria-label="Навигация между уроками">
+          {previousSection ? (
+            <a className="lesson-nav__link" href={toPath(`/course/${previousSection.slug}`)}>
+              <span className="lesson-nav__label">Предыдущий</span>
+              <strong>
+                {previousSection.number}. {previousSection.title}
+              </strong>
+            </a>
+          ) : (
+            <span />
+          )}
+          {nextSection ? (
+            <a className="lesson-nav__link lesson-nav__link--next" href={toPath(`/course/${nextSection.slug}`)}>
+              <span className="lesson-nav__label">Следующий</span>
+              <strong>
+                {nextSection.number}. {nextSection.title}
+              </strong>
+              {!isCourseSectionReady(nextSection) && (
+                <span className={`status-badge status-badge--${statusMeta[nextSection.status].tone}`}>
+                  {statusMeta[nextSection.status].label}
+                </span>
+              )}
+            </a>
+          ) : (
+            <span />
+          )}
+        </nav>
+      )}
 
       <section className="related-tasks">
         <div className="section-heading">

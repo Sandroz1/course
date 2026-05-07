@@ -11,15 +11,16 @@ const checklist = [
 
 export function SelfCheckPage() {
   return (
-    <article className="reading-page compact-page">
-      <p className="eyebrow">Самопроверка</p>
-      <h1>Как понять, что задача решена</h1>
-      <p className="lead">
-        Не смотри ответ сразу. Сначала проверь, что твой код действительно
-        выполняет условие и не ломается на простых случаях.
-      </p>
+    <article className="reading-page compact-page check-page">
+      <header className="page-header">
+        <p className="eyebrow">Самопроверка</p>
+        <h1>Как понять, что задача решена</h1>
+        <p className="lead">
+          Перед переходом дальше проверь компиляцию, поведение и своё понимание кода.
+        </p>
+      </header>
 
-      <section className="panel check-panel">
+      <section className="panel check-panel check-panel--main">
         <h2>Чек-лист перед переходом дальше</h2>
         <ul className="checklist">
           {checklist.map((item) => (
@@ -28,7 +29,7 @@ export function SelfCheckPage() {
         </ul>
       </section>
 
-      <section className="panel">
+      <section className="panel check-note">
         <h2>Как сравнивать с эталоном</h2>
         <ol>
           <li>Сначала доведи своё решение до компиляции.</li>
@@ -38,12 +39,11 @@ export function SelfCheckPage() {
         </ol>
       </section>
 
-      <section className="panel warning-panel">
-        <h2>Когда ответ смотреть рано</h2>
+      <section className="panel check-note">
+        <h2>Если не получается</h2>
         <p>
-          Если ты ещё не пробовала написать каркас или не можешь объяснить,
-          где именно застряла, ответ только создаст ощущение понимания.
-          Лучше вернуться к теории и блоку “Что писать вместо TODO”.
+          Вернись к теории, прочитай первое сообщение компилятора и исправь одну проблему.
+          Готовый ответ смотри только после собственной попытки.
         </p>
       </section>
     </article>

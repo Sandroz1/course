@@ -6,6 +6,27 @@
     <title>ООП C++ — курс и практика</title>
     <script>
       (function () {
+        try {
+          var themePreference = window.localStorage.getItem("cppLearnTheme") || "system";
+          var resolvedTheme = themePreference;
+
+          if (themePreference === "system") {
+            resolvedTheme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+          }
+
+          if (["light", "dark", "blue"].indexOf(resolvedTheme) === -1) {
+            resolvedTheme = "dark";
+            themePreference = "system";
+          }
+
+          document.documentElement.dataset.theme = resolvedTheme;
+          document.documentElement.dataset.themePreference = themePreference;
+          document.documentElement.style.colorScheme = resolvedTheme === "light" ? "light" : "dark";
+        } catch (error) {
+          document.documentElement.dataset.theme = "dark";
+          document.documentElement.dataset.themePreference = "system";
+        }
+
         var redirect = window.sessionStorage.getItem("spa-redirect");
 
         if (redirect) {
