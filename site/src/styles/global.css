@@ -1064,6 +1064,25 @@ summary code,
   font-size: 13px;
 }
 
+.lesson-reading-note {
+  display: grid;
+  gap: 5px;
+  border: 1px solid color-mix(in srgb, var(--accent) 18%, transparent);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent-soft);
+  padding: 12px 14px;
+}
+
+.lesson-reading-note strong {
+  color: var(--text);
+}
+
+.lesson-reading-note span {
+  color: var(--soft);
+  line-height: 1.55;
+}
+
 .section-placeholder {
   display: grid;
   gap: 14px;

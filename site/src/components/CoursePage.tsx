@@ -23,10 +23,14 @@ function renderInline(text: string) {
 }
 
 function headingId(text: string) {
-  return text
+  return cleanHeadingTitle(text)
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, "-")
     .replace(/^-|-$/g, "");
+}
+
+function cleanHeadingTitle(text: string) {
+  return text.replace(/^\d+\.\s+/, "");
 }
 
 function flushList(nodes: ReactNode[], list: string[], ordered: boolean) {
@@ -117,7 +121,7 @@ function renderContent(content: string) {
       }
       if (trimmed.startsWith("## ")) {
         flushAll();
-        const title = trimmed.slice(3);
+        const title = cleanHeadingTitle(trimmed.slice(3));
         nodes.push(
           <h2
             className="lesson-heading"
@@ -178,7 +182,7 @@ function collectHeadings(content: string) {
     .split("\n")
     .filter((line) => line.startsWith("## "))
     .map((line) => {
-      const title = line.slice(3).trim();
+      const title = cleanHeadingTitle(line.slice(3).trim());
       return { title, id: headingId(title) };
     });
 }
@@ -259,6 +263,8 @@ export function CoursePage({ slug }: { slug: string }) {
     sectionIndex >= 0 && sectionIndex < courseSections.length - 1
       ? courseSections[sectionIndex + 1]
       : undefined;
+  const readySections = courseSections.filter(isCourseSectionReady);
+  const readySectionIndex = readySections.findIndex((item) => item.slug === normalizedSlug);
 
   if (!section) {
     return (
@@ -310,9 +316,7 @@ export function CoursePage({ slug }: { slug: string }) {
         <h1>{section.title}</h1>
         <div className="lesson-header__meta">
           <span className="status-badge status-badge--success">{statusMeta.ready.label}</span>
-          <span>
-            Урок {sectionIndex + 1} из {courseSections.length}
-          </span>
+          <span>Урок {readySectionIndex + 1} из {readySections.length} открытых</span>
         </div>
         <p className="lead">{section.description}</p>
 
@@ -322,6 +326,14 @@ export function CoursePage({ slug }: { slug: string }) {
           ))}
         </div>
       </header>
+
+      <section className="lesson-reading-note">
+        <strong>Как читать этот урок</strong>
+        <span>
+          Иди блоками: сначала пойми проблему, потом пример кода, потом разбор. Не нужно заучивать
+          весь раздел за один проход.
+        </span>
+      </section>
 
       {tocItems.length > 3 && (
         <nav className="lesson-toc" aria-label="Содержание раздела">
