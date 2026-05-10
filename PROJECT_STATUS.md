@@ -48,8 +48,6 @@ POST /api/ai/chat/
 
 `QWEN_API_KEY` берётся только из env. Если ключ не задан, backend возвращает понятную ошибку `503`.
 
-`qwen-local-api/` остаётся legacy-локальным proxy и не является production-зависимостью.
-
 ### Auth
 
 Frontend страницы auth уже подготовлены.
@@ -216,7 +214,6 @@ Postgres:
 - VPS должен быть чистой Ubuntu без конфликтующего LEMP/LAMP.
 - Пароль VPS нужно сменить после выдачи доступа.
 - Backend auth endpoints пока placeholder.
-- `qwen-local-api/` legacy и не должен использоваться в production.
 - Нельзя коммитить `.env`, `.env.local`, `.env.production`.
 - `site/dist/` больше не должен попадать в Git.
 

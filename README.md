@@ -14,7 +14,6 @@ Uchicode — учебный сайт по C++ и ООП.
 ```text
 site/                    Frontend на React/Vite/TypeScript
 backend/                 Django REST Framework API
-qwen-local-api/           Legacy локальный Node proxy
 docker/                  Production Nginx конфигурация
 docker-compose.dev.yml    Локальная Docker-среда
 docker-compose.prod.yml   Production Docker Compose
@@ -172,15 +171,15 @@ docker compose -f docker-compose.prod.yml exec backend python manage.py collects
 
 HTTPS/Let's Encrypt ещё нужно оформить отдельным шагом.
 
-## Legacy
+## AI endpoint
 
-`qwen-local-api/` — старый локальный Node proxy. Он оставлен в репозитории как legacy. Production AI должен идти через Django endpoint:
+AI-помощник работает через Django endpoint:
 
 ```text
 POST /api/ai/chat/
 ```
 
-Frontend больше не должен использовать прямой Qwen proxy URL.
+Frontend использует общий API base URL из `VITE_API_BASE_URL`.
 
 ## Статус
 

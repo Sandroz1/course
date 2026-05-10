@@ -164,7 +164,7 @@ docker compose -f docker-compose.prod.yml config
 Поиск старых production-следов. Команда ниже намеренно содержит legacy-строки, чтобы их можно было быстро найти перед коммитом:
 
 ```bash
-rg "cppbase.ru|api.cppbase.ru|VITE_QWEN_PROXY_URL|GITHUB_PAGES|workers.dev|cloudflare"
+rg "cppbase.ru|api.cppbase.ru|GITHUB_PAGES|workers.dev|cloudflare"
 ```
 
 Что не должно попасть в Git:

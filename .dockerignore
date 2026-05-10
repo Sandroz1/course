@@ -17,6 +17,3 @@ site/.env.*.local
 site/node_modules/
 site/dist/
 site/tsconfig.tsbuildinfo
-
-qwen-local-api/.env
-qwen-local-api/node_modules/
