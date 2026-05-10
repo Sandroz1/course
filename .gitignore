@@ -1,5 +1,14 @@
 node_modules/
+dist/
 .env
 .env.local
+.env.production
 .env.*.local
 tsconfig.tsbuildinfo
+.venv/
+venv/
+db.sqlite3
+__pycache__/
+*.pyc
+staticfiles/
+media/

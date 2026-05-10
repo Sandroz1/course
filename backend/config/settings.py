@@ -111,7 +111,7 @@ else:
     CACHES = {
         "default": {
             "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
-            "LOCATION": "cppbase-dev-cache",
+            "LOCATION": "uchicode-dev-cache",
         }
     }
 

@@ -7,7 +7,6 @@ def health(_request):
     return Response(
         {
             "status": "ok",
-            "service": "cppbase-api",
+            "service": "uchicode-api",
         }
     )
-

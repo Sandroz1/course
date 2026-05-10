@@ -22,7 +22,7 @@ class AiHealthView(APIView):
         return Response(
             {
                 "status": "ok",
-                "service": "cppbase-ai",
+                "service": "uchicode-ai",
             }
         )
 
@@ -58,4 +58,3 @@ class AiChatView(APIView):
             detail="Слишком много запросов к AI. Подожди немного и попробуй снова.",
             wait=wait,
         )
-

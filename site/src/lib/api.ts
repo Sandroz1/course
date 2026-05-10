@@ -1,8 +1,8 @@
 import type { ApiErrorPayload, ApiRequestOptions } from "../types/api";
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
-export const ACCESS_TOKEN_STORAGE_KEY = "cppbaseAccessToken";
-export const REFRESH_TOKEN_STORAGE_KEY = "cppbaseRefreshToken";
+export const ACCESS_TOKEN_STORAGE_KEY = "uchicodeAccessToken";
+export const REFRESH_TOKEN_STORAGE_KEY = "uchicodeRefreshToken";
 
 export class ApiError extends Error {
   status: number;
