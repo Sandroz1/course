@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Layout } from "./components/Layout";
 import { CoursePage } from "./components/CoursePage";
+import { useAuth } from "./context/AuthContext";
 import { HomePage } from "./pages/HomePage";
 import { BaseCppCoursePage } from "./pages/BaseCppCoursePage";
 import { CourseIndexPage } from "./pages/CourseIndexPage";
@@ -10,10 +11,39 @@ import { TaskDetailsPage } from "./pages/TaskDetailsPage";
 import { SelfCheckPage } from "./pages/SelfCheckPage";
 import { GuidePage } from "./pages/GuidePage";
 import { CommonErrorsPage } from "./pages/CommonErrorsPage";
+import { LoginPage } from "./pages/LoginPage";
+import { ProfilePage } from "./pages/ProfilePage";
+import { RegisterPage } from "./pages/RegisterPage";
+import { navigateTo } from "./utils/navigation";
 import { currentPath } from "./utils/slug";
+
+function ProtectedProfilePage() {
+  const { accessToken, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (!isLoading && !accessToken) {
+      navigateTo("/login", true);
+    }
+  }, [accessToken, isLoading]);
+
+  if (isLoading) {
+    return (
+      <article className="reading-page compact-page auth-page">
+        <section className="panel auth-card">
+          <p>Проверяем вход...</p>
+        </section>
+      </article>
+    );
+  }
+
+  return accessToken ? <ProfilePage /> : null;
+}
 
 function renderRoute(path: string) {
   if (path === "/") return <HomePage />;
+  if (path === "/login") return <LoginPage />;
+  if (path === "/register") return <RegisterPage />;
+  if (path === "/profile") return <ProtectedProfilePage />;
   if (path === "/courses") return <CoursesPage />;
   if (path === "/courses/base-cpp") return <BaseCppCoursePage />;
   if (path === "/courses/oop-cpp") return <CourseIndexPage />;

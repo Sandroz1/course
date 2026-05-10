@@ -31,9 +31,10 @@
 
         if (redirect) {
           window.sessionStorage.removeItem("spa-redirect");
-          var segments = window.location.pathname.split("/").filter(Boolean);
-          var base = segments.length > 0 ? "/" + segments[0] + "/" : "/";
-          var cleanPath = redirect === "/" ? base : base + redirect.replace(/^\//, "");
+          var redirectBase = window.sessionStorage.getItem("spa-redirect-base") || "/";
+          window.sessionStorage.removeItem("spa-redirect-base");
+          var normalizedBase = redirectBase.endsWith("/") ? redirectBase : redirectBase + "/";
+          var cleanPath = redirect === "/" ? normalizedBase : normalizedBase + redirect.replace(/^\//, "");
           window.history.replaceState(null, "", cleanPath);
           return;
         }

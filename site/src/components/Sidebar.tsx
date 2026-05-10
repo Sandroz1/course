@@ -1,5 +1,6 @@
 import { courseSections, isCourseSectionReady } from "../data/courseSections";
 import { statusMeta } from "../data/status";
+import { useAuth } from "../context/AuthContext";
 import { currentPath, toPath } from "../utils/slug";
 
 const mainLinks = [
@@ -13,7 +14,12 @@ const mainLinks = [
 
 export function Sidebar() {
   const path = currentPath();
+  const { isAuthenticated } = useAuth();
   const showCourseSections = path === "/course" || path.startsWith("/course/");
+  const navLinks = [
+    ...mainLinks,
+    isAuthenticated ? { href: "/profile", label: "Профиль" } : { href: "/login", label: "Войти" },
+  ];
 
   return (
     <aside className="sidebar">
@@ -22,7 +28,7 @@ export function Sidebar() {
       </a>
 
       <nav className="sidebar__nav" aria-label="Основная навигация">
-        {mainLinks.map((link) => {
+        {navLinks.map((link) => {
           const isActive =
             link.href === "/"
               ? path === "/"

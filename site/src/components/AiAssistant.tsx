@@ -5,6 +5,9 @@ import {
     useRef,
     useState,
 } from "react";
+import { isApiConfigured } from "../lib/api";
+import { sendAiChat } from "../lib/aiApi";
+import type { AiChatMessage } from "../types/api";
 
 type ResizeDirection = "left" | "top" | "corner";
 
@@ -51,19 +54,10 @@ function getPanelBounds() {
     return { minWidth, maxWidth, minHeight, maxHeight };
 }
 
-type ChatRole = "user" | "assistant";
-
-type ChatMessage = {
-    role: ChatRole;
-    content: string;
-};
-
 type SelectionPopover = {
     x: number;
     y: number;
 };
-
-const qwenProxyUrl = (import.meta.env.VITE_QWEN_PROXY_URL as string | undefined)?.trim();
 
 function getElementFromNode(node: Node | null) {
     if (!node) {
@@ -152,7 +146,7 @@ function readLessonSelection() {
 }
 
 export function AiAssistant() {
-    if (!qwenProxyUrl) {
+    if (!isApiConfigured()) {
         return null;
     }
 
@@ -161,7 +155,7 @@ export function AiAssistant() {
     const [selectedText, setSelectedText] = useState("");
     const [selectionPopover, setSelectionPopover] =
         useState<SelectionPopover | null>(null);
-    const [messages, setMessages] = useState<ChatMessage[]>([]);
+    const [messages, setMessages] = useState<AiChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [errorText, setErrorText] = useState("");
     const [showJumpToBottom, setShowJumpToBottom] = useState(false);
@@ -444,12 +438,12 @@ export function AiAssistant() {
             return;
         }
 
-        if (!qwenProxyUrl) {
-            setErrorText("Не задан VITE_QWEN_PROXY_URL в site/.env.local");
+        if (!isApiConfigured()) {
+            setErrorText("Не задан VITE_API_BASE_URL в site/.env.local");
             return;
         }
 
-        const userMessage: ChatMessage = {
+        const userMessage: AiChatMessage = {
             role: "user",
             content: selectedText
                 ? `Вопрос по выделенному тексту: ${cleanQuestion}`
@@ -464,23 +458,11 @@ export function AiAssistant() {
         setIsLoading(true);
 
         try {
-            const response = await fetch(qwenProxyUrl, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    question: cleanQuestion,
-                    selectedText,
-                    history: messages.slice(-8),
-                }),
+            const data = await sendAiChat({
+                question: cleanQuestion,
+                selectedText,
+                history: messages.slice(-8),
             });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data?.error || "Ошибка запроса к Qwen");
-            }
 
             setMessages((currentMessages) => [
                 ...currentMessages,
@@ -493,7 +475,7 @@ export function AiAssistant() {
             setErrorText(
                 error instanceof Error
                     ? error.message
-                    : "Не удалось получить ответ от Qwen"
+                    : "Не удалось получить ответ от AI"
             );
         } finally {
             setIsLoading(false);

@@ -1090,6 +1090,23 @@ summary code,
   line-height: 1.55;
 }
 
+.lesson-progress-panel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+  padding: 12px 14px;
+}
+
+.lesson-progress-panel span {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 .section-placeholder {
   display: grid;
   gap: 14px;
@@ -1646,6 +1663,72 @@ pre:not(.code-block__pre) code {
   color: var(--muted);
   font-size: 13px;
   white-space: nowrap;
+}
+
+.auth-page {
+  max-width: 720px;
+}
+
+.auth-card {
+  display: grid;
+  gap: 16px;
+}
+
+.auth-form {
+  display: grid;
+  gap: 13px;
+}
+
+.auth-form .button {
+  justify-self: start;
+}
+
+.auth-note,
+.auth-error,
+.auth-success {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.auth-note {
+  color: var(--muted);
+}
+
+.auth-note a {
+  color: var(--accent-strong);
+  font-weight: 750;
+}
+
+.auth-error {
+  border: 1px solid rgba(232, 139, 131, 0.35);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--danger);
+  padding: 10px 12px;
+}
+
+.auth-success {
+  border: 1px solid rgba(138, 203, 143, 0.35);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--success);
+  padding: 10px 12px;
+}
+
+.profile-status {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--muted);
+  padding: 11px 12px;
+}
+
+.profile-status strong {
+  color: var(--text);
 }
 
 @media (max-width: 900px) {

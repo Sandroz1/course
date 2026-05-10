@@ -1,7 +1,9 @@
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+import { useAuth } from "../context/AuthContext";
 import { courseSections, isCourseSectionReady } from "../data/courseSections";
 import { statusMeta } from "../data/status";
 import { tasks } from "../data/tasks";
+import { getProgress, updateStudyState, upsertLessonProgress } from "../lib/progressApi";
 import { toPath } from "../utils/slug";
 import { CodeBlock } from "./CodeBlock";
 
@@ -255,6 +257,10 @@ function collectTocItems(content: string) {
 }
 
 export function CoursePage({ slug }: { slug: string }) {
+  const { isAuthenticated } = useAuth();
+  const [isLessonCompleted, setIsLessonCompleted] = useState(false);
+  const [isProgressSaving, setIsProgressSaving] = useState(false);
+  const [progressMessage, setProgressMessage] = useState("");
   const normalizedSlug = slug === "structs" ? "struct" : slug;
   const section = courseSections.find((item) => item.slug === normalizedSlug);
   const sectionIndex = courseSections.findIndex((item) => item.slug === normalizedSlug);
@@ -265,6 +271,55 @@ export function CoursePage({ slug }: { slug: string }) {
       : undefined;
   const readySections = courseSections.filter(isCourseSectionReady);
   const readySectionIndex = readySections.findIndex((item) => item.slug === normalizedSlug);
+
+  useEffect(() => {
+    if (!section || !isCourseSectionReady(section)) return;
+
+    const currentSection = section;
+
+    setIsLessonCompleted(false);
+    setProgressMessage("");
+
+    if (!isAuthenticated) return;
+
+    let cancelled = false;
+
+    async function syncOpenedLesson() {
+      try {
+        const [progress] = await Promise.all([
+          getProgress(),
+          updateStudyState({
+            last_course_slug: currentSection.courseId,
+            last_lesson_slug: currentSection.slug,
+          }),
+          upsertLessonProgress({
+            course_slug: currentSection.courseId,
+            lesson_slug: currentSection.slug,
+          }),
+        ]);
+
+        if (cancelled) return;
+
+        const lesson = progress.lessons.find(
+          (item) =>
+            item.course_slug === currentSection.courseId &&
+            item.lesson_slug === currentSection.slug,
+        );
+
+        setIsLessonCompleted(Boolean(lesson?.is_completed));
+      } catch {
+        if (!cancelled) {
+          setProgressMessage("Прогресс временно не синхронизирован.");
+        }
+      }
+    }
+
+    void syncOpenedLesson();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, section]);
 
   if (!section) {
     return (
@@ -306,6 +361,29 @@ export function CoursePage({ slug }: { slug: string }) {
   );
   const tocItems = collectTocItems(section.content);
 
+  async function handleToggleCompleted() {
+    if (!section || !isAuthenticated || isProgressSaving) return;
+
+    const nextValue = !isLessonCompleted;
+    setIsProgressSaving(true);
+    setProgressMessage("");
+
+    try {
+      const progress = await upsertLessonProgress({
+        course_slug: section.courseId,
+        lesson_slug: section.slug,
+        is_completed: nextValue,
+      });
+
+      setIsLessonCompleted(progress.is_completed);
+      setProgressMessage(progress.is_completed ? "Урок отмечен как пройденный." : "Отметка снята.");
+    } catch {
+      setProgressMessage("Не удалось сохранить прогресс. Можно продолжать читать урок.");
+    } finally {
+      setIsProgressSaving(false);
+    }
+  }
+
   return (
     <article className="reading-page lesson-page">
       <header className="lesson-header">
@@ -317,6 +395,9 @@ export function CoursePage({ slug }: { slug: string }) {
         <div className="lesson-header__meta">
           <span className="status-badge status-badge--success">{statusMeta.ready.label}</span>
           <span>Урок {readySectionIndex + 1} из {readySections.length} открытых</span>
+          {isAuthenticated && isLessonCompleted && (
+            <span className="status-badge status-badge--success">Пройдено</span>
+          )}
         </div>
         <p className="lead">{section.description}</p>
 
@@ -326,6 +407,24 @@ export function CoursePage({ slug }: { slug: string }) {
           ))}
         </div>
       </header>
+
+      {isAuthenticated && (
+        <section className="lesson-progress-panel">
+          <button
+            className={isLessonCompleted ? "button" : "button button--primary"}
+            disabled={isProgressSaving}
+            type="button"
+            onClick={() => void handleToggleCompleted()}
+          >
+            {isProgressSaving
+              ? "Сохраняем..."
+              : isLessonCompleted
+                ? "Снять отметку"
+                : "Отметить пройдено"}
+          </button>
+          {progressMessage ? <span>{progressMessage}</span> : null}
+        </section>
+      )}
 
       <section className="lesson-reading-note">
         <strong>Как читать этот урок</strong>

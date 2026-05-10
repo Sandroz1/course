@@ -1,8 +1,24 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { courseSections, isCourseSectionReady } from "../data/courseSections";
 import { statusMeta } from "../data/status";
+import { getProgress } from "../lib/progressApi";
 import { toPath } from "../utils/slug";
 
-function CourseSectionRow({ slug, number, title, description, status }: (typeof courseSections)[number]) {
+type CourseSection = (typeof courseSections)[number];
+
+function progressKey(section: CourseSection) {
+  return `${section.courseId}:${section.slug}`;
+}
+
+function CourseSectionRow({
+  section,
+  isCompleted = false,
+}: {
+  section: CourseSection;
+  isCompleted?: boolean;
+}) {
+  const { slug, number, title, description, status } = section;
   const isReady = status === "available" || status === "ready";
   const meta = statusMeta[status];
 
@@ -18,6 +34,7 @@ function CourseSectionRow({ slug, number, title, description, status }: (typeof 
           <span className={`status-badge status-badge--${isReady ? "success" : meta.tone}`}>
             {isReady ? statusMeta.ready.label : meta.label}
           </span>
+          {isCompleted && <span className="status-badge status-badge--success">Пройдено</span>}
         </span>
         <span className="course-row__description">
           {isReady
@@ -33,8 +50,45 @@ function CourseSectionRow({ slug, number, title, description, status }: (typeof 
 }
 
 export function CourseIndexPage() {
+  const { isAuthenticated } = useAuth();
+  const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
   const readySections = courseSections.filter(isCourseSectionReady);
   const plannedSections = courseSections.filter((section) => !isCourseSectionReady(section));
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setCompletedLessons(new Set());
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadProgress() {
+      try {
+        const progress = await getProgress();
+
+        if (cancelled) return;
+
+        setCompletedLessons(
+          new Set(
+            progress.lessons
+              .filter((lesson) => lesson.is_completed)
+              .map((lesson) => `${lesson.course_slug}:${lesson.lesson_slug}`),
+          ),
+        );
+      } catch {
+        if (!cancelled) {
+          setCompletedLessons(new Set());
+        }
+      }
+    }
+
+    void loadProgress();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated]);
 
   return (
     <article className="reading-page compact-page route-page">
@@ -68,7 +122,11 @@ export function CourseIndexPage() {
         </div>
         <div className="course-list">
           {readySections.map((section) => (
-            <CourseSectionRow key={section.slug} {...section} />
+            <CourseSectionRow
+              key={section.slug}
+              section={section}
+              isCompleted={completedLessons.has(progressKey(section))}
+            />
           ))}
         </div>
       </section>
@@ -80,7 +138,11 @@ export function CourseIndexPage() {
         </div>
         <div className="course-list">
           {plannedSections.map((section) => (
-            <CourseSectionRow key={section.slug} {...section} />
+            <CourseSectionRow
+              key={section.slug}
+              section={section}
+              isCompleted={completedLessons.has(progressKey(section))}
+            />
           ))}
         </div>
       </section>
