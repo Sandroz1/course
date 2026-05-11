@@ -1,0 +1,21 @@
+/* Shared layout primitives that are still global. */
+
+.field input,
+.field select {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  padding: 10px 12px;
+}
+
+.field input::placeholder {
+  color: #77786f;
+}
+
+.muted-text,
+.path-label {
+  color: var(--muted);
+}

@@ -1,0 +1,65 @@
+/* Global responsive rules */
+
+@media (max-width: 900px) {
+  .quick-start,
+  .flow-steps,
+  .filters-panel,
+  .course-catalog,
+  .course-progress,
+  .base-course-card,
+  .lesson-nav {
+    grid-template-columns: 1fr;
+  }
+
+  .lesson-toc div {
+    display: grid;
+  }
+}
+
+@media (max-width: 560px) {
+  .actions,
+  .task-summary,
+  .section-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .course-row {
+    grid-template-columns: 42px minmax(0, 1fr);
+  }
+
+  .course-row__action {
+    grid-column: 2;
+    width: fit-content;
+  }
+
+  .button {
+    width: 100%;
+  }
+
+  .route-list {
+    grid-template-columns: 1fr;
+  }
+
+  .course-catalog {
+    gap: 10px;
+  }
+
+  .course-card {
+    min-height: 0;
+  }
+
+  .course-mini-card,
+  .related-task-link {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .lesson-nav__link--next {
+    justify-items: start;
+    text-align: left;
+  }
+
+}
+
+/* ===== AI Assistant: clean version ===== */

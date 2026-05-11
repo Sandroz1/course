@@ -1,0 +1,43 @@
+.root {
+  flex: 1;
+  position: relative;
+  max-width: 560px;
+}
+
+.input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  padding: 10px 12px;
+}
+
+.input::placeholder {
+  color: #77786f;
+}
+
+.results {
+  position: absolute;
+  top: 46px;
+  right: 0;
+  left: 0;
+  z-index: 10;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+}
+
+.resultLink {
+  display: grid;
+  gap: 4px;
+  border-bottom: 1px solid var(--line);
+  padding: 11px 12px;
+}
+
+.resultSection {
+  color: var(--muted);
+}

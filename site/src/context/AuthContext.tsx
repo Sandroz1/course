@@ -9,6 +9,7 @@ import {
 } from "react";
 import {
   ACCESS_TOKEN_STORAGE_KEY,
+  AUTH_CLEARED_EVENT,
   ApiError,
   REFRESH_TOKEN_STORAGE_KEY,
   apiRequest,
@@ -46,11 +47,19 @@ function readStorage(key: string) {
 }
 
 function writeStorage(key: string, value: string) {
-  window.localStorage.setItem(key, value);
+  try {
+    window.localStorage.setItem(key, value);
+  } catch {
+    // Auth can continue without persistent storage.
+  }
 }
 
 function removeStorage(key: string) {
-  window.localStorage.removeItem(key);
+  try {
+    window.localStorage.removeItem(key);
+  } catch {
+    // Ignore storage cleanup failures in restricted browser modes.
+  }
 }
 
 function extractTokens(response: AuthResponse): AuthTokens {
@@ -88,6 +97,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(nextUser);
     }
   }, []);
+
+  useEffect(() => {
+    window.addEventListener(AUTH_CLEARED_EVENT, clearAuth);
+
+    return () => {
+      window.removeEventListener(AUTH_CLEARED_EVENT, clearAuth);
+    };
+  }, [clearAuth]);
 
   const refreshProfile = useCallback(async () => {
     const profile = await apiRequest<AuthUser>("/api/me/");
@@ -170,6 +187,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           body: { refresh: currentRefresh },
         });
       }
+    } catch {
+      // Local logout must still complete if the API is temporarily unavailable.
     } finally {
       clearAuth();
     }

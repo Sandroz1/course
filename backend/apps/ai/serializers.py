@@ -18,6 +18,6 @@ class ChatRequestSerializer(serializers.Serializer):
 
     def validate_history(self, value):
         if len(value) > 10:
-            raise serializers.ValidationError("History can contain at most 10 messages.")
+            raise serializers.ValidationError("История может содержать не больше 10 сообщений.")
 
         return value

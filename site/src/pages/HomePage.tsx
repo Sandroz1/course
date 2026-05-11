@@ -3,10 +3,9 @@ import { statusMeta } from "../data/status";
 import { toPath } from "../utils/slug";
 
 const quickLinks = [
-  { title: "Курсы", href: "/courses" },
   { title: "Задачи", href: "/tasks" },
-  { title: "Как учиться", href: "/guide" },
-  { title: "Частые ошибки", href: "/common-errors" },
+  { title: "Гайд", href: "/guide" },
+  { title: "Ошибки", href: "/common-errors" },
   { title: "Самопроверка", href: "/check" },
 ];
 
@@ -19,18 +18,13 @@ export function HomePage() {
       <section className="home-hero app-hero">
         <p className="eyebrow">Учебная панель</p>
         <h1>Курс C++</h1>
-        <p className="lead">
-          Открой курс, разбери тему, перейди к задаче и пиши решение локально в отдельном .cpp файле.
-        </p>
+        <p className="lead">Теория, задачи и самопроверка в одном месте.</p>
         <div className="actions">
           <a className="button button--primary" href={toPath("/course")}>
-            Продолжить ООП C++
+            Продолжить курс
           </a>
           <a className="button button--ghost" href={toPath("/courses")}>
             Все курсы
-          </a>
-          <a className="button button--ghost" href={toPath("/tasks")}>
-            Задачи
           </a>
         </div>
       </section>
@@ -39,10 +33,7 @@ export function HomePage() {
         <div>
           <p className="eyebrow">Маршрут обучения</p>
           <h2>Курсы</h2>
-          <p>
-            Сейчас доступен курс “ООП C++”. Перед ним позже появится отдельная “База C++”, чтобы
-            спокойно закрыть ввод, условия, циклы, функции и массивы.
-          </p>
+          <p>Доступен курс ООП C++. База C++ готовится.</p>
         </div>
         <div className="course-mini-list">
           {[baseCourse, oopCourse].filter(Boolean).map((course) => {
@@ -55,9 +46,6 @@ export function HomePage() {
             );
           })}
         </div>
-        <a className="button button--small" href={toPath("/courses")}>
-          Открыть список курсов
-        </a>
       </section>
 
       <section className="panel study-flow">
@@ -72,8 +60,8 @@ export function HomePage() {
             <span>Открыть карточку задачи.</span>
           </div>
           <div>
-            <strong>.cpp файл</strong>
-            <span>Создать файл локально.</span>
+            <strong>Код</strong>
+            <span>Написать решение.</span>
           </div>
           <div>
             <strong>Проверка</strong>

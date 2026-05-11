@@ -1,0 +1,313 @@
+/* Standalone page surfaces: home, courses, guide, errors and auth */
+
+.home-page,
+.reading-page {
+  display: grid;
+  gap: 16px;
+  max-width: 960px;
+}
+
+.dashboard-page {
+  max-width: 920px;
+}
+
+.compact-page {
+  max-width: 860px;
+}
+
+.page-header,
+.home-hero {
+  display: grid;
+  gap: 6px;
+  padding: 4px 0 2px;
+}
+
+.home-hero h1,
+.reading-page h1 {
+  margin: 6px 0 8px;
+  font-size: clamp(30px, 4vw, 44px);
+  line-height: 1.08;
+  text-wrap: balance;
+}
+
+.home-hero h1 {
+  font-size: clamp(30px, 3.5vw, 42px);
+}
+
+.page-header h1,
+.page-header .lead {
+  margin-top: 0;
+}
+
+.page-header .lead {
+  margin-bottom: 0;
+}
+
+.lead {
+  max-width: 760px;
+  color: var(--soft);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.eyebrow {
+  margin: 0;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.panel {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 16px;
+  box-shadow: none;
+}
+
+.panel h2:first-child {
+  margin-top: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-2);
+  color: var(--text);
+  cursor: pointer;
+  min-height: 36px;
+  font-size: 14px;
+  font-weight: 750;
+  padding: 8px 11px;
+}
+
+.button:hover {
+  border-color: var(--accent);
+}
+
+.button:active {
+  transform: translateY(1px);
+}
+
+.button--primary {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  align-self: end;
+}
+
+.button--ghost {
+  background: transparent;
+}
+
+.button--small {
+  width: fit-content;
+  font-size: 14px;
+  padding: 7px 10px;
+}
+
+.app-hero {
+  padding-bottom: 4px;
+}
+
+.app-hero .lead {
+  max-width: 640px;
+}
+
+.base-course-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 0.9fr);
+  gap: 14px;
+  align-items: start;
+
+}
+
+.base-course-card h2 {
+  margin: 4px 0 8px;
+}
+
+.base-course-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.base-course-card .button {
+  grid-column: 1 / -1;
+}
+
+.next-actions {
+  display: grid;
+  gap: 10px;
+}
+
+.next-actions h2 {
+  margin: 0;
+}
+
+.next-actions ol {
+  margin: 0;
+  padding-left: 22px;
+}
+
+.course-mini-list {
+  display: grid;
+  gap: 6px;
+}
+
+.course-mini-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-2);
+  padding: 8px 10px;
+}
+
+.course-mini-card:hover {
+  border-color: var(--border-strong);
+}
+
+.course-placeholder {
+  display: grid;
+  gap: 14px;
+  max-width: 760px;
+}
+
+.course-placeholder h2,
+.course-placeholder p {
+  margin: 0;
+}
+
+.plain-list {
+  display: grid;
+  gap: 6px;
+  margin: 0;
+  padding-left: 20px;
+}
+
+.error-card {
+  padding: 0;
+}
+
+.error-card summary {
+  display: grid;
+  gap: 4px;
+  cursor: pointer;
+  padding: 11px 14px;
+}
+
+.error-card[open] summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.error-card summary span {
+  color: var(--muted);
+  line-height: 1.42;
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.error-card__body {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+}
+
+.guide-list {
+  display: grid;
+  border-top: 1px solid rgba(214, 212, 202, 0.12);
+}
+
+.guide-section {
+  display: grid;
+  gap: 7px;
+  border-bottom: 1px solid rgba(214, 212, 202, 0.12);
+  padding: 14px 0;
+}
+
+.guide-section h2 {
+  margin: 0;
+}
+
+.guide-section ul {
+  margin: 0;
+}
+
+.example-pair {
+  display: grid;
+  gap: 12px;
+}
+
+.example-box {
+  display: grid;
+  gap: 8px;
+}
+
+.example-box h3 {
+  width: fit-content;
+  margin: 0;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  font-size: 13px;
+  padding: 4px 9px;
+}
+
+.example-box--bad h3 {
+  border-color: rgba(232, 139, 131, 0.45);
+  color: var(--danger);
+}
+
+.example-box--good h3 {
+  border-color: rgba(138, 203, 143, 0.45);
+  color: var(--ok);
+}
+
+.remember-note {
+  border-left: 3px solid var(--accent);
+  margin: 0;
+  color: var(--soft);
+  padding: 2px 0 2px 12px;
+}
+
+.related-tasks {
+  display: grid;
+  gap: 12px;
+}
+
+.related-task-list {
+  display: grid;
+  gap: 6px;
+}
+
+.related-task-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid rgba(214, 212, 202, 0.12);
+  border-radius: 7px;
+  background: var(--surface);
+  padding: 10px 12px;
+}
+
+.related-task-link span {
+  color: var(--muted);
+  font-size: 13px;
+  white-space: nowrap;
+}

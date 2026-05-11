@@ -1,7 +1,9 @@
 export type ApiErrorPayload = {
   detail?: string;
   error?: string;
+  fields?: Record<string, string[]>;
   message?: string;
+  retryAfterSeconds?: number;
   [key: string]: unknown;
 };
 
@@ -10,6 +12,7 @@ export type ApiRequestOptions = {
   body?: unknown;
   headers?: HeadersInit;
   signal?: AbortSignal;
+  skipAuthRefresh?: boolean;
 };
 
 export type AiChatRole = "user" | "assistant";
@@ -62,6 +65,30 @@ export type LoginRequest = {
 
 export type ProfileUpdateRequest = {
   phone: string;
+};
+
+export type PhoneSendCodeRequest = {
+  phone: string;
+};
+
+export type PhoneVerifyRequest = {
+  phone: string;
+  code: string;
+};
+
+export type PhoneVerifyResponse = {
+  message: string;
+  user: AuthUser;
+};
+
+export type ChangePasswordRequest = {
+  currentPassword: string;
+  newPassword: string;
+  newPassword2: string;
+};
+
+export type MessageResponse = {
+  message: string;
 };
 
 export type LessonProgress = {

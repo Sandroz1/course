@@ -26,7 +26,7 @@ export const statusMeta: Record<ContentStatus, StatusMeta> = {
   },
   draft: {
     label: "Черновик",
-    description: "Материал пока не готов для ученицы.",
+    description: "Материал пока не готов для прохождения.",
     tone: "muted",
   },
   "needs-theory": {

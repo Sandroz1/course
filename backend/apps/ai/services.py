@@ -7,10 +7,25 @@ from rest_framework import status
 
 SYSTEM_PROMPT = """
 Ты помощник на учебном сайте по C++.
-Отвечай по-русски.
-Объясняй просто, но технически точно.
-Учитывай, что ученица новичок.
-Если вопрос связан с выделенным текстом, сначала объясни именно выделенный фрагмент.
+Отвечай на русском языке.
+Пиши кратко, понятно и без лишнего оформления.
+
+Запрещено:
+- начинать с "Конечно", "Давай", "Отлично";
+- использовать emoji;
+- использовать декоративные разделители "---";
+- использовать заголовки "###", если ответ короткий;
+- злоупотреблять жирным текстом;
+- писать длинные вступления.
+
+Разрешено:
+- короткие абзацы;
+- обычные списки;
+- code blocks для кода;
+- inline code для терминов C++.
+
+Если пользователь выделил текст, объясни именно выделенный фрагмент.
+Сначала дай суть, потом пример, потом короткий вывод.
 Если в коде есть ошибка, покажи: что не так, почему, как исправить.
 Не выдумывай факты о проекте.
 Не давай слишком длинный ответ без необходимости.
@@ -41,18 +56,18 @@ def build_qwen_messages(question: str, selected_text: str = "", history: list[di
 def sanitize_upstream_error(status_code: int | None = None) -> UpstreamAiError:
     if status_code in {401, 403}:
         return UpstreamAiError(
-            "AI provider rejected the request. Check server configuration.",
+            "AI-сервис временно недоступен.",
             status.HTTP_503_SERVICE_UNAVAILABLE,
         )
 
     if status_code == 429:
         return UpstreamAiError(
-            "AI provider rate limit was reached. Try again later.",
+            "AI-сервис временно ограничил запросы. Попробуйте позже.",
             status.HTTP_503_SERVICE_UNAVAILABLE,
         )
 
     return UpstreamAiError(
-        "AI provider is temporarily unavailable.",
+        "AI-сервис временно недоступен.",
         status.HTTP_502_BAD_GATEWAY,
     )
 
@@ -61,7 +76,7 @@ def extract_answer(payload: dict[str, Any]) -> str:
     answer = payload.get("choices", [{}])[0].get("message", {}).get("content", "")
 
     if not isinstance(answer, str) or not answer.strip():
-        raise UpstreamAiError("AI provider returned an empty response.")
+        raise UpstreamAiError("AI-сервис вернул пустой ответ.")
 
     return answer.strip()
 
@@ -69,7 +84,7 @@ def extract_answer(payload: dict[str, Any]) -> str:
 def call_qwen(messages: list[dict[str, str]]) -> str:
     if not settings.QWEN_API_KEY:
         raise UpstreamAiError(
-            "AI service is not configured. Set QWEN_API_KEY on the server.",
+            "AI-сервис временно не настроен.",
             status.HTTP_503_SERVICE_UNAVAILABLE,
         )
 
@@ -77,7 +92,7 @@ def call_qwen(messages: list[dict[str, str]]) -> str:
         import requests
     except ImportError as exc:
         raise UpstreamAiError(
-            "AI service dependency is not installed.",
+            "AI-сервис временно недоступен.",
             status.HTTP_503_SERVICE_UNAVAILABLE,
         ) from exc
 
@@ -91,14 +106,14 @@ def call_qwen(messages: list[dict[str, str]]) -> str:
             json={
                 "model": settings.QWEN_MODEL,
                 "messages": messages,
-                "temperature": 0.3,
-                "max_tokens": 1200,
+                "temperature": 0.2,
+                "max_tokens": 900,
             },
             timeout=settings.QWEN_TIMEOUT_SECONDS,
         )
     except requests.RequestException as exc:
         raise UpstreamAiError(
-            "AI provider is temporarily unavailable.",
+            "AI-сервис временно недоступен.",
             status.HTTP_502_BAD_GATEWAY,
         ) from exc
 
@@ -108,7 +123,6 @@ def call_qwen(messages: list[dict[str, str]]) -> str:
     try:
         payload = response.json()
     except ValueError as exc:
-        raise UpstreamAiError("AI provider returned invalid JSON.") from exc
+        raise UpstreamAiError("AI-сервис вернул некорректный ответ.") from exc
 
     return extract_answer(payload)
-

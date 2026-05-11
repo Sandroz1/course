@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { TaskListPage } from "../components/TaskListPage";
+import { TaskListPage } from "../components/TaskListPage/TaskListPage";
 import { courseSections, isCourseSectionReady } from "../data/courseSections";
 import { courses, type CourseId } from "../data/courses";
 import { getStatusLabel } from "../data/status";
@@ -66,10 +66,7 @@ export function TasksIndexPage() {
       <header className="page-header">
         <p className="eyebrow">Практика</p>
         <h1>Задачи</h1>
-        <p className="lead">
-          Выбери задачу, создай файл локально и пиши решение вместо TODO. Задачи с закрытой теорией
-          помечены отдельно.
-        </p>
+        <p className="lead">Фильтр и список задач. Закрытые темы отмечены отдельно.</p>
       </header>
 
       <section className="panel filters-panel filters-panel--tasks">
@@ -133,11 +130,8 @@ export function TasksIndexPage() {
 
       {closedTheoryTaskCount > 0 && (
         <section className="panel task-theory-note">
-          <strong>Есть задачи с теорией на доработке</strong>
-          <p>
-            Их можно открыть, но лучше сначала пройти готовые разделы. Такие задачи отмечены бейджем
-            “{getStatusLabel("needs-theory")}”.
-          </p>
+          <strong>Есть задачи с закрытой теорией</strong>
+          <p>Они отмечены статусом {getStatusLabel("needs-theory")}.</p>
         </section>
       )}
 

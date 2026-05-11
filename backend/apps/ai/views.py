@@ -49,7 +49,7 @@ class AiChatView(APIView):
         try:
             answer = call_qwen(messages)
         except UpstreamAiError as exc:
-            return Response({"detail": exc.message}, status=exc.status_code)
+            return Response({"message": exc.message}, status=exc.status_code)
 
         return Response({"answer": answer})
 

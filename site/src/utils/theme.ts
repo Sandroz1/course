@@ -19,13 +19,22 @@ export function isThemePreference(value: string | null): value is ThemePreferenc
 export function getStoredThemePreference(): ThemePreference {
   if (typeof window === "undefined") return "system";
 
-  const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
-  return isThemePreference(stored) ? stored : "system";
+  try {
+    const stored = window.localStorage.getItem(THEME_STORAGE_KEY);
+    return isThemePreference(stored) ? stored : "system";
+  } catch {
+    return "system";
+  }
 }
 
 export function saveThemePreference(preference: ThemePreference) {
   if (typeof window === "undefined") return;
-  window.localStorage.setItem(THEME_STORAGE_KEY, preference);
+
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, preference);
+  } catch {
+    // Theme switching should keep working even when storage is unavailable.
+  }
 }
 
 export function resolveTheme(preference: ThemePreference): ResolvedTheme {

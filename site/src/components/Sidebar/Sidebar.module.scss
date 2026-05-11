@@ -1,0 +1,98 @@
+.root {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+  padding: 16px;
+}
+
+.brand {
+  display: block;
+  margin-bottom: 14px;
+  color: var(--text);
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.nav,
+.chapters {
+  display: grid;
+  gap: 4px;
+}
+
+.chapters {
+  max-height: calc(100vh - 250px);
+  overflow: auto;
+  padding-right: 4px;
+}
+
+.link,
+.chapterLink {
+  border-radius: 7px;
+  color: var(--muted);
+  padding: 7px 9px;
+}
+
+.link:hover,
+.chapterLink:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.active {
+  background: var(--surface-2);
+  color: var(--text);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.sectionTitle {
+  margin: 22px 0 8px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.chapterLink {
+  display: grid;
+  grid-template-columns: 26px minmax(0, 1fr) auto;
+  gap: 6px;
+  align-items: center;
+  font-size: 14px;
+}
+
+.chapterNumber {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.chapterTitle {
+  min-width: 0;
+}
+
+.chapterStatus {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.chapterInProgress {
+  opacity: 0.66;
+}
+
+.chapterInProgress:hover {
+  opacity: 1;
+}
+
+@media (max-width: 900px) {
+  .root {
+    position: static;
+    height: auto;
+    padding: 14px;
+  }
+
+  .chapters {
+    max-height: none;
+  }
+}
