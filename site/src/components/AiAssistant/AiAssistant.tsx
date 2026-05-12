@@ -6,10 +6,19 @@ import {
     useRef,
     useState,
 } from "react";
-import { isApiConfigured } from "../../lib/api";
+import { useAuth } from "../../context/AuthContext";
+import { ApiError, isApiConfigured } from "../../lib/api";
+import {
+    AI_USAGE_UPDATED_EVENT,
+    formatAiUsage,
+    getLocalAiUsage,
+    markAiLimitReached,
+    recordAiSuccess,
+} from "../../lib/aiUsage";
 import { sendAiChat } from "../../lib/aiApi";
 import { classNames } from "../../shared/lib/classNames";
-import type { AiChatMessage } from "../../types/api";
+import type { AiChatMessage, AiUsage } from "../../types/api";
+import { toPath } from "../../utils/slug";
 import styles from "./AiAssistant.module.scss";
 
 type ResizeDirection = "left" | "top" | "corner";
@@ -314,7 +323,60 @@ function readLessonSelection() {
     };
 }
 
+function getAiAccessMessage({
+    isAuthenticated,
+    isAuthLoading,
+    isPhoneVerified,
+}: {
+    isAuthenticated: boolean;
+    isAuthLoading: boolean;
+    isPhoneVerified: boolean;
+}) {
+    if (isAuthLoading) {
+        return "Проверяем аккаунт...";
+    }
+
+    if (!isAuthenticated) {
+        return "Войдите, чтобы использовать AI.";
+    }
+
+    if (!isPhoneVerified) {
+        return "Подтвердите телефон в профиле.";
+    }
+
+    return "";
+}
+
+function getAiErrorMessage(error: unknown) {
+    if (!(error instanceof ApiError)) {
+        return "Не удалось получить ответ от AI.";
+    }
+
+    if (error.status === 401) {
+        return "Сессия истекла. Войдите снова.";
+    }
+
+    if (error.status === 403) {
+        return "Подтвердите телефон в профиле.";
+    }
+
+    if (error.status === 429) {
+        const retryText = error.retryAfterSeconds
+            ? ` Попробуйте через ${error.retryAfterSeconds} с.`
+            : "";
+        return `${error.message || "Лимит запросов к AI исчерпан."}${retryText}`;
+    }
+
+    if (error.status >= 500 || error.status === 0) {
+        return error.message || "AI-сервис временно недоступен.";
+    }
+
+    return error.message || "Не удалось получить ответ от AI.";
+}
+
 export function AiAssistant() {
+    const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
+
     if (!isApiConfigured()) {
         return null;
     }
@@ -331,6 +393,15 @@ export function AiAssistant() {
     const [panelSize, setPanelSize] = useState(() =>
         clampPanelSize(readStoredPanelSize())
     );
+    const [aiUsage, setAiUsage] = useState<AiUsage>(() => getLocalAiUsage(user?.id));
+    const isPhoneVerified = Boolean(user?.is_phone_verified);
+    const aiAccessMessage = getAiAccessMessage({
+        isAuthenticated,
+        isAuthLoading,
+        isPhoneVerified,
+    });
+    const canUseAi = !aiAccessMessage;
+    const usageText = formatAiUsage(aiUsage);
 
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
     const messagesRef = useRef<HTMLDivElement | null>(null);
@@ -352,6 +423,18 @@ export function AiAssistant() {
     useEffect(() => {
         panelSizeDuringResizeRef.current = panelSize;
     }, [panelSize]);
+
+    useEffect(() => {
+        setAiUsage(getLocalAiUsage(user?.id));
+
+        function syncUsage() {
+            setAiUsage(getLocalAiUsage(user?.id));
+        }
+
+        window.addEventListener(AI_USAGE_UPDATED_EVENT, syncUsage);
+
+        return () => window.removeEventListener(AI_USAGE_UPDATED_EVENT, syncUsage);
+    }, [user?.id]);
 
     useEffect(() => {
         function handleWindowResize() {
@@ -659,6 +742,16 @@ export function AiAssistant() {
             return;
         }
 
+        if (!canUseAi) {
+            setErrorText(aiAccessMessage);
+            return;
+        }
+
+        if (user && aiUsage.remaining <= 0) {
+            setErrorText("Лимит AI-запросов на сегодня исчерпан.");
+            return;
+        }
+
         const userMessage: ChatMessage = {
             id: createMessageId("user"),
             role: "user",
@@ -693,13 +786,17 @@ export function AiAssistant() {
                 pendingScrollTargetRef.current = { id: assistantMessage.id, align: "start" };
             }
 
+            if (user) {
+                setAiUsage(recordAiSuccess(user.id, data.usage));
+            }
+
             setMessages((currentMessages) => [...currentMessages, assistantMessage]);
         } catch (error) {
-            setErrorText(
-                error instanceof Error
-                    ? error.message || "AI-сервис временно недоступен."
-                    : "Не удалось получить ответ от AI"
-            );
+            if (user && error instanceof ApiError && error.status === 429) {
+                setAiUsage(markAiLimitReached(user.id, error.payload?.usage));
+            }
+
+            setErrorText(getAiErrorMessage(error));
         } finally {
             setIsLoading(false);
         }
@@ -713,7 +810,7 @@ export function AiAssistant() {
 
     return (
         <>
-            {selectedText && selectionPopover && !isOpen ? (
+            {selectedText && selectionPopover && !isOpen && canUseAi ? (
                 <button
                     className={styles.selectionPopover}
                     type="button"
@@ -752,6 +849,9 @@ export function AiAssistant() {
                             <h2>
                                 {selectedText ? "Вопрос по выделенному" : "Помощник по C++"}
                             </h2>
+                            {isAuthenticated && isPhoneVerified ? (
+                                <span className={styles.usageText}>{usageText}</span>
+                            ) : null}
                         </div>
 
                         <button
@@ -773,6 +873,25 @@ export function AiAssistant() {
                                 </button>
                             </div>
                             <p>{selectedText}</p>
+                        </div>
+                    ) : null}
+
+                    {!canUseAi ? (
+                        <div className={styles.accessNotice}>
+                            <p>{aiAccessMessage}</p>
+                            {!isAuthenticated && !isAuthLoading ? (
+                                <a href={toPath("/login")}>Войти</a>
+                            ) : null}
+                            {isAuthenticated && !isPhoneVerified ? (
+                                <a href={toPath("/profile")}>Открыть профиль</a>
+                            ) : null}
+                        </div>
+                    ) : null}
+
+                    {canUseAi ? (
+                        <div className={styles.usageNotice}>
+                            <span>{usageText}</span>
+                            {aiUsage.remaining <= 0 ? <strong>Лимит на сегодня исчерпан</strong> : null}
                         </div>
                     ) : null}
 
@@ -837,14 +956,17 @@ export function AiAssistant() {
                             value={question}
                             onChange={(event) => setQuestion(event.target.value)}
                             placeholder={
-                                selectedText
+                                !canUseAi
+                                    ? aiAccessMessage
+                                    : selectedText
                                     ? "Что объяснить в выделенном фрагменте?"
                                     : "Спроси что-нибудь по C++..."
                             }
                             rows={3}
+                            disabled={!canUseAi || aiUsage.remaining <= 0 || isLoading}
                         />
 
-                        <button type="submit" disabled={isLoading || !question.trim()}>
+                        <button type="submit" disabled={!canUseAi || aiUsage.remaining <= 0 || isLoading || !question.trim()}>
                             Отправить
                         </button>
                     </form>

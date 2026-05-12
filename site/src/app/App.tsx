@@ -1,15 +1,7 @@
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Layout } from "../components/Layout/Layout";
 import { currentPath } from "../utils/slug";
 import { renderRoute } from "./routes";
-
-const routeFallback = (
-  <article className="reading-page compact-page">
-    <section className="panel">
-      <p>Загрузка...</p>
-    </section>
-  </article>
-);
 
 export default function App() {
   const [path, setPath] = useState(currentPath());
@@ -52,5 +44,5 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  return <Layout><Suspense fallback={routeFallback}>{renderRoute(path)}</Suspense></Layout>;
+  return <Layout>{renderRoute(path)}</Layout>;
 }

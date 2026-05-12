@@ -3,8 +3,19 @@ export type ApiErrorPayload = {
   error?: string;
   fields?: Record<string, string[]>;
   message?: string;
+  retryAfter?: number;
+  retry_after?: number;
   retryAfterSeconds?: number;
+  usage?: AiUsage;
   [key: string]: unknown;
+};
+
+export type AiUsage = {
+  limit: number;
+  remaining: number;
+  used?: number;
+  resetAt?: string;
+  retryAfterSeconds?: number;
 };
 
 export type ApiRequestOptions = {
@@ -30,6 +41,8 @@ export type AiChatRequest = {
 
 export type AiChatResponse = {
   answer: string;
+  remainingRequests?: number;
+  usage?: AiUsage;
 };
 
 export type AuthUser = {

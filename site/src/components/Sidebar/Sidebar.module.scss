@@ -9,11 +9,19 @@
 }
 
 .brand {
-  display: block;
+  display: flex;
+  align-items: center;
+  width: min(100%, 212px);
+  min-height: 48px;
   margin-bottom: 14px;
-  color: var(--text);
-  font-size: 20px;
-  font-weight: 800;
+}
+
+.brandLogo {
+  display: block;
+  width: 100%;
+  max-height: 45px;
+  object-fit: contain;
+  object-position: left center;
 }
 
 .nav,

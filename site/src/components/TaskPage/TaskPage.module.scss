@@ -44,6 +44,27 @@
   border-color: var(--border-strong);
 }
 
+.progressPanel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  border-color: rgba(214, 212, 202, 0.16);
+  background: var(--surface-2);
+}
+
+.progressPanel div {
+  display: grid;
+  gap: 3px;
+}
+
+.progressPanel span {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 .goal h2,
 .plainPanel h2,
 .codePanel h2 {
@@ -104,6 +125,11 @@
 
 @media (max-width: 560px) {
   .summary {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .progressPanel {
     align-items: stretch;
     flex-direction: column;
   }

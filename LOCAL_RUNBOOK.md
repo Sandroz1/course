@@ -155,11 +155,14 @@ npm run build
 ```powershell
 cd backend
 .venv\Scripts\python.exe manage.py check
+.venv\Scripts\python.exe manage.py test
 ```
 
 ```bash
 docker compose -f docker-compose.prod.yml config
 ```
+
+Production compose требует заполненный `.env.production`. Nginx HTTPS-конфиг ожидает сертификаты Let's Encrypt в `/etc/letsencrypt/live/uchicode.ru/`.
 
 Поиск старых production-следов. Команда ниже намеренно содержит legacy-строки, чтобы их можно было быстро найти перед коммитом:
 

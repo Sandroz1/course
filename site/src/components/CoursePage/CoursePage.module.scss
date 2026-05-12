@@ -48,6 +48,11 @@
   line-height: 1.45;
 }
 
+.progressPanel :global(.button) {
+  justify-content: center;
+  min-width: 172px;
+}
+
 .sectionPlaceholder {
   display: grid;
   gap: 14px;

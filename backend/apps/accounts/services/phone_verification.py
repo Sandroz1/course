@@ -71,6 +71,7 @@ def ensure_can_send_code(user: User, phone: str) -> None:
 
 def send_sms_code(phone: str, code: str) -> None:
     provider = getattr(settings, "SMS_PROVIDER", "console")
+    message = f"Код подтверждения Uchicode: {code}"
 
     if provider == "console":
         if settings.DEBUG:
@@ -79,10 +80,92 @@ def send_sms_code(phone: str, code: str) -> None:
 
         raise SmsProviderUnavailable("SMS provider не настроен.")
 
-    if provider in {"smsc", "smsru"}:
-        raise SmsProviderUnavailable("SMS provider пока не подключён.")
+    if provider == "smsru":
+        send_smsru_code(phone, message)
+        return
+
+    if provider == "smsc":
+        send_smsc_code(phone, message)
+        return
 
     raise SmsProviderUnavailable("Неизвестный SMS provider.")
+
+
+def _raise_if_sms_credentials_missing(*values: str | None) -> None:
+    if not all(value and value.strip() for value in values):
+        raise SmsProviderUnavailable("SMS provider не настроен.")
+
+
+def _post_sms_provider(url: str, data: dict[str, str]) -> dict:
+    try:
+        import requests
+    except ImportError as exc:
+        raise SmsProviderUnavailable("SMS provider недоступен.") from exc
+
+    try:
+        response = requests.post(url, data=data, timeout=settings.SMS_TIMEOUT_SECONDS)
+    except requests.RequestException as exc:
+        raise SmsProviderUnavailable("SMS provider недоступен.") from exc
+
+    if not response.ok:
+        raise SmsProviderUnavailable("SMS provider временно недоступен.")
+
+    try:
+        payload = response.json()
+    except ValueError as exc:
+        raise SmsProviderUnavailable("SMS provider вернул некорректный ответ.") from exc
+
+    if not isinstance(payload, dict):
+        raise SmsProviderUnavailable("SMS provider вернул некорректный ответ.")
+
+    return payload
+
+
+def send_smsru_code(phone: str, message: str) -> None:
+    _raise_if_sms_credentials_missing(settings.SMS_API_KEY)
+
+    payload = _post_sms_provider(
+        "https://sms.ru/sms/send",
+        {
+            "api_id": settings.SMS_API_KEY,
+            "to": phone.lstrip("+"),
+            "msg": message,
+            "json": "1",
+            "from": settings.SMS_FROM,
+        },
+    )
+
+    if payload.get("status") != "OK":
+        raise SmsProviderUnavailable("SMS provider не принял сообщение.")
+
+    sms_payload = payload.get("sms", {})
+    if isinstance(sms_payload, dict):
+        phone_payload = sms_payload.get(phone.lstrip("+"))
+        if isinstance(phone_payload, dict) and phone_payload.get("status") != "OK":
+            raise SmsProviderUnavailable("SMS provider не принял сообщение.")
+
+
+def send_smsc_code(phone: str, message: str) -> None:
+    if settings.SMS_API_KEY:
+        auth_data = {"apikey": settings.SMS_API_KEY}
+    else:
+        _raise_if_sms_credentials_missing(settings.SMS_LOGIN, settings.SMS_PASSWORD)
+        auth_data = {"login": settings.SMS_LOGIN, "psw": settings.SMS_PASSWORD}
+
+    payload = _post_sms_provider(
+        "https://smsc.ru/sys/send.php",
+        {
+            **auth_data,
+            "phones": phone,
+            "mes": message,
+            "sender": settings.SMS_FROM,
+            "fmt": "3",
+            "charset": "utf-8",
+        },
+    )
+
+    if "error" in payload or "error_code" in payload:
+        raise SmsProviderUnavailable("SMS provider не принял сообщение.")
 
 
 def create_and_send_code(*, user: User, phone: str, request) -> PhoneVerificationCode:

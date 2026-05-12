@@ -1,3 +1,6 @@
+import time
+
+from django.db import IntegrityError, OperationalError
 from django.utils import timezone
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
@@ -10,6 +13,55 @@ from .serializers import (
     TaskProgressSerializer,
     UserStudyStateSerializer,
 )
+
+DATABASE_LOCK_RETRY_DELAYS = (0.05, 0.15, 0.3)
+
+
+def _is_database_locked(error: OperationalError) -> bool:
+    message = str(error).lower()
+    return "database is locked" in message or "database table is locked" in message
+
+
+def _save_existing_lesson_progress(user, data, defaults):
+    progress = LessonProgress.objects.get(
+        user=user,
+        course_slug=data["course_slug"],
+        lesson_slug=data["lesson_slug"],
+    )
+
+    for field, value in defaults.items():
+        setattr(progress, field, value)
+
+    progress.save(update_fields=[*defaults.keys(), "updated_at"])
+    return progress
+
+
+def _upsert_lesson_progress(user, data, defaults):
+    attempts = len(DATABASE_LOCK_RETRY_DELAYS) + 1
+
+    for attempt in range(attempts):
+        try:
+            progress, _created = LessonProgress.objects.update_or_create(
+                user=user,
+                course_slug=data["course_slug"],
+                lesson_slug=data["lesson_slug"],
+                defaults=defaults,
+            )
+            return progress
+        except IntegrityError:
+            if attempt < len(DATABASE_LOCK_RETRY_DELAYS):
+                time.sleep(DATABASE_LOCK_RETRY_DELAYS[attempt])
+                continue
+
+            return _save_existing_lesson_progress(user, data, defaults)
+        except OperationalError as exc:
+            if _is_database_locked(exc) and attempt < len(DATABASE_LOCK_RETRY_DELAYS):
+                time.sleep(DATABASE_LOCK_RETRY_DELAYS[attempt])
+                continue
+
+            raise
+
+    return _save_existing_lesson_progress(user, data, defaults)
 
 
 class ProgressOverviewView(APIView):
@@ -58,12 +110,7 @@ class LessonProgressView(APIView):
         if "is_completed" in data:
             defaults["is_completed"] = data["is_completed"]
 
-        progress, _created = LessonProgress.objects.update_or_create(
-            user=request.user,
-            course_slug=data["course_slug"],
-            lesson_slug=data["lesson_slug"],
-            defaults=defaults,
-        )
+        progress = _upsert_lesson_progress(request.user, data, defaults)
 
         return Response(LessonProgressSerializer(progress).data)
 
@@ -85,4 +132,3 @@ class TaskProgressView(APIView):
         )
 
         return Response(TaskProgressSerializer(progress).data)
-

@@ -1,3 +1,4 @@
+from datetime import timedelta
 from pathlib import Path
 
 import dj_database_url
@@ -70,6 +71,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "rest_framework",
+    "rest_framework_simplejwt.token_blacklist",
     "apps.core",
     "apps.accounts",
     "apps.ai",
@@ -180,16 +182,24 @@ QWEN_API_KEY = env("QWEN_API_KEY")
 QWEN_BASE_URL = env("QWEN_BASE_URL") or "https://dashscope-intl.aliyuncs.com/compatible-mode/v1"
 QWEN_MODEL = env("QWEN_MODEL") or "qwen-plus"
 QWEN_TIMEOUT_SECONDS = env_int("QWEN_TIMEOUT_SECONDS", 30)
+AI_DAILY_REQUEST_LIMIT = env_int("AI_DAILY_REQUEST_LIMIT", 15)
 
 SMS_PROVIDER = env("SMS_PROVIDER") or "console"
 SMS_API_KEY = env("SMS_API_KEY")
 SMS_LOGIN = env("SMS_LOGIN")
 SMS_PASSWORD = env("SMS_PASSWORD")
 SMS_FROM = env("SMS_FROM") or "Uchicode"
+SMS_TIMEOUT_SECONDS = env_int("SMS_TIMEOUT_SECONDS", 10)
 
 SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", False)
 SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", False)
 CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", False)
+SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = env_bool("DJANGO_CSRF_COOKIE_HTTPONLY", False)
+SECURE_HSTS_SECONDS = env_int("DJANGO_SECURE_HSTS_SECONDS", 0)
+SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
+SECURE_HSTS_PRELOAD = env_bool("DJANGO_SECURE_HSTS_PRELOAD", False)
+X_FRAME_OPTIONS = "DENY"
 
 if env_bool("DJANGO_SECURE_SSL", False):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -219,9 +229,14 @@ REST_FRAMEWORK = {
         "phone_send_code_daily": "10/day",
         "phone_verify_code": "5/min",
         "change_password": "5/hour",
-        "ai_anon_burst": "3/min",
-        "ai_anon_daily": "20/day",
         "ai_user_burst": "10/min",
-        "ai_user_daily": "100/day",
     },
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=14),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+    "UPDATE_LAST_LOGIN": True,
 }

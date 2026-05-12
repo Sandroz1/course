@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { courseSections, isCourseSectionReady } from "../../data/courseSections";
 import { getCourseById } from "../../data/courses";
 import { getStatusLabel } from "../../data/status";
 import { tasks } from "../../data/tasks";
+import { useAuth } from "../../context/AuthContext";
+import { getProgress, upsertTaskProgress } from "../../lib/progressApi";
 import { classNames } from "../../shared/lib/classNames";
+import type { TaskProgressStatus } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import { CodeBlock } from "../CodeBlock/CodeBlock";
 import { ProgressBadge } from "../ProgressBadge/ProgressBadge";
@@ -17,7 +20,88 @@ function fileCountLabel(count: number) {
 
 export function TaskPage({ taskId }: { taskId: string }) {
   const task = tasks.find((item) => item.id === taskId);
+  const { isAuthenticated } = useAuth();
   const [activeFileIndex, setActiveFileIndex] = useState(0);
+  const [taskStatus, setTaskStatus] = useState<TaskProgressStatus | null>(null);
+  const [isProgressLoading, setIsProgressLoading] = useState(false);
+  const [isProgressSaving, setIsProgressSaving] = useState(false);
+  const [progressMessage, setProgressMessage] = useState("");
+
+  useEffect(() => {
+    const currentTask = task;
+
+    if (!currentTask || !isAuthenticated) {
+      setTaskStatus(null);
+      setIsProgressLoading(false);
+      setProgressMessage("");
+      return;
+    }
+
+    let cancelled = false;
+    const currentTaskId = currentTask.id;
+
+    async function syncTaskProgress() {
+      setIsProgressLoading(true);
+      setProgressMessage("");
+
+      try {
+        const progress = await getProgress();
+        const existingTask = progress.tasks.find((item) => item.task_id === currentTaskId);
+
+        if (cancelled) return;
+
+        if (existingTask) {
+          setTaskStatus(existingTask.status);
+          return;
+        }
+
+        const createdProgress = await upsertTaskProgress({
+          task_id: currentTaskId,
+          status: "in_progress",
+        });
+
+        if (!cancelled) {
+          setTaskStatus(createdProgress.status);
+        }
+      } catch {
+        if (!cancelled) {
+          setProgressMessage("Прогресс задачи временно не синхронизирован.");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsProgressLoading(false);
+        }
+      }
+    }
+
+    void syncTaskProgress();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isAuthenticated, task]);
+
+  async function handleSetTaskStatus(nextStatus: TaskProgressStatus) {
+    const currentTask = task;
+
+    if (!currentTask || isProgressSaving) return;
+
+    setIsProgressSaving(true);
+    setProgressMessage("");
+
+    try {
+      const progress = await upsertTaskProgress({
+        task_id: currentTask.id,
+        status: nextStatus,
+      });
+      setTaskStatus(progress.status);
+      setProgressMessage(progress.status === "solved" ? "Задача отмечена решённой." : "Задача возвращена в работу.");
+    } catch {
+      setProgressMessage("Не удалось сохранить прогресс задачи.");
+    } finally {
+      setIsProgressSaving(false);
+    }
+  }
 
   if (!task) {
     return (
@@ -55,6 +139,34 @@ export function TaskPage({ taskId }: { taskId: string }) {
         <section className={classNames("panel", styles.theoryNote)}>
           <strong>Теория к этой задаче ещё закрыта</strong>
           <p>Лучше пройти готовые разделы до this. Объяснение темы пока на доработке.</p>
+        </section>
+      )}
+
+      {isAuthenticated && (
+        <section className={classNames("panel", styles.progressPanel)}>
+          <div>
+            <strong>Прогресс задачи</strong>
+            <span>
+              {isProgressLoading
+                ? "Проверяем..."
+                : taskStatus === "solved"
+                  ? "Решена"
+                  : "В работе"}
+            </span>
+          </div>
+          <button
+            className={taskStatus === "solved" ? "button" : "button button--primary"}
+            type="button"
+            disabled={isProgressLoading || isProgressSaving}
+            onClick={() => void handleSetTaskStatus(taskStatus === "solved" ? "in_progress" : "solved")}
+          >
+            {isProgressSaving
+              ? "Сохраняем..."
+              : taskStatus === "solved"
+                ? "Вернуть в работу"
+                : "Отметить решённой"}
+          </button>
+          {progressMessage ? <span>{progressMessage}</span> : null}
         </section>
       )}
 

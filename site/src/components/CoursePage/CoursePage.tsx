@@ -3,7 +3,7 @@ import { useAuth } from "../../context/AuthContext";
 import { courseSections, isCourseSectionReady } from "../../data/courseSections";
 import { statusMeta } from "../../data/status";
 import { tasks } from "../../data/tasks";
-import { getProgress, updateStudyState, upsertLessonProgress } from "../../lib/progressApi";
+import { updateStudyState, upsertLessonProgress } from "../../lib/progressApi";
 import { classNames } from "../../shared/lib/classNames";
 import { toPath } from "../../utils/slug";
 import { CodeBlock } from "../CodeBlock/CodeBlock";
@@ -12,6 +12,11 @@ import styles from "./CoursePage.module.scss";
 type TocItem = {
   title: string;
   id: string;
+};
+
+type LessonProgressState = {
+  key: string;
+  isCompleted: boolean;
 };
 
 const MAX_TOC_ITEMS = 7;
@@ -258,9 +263,49 @@ function collectTocItems(content: string) {
   return toc.slice(0, MAX_TOC_ITEMS);
 }
 
+const openedLessonSyncRequests = new Map<string, ReturnType<typeof upsertLessonProgress>>();
+
+function syncOpenedLessonProgress(courseSlug: string, lessonSlug: string) {
+  const key = `${courseSlug}:${lessonSlug}`;
+  const existingRequest = openedLessonSyncRequests.get(key);
+
+  if (existingRequest) {
+    return existingRequest;
+  }
+
+  const request = (async () => {
+    await updateStudyState({
+      last_course_slug: courseSlug,
+      last_lesson_slug: lessonSlug,
+    });
+
+    return upsertLessonProgress({
+      course_slug: courseSlug,
+      lesson_slug: lessonSlug,
+    });
+  })();
+
+  openedLessonSyncRequests.set(key, request);
+  request.then(
+    () => {
+      if (openedLessonSyncRequests.get(key) === request) {
+        openedLessonSyncRequests.delete(key);
+      }
+    },
+    () => {
+      if (openedLessonSyncRequests.get(key) === request) {
+        openedLessonSyncRequests.delete(key);
+      }
+    },
+  );
+
+  return request;
+}
+
 export function CoursePage({ slug }: { slug: string }) {
   const { isAuthenticated } = useAuth();
-  const [isLessonCompleted, setIsLessonCompleted] = useState(false);
+  const [lessonProgressState, setLessonProgressState] = useState<LessonProgressState | null>(null);
+  const [isProgressChecking, setIsProgressChecking] = useState(true);
   const [isProgressSaving, setIsProgressSaving] = useState(false);
   const [progressMessage, setProgressMessage] = useState("");
   const normalizedSlug = slug === "structs" ? "struct" : slug;
@@ -273,45 +318,51 @@ export function CoursePage({ slug }: { slug: string }) {
       : undefined;
   const readySections = courseSections.filter(isCourseSectionReady);
   const readySectionIndex = readySections.findIndex((item) => item.slug === normalizedSlug);
+  const lessonProgressKey = section ? `${section.courseId}:${section.slug}` : "";
+  const hasLessonProgressState = lessonProgressState?.key === lessonProgressKey;
+  const isLessonCompleted = hasLessonProgressState ? lessonProgressState.isCompleted : false;
+  const isProgressPending = isAuthenticated && isProgressChecking;
 
   useEffect(() => {
-    if (!section || !isCourseSectionReady(section)) return;
+    if (!section || !isCourseSectionReady(section)) {
+      setIsProgressChecking(false);
+      return;
+    }
 
     const currentSection = section;
+    const currentKey = `${currentSection.courseId}:${currentSection.slug}`;
 
-    setIsLessonCompleted(false);
     setProgressMessage("");
 
-    if (!isAuthenticated) return;
+    if (!isAuthenticated) {
+      setLessonProgressState({ key: currentKey, isCompleted: false });
+      setIsProgressChecking(false);
+      return;
+    }
 
     let cancelled = false;
+    setIsProgressChecking(true);
 
     async function syncOpenedLesson() {
       try {
-        const [progress] = await Promise.all([
-          getProgress(),
-          updateStudyState({
-            last_course_slug: currentSection.courseId,
-            last_lesson_slug: currentSection.slug,
-          }),
-          upsertLessonProgress({
-            course_slug: currentSection.courseId,
-            lesson_slug: currentSection.slug,
-          }),
-        ]);
+        const progress = await syncOpenedLessonProgress(
+          currentSection.courseId,
+          currentSection.slug,
+        );
 
         if (cancelled) return;
 
-        const lesson = progress.lessons.find(
-          (item) =>
-            item.course_slug === currentSection.courseId &&
-            item.lesson_slug === currentSection.slug,
-        );
-
-        setIsLessonCompleted(Boolean(lesson?.is_completed));
+        setLessonProgressState({
+          key: currentKey,
+          isCompleted: Boolean(progress.is_completed),
+        });
       } catch {
         if (!cancelled) {
           setProgressMessage("Прогресс временно не синхронизирован.");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsProgressChecking(false);
         }
       }
     }
@@ -364,7 +415,7 @@ export function CoursePage({ slug }: { slug: string }) {
   const tocItems = collectTocItems(section.content);
 
   async function handleToggleCompleted() {
-    if (!section || !isAuthenticated || isProgressSaving) return;
+    if (!section || !isAuthenticated || isProgressSaving || isProgressPending || !hasLessonProgressState) return;
 
     const nextValue = !isLessonCompleted;
     setIsProgressSaving(true);
@@ -377,7 +428,10 @@ export function CoursePage({ slug }: { slug: string }) {
         is_completed: nextValue,
       });
 
-      setIsLessonCompleted(progress.is_completed);
+      setLessonProgressState({
+        key: `${section.courseId}:${section.slug}`,
+        isCompleted: Boolean(progress.is_completed),
+      });
       setProgressMessage(progress.is_completed ? "Урок отмечен как пройденный." : "Отметка снята.");
     } catch {
       setProgressMessage("Не удалось сохранить прогресс. Можно продолжать читать урок.");
@@ -413,16 +467,20 @@ export function CoursePage({ slug }: { slug: string }) {
       {isAuthenticated && (
         <section className={styles.progressPanel}>
           <button
-            className={isLessonCompleted ? "button" : "button button--primary"}
-            disabled={isProgressSaving}
+            className={isLessonCompleted && !isProgressPending ? "button" : "button button--primary"}
+            disabled={isProgressSaving || isProgressPending || !hasLessonProgressState}
             type="button"
             onClick={() => void handleToggleCompleted()}
           >
             {isProgressSaving
               ? "Сохраняем..."
-              : isLessonCompleted
-                ? "Снять отметку"
-                : "Отметить пройдено"}
+                : isProgressPending
+                  ? "Проверяем..."
+                  : !hasLessonProgressState
+                    ? "Прогресс недоступен"
+                    : isLessonCompleted
+                      ? "Снять отметку"
+                      : "Отметить пройдено"}
           </button>
           {progressMessage ? <span>{progressMessage}</span> : null}
         </section>

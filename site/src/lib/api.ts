@@ -1,4 +1,4 @@
-import type { ApiErrorPayload, ApiRequestOptions } from "../types/api";
+import type { AiUsage, ApiErrorPayload, ApiRequestOptions } from "../types/api";
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
 export const ACCESS_TOKEN_STORAGE_KEY = "uchicodeAccessToken";
@@ -29,8 +29,7 @@ export class ApiError extends Error {
     this.status = status;
     this.payload = payload;
     this.fields = extractFields(payload);
-    this.retryAfterSeconds =
-      typeof payload?.retryAfterSeconds === "number" ? payload.retryAfterSeconds : undefined;
+    this.retryAfterSeconds = extractRetryAfterSeconds(payload);
   }
 }
 
@@ -157,11 +156,93 @@ function getErrorMessage(status: number, payload: ApiErrorPayload | null) {
 
   if (status === 400) return "Проверь данные запроса.";
   if (status === 401) return "Нужно войти в аккаунт.";
-  if (status === 429) return "Слишком много запросов. Подожди немного и попробуй снова.";
+  if (status === 429) {
+    const usage = normalizeUsage(payload?.usage);
+    if (usage?.remaining === 0) return "Лимит запросов на сегодня исчерпан.";
+    return "Слишком много запросов. Подожди немного и попробуй снова.";
+  }
   if (status === 501) return "Серверная функция ещё не подключена или временно недоступна.";
   if (status >= 500) return "Сервер временно недоступен. Попробуй позже.";
 
   return "Не удалось выполнить запрос.";
+}
+
+function extractRetryAfterSeconds(payload: ApiErrorPayload | null) {
+  const value = payload?.retryAfterSeconds ?? payload?.retryAfter ?? payload?.retry_after;
+  return typeof value === "number" && Number.isFinite(value) ? Math.max(Math.ceil(value), 1) : undefined;
+}
+
+function parseRetryAfterHeader(value: string | null) {
+  if (!value) return undefined;
+
+  const seconds = Number(value);
+  if (Number.isFinite(seconds)) {
+    return Math.max(Math.ceil(seconds), 1);
+  }
+
+  const dateMs = Date.parse(value);
+  if (!Number.isNaN(dateMs)) {
+    return Math.max(Math.ceil((dateMs - Date.now()) / 1000), 1);
+  }
+
+  return undefined;
+}
+
+function parseHeaderInt(value: string | null) {
+  if (!value) return undefined;
+
+  const number = Number.parseInt(value, 10);
+  return Number.isFinite(number) ? number : undefined;
+}
+
+function normalizeUsage(value: unknown): AiUsage | undefined {
+  if (!value || typeof value !== "object") return undefined;
+
+  const usage = value as Partial<AiUsage>;
+  const limit = typeof usage.limit === "number" ? usage.limit : undefined;
+  const remaining = typeof usage.remaining === "number" ? usage.remaining : undefined;
+
+  if (limit === undefined || remaining === undefined) return undefined;
+
+  return {
+    limit,
+    remaining,
+    used: typeof usage.used === "number" ? usage.used : Math.max(limit - remaining, 0),
+    resetAt: typeof usage.resetAt === "string" ? usage.resetAt : undefined,
+    retryAfterSeconds:
+      typeof usage.retryAfterSeconds === "number" && Number.isFinite(usage.retryAfterSeconds)
+        ? Math.max(Math.ceil(usage.retryAfterSeconds), 1)
+        : undefined,
+  };
+}
+
+function enrichPayloadFromHeaders(response: Response, payload: ApiErrorPayload | null) {
+  const retryAfterSeconds = parseRetryAfterHeader(response.headers.get("Retry-After"));
+  const limit = parseHeaderInt(response.headers.get("X-RateLimit-Limit"));
+  const remaining = parseHeaderInt(response.headers.get("X-RateLimit-Remaining"));
+  const resetAt = response.headers.get("X-RateLimit-Reset") || undefined;
+  const nextPayload: ApiErrorPayload = payload ? { ...payload } : {};
+
+  if (retryAfterSeconds !== undefined && typeof nextPayload.retryAfterSeconds !== "number") {
+    nextPayload.retryAfterSeconds = retryAfterSeconds;
+  }
+
+  if (limit !== undefined && remaining !== undefined && !nextPayload.usage) {
+    nextPayload.usage = {
+      limit,
+      remaining,
+      used: Math.max(limit - remaining, 0),
+      resetAt,
+      retryAfterSeconds,
+    };
+  }
+
+  const normalizedUsage = normalizeUsage(nextPayload.usage);
+  if (normalizedUsage) {
+    nextPayload.usage = normalizedUsage;
+  }
+
+  return Object.keys(nextPayload).length > 0 ? nextPayload : null;
 }
 
 function extractFields(payload: ApiErrorPayload | null): Record<string, string[]> | undefined {
@@ -174,7 +255,7 @@ function extractFields(payload: ApiErrorPayload | null): Record<string, string[]
   const fields: Record<string, string[]> = {};
 
   for (const [key, value] of Object.entries(payload)) {
-    if (["detail", "error", "fields", "message", "retryAfterSeconds"].includes(key)) continue;
+    if (["detail", "error", "fields", "message", "retryAfter", "retry_after", "retryAfterSeconds", "usage"].includes(key)) continue;
 
     if (Array.isArray(value)) {
       fields[key] = value.map(String);
@@ -191,16 +272,17 @@ function extractFields(payload: ApiErrorPayload | null): Record<string, string[]
 
 async function readPayload(response: Response) {
   const contentType = response.headers.get("content-type") || "";
+  let payload: ApiErrorPayload | null = null;
 
-  if (!contentType.includes("application/json")) {
-    return null;
+  if (contentType.includes("application/json")) {
+    try {
+      payload = (await response.json()) as ApiErrorPayload;
+    } catch {
+      payload = null;
+    }
   }
 
-  try {
-    return (await response.json()) as ApiErrorPayload;
-  } catch {
-    return null;
-  }
+  return enrichPayloadFromHeaders(response, payload);
 }
 
 async function refreshAccessToken() {

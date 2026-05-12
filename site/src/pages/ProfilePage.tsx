@@ -1,8 +1,15 @@
 import { type FormEvent, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { ApiError } from "../lib/api";
+import {
+  AI_USAGE_UPDATED_EVENT,
+  formatAiUsage,
+  getLocalAiUsage,
+} from "../lib/aiUsage";
 import { changePassword, sendPhoneVerificationCode, verifyPhoneCode } from "../lib/authApi";
+import { getProgress } from "../lib/progressApi";
 import { classNames } from "../shared/lib/classNames";
+import type { AiUsage, ProgressOverview } from "../types/api";
 import { navigateTo } from "../utils/navigation";
 import styles from "./ProfilePage.module.scss";
 
@@ -39,6 +46,10 @@ export function ProfilePage() {
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+  const [studyProgress, setStudyProgress] = useState<ProgressOverview | null>(null);
+  const [isStudyProgressLoading, setIsStudyProgressLoading] = useState(false);
+  const [studyProgressError, setStudyProgressError] = useState("");
+  const [aiUsage, setAiUsage] = useState<AiUsage>(() => getLocalAiUsage(user?.id));
   const phoneError = firstError(fieldErrors, "phone");
   const phoneVerifyError = firstError(phoneFieldErrors, "phone");
   const codeError = firstError(phoneFieldErrors, "code");
@@ -51,6 +62,18 @@ export function ProfilePage() {
   }, [user]);
 
   useEffect(() => {
+    setAiUsage(getLocalAiUsage(user?.id));
+
+    function syncUsage() {
+      setAiUsage(getLocalAiUsage(user?.id));
+    }
+
+    window.addEventListener(AI_USAGE_UPDATED_EVENT, syncUsage);
+
+    return () => window.removeEventListener(AI_USAGE_UPDATED_EVENT, syncUsage);
+  }, [user?.id]);
+
+  useEffect(() => {
     if (cooldownSeconds <= 0) return undefined;
 
     const timer = window.setInterval(() => {
@@ -59,6 +82,44 @@ export function ProfilePage() {
 
     return () => window.clearInterval(timer);
   }, [cooldownSeconds]);
+
+  useEffect(() => {
+    if (!user) {
+      setStudyProgress(null);
+      setIsStudyProgressLoading(false);
+      setStudyProgressError("");
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadStudyProgress() {
+      setIsStudyProgressLoading(true);
+      setStudyProgressError("");
+
+      try {
+        const progress = await getProgress();
+        if (!cancelled) {
+          setStudyProgress(progress);
+        }
+      } catch {
+        if (!cancelled) {
+          setStudyProgress(null);
+          setStudyProgressError("Прогресс временно недоступен.");
+        }
+      } finally {
+        if (!cancelled) {
+          setIsStudyProgressLoading(false);
+        }
+      }
+    }
+
+    void loadStudyProgress();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   async function handleSave(event: FormEvent) {
     event.preventDefault();
@@ -177,7 +238,7 @@ export function ProfilePage() {
     navigateTo("/login", true);
   }
 
-  if (isLoading) {
+  if (isLoading && !user) {
     return (
       <article className={styles.root}>
         <section className={styles.card}>
@@ -212,6 +273,14 @@ export function ProfilePage() {
   const isPhoneChanged = phone.trim() !== (user.phone ?? "");
   const isPhoneVerified = Boolean(user.phone && user.is_phone_verified && !isPhoneChanged);
   const canSendCode = Boolean(phone.trim()) && cooldownSeconds === 0 && !isSendingCode;
+  const completedLessonsCount = studyProgress?.lessons.filter((lesson) => lesson.is_completed).length ?? 0;
+  const openedLessonsCount = studyProgress?.lessons.length ?? 0;
+  const solvedTasksCount = studyProgress?.tasks.filter((task) => task.status === "solved").length ?? 0;
+  const activeTasksCount = studyProgress?.tasks.filter((task) => task.status === "in_progress").length ?? 0;
+  const aiStatusText = isPhoneVerified
+    ? "AI доступен для этого аккаунта."
+    : "AI недоступен, пока телефон не подтверждён.";
+  const displayedAiUsage = isPhoneVerified ? aiUsage : { ...aiUsage, remaining: 0 };
 
   return (
     <article className={styles.root}>
@@ -293,7 +362,7 @@ export function ProfilePage() {
                       ? "Отправляем..."
                       : cooldownSeconds > 0
                         ? `Повтор через ${cooldownSeconds} с`
-                        : "Отправить код"}
+                        : "Отправить SMS-код"}
                   </button>
                 )}
               </div>
@@ -419,8 +488,56 @@ export function ProfilePage() {
 
         <div className={styles.sideColumn}>
           <section className={styles.card}>
+            <h2 className={styles.cardTitle}>AI-лимит</h2>
+            <div
+              className={classNames(
+                styles.aiStatus,
+                isPhoneVerified ? styles.aiStatusAvailable : styles.aiStatusBlocked,
+              )}
+            >
+              <strong>{isPhoneVerified ? "Доступен" : "Недоступен"}</strong>
+              <span>{aiStatusText}</span>
+            </div>
+            <div className={styles.aiLimit}>
+              <span>{formatAiUsage(displayedAiUsage)}</span>
+              <div aria-hidden="true">
+                <span
+                  style={{
+                    width: `${Math.round((displayedAiUsage.remaining / displayedAiUsage.limit) * 100)}%`,
+                  }}
+                />
+              </div>
+            </div>
+          </section>
+
+          <section className={classNames(styles.card, styles.progressCard)}>
             <h2 className={styles.cardTitle}>Прогресс</h2>
-            <p className={styles.mutedText}>Уроки и задачи появятся здесь.</p>
+            {isStudyProgressLoading ? (
+              <p className={classNames(styles.mutedText, styles.progressState)}>Загружаем прогресс...</p>
+            ) : studyProgressError ? (
+              <p className={classNames(styles.formMessage, styles.formError, styles.progressState)}>
+                {studyProgressError}
+              </p>
+            ) : (
+              <div className={styles.progressStats}>
+                <div>
+                  <strong>{completedLessonsCount}</strong>
+                  <span>уроков пройдено</span>
+                </div>
+                <div>
+                  <strong>{openedLessonsCount}</strong>
+                  <span>уроков открыто</span>
+                </div>
+                <div>
+                  <strong>{solvedTasksCount}</strong>
+                  <span>задач решено</span>
+                </div>
+                <div>
+                  <strong>{activeTasksCount}</strong>
+                  <span>задач в работе</span>
+                </div>
+              </div>
+            )}
           </section>
 
           <section className={classNames(styles.card, styles.sessionCard)}>

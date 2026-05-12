@@ -16,19 +16,6 @@ class BaseAiThrottle(SimpleRateThrottle):
         }
 
 
-class AiAnonBurstThrottle(BaseAiThrottle):
-    scope = "ai_anon_burst"
-
-    def allow_request(self, request, view):
-        if request.user and request.user.is_authenticated:
-            return True
-        return super().allow_request(request, view)
-
-
-class AiAnonDailyThrottle(AiAnonBurstThrottle):
-    scope = "ai_anon_daily"
-
-
 class AiUserBurstThrottle(BaseAiThrottle):
     scope = "ai_user_burst"
 
@@ -40,4 +27,3 @@ class AiUserBurstThrottle(BaseAiThrottle):
 
 class AiUserDailyThrottle(AiUserBurstThrottle):
     scope = "ai_user_daily"
-

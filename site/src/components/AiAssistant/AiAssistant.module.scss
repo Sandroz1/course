@@ -166,6 +166,15 @@
   line-height: 1.25;
 }
 
+.usageText {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.35;
+}
+
 .panelClose {
   display: grid;
   width: 30px;
@@ -234,6 +243,57 @@
   line-height: 1.55;
   -webkit-line-clamp: 5;
   -webkit-box-orient: vertical;
+}
+
+.accessNotice {
+  display: grid;
+  flex-shrink: 0;
+  gap: 8px;
+  margin: 12px 12px 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  padding: 11px 12px;
+}
+
+.accessNotice p {
+  margin: 0;
+  color: var(--text-soft);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.accessNotice a {
+  width: fit-content;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.accessNotice a:hover {
+  color: var(--accent-strong);
+}
+
+.usageNotice {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 12px 12px 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--text-muted);
+  padding: 9px 12px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.usageNotice strong {
+  color: var(--danger);
+  font-size: 12px;
+  font-weight: 750;
 }
 
 .messagesWrap {
@@ -430,6 +490,11 @@
   outline: 1px solid var(--accent-strong);
   outline-offset: 2px;
   border-color: var(--accent-strong);
+}
+
+.form textarea:disabled {
+  cursor: default;
+  opacity: 0.72;
 }
 
 .form button {

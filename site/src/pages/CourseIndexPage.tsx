@@ -14,9 +14,11 @@ function progressKey(section: CourseSection) {
 function CourseSectionRow({
   section,
   isCompleted = false,
+  isProgressLoading = false,
 }: {
   section: CourseSection;
   isCompleted?: boolean;
+  isProgressLoading?: boolean;
 }) {
   const { slug, number, title, description, status } = section;
   const isReady = status === "available" || status === "ready";
@@ -34,6 +36,9 @@ function CourseSectionRow({
           <span className={`status-badge status-badge--${isReady ? "success" : meta.tone}`}>
             {isReady ? statusMeta.ready.label : meta.label}
           </span>
+          {isReady && isProgressLoading && (
+            <span className="status-badge status-badge--muted">Проверяем</span>
+          )}
           {isCompleted && <span className="status-badge status-badge--success">Пройдено</span>}
         </span>
         <span className="course-row__description">
@@ -50,20 +55,26 @@ function CourseSectionRow({
 }
 
 export function CourseIndexPage() {
-  const { isAuthenticated } = useAuth();
-  const [completedLessons, setCompletedLessons] = useState<Set<string>>(new Set());
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
+  const [completedLessons, setCompletedLessons] = useState<Set<string> | null>(null);
+  const [progressError, setProgressError] = useState("");
   const readySections = courseSections.filter(isCourseSectionReady);
   const plannedSections = courseSections.filter((section) => !isCourseSectionReady(section));
+  const isProgressLoading = isAuthenticated && (isAuthLoading || completedLessons === null);
 
   useEffect(() => {
     if (!isAuthenticated) {
       setCompletedLessons(new Set());
+      setProgressError("");
       return;
     }
 
     let cancelled = false;
 
     async function loadProgress() {
+      setCompletedLessons(null);
+      setProgressError("");
+
       try {
         const progress = await getProgress();
 
@@ -79,6 +90,7 @@ export function CourseIndexPage() {
       } catch {
         if (!cancelled) {
           setCompletedLessons(new Set());
+          setProgressError("Прогресс временно недоступен.");
         }
       }
     }
@@ -115,6 +127,12 @@ export function CourseIndexPage() {
         </div>
       </section>
 
+      {progressError && (
+        <section className="panel progress-state">
+          <span>{progressError}</span>
+        </section>
+      )}
+
       <section className="course-group">
         <div className="section-heading">
           <h2>Открытые уроки</h2>
@@ -125,7 +143,8 @@ export function CourseIndexPage() {
             <CourseSectionRow
               key={section.slug}
               section={section}
-              isCompleted={completedLessons.has(progressKey(section))}
+              isCompleted={Boolean(completedLessons?.has(progressKey(section)))}
+              isProgressLoading={isProgressLoading}
             />
           ))}
         </div>
@@ -141,7 +160,8 @@ export function CourseIndexPage() {
             <CourseSectionRow
               key={section.slug}
               section={section}
-              isCompleted={completedLessons.has(progressKey(section))}
+              isCompleted={Boolean(completedLessons?.has(progressKey(section)))}
+              isProgressLoading={isProgressLoading}
             />
           ))}
         </div>

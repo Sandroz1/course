@@ -1,6 +1,8 @@
 from rest_framework import permissions, status
+from rest_framework.exceptions import ValidationError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from apps.core.throttles import (
@@ -60,7 +62,17 @@ class LoginView(APIView):
 class LogoutView(APIView):
     permission_classes = [permissions.AllowAny]
 
-    def post(self, _request):
+    def post(self, request):
+        refresh_token = request.data.get("refresh")
+
+        if not isinstance(refresh_token, str) or not refresh_token.strip():
+            raise ValidationError({"refresh": ["Передайте refresh token."]})
+
+        try:
+            RefreshToken(refresh_token).blacklist()
+        except TokenError:
+            return Response(status=status.HTTP_204_NO_CONTENT)
+
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 

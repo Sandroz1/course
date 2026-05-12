@@ -14,6 +14,7 @@ import {
   REFRESH_TOKEN_STORAGE_KEY,
   apiRequest,
 } from "../lib/api";
+import { clearLocalAiUsage } from "../lib/aiUsage";
 import type {
   AuthResponse,
   AuthTokens,
@@ -37,6 +38,7 @@ type AuthContextValue = {
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
+const USER_SNAPSHOT_STORAGE_KEY = "uchicode.auth.user";
 
 function readStorage(key: string) {
   try {
@@ -62,6 +64,48 @@ function removeStorage(key: string) {
   }
 }
 
+function isAuthUser(value: unknown): value is AuthUser {
+  if (!value || typeof value !== "object") return false;
+
+  const user = value as Partial<AuthUser>;
+
+  return (
+    typeof user.id === "number" &&
+    typeof user.username === "string" &&
+    (typeof user.phone === "string" || user.phone === null) &&
+    typeof user.is_phone_verified === "boolean"
+  );
+}
+
+function toUserSnapshot(user: AuthUser): AuthUser {
+  return {
+    id: user.id,
+    username: user.username,
+    phone: user.phone,
+    is_phone_verified: user.is_phone_verified,
+  };
+}
+
+function readUserSnapshot() {
+  const raw = readStorage(USER_SNAPSHOT_STORAGE_KEY);
+  if (!raw) return null;
+
+  try {
+    const parsed = JSON.parse(raw);
+    return isAuthUser(parsed) ? toUserSnapshot(parsed) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeUserSnapshot(user: AuthUser) {
+  writeStorage(USER_SNAPSHOT_STORAGE_KEY, JSON.stringify(toUserSnapshot(user)));
+}
+
+function removeUserSnapshot() {
+  removeStorage(USER_SNAPSHOT_STORAGE_KEY);
+}
+
 function extractTokens(response: AuthResponse): AuthTokens {
   const access = response.access ?? response.access_token ?? response.tokens?.access;
   const refresh = response.refresh ?? response.refresh_token ?? response.tokens?.refresh;
@@ -76,12 +120,18 @@ function extractTokens(response: AuthResponse): AuthTokens {
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState(() => readStorage(ACCESS_TOKEN_STORAGE_KEY));
   const [refreshToken, setRefreshToken] = useState(() => readStorage(REFRESH_TOKEN_STORAGE_KEY));
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [user, setUser] = useState<AuthUser | null>(() =>
+    readStorage(ACCESS_TOKEN_STORAGE_KEY) ? readUserSnapshot() : null,
+  );
   const [isLoading, setIsLoading] = useState(Boolean(accessToken));
 
   const clearAuth = useCallback(() => {
+    const userId = readUserSnapshot()?.id;
+
     removeStorage(ACCESS_TOKEN_STORAGE_KEY);
     removeStorage(REFRESH_TOKEN_STORAGE_KEY);
+    removeUserSnapshot();
+    clearLocalAiUsage(userId);
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);
@@ -94,7 +144,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setRefreshToken(tokens.refresh);
 
     if (nextUser) {
-      setUser(nextUser);
+      const snapshot = toUserSnapshot(nextUser);
+      writeUserSnapshot(snapshot);
+      setUser(snapshot);
     }
   }, []);
 
@@ -107,12 +159,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [clearAuth]);
 
   const refreshProfile = useCallback(async () => {
-    const profile = await apiRequest<AuthUser>("/api/me/");
-    setUser(profile);
-  }, []);
+    try {
+      const profile = await apiRequest<AuthUser>("/api/me/");
+      const snapshot = toUserSnapshot(profile);
+      writeUserSnapshot(snapshot);
+      setUser(snapshot);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 401) {
+        clearAuth();
+      }
+
+      throw error;
+    }
+  }, [clearAuth]);
 
   useEffect(() => {
     if (!accessToken) {
+      removeUserSnapshot();
       setIsLoading(false);
       return;
     }
@@ -125,7 +188,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       try {
         const profile = await apiRequest<AuthUser>("/api/me/");
         if (!cancelled) {
-          setUser(profile);
+          const snapshot = toUserSnapshot(profile);
+          writeUserSnapshot(snapshot);
+          setUser(snapshot);
         }
       } catch (error) {
         if (!cancelled && error instanceof ApiError && error.status === 401) {
@@ -199,7 +264,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       method: "PATCH",
       body: payload,
     });
-    setUser(profile);
+    const snapshot = toUserSnapshot(profile);
+    writeUserSnapshot(snapshot);
+    setUser(snapshot);
   }, []);
 
   const value = useMemo<AuthContextValue>(

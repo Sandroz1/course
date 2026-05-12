@@ -19,8 +19,8 @@ export function Sidebar() {
 
   return (
     <aside className={styles.root}>
-      <a className={styles.brand} href={toPath("/")}>
-        Uchicode
+      <a className={styles.brand} href={toPath("/")} aria-label="Uchicode — на главную">
+        <img className={styles.brandLogo} src="/brand/uchicode-logo.png" alt="Uchicode.ru" />
       </a>
 
       <nav className={styles.nav} aria-label="Основная навигация">

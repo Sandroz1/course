@@ -48,16 +48,20 @@ POST /api/ai/chat/
 
 `QWEN_API_KEY` берётся только из env. Если ключ не задан, backend возвращает понятную ошибку `503`.
 
+Доступ к `/api/ai/chat/` разрешён только авторизованным пользователям с `is_phone_verified=True`. Backend-лимит: 15 AI-запросов в день на пользователя.
+
 ### Auth
 
 Frontend страницы auth уже подготовлены.
 
-Backend auth endpoints пока placeholder:
+Backend auth реализован через JWT:
 
-- `POST /api/auth/register/` возвращает `501`;
-- `POST /api/auth/login/` возвращает `501`.
-
-JWT ещё нужно реализовать на backend.
+- `POST /api/auth/register/`;
+- `POST /api/auth/login/`;
+- `POST /api/auth/token/refresh/`;
+- `POST /api/auth/logout/` blacklist refresh token;
+- `GET/PATCH /api/me/`;
+- подтверждение телефона через SMS-код.
 
 ### Docker
 
@@ -85,7 +89,7 @@ Production backend запускается через `gunicorn`.
 - `www.uchicode.ru` редиректится на `uchicode.ru`;
 - `api.uchicode.ru` проксирует backend.
 
-HTTPS ещё не подключён.
+Nginx настроен на HTTPS и ожидает Let's Encrypt сертификат в `/etc/letsencrypt/live/uchicode.ru/`.
 
 ### Domain/VPS
 
@@ -102,25 +106,25 @@ HTTPS ещё не подключён.
 - Создан Django backend.
 - Добавлены cache/throttling настройки под Redis.
 - Добавлен backend AI proxy.
+- AI закрыт для гостей и пользователей без подтверждённого телефона.
 - Frontend переведён на Django API через `VITE_API_BASE_URL`.
 - Добавлен frontend auth scaffold.
 - Добавлен backend progress API.
-- Frontend подключён к progress API.
+- Frontend подключён к progress API для уроков, задач и профиля.
 - Production frontend base переведён на `/`.
 - Добавлен dev Docker Compose.
 - Добавлен production Docker Compose.
 - Добавлен production Nginx config.
 - Домен обновлён на `uchicode.ru`.
 - `site/dist/` снят с Git tracking.
+- Добавлены `DEPLOY.md`, `DEPLOY_SSL.md`, `SMOKE_TESTS.md`.
 
 ## 3. Что ещё не выполнено
 
-- Реальный backend JWT auth.
-- Production SSL через Let's Encrypt.
+- Получить production SSL через Let's Encrypt.
 - DNS настройка у REG.RU.
 - Деплой на VPS.
 - Production smoke tests после деплоя.
-- Deploy documentation: `DEPLOY.md`, `DEPLOY_SSL.md`, `SMOKE_TESTS.md`.
 - Финальная проверка frontend UX после стабилизации инфраструктуры.
 
 ## 4. Как запускать локально
@@ -198,6 +202,11 @@ Backend:
 - `QWEN_API_KEY`
 - `QWEN_BASE_URL`
 - `QWEN_MODEL`
+- `SMS_PROVIDER`
+- `SMS_API_KEY`
+- `SMS_LOGIN`
+- `SMS_PASSWORD`
+- `SMS_FROM`
 
 Postgres:
 
@@ -209,11 +218,10 @@ Postgres:
 
 ## 7. Риски
 
-- SSL ещё не получен.
+- SSL ещё нужно получить до запуска HTTPS-конфига nginx.
 - DNS может быть ещё не направлен на VPS.
 - VPS должен быть чистой Ubuntu без конфликтующего LEMP/LAMP.
 - Пароль VPS нужно сменить после выдачи доступа.
-- Backend auth endpoints пока placeholder.
 - Нельзя коммитить `.env`, `.env.local`, `.env.production`.
 - `site/dist/` больше не должен попадать в Git.
 

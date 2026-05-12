@@ -6,7 +6,7 @@ import { toPath } from "../../utils/slug";
 import styles from "./AccountMenu.module.scss";
 
 export function AccountMenu() {
-  const { isAuthenticated, isLoading, logout, user } = useAuth();
+  const { isAuthenticated, logout, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
   const avatarLetter = user?.username.trim().charAt(0).toUpperCase() || "U";
@@ -41,11 +41,7 @@ export function AccountMenu() {
     navigateTo("/", true);
   }
 
-  if (isLoading) {
-    return <div className={styles.loading}>Аккаунт</div>;
-  }
-
-  if (!isAuthenticated || !user) {
+  if (!isAuthenticated) {
     return (
       <div className={styles.guestActions} aria-label="Аккаунт">
         <a className={styles.loginLink} href={toPath("/login")}>
@@ -56,6 +52,10 @@ export function AccountMenu() {
         </a>
       </div>
     );
+  }
+
+  if (!user) {
+    return <div className={styles.loading}>Аккаунт</div>;
   }
 
   return (

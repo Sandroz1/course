@@ -201,6 +201,99 @@
   gap: 12px;
 }
 
+.progressCard {
+  min-block-size: 196px;
+}
+
+.progressState {
+  align-items: flex-start;
+  min-block-size: 126px;
+}
+
+.progressStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  min-block-size: 126px;
+}
+
+.progressStats div {
+  display: grid;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-2);
+  padding: 9px 10px;
+}
+
+.progressStats strong {
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+.progressStats span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.aiStatus {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-2);
+  padding: 10px;
+}
+
+.aiStatus strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.aiStatus span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.aiStatusAvailable {
+  border-color: rgba(138, 203, 143, 0.35);
+  background: color-mix(in srgb, var(--success) 9%, var(--surface-2));
+}
+
+.aiStatusBlocked {
+  border-color: rgba(232, 139, 131, 0.32);
+  background: color-mix(in srgb, var(--danger) 8%, var(--surface-2));
+}
+
+.aiLimit {
+  display: grid;
+  gap: 8px;
+}
+
+.aiLimit > span {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.aiLimit > div {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.aiLimit > div > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 160ms ease;
+}
+
 .primaryButton,
 .secondaryButton,
 .dangerButton {
@@ -266,5 +359,18 @@
 
   .sessionCard {
     grid-template-columns: 1fr;
+  }
+
+  .progressStats {
+    grid-template-columns: 1fr;
+    min-block-size: 260px;
+  }
+
+  .progressCard {
+    min-block-size: 330px;
+  }
+
+  .progressState {
+    min-block-size: 260px;
   }
 }
