@@ -26,13 +26,24 @@ export function SearchBox() {
         className={styles.input}
         value={query}
         onChange={(event) => setQuery(event.target.value)}
+        onKeyDown={(event) => {
+          if (event.key === "Escape") {
+            setQuery("");
+          }
+        }}
         placeholder="Поиск задачи или темы"
         aria-label="Поиск задачи или темы"
+        aria-expanded={results.length > 0}
       />
       {results.length > 0 && (
         <div className={styles.results}>
           {results.map((task) => (
-            <a className={styles.resultLink} key={task.id} href={toPath(`/tasks/${task.id}`)}>
+            <a
+              className={styles.resultLink}
+              key={task.id}
+              href={toPath(`/tasks/${task.id}`)}
+              onClick={() => setQuery("")}
+            >
               <strong>{task.title}</strong>
               <span className={styles.resultSection}>{task.section}</span>
             </a>

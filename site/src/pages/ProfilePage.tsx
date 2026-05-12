@@ -478,7 +478,7 @@ export function ProfilePage() {
               </p>
 
               <div className={styles.actions}>
-                <button className={styles.primaryButton} type="submit" disabled={isChangingPassword}>
+                <button className={styles.secondaryButton} type="submit" disabled={isChangingPassword}>
                   {isChangingPassword ? "Меняем..." : "Сменить пароль"}
                 </button>
               </div>

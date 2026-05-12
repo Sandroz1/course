@@ -2,13 +2,28 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { courseSections, isCourseSectionReady } from "../data/courseSections";
 import { statusMeta } from "../data/status";
-import { getProgress } from "../lib/progressApi";
+import { getCachedCourseProgress, readCachedCourseProgress } from "../lib/progressApi";
+import type { ProgressOverview } from "../types/api";
 import { toPath } from "../utils/slug";
 
 type CourseSection = (typeof courseSections)[number];
 
 function progressKey(section: CourseSection) {
   return `${section.courseId}:${section.slug}`;
+}
+
+function completedLessonKeys(progress: ProgressOverview) {
+  return new Set(
+    progress.lessons
+      .filter((lesson) => lesson.is_completed)
+      .map((lesson) => `${lesson.course_slug}:${lesson.lesson_slug}`),
+  );
+}
+
+function readCachedCompletedLessons(authKey: string) {
+  const progress = readCachedCourseProgress(authKey);
+
+  return progress ? completedLessonKeys(progress) : null;
 }
 
 function CourseSectionRow({
@@ -55,16 +70,34 @@ function CourseSectionRow({
 }
 
 export function CourseIndexPage() {
-  const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
-  const [completedLessons, setCompletedLessons] = useState<Set<string> | null>(null);
+  const { accessToken, isAuthenticated } = useAuth();
+  const authKey = accessToken ?? "";
+  const [completedLessonsState, setCompletedLessonsState] = useState<{
+    authKey: string;
+    lessons: Set<string>;
+  } | null>(() => {
+    const cachedLessons = readCachedCompletedLessons(authKey);
+
+    return cachedLessons ? { authKey, lessons: cachedLessons } : null;
+  });
   const [progressError, setProgressError] = useState("");
   const readySections = courseSections.filter(isCourseSectionReady);
   const plannedSections = courseSections.filter((section) => !isCourseSectionReady(section));
-  const isProgressLoading = isAuthenticated && (isAuthLoading || completedLessons === null);
+  const completedLessons =
+    completedLessonsState?.authKey === authKey ? completedLessonsState.lessons : null;
+  const isProgressLoading = isAuthenticated && completedLessons === null;
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      setCompletedLessons(new Set());
+    if (!isAuthenticated || !authKey) {
+      setCompletedLessonsState({ authKey, lessons: new Set() });
+      setProgressError("");
+      return;
+    }
+
+    const cachedLessons = readCachedCompletedLessons(authKey);
+
+    if (cachedLessons) {
+      setCompletedLessonsState({ authKey, lessons: cachedLessons });
       setProgressError("");
       return;
     }
@@ -72,24 +105,20 @@ export function CourseIndexPage() {
     let cancelled = false;
 
     async function loadProgress() {
-      setCompletedLessons(null);
       setProgressError("");
 
       try {
-        const progress = await getProgress();
+        const progress = await getCachedCourseProgress(authKey);
 
         if (cancelled) return;
 
-        setCompletedLessons(
-          new Set(
-            progress.lessons
-              .filter((lesson) => lesson.is_completed)
-              .map((lesson) => `${lesson.course_slug}:${lesson.lesson_slug}`),
-          ),
-        );
+        setCompletedLessonsState({
+          authKey,
+          lessons: completedLessonKeys(progress),
+        });
       } catch {
         if (!cancelled) {
-          setCompletedLessons(new Set());
+          setCompletedLessonsState({ authKey, lessons: new Set() });
           setProgressError("Прогресс временно недоступен.");
         }
       }
@@ -100,7 +129,7 @@ export function CourseIndexPage() {
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated]);
+  }, [authKey, isAuthenticated]);
 
   return (
     <article className="reading-page compact-page route-page">

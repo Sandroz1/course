@@ -17,6 +17,19 @@
 }
 
 @media (max-width: 560px) {
+  .home-hero h1,
+  .reading-page h1 {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    font-size: 26px;
+    line-height: 1.12;
+  }
+
+  .reading-page p,
+  .reading-page li {
+    overflow-wrap: break-word;
+  }
+
   .actions,
   .task-summary,
   .section-heading {

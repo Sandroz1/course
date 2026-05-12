@@ -4,6 +4,8 @@
 .reading-page {
   display: grid;
   gap: 16px;
+  width: 100%;
+  min-width: 0;
   max-width: 960px;
 }
 
@@ -25,13 +27,13 @@
 .home-hero h1,
 .reading-page h1 {
   margin: 6px 0 8px;
-  font-size: clamp(30px, 4vw, 44px);
+  font-size: clamp(28px, 3.4vw, 40px);
   line-height: 1.08;
   text-wrap: balance;
 }
 
 .home-hero h1 {
-  font-size: clamp(30px, 3.5vw, 42px);
+  font-size: clamp(28px, 3.2vw, 38px);
 }
 
 .page-header h1,
@@ -59,10 +61,11 @@
 }
 
 .panel {
+  min-width: 0;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
-  padding: 16px;
+  padding: 15px;
   box-shadow: none;
 }
 
@@ -104,7 +107,6 @@
   border-color: transparent;
   background: var(--accent);
   color: var(--accent-contrast);
-  align-self: end;
 }
 
 .button--ghost {

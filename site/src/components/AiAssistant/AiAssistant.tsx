@@ -901,15 +901,9 @@ export function AiAssistant() {
                             ref={messagesRef}
                             onScroll={handleMessagesScroll}
                         >
-                            {messages.length === 0 ? (
+                            {messages.length === 0 && canUseAi ? (
                                 <div className={styles.empty}>
-                                    <p>
-                                        Выдели фрагмент в теме → нажми «Спросить» → задай уточнение.
-                                    </p>
-                                    <p>
-                                        Можно спросить, зачем нужен код, где ошибка или как написать
-                                        проще.
-                                    </p>
+                                    <p>Задай вопрос по C++ или выделенному фрагменту.</p>
                                 </div>
                             ) : null}
 

@@ -15,6 +15,7 @@ import {
   apiRequest,
 } from "../lib/api";
 import { clearLocalAiUsage } from "../lib/aiUsage";
+import { clearCachedCourseProgress } from "../lib/progressApi";
 import type {
   AuthResponse,
   AuthTokens,
@@ -132,6 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     removeStorage(REFRESH_TOKEN_STORAGE_KEY);
     removeUserSnapshot();
     clearLocalAiUsage(userId);
+    clearCachedCourseProgress();
     setAccessToken(null);
     setRefreshToken(null);
     setUser(null);

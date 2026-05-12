@@ -6,6 +6,7 @@
 
 .input {
   width: 100%;
+  min-height: 38px;
   border: 1px solid var(--line);
   border-radius: 7px;
   background: var(--surface);
@@ -20,15 +21,15 @@
 
 .results {
   position: absolute;
-  top: 46px;
+  top: calc(100% + 6px);
   right: 0;
   left: 0;
   z-index: 10;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
-  background: var(--surface-2);
-  box-shadow: 0 18px 50px rgba(0, 0, 0, 0.28);
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
 }
 
 .resultLink {
@@ -36,6 +37,15 @@
   gap: 4px;
   border-bottom: 1px solid var(--line);
   padding: 11px 12px;
+}
+
+.resultLink:hover,
+.resultLink:focus-visible {
+  background: var(--surface-2);
+}
+
+.resultLink:last-child {
+  border-bottom: 0;
 }
 
 .resultSection {

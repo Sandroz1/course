@@ -3,8 +3,17 @@ import { useAuth } from "../../context/AuthContext";
 import { courseSections, isCourseSectionReady } from "../../data/courseSections";
 import { statusMeta } from "../../data/status";
 import { tasks } from "../../data/tasks";
-import { updateStudyState, upsertLessonProgress } from "../../lib/progressApi";
+import {
+  getCachedCourseProgress,
+  readCachedCourseProgress,
+  setCachedCourseStudyState,
+  setCachedLessonProgress,
+  setCachedOpenedLessonProgress,
+  updateStudyState,
+  upsertLessonProgress,
+} from "../../lib/progressApi";
 import { classNames } from "../../shared/lib/classNames";
+import type { ProgressOverview } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import { CodeBlock } from "../CodeBlock/CodeBlock";
 import styles from "./CoursePage.module.scss";
@@ -15,11 +24,18 @@ type TocItem = {
 };
 
 type LessonProgressState = {
+  authKey: string;
   key: string;
   isCompleted: boolean;
 };
 
 const MAX_TOC_ITEMS = 7;
+
+function findLessonProgress(progress: ProgressOverview, courseSlug: string, lessonSlug: string) {
+  return progress.lessons.find(
+    (lesson) => lesson.course_slug === courseSlug && lesson.lesson_slug === lessonSlug,
+  );
+}
 
 function renderInline(text: string) {
   const parts = text.split(/(`[^`]+`)/g);
@@ -263,10 +279,10 @@ function collectTocItems(content: string) {
   return toc.slice(0, MAX_TOC_ITEMS);
 }
 
-const openedLessonSyncRequests = new Map<string, ReturnType<typeof upsertLessonProgress>>();
+const openedLessonSyncRequests = new Map<string, Promise<void>>();
 
-function syncOpenedLessonProgress(courseSlug: string, lessonSlug: string) {
-  const key = `${courseSlug}:${lessonSlug}`;
+function syncOpenedLessonProgress(authKey: string, courseSlug: string, lessonSlug: string) {
+  const key = `${authKey}:${courseSlug}:${lessonSlug}`;
   const existingRequest = openedLessonSyncRequests.get(key);
 
   if (existingRequest) {
@@ -274,15 +290,17 @@ function syncOpenedLessonProgress(courseSlug: string, lessonSlug: string) {
   }
 
   const request = (async () => {
-    await updateStudyState({
+    const state = await updateStudyState({
       last_course_slug: courseSlug,
       last_lesson_slug: lessonSlug,
     });
+    setCachedCourseStudyState(authKey, state);
 
-    return upsertLessonProgress({
+    const progress = await upsertLessonProgress({
       course_slug: courseSlug,
       lesson_slug: lessonSlug,
     });
+    setCachedOpenedLessonProgress(authKey, progress);
   })();
 
   openedLessonSyncRequests.set(key, request);
@@ -303,14 +321,15 @@ function syncOpenedLessonProgress(courseSlug: string, lessonSlug: string) {
 }
 
 export function CoursePage({ slug }: { slug: string }) {
-  const { isAuthenticated } = useAuth();
+  const { accessToken, isAuthenticated } = useAuth();
+  const authKey = accessToken ?? "";
+  const normalizedSlug = slug === "structs" ? "struct" : slug;
+  const section = courseSections.find((item) => item.slug === normalizedSlug);
+  const sectionIndex = courseSections.findIndex((item) => item.slug === normalizedSlug);
   const [lessonProgressState, setLessonProgressState] = useState<LessonProgressState | null>(null);
   const [isProgressChecking, setIsProgressChecking] = useState(true);
   const [isProgressSaving, setIsProgressSaving] = useState(false);
   const [progressMessage, setProgressMessage] = useState("");
-  const normalizedSlug = slug === "structs" ? "struct" : slug;
-  const section = courseSections.find((item) => item.slug === normalizedSlug);
-  const sectionIndex = courseSections.findIndex((item) => item.slug === normalizedSlug);
   const previousSection = sectionIndex > 0 ? courseSections[sectionIndex - 1] : undefined;
   const nextSection =
     sectionIndex >= 0 && sectionIndex < courseSections.length - 1
@@ -319,9 +338,18 @@ export function CoursePage({ slug }: { slug: string }) {
   const readySections = courseSections.filter(isCourseSectionReady);
   const readySectionIndex = readySections.findIndex((item) => item.slug === normalizedSlug);
   const lessonProgressKey = section ? `${section.courseId}:${section.slug}` : "";
-  const hasLessonProgressState = lessonProgressState?.key === lessonProgressKey;
-  const isLessonCompleted = hasLessonProgressState ? lessonProgressState.isCompleted : false;
-  const isProgressPending = isAuthenticated && isProgressChecking;
+  const cachedCourseProgress = authKey ? readCachedCourseProgress(authKey) : null;
+  const cachedLessonProgress =
+    section && cachedCourseProgress
+      ? findLessonProgress(cachedCourseProgress, section.courseId, section.slug)
+      : undefined;
+  const hasLocalLessonProgressState =
+    lessonProgressState?.authKey === authKey && lessonProgressState.key === lessonProgressKey;
+  const hasLessonProgressState = Boolean(cachedCourseProgress) || hasLocalLessonProgressState;
+  const isLessonCompleted = hasLocalLessonProgressState
+    ? lessonProgressState.isCompleted
+    : Boolean(cachedLessonProgress?.is_completed);
+  const isProgressPending = isAuthenticated && isProgressChecking && !hasLessonProgressState;
 
   useEffect(() => {
     if (!section || !isCourseSectionReady(section)) {
@@ -334,31 +362,50 @@ export function CoursePage({ slug }: { slug: string }) {
 
     setProgressMessage("");
 
-    if (!isAuthenticated) {
-      setLessonProgressState({ key: currentKey, isCompleted: false });
+    if (!isAuthenticated || !authKey) {
+      setLessonProgressState({ authKey, key: currentKey, isCompleted: false });
       setIsProgressChecking(false);
       return;
     }
 
     let cancelled = false;
-    setIsProgressChecking(true);
 
-    async function syncOpenedLesson() {
+    function applyCourseProgress(progress: ProgressOverview) {
+      const lessonProgress = findLessonProgress(
+        progress,
+        currentSection.courseId,
+        currentSection.slug,
+      );
+
+      setLessonProgressState({
+        authKey,
+        key: currentKey,
+        isCompleted: Boolean(lessonProgress?.is_completed),
+      });
+    }
+
+    const cachedProgress = readCachedCourseProgress(authKey);
+
+    if (cachedProgress) {
+      applyCourseProgress(cachedProgress);
+      setIsProgressChecking(false);
+    } else {
+      setIsProgressChecking(true);
+    }
+
+    async function loadCourseProgress() {
+      if (cachedProgress) return;
+
       try {
-        const progress = await syncOpenedLessonProgress(
-          currentSection.courseId,
-          currentSection.slug,
-        );
+        const progress = await getCachedCourseProgress(authKey);
 
         if (cancelled) return;
 
-        setLessonProgressState({
-          key: currentKey,
-          isCompleted: Boolean(progress.is_completed),
-        });
+        applyCourseProgress(progress);
       } catch {
         if (!cancelled) {
-          setProgressMessage("Прогресс временно не синхронизирован.");
+          setLessonProgressState(null);
+          setProgressMessage("Прогресс временно недоступен.");
         }
       } finally {
         if (!cancelled) {
@@ -367,12 +414,21 @@ export function CoursePage({ slug }: { slug: string }) {
       }
     }
 
-    void syncOpenedLesson();
+    void loadCourseProgress();
+    void syncOpenedLessonProgress(
+      authKey,
+      currentSection.courseId,
+      currentSection.slug,
+    ).catch(() => {
+      if (!cancelled) {
+        setProgressMessage("Прогресс временно не синхронизирован.");
+      }
+    });
 
     return () => {
       cancelled = true;
     };
-  }, [isAuthenticated, section]);
+  }, [authKey, isAuthenticated, section]);
 
   if (!section) {
     return (
@@ -415,7 +471,7 @@ export function CoursePage({ slug }: { slug: string }) {
   const tocItems = collectTocItems(section.content);
 
   async function handleToggleCompleted() {
-    if (!section || !isAuthenticated || isProgressSaving || isProgressPending || !hasLessonProgressState) return;
+    if (!section || !isAuthenticated || !authKey || isProgressSaving || isProgressPending || !hasLessonProgressState) return;
 
     const nextValue = !isLessonCompleted;
     setIsProgressSaving(true);
@@ -428,7 +484,9 @@ export function CoursePage({ slug }: { slug: string }) {
         is_completed: nextValue,
       });
 
+      setCachedLessonProgress(authKey, progress);
       setLessonProgressState({
+        authKey,
         key: `${section.courseId}:${section.slug}`,
         isCompleted: Boolean(progress.is_completed),
       });

@@ -51,7 +51,7 @@
   justify-content: space-between;
   gap: 10px;
   border-color: rgba(214, 212, 202, 0.16);
-  background: var(--surface-2);
+  background: var(--surface);
 }
 
 .progressPanel div {
@@ -124,9 +124,14 @@
 }
 
 @media (max-width: 560px) {
+  .header h1 {
+    overflow-wrap: break-word;
+  }
+
   .summary {
-    align-items: stretch;
+    align-items: flex-start;
     flex-direction: column;
+    gap: 7px;
   }
 
   .progressPanel {

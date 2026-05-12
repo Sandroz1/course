@@ -202,19 +202,19 @@
 }
 
 .progressCard {
-  min-block-size: 196px;
+  min-block-size: 0;
 }
 
 .progressState {
   align-items: flex-start;
-  min-block-size: 126px;
+  min-block-size: 84px;
 }
 
 .progressStats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 8px;
-  min-block-size: 126px;
+  min-block-size: 0;
 }
 
 .progressStats div {
@@ -363,14 +363,5 @@
 
   .progressStats {
     grid-template-columns: 1fr;
-    min-block-size: 260px;
-  }
-
-  .progressCard {
-    min-block-size: 330px;
-  }
-
-  .progressState {
-    min-block-size: 260px;
   }
 }
