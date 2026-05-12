@@ -35,8 +35,7 @@ export const courses: Course[] = [
     id: "base-cpp",
     title: "База C++",
     shortTitle: "База C++",
-    description:
-      "Будущий курс перед ООП: переменные, ввод и вывод, условия, циклы, функции, массивы и строки.",
+    description: "Переменные, ввод, условия, циклы, функции, массивы и строки.",
     status: "soon",
     order: 1,
     path: "/courses/base-cpp",
@@ -46,8 +45,7 @@ export const courses: Course[] = [
     id: "oop-cpp",
     title: "ООП C++",
     shortTitle: "ООП C++",
-    description:
-      "Доступный курс: от подготовки к C++ до структур, классов, конструкторов и this.",
+    description: "Структуры, классы, конструкторы, this и практика.",
     status: "available",
     order: 2,
     path: "/course",

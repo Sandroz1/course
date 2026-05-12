@@ -1,0 +1,122 @@
+/* CSS custom properties and color themes */
+
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #101110;
+  --surface: #171817;
+  --surface-2: #20211f;
+  --surface-3: #252724;
+  --text: #f2f1ec;
+  --text-muted: #aaa9a2;
+  --text-soft: #d6d4ca;
+  --border: #343631;
+  --border-strong: #4a4d45;
+  --accent: #58c7c2;
+  --accent-soft: rgba(88, 199, 194, 0.12);
+  --accent-contrast: #061413;
+  --success: #8acb8f;
+  --warning: #d6a75f;
+  --danger: #e88b83;
+  --code-bg: #1e1e1e;
+  --code-text: #d4d4d4;
+  --code-border: #3c3c3c;
+  --focus-ring: #7ddfd9;
+  --shadow-sm: 0 8px 22px rgba(0, 0, 0, 0.18);
+  --shadow-md: 0 18px 50px rgba(0, 0, 0, 0.28);
+  --muted: var(--text-muted);
+  --soft: var(--text-soft);
+  --line: var(--border);
+  --accent-strong: var(--focus-ring);
+  --amber: var(--warning);
+  --ok: var(--success);
+  --code: var(--code-bg);
+  --code-panel: #252526;
+  --code-line: var(--code-border);
+  --keyword: #569cd6;
+  --course-inline-code-bg: color-mix(in srgb, var(--accent) 7%, var(--surface-2) 93%);
+  --course-inline-code-text: color-mix(in srgb, var(--accent) 32%, var(--text) 68%);
+  --course-inline-code-border: color-mix(in srgb, var(--accent) 18%, var(--border) 82%);
+  --string: #ce9178;
+  --comment: #6a9955;
+  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f6f6f2;
+  --surface: #ffffff;
+  --surface-2: #eeeeea;
+  --surface-3: #e6e6df;
+  --text: #1f211d;
+  --text-muted: #64675e;
+  --text-soft: #3e413a;
+  --border: #d8d9cf;
+  --border-strong: #c4c6b9;
+  --accent: #167f7a;
+  --accent-soft: rgba(22, 127, 122, 0.1);
+  --accent-contrast: #ffffff;
+  --success: #327a3d;
+  --warning: #9a6a1d;
+  --danger: #b4453e;
+  --code-bg: #202124;
+  --code-text: #e9eaee;
+  --code-border: #3b3d42;
+  --focus-ring: #0f8d87;
+  --shadow-sm: 0 8px 22px rgba(33, 35, 29, 0.08);
+  --shadow-md: 0 18px 50px rgba(33, 35, 29, 0.14);
+  --muted: var(--text-muted);
+  --soft: var(--text-soft);
+  --line: var(--border);
+  --accent-strong: var(--focus-ring);
+  --amber: var(--warning);
+  --ok: var(--success);
+  --code: var(--code-bg);
+  --code-panel: #26282d;
+  --code-line: var(--code-border);
+  --course-inline-code-bg: color-mix(in srgb, var(--accent) 7%, var(--surface) 93%);
+  --course-inline-code-text: color-mix(in srgb, var(--accent) 46%, var(--text) 54%);
+  --course-inline-code-border: color-mix(in srgb, var(--accent) 16%, var(--border) 84%);
+}
+
+:root[data-theme="blue"] {
+  color-scheme: dark;
+  --bg: #0d1320;
+  --surface: #121a2a;
+  --surface-2: #182235;
+  --surface-3: #202c42;
+  --text: #f2f6ff;
+  --text-muted: #aab6ca;
+  --text-soft: #d7e0ef;
+  --border: #2d3b55;
+  --border-strong: #40516e;
+  --accent: #7fb4ff;
+  --accent-soft: rgba(127, 180, 255, 0.13);
+  --accent-contrast: #08111f;
+  --success: #78c795;
+  --warning: #e0b86a;
+  --danger: #ef938d;
+  --code-bg: #101827;
+  --code-text: #d9e6ff;
+  --code-border: #2e3a50;
+  --focus-ring: #99c5ff;
+  --shadow-sm: 0 8px 22px rgba(0, 0, 0, 0.2);
+  --shadow-md: 0 18px 50px rgba(0, 0, 0, 0.32);
+  --muted: var(--text-muted);
+  --soft: var(--text-soft);
+  --line: var(--border);
+  --accent-strong: var(--focus-ring);
+  --amber: var(--warning);
+  --ok: var(--success);
+  --code: var(--code-bg);
+  --code-panel: #151f31;
+  --code-line: var(--code-border);
+  --course-inline-code-bg: color-mix(in srgb, var(--accent) 7%, var(--surface-2) 93%);
+  --course-inline-code-text: color-mix(in srgb, var(--accent) 34%, var(--text) 66%);
+  --course-inline-code-border: color-mix(in srgb, var(--accent) 18%, var(--border) 82%);
+}
+
+html {
+  background: var(--bg);
+  text-rendering: optimizeLegibility;
+}

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { CodeBlock } from "../components/CodeBlock";
+import { CodeBlock } from "../components/CodeBlock/CodeBlock";
 
 const errors = [
   {
@@ -12,7 +12,7 @@ const errors = [
   },
   {
     title: "Забыли #include",
-    symptom: "Сообщения похожи на “cout was not declared”, “vector was not declared”, “runtime_error was not declared”.",
+    symptom: "Сообщения похожи на `cout was not declared`, `vector was not declared`, `runtime_error was not declared`.",
     why: "Компилятор должен знать, где объявлены `cout`, `cin`, `string`, `vector`, `sort` и `runtime_error`.",
     bad: "int main() {\n    cout << \"Hello\";\n}",
     fixed: "#include <iostream>\n\nusing namespace std;\n\nint main() {\n    cout << \"Hello\";\n}",
@@ -40,7 +40,7 @@ const errors = [
     why: "При реализации метода вне класса нужно указать, какому классу он принадлежит.",
     bad: "void print() {\n    cout << material;\n}",
     fixed: "void Bed::print() {\n    cout << material;\n}",
-    remember: "`Bed::print` читается как “метод print класса Bed”.",
+    remember: "`Bed::print` читается как метод print класса Bed.",
   },
   {
     title: "undefined reference",
@@ -126,14 +126,12 @@ export function CommonErrorsPage() {
       <header className="page-header">
         <p className="eyebrow">Справочник</p>
         <h1>Частые ошибки</h1>
-        <p className="lead">
-          Найди похожую ошибку, сравни плохой код с исправленным и вернись к задаче.
-        </p>
+        <p className="lead">Поиск по типичным ошибкам компиляции и коду.</p>
       </header>
 
       <section className="panel filters-panel filters-panel--single">
         <label className="field">
-          Поиск ошибки
+          Поиск
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
@@ -151,7 +149,7 @@ export function CommonErrorsPage() {
               <span>{error.symptom}</span>
             </summary>
             <div className="error-card__body">
-              <h3>Что означает</h3>
+              <h3>Причина</h3>
               <p>{error.why}</p>
               <div className="example-pair">
                 <section className="example-box example-box--bad">
@@ -164,7 +162,7 @@ export function CommonErrorsPage() {
                 </section>
               </div>
               <p className="remember-note">
-                <strong>Как запомнить:</strong> {error.remember}
+                <strong>Запомнить:</strong> {error.remember}
               </p>
             </div>
           </details>

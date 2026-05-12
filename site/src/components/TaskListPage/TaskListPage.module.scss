@@ -1,0 +1,76 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 8px;
+}
+
+.card {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-height: 148px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 12px;
+}
+
+.card:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+
+.closedTheory {
+  border-color: rgba(214, 212, 202, 0.16);
+  background: var(--surface-2);
+}
+
+.card strong {
+  text-wrap: balance;
+}
+
+.top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.meta {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.topics {
+  gap: 5px;
+  min-height: 25px;
+}
+
+.topics span {
+  font-size: 12px;
+  padding: 3px 7px;
+}
+
+.notice {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: auto;
+  border-top: 1px solid rgba(214, 212, 202, 0.1);
+  color: var(--muted);
+  font-size: 13px;
+  padding-top: 10px;
+}
+
+.footer span:last-child {
+  color: var(--accent-strong);
+  font-weight: 700;
+}

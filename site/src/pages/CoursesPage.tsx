@@ -10,10 +10,7 @@ export function CoursesPage() {
       <header className="page-header">
         <p className="eyebrow">Курсы</p>
         <h1>Выбор курса</h1>
-        <p className="lead">
-          Сначала здесь будет “База C++”, затем “ООП C++”. Пока база готовится, можно проходить
-          открытый курс по ООП.
-        </p>
+        <p className="lead">Доступен курс ООП C++. База C++ появится позже.</p>
       </header>
 
       <div className="course-catalog">
@@ -34,7 +31,7 @@ export function CoursesPage() {
                 <p>{course.description}</p>
               </div>
               <a className={isAvailable ? "button button--primary" : "button"} href={toPath(course.path)}>
-                {isAvailable ? "Начать обучение" : "Посмотреть план"}
+                {isAvailable ? "Открыть" : "План"}
               </a>
             </article>
           );

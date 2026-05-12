@@ -3,7 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ООП C++ — курс и практика</title>
+    <title>Uchicode - C++ учебник</title>
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
     <script>
       (function () {
         try {
@@ -31,9 +34,10 @@
 
         if (redirect) {
           window.sessionStorage.removeItem("spa-redirect");
-          var segments = window.location.pathname.split("/").filter(Boolean);
-          var base = segments.length > 0 ? "/" + segments[0] + "/" : "/";
-          var cleanPath = redirect === "/" ? base : base + redirect.replace(/^\//, "");
+          var redirectBase = window.sessionStorage.getItem("spa-redirect-base") || "/";
+          window.sessionStorage.removeItem("spa-redirect-base");
+          var normalizedBase = redirectBase.endsWith("/") ? redirectBase : redirectBase + "/";
+          var cleanPath = redirect === "/" ? normalizedBase : normalizedBase + redirect.replace(/^\//, "");
           window.history.replaceState(null, "", cleanPath);
           return;
         }

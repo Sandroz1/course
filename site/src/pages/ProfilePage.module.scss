@@ -1,0 +1,367 @@
+.root {
+  display: grid;
+  gap: 14px;
+  max-width: 980px;
+}
+
+.header {
+  display: grid;
+  gap: 6px;
+  max-width: 720px;
+}
+
+.eyebrow,
+.title,
+.description,
+.cardTitle,
+.mutedText,
+.formMessage {
+  margin: 0;
+}
+
+.eyebrow {
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.title {
+  color: var(--text);
+  font-size: clamp(28px, 3vw, 36px);
+  line-height: 1.08;
+}
+
+.description,
+.mutedText {
+  color: var(--soft);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(260px, 310px);
+  gap: 12px;
+  align-items: start;
+}
+
+.mainColumn,
+.sideColumn {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.card {
+  display: grid;
+  gap: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 16px;
+}
+
+.cardHeader {
+  display: grid;
+  gap: 5px;
+}
+
+.cardTitle {
+  color: var(--text);
+  font-size: 17px;
+  line-height: 1.25;
+}
+
+.form {
+  display: grid;
+  gap: 7px;
+}
+
+.form + .form {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.label {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.input {
+  width: 100%;
+  min-height: 40px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+  color: var(--text);
+  font: inherit;
+  padding: 8px 11px;
+}
+
+.input[readonly] {
+  color: var(--muted);
+}
+
+.input[aria-invalid="true"] {
+  border-color: rgba(232, 139, 131, 0.72);
+}
+
+.input:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.input:focus-visible {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
+.fieldError {
+  min-height: 17px;
+  color: var(--danger);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.phoneStatus {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-2);
+  color: var(--muted);
+  padding: 8px 10px;
+}
+
+.phoneStatus strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.phoneStatusVerified {
+  background: color-mix(in srgb, var(--success) 10%, var(--surface-2));
+}
+
+.phoneStatusPending {
+  background: color-mix(in srgb, var(--warning) 10%, var(--surface-2));
+}
+
+.phoneStatusVerified strong {
+  color: var(--success);
+}
+
+.phoneStatusPending strong {
+  color: var(--warning);
+}
+
+.formMessage {
+  display: flex;
+  align-items: center;
+  min-height: 34px;
+  border-radius: 7px;
+  line-height: 1.45;
+  padding: 7px 10px;
+  font-size: 14px;
+}
+
+.formMessageEmpty {
+  visibility: hidden;
+}
+
+.formError {
+  border: 1px solid rgba(232, 139, 131, 0.35);
+  background: var(--surface-2);
+  color: var(--danger);
+}
+
+.formSuccess {
+  border: 1px solid rgba(138, 203, 143, 0.35);
+  background: var(--surface-2);
+  color: var(--success);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.sessionCard {
+  align-items: start;
+  gap: 12px;
+}
+
+.progressCard {
+  min-block-size: 0;
+}
+
+.progressState {
+  align-items: flex-start;
+  min-block-size: 84px;
+}
+
+.progressStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  min-block-size: 0;
+}
+
+.progressStats div {
+  display: grid;
+  gap: 2px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-2);
+  padding: 9px 10px;
+}
+
+.progressStats strong {
+  color: var(--text);
+  font-size: 20px;
+  line-height: 1.1;
+}
+
+.progressStats span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.aiStatus {
+  display: grid;
+  gap: 4px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  background: var(--surface-2);
+  padding: 10px;
+}
+
+.aiStatus strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.aiStatus span {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.aiStatusAvailable {
+  border-color: rgba(138, 203, 143, 0.35);
+  background: color-mix(in srgb, var(--success) 9%, var(--surface-2));
+}
+
+.aiStatusBlocked {
+  border-color: rgba(232, 139, 131, 0.32);
+  background: color-mix(in srgb, var(--danger) 8%, var(--surface-2));
+}
+
+.aiLimit {
+  display: grid;
+  gap: 8px;
+}
+
+.aiLimit > span {
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 750;
+}
+
+.aiLimit > div {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--surface-2);
+}
+
+.aiLimit > div > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 160ms ease;
+}
+
+.primaryButton,
+.secondaryButton,
+.dangerButton {
+  width: fit-content;
+  min-height: 36px;
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  cursor: pointer;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 750;
+  padding: 8px 11px;
+}
+
+.primaryButton {
+  border-color: transparent;
+  background: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.secondaryButton {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.dangerButton {
+  background: transparent;
+  color: var(--danger);
+}
+
+.primaryButton:hover:not(:disabled),
+.secondaryButton:hover:not(:disabled),
+.dangerButton:hover:not(:disabled),
+.primaryButton:focus-visible,
+.secondaryButton:focus-visible,
+.dangerButton:focus-visible {
+  border-color: var(--accent);
+}
+
+.primaryButton:disabled,
+.secondaryButton:disabled,
+.dangerButton:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+@media (max-width: 760px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 560px) {
+  .card {
+    padding: 15px;
+  }
+
+  .phoneStatus {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sessionCard {
+    grid-template-columns: 1fr;
+  }
+
+  .progressStats {
+    grid-template-columns: 1fr;
+  }
+}

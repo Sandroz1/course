@@ -1,0 +1,141 @@
+.root {
+  max-width: 940px;
+}
+
+.header {
+  display: grid;
+  gap: 8px;
+}
+
+.header h1 {
+  margin-bottom: 4px;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.summary span:not(:global(.status-badge)) {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.theoryNote,
+.homeStatus {
+  border-color: rgba(214, 212, 202, 0.16);
+  background: var(--surface-2);
+}
+
+.theoryNote {
+  display: grid;
+  gap: 6px;
+}
+
+.theoryNote p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.goal {
+  border-color: var(--border-strong);
+}
+
+.progressPanel {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  border-color: rgba(214, 212, 202, 0.16);
+  background: var(--surface);
+}
+
+.progressPanel div {
+  display: grid;
+  gap: 3px;
+}
+
+.progressPanel span {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.goal h2,
+.plainPanel h2,
+.codePanel h2 {
+  margin-top: 0;
+}
+
+.plainPanel {
+  border-color: rgba(214, 212, 202, 0.1);
+  background: transparent;
+  padding: 16px 0;
+}
+
+.plainPanel + .plainPanel {
+  border-top: 1px solid rgba(214, 212, 202, 0.12);
+  border-radius: 0;
+}
+
+.notePanel {
+  color: var(--muted);
+}
+
+.codePanel {
+  border-color: rgba(214, 212, 202, 0.18);
+  background: var(--surface);
+  padding: 18px;
+}
+
+.fileList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 14px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.fileTab {
+  border: 1px solid transparent;
+  border-bottom: 0;
+  border-radius: 7px 7px 0 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  padding: 9px 12px;
+}
+
+.fileTab:hover {
+  color: var(--text);
+  background: var(--surface-2);
+}
+
+.fileTabActive {
+  border-color: var(--line);
+  background: var(--code-panel);
+  color: var(--text);
+  box-shadow: inset 0 2px 0 var(--accent);
+}
+
+@media (max-width: 560px) {
+  .header h1 {
+    overflow-wrap: break-word;
+  }
+
+  .summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .progressPanel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

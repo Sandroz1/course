@@ -1,0 +1,81 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    env_file:
+      - path: .env.production
+        required: true
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
+
+  backend:
+    build:
+      context: ./backend
+    restart: unless-stopped
+    env_file:
+      - path: .env.production
+        required: true
+    command:
+      [
+        "sh",
+        "-c",
+        "python manage.py migrate --noinput && python manage.py collectstatic --noinput && gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3 --timeout 60",
+      ]
+    expose:
+      - "8000"
+    volumes:
+      - backend_static:/app/staticfiles
+      - backend_media:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS -H 'Host: api.uchicode.ru' -H 'X-Forwarded-Proto: https' http://127.0.0.1:8000/api/health/ || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 5
+
+  nginx:
+    build:
+      context: .
+      dockerfile: docker/nginx/Dockerfile
+      args:
+        VITE_API_BASE_URL: https://api.uchicode.ru
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - backend_static:/app/staticfiles:ro
+      - backend_media:/app/media:ro
+      - certbot_www:/var/www/certbot:ro
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+
+volumes:
+  postgres_data:
+  redis_data:
+  backend_static:
+  backend_media:
+  certbot_www:

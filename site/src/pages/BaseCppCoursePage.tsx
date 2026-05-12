@@ -24,10 +24,7 @@ export function BaseCppCoursePage() {
         <p className="eyebrow">Будущий курс</p>
         <h1>База C++</h1>
         <span className={`status-badge status-badge--${meta.tone}`}>{meta.label}</span>
-        <p className="lead">
-          Этот курс будет идти перед ООП C++. Он нужен, чтобы спокойно разобрать базовые конструкции
-          языка до классов и объектов.
-        </p>
+        <p className="lead">Базовые конструкции C++ перед классами и объектами.</p>
       </header>
 
       <section className="panel course-placeholder">
@@ -37,13 +34,10 @@ export function BaseCppCoursePage() {
             <li key={topic}>{topic}</li>
           ))}
         </ul>
-        <p>
-          Пока курс в разработке. Сейчас можно перейти к доступному курсу “ООП C++” и проходить открытые
-          разделы.
-        </p>
+        <p>Курс в разработке. Сейчас открыт курс ООП C++.</p>
         <div className="actions">
           <a className="button button--primary" href={toPath("/course")}>
-            Открыть ООП C++
+            Открыть курс
           </a>
           <a className="button button--ghost" href={toPath("/courses")}>
             Все курсы

@@ -1,8 +1,41 @@
+import { useEffect, useState } from "react";
+import { useAuth } from "../context/AuthContext";
 import { courseSections, isCourseSectionReady } from "../data/courseSections";
 import { statusMeta } from "../data/status";
+import { getCachedCourseProgress, readCachedCourseProgress } from "../lib/progressApi";
+import type { ProgressOverview } from "../types/api";
 import { toPath } from "../utils/slug";
 
-function CourseSectionRow({ slug, number, title, description, status }: (typeof courseSections)[number]) {
+type CourseSection = (typeof courseSections)[number];
+
+function progressKey(section: CourseSection) {
+  return `${section.courseId}:${section.slug}`;
+}
+
+function completedLessonKeys(progress: ProgressOverview) {
+  return new Set(
+    progress.lessons
+      .filter((lesson) => lesson.is_completed)
+      .map((lesson) => `${lesson.course_slug}:${lesson.lesson_slug}`),
+  );
+}
+
+function readCachedCompletedLessons(authKey: string) {
+  const progress = readCachedCourseProgress(authKey);
+
+  return progress ? completedLessonKeys(progress) : null;
+}
+
+function CourseSectionRow({
+  section,
+  isCompleted = false,
+  isProgressLoading = false,
+}: {
+  section: CourseSection;
+  isCompleted?: boolean;
+  isProgressLoading?: boolean;
+}) {
+  const { slug, number, title, description, status } = section;
   const isReady = status === "available" || status === "ready";
   const meta = statusMeta[status];
 
@@ -18,6 +51,10 @@ function CourseSectionRow({ slug, number, title, description, status }: (typeof 
           <span className={`status-badge status-badge--${isReady ? "success" : meta.tone}`}>
             {isReady ? statusMeta.ready.label : meta.label}
           </span>
+          {isReady && isProgressLoading && (
+            <span className="status-badge status-badge--muted">Проверяем</span>
+          )}
+          {isCompleted && <span className="status-badge status-badge--success">Пройдено</span>}
         </span>
         <span className="course-row__description">
           {isReady
@@ -33,8 +70,66 @@ function CourseSectionRow({ slug, number, title, description, status }: (typeof 
 }
 
 export function CourseIndexPage() {
+  const { accessToken, isAuthenticated } = useAuth();
+  const authKey = accessToken ?? "";
+  const [completedLessonsState, setCompletedLessonsState] = useState<{
+    authKey: string;
+    lessons: Set<string>;
+  } | null>(() => {
+    const cachedLessons = readCachedCompletedLessons(authKey);
+
+    return cachedLessons ? { authKey, lessons: cachedLessons } : null;
+  });
+  const [progressError, setProgressError] = useState("");
   const readySections = courseSections.filter(isCourseSectionReady);
   const plannedSections = courseSections.filter((section) => !isCourseSectionReady(section));
+  const completedLessons =
+    completedLessonsState?.authKey === authKey ? completedLessonsState.lessons : null;
+  const isProgressLoading = isAuthenticated && completedLessons === null;
+
+  useEffect(() => {
+    if (!isAuthenticated || !authKey) {
+      setCompletedLessonsState({ authKey, lessons: new Set() });
+      setProgressError("");
+      return;
+    }
+
+    const cachedLessons = readCachedCompletedLessons(authKey);
+
+    if (cachedLessons) {
+      setCompletedLessonsState({ authKey, lessons: cachedLessons });
+      setProgressError("");
+      return;
+    }
+
+    let cancelled = false;
+
+    async function loadProgress() {
+      setProgressError("");
+
+      try {
+        const progress = await getCachedCourseProgress(authKey);
+
+        if (cancelled) return;
+
+        setCompletedLessonsState({
+          authKey,
+          lessons: completedLessonKeys(progress),
+        });
+      } catch {
+        if (!cancelled) {
+          setCompletedLessonsState({ authKey, lessons: new Set() });
+          setProgressError("Прогресс временно недоступен.");
+        }
+      }
+    }
+
+    void loadProgress();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authKey, isAuthenticated]);
 
   return (
     <article className="reading-page compact-page route-page">
@@ -61,6 +156,12 @@ export function CourseIndexPage() {
         </div>
       </section>
 
+      {progressError && (
+        <section className="panel progress-state">
+          <span>{progressError}</span>
+        </section>
+      )}
+
       <section className="course-group">
         <div className="section-heading">
           <h2>Открытые уроки</h2>
@@ -68,7 +169,12 @@ export function CourseIndexPage() {
         </div>
         <div className="course-list">
           {readySections.map((section) => (
-            <CourseSectionRow key={section.slug} {...section} />
+            <CourseSectionRow
+              key={section.slug}
+              section={section}
+              isCompleted={Boolean(completedLessons?.has(progressKey(section)))}
+              isProgressLoading={isProgressLoading}
+            />
           ))}
         </div>
       </section>
@@ -80,7 +186,12 @@ export function CourseIndexPage() {
         </div>
         <div className="course-list">
           {plannedSections.map((section) => (
-            <CourseSectionRow key={section.slug} {...section} />
+            <CourseSectionRow
+              key={section.slug}
+              section={section}
+              isCompleted={Boolean(completedLessons?.has(progressKey(section)))}
+              isProgressLoading={isProgressLoading}
+            />
           ))}
         </div>
       </section>

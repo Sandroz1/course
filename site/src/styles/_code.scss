@@ -1,0 +1,84 @@
+/* Code block and preformatted code styles */
+
+.code-block {
+  overflow: hidden;
+  border: 1px solid var(--code-border);
+  border-radius: 8px;
+  background: var(--code);
+  box-shadow: none;
+}
+
+.code-block__bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--code-line);
+  background: var(--code-panel);
+  color: var(--muted);
+  padding: 7px 10px 7px 12px;
+}
+
+.code-block__language {
+  color: var(--muted);
+  font-family: Consolas, Monaco, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.code-block button {
+  border: 1px solid var(--code-border);
+  border-radius: 5px;
+  background: var(--code-panel);
+  color: var(--code-text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  padding: 5px 8px;
+}
+
+.code-block button:hover {
+  border-color: var(--border-strong);
+  background: var(--code-panel);
+}
+
+.code-block__highlight {
+  background: var(--code);
+}
+
+.code-block .shiki,
+.code-block__pre {
+  margin: 0;
+  overflow: auto;
+  background: var(--code) !important;
+  padding: 15px 16px;
+  scrollbar-color: var(--code-border) transparent;
+}
+
+.code-block .shiki code,
+.code-block__code {
+  display: block;
+  min-width: max-content;
+  color: var(--code-text);
+  font-family: Consolas, "Cascadia Code", "Fira Code", Monaco, monospace;
+  font-size: 13.5px;
+  line-height: 1.56;
+  tab-size: 4;
+}
+
+.code-block__pre--fallback .code-block__code {
+  white-space: pre;
+}
+
+pre:not(.code-block__pre) {
+  margin: 0;
+  overflow: auto;
+  padding: 16px;
+  scrollbar-color: var(--line) transparent;
+}
+
+pre:not(.code-block__pre) code {
+  color: #e7e1cf;
+  font-size: 14px;
+  line-height: 1.55;
+}
