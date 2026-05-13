@@ -10,6 +10,8 @@ import styles from "./TaskListPage.module.scss";
 
 type TaskDisplayStatus = "available" | "needs-theory" | "in_progress" | "solved";
 
+const VISIBLE_TOPIC_LIMIT = 3;
+
 function fileCountLabel(count: number) {
   if (count === 1) return "1 файл";
   if (count >= 2 && count <= 4) return `${count} файла`;
@@ -38,12 +40,12 @@ function getTaskDisplayLabel(status: TaskDisplayStatus) {
   return getStatusLabel("available");
 }
 
-function getTaskDisplayTone(status: TaskDisplayStatus) {
-  if (status === "solved") return "success";
-  if (status === "in_progress") return "info";
-  if (status === "needs-theory") return "task";
+function getTaskStatusClass(status: TaskDisplayStatus) {
+  if (status === "solved") return styles.statusSolved;
+  if (status === "in_progress") return styles.statusInProgress;
+  if (status === "needs-theory") return styles.statusLocked;
 
-  return "success";
+  return styles.statusAvailable;
 }
 
 export function TaskListPage({
@@ -69,37 +71,45 @@ export function TaskListPage({
         const course = getCourseById(task.courseId);
         const theoryTitle = theory?.title ?? task.section;
         const displayStatus = getTaskDisplayStatus(task, hasClosedTheory, taskProgressById);
+        const visibleTopics = task.topics.slice(0, VISIBLE_TOPIC_LIMIT);
+        const hiddenTopicCount = Math.max(task.topics.length - VISIBLE_TOPIC_LIMIT, 0);
 
         return (
           <a
             className={classNames(styles.card, hasClosedTheory && styles.closedTheory)}
             href={toPath(`/tasks/${task.id}`)}
+            aria-label={`Открыть задачу: ${task.title}`}
             key={task.id}
           >
             <div className={styles.top}>
-              <strong>{task.title}</strong>
+              <div className={styles.titleBlock}>
+                <strong>{task.title}</strong>
+                <span className={styles.meta}>
+                  {course?.shortTitle ?? "Курс"} · {task.section}
+                </span>
+              </div>
               <ProgressBadge level={task.level} />
             </div>
-            <span className={styles.meta}>
-              {course?.shortTitle ?? "Курс"} · {task.section}
-            </span>
-            <span className={styles.theory}>Тема: {theoryTitle}</span>
             <div className={styles.statusRow}>
-              <span className={`status-badge status-badge--${getTaskDisplayTone(displayStatus)}`}>
+              <span
+                className={classNames(
+                  styles.statusBadge,
+                  getTaskStatusClass(displayStatus),
+                )}
+              >
                 {getTaskDisplayLabel(displayStatus)}
               </span>
             </div>
+            <span className={styles.theory}>Тема: {theoryTitle}</span>
             <div className={classNames("topic-list topic-list--compact", styles.topics)}>
-              {task.topics.slice(0, 4).map((topic) => (
+              {visibleTopics.map((topic) => (
                 <span key={topic}>{topic}</span>
               ))}
+              {hiddenTopicCount > 0 && <span>+{hiddenTopicCount}</span>}
             </div>
-            {hasClosedTheory && (
-              <span className={styles.notice}>Теория ещё закрыта.</span>
-            )}
-            <span className={styles.footer}>
-              <span>{fileCountLabel(task.files.length)}</span>
-              <span>Открыть</span>
+            <span className={styles.footer} aria-hidden="true">
+              <span className={styles.fileCount}>{fileCountLabel(task.files.length)}</span>
+              <span className={styles.cta}>Открыть</span>
             </span>
           </a>
         );

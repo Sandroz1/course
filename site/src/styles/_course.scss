@@ -303,13 +303,13 @@
 .filters-panel {
   display: grid;
   grid-template-columns: minmax(260px, 1.5fr) repeat(2, minmax(180px, 1fr));
-  gap: 10px;
+  gap: 8px;
   align-items: end;
-  padding: 12px;
+  padding: 10px;
 }
 
 .filters-panel--tasks {
-  grid-template-columns: minmax(220px, 1.35fr) repeat(4, minmax(128px, 1fr)) auto;
+  grid-template-columns: minmax(220px, 1.4fr) repeat(4, minmax(116px, 0.85fr)) minmax(122px, auto);
 }
 
 .filters-panel--single {
@@ -319,9 +319,17 @@
 
 .field {
   display: grid;
-  gap: 6px;
+  gap: 5px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.filters-panel .field input,
+.filters-panel .field select {
+  min-height: 38px;
+  background: var(--surface-2);
+  padding: 8px 10px;
 }
 
 .filter-count {
@@ -335,10 +343,21 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
-  gap: 8px;
+  align-self: end;
+  gap: 6px;
+  min-height: 38px;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
   white-space: nowrap;
+}
+
+.filters-summary strong {
+  color: var(--text);
+  font-size: 14px;
+}
+
+.filters-summary .button {
+  margin-left: 2px;
 }
 
 .task-theory-note {

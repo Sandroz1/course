@@ -45,13 +45,20 @@
 }
 
 .progressPanel {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: minmax(38px, auto) 21px;
   align-items: center;
-  flex-wrap: wrap;
-  justify-content: space-between;
-  gap: 10px;
+  align-content: center;
+  gap: 8px 14px;
+  min-height: 104px;
   border-color: rgba(214, 212, 202, 0.16);
   background: var(--surface);
+}
+
+.progressPanel button {
+  justify-self: end;
+  min-width: 164px;
 }
 
 .progressPanel div {
@@ -63,6 +70,16 @@
   color: var(--muted);
   font-size: 14px;
   line-height: 1.45;
+}
+
+.progressMessage {
+  grid-column: 1 / -1;
+  min-height: 21px;
+  overflow: hidden;
+}
+
+.progressMessageEmpty {
+  opacity: 0;
 }
 
 .goal h2,
@@ -136,6 +153,19 @@
 
   .progressPanel {
     align-items: stretch;
-    flex-direction: column;
+    align-content: stretch;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto 21px;
+    min-height: 136px;
+  }
+
+  .progressPanel button {
+    justify-self: stretch;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .progressMessage {
+    grid-column: auto;
   }
 }

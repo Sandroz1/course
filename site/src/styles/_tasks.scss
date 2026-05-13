@@ -2,7 +2,14 @@
 
 .task-section {
   display: grid;
-  gap: 8px;
+  gap: 10px;
+  padding-top: 2px;
+}
+
+.task-section + .task-section {
+  margin-top: 10px;
+  border-top: 1px solid rgba(214, 212, 202, 0.1);
+  padding-top: 18px;
 }
 
 .section-heading {
@@ -14,11 +21,13 @@
 
 .section-heading h2 {
   margin: 0;
+  font-size: 20px;
+  line-height: 1.25;
 }
 
 .section-heading span {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 13px;
 }
 
 .task-grid {

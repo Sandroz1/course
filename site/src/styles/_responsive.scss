@@ -42,6 +42,12 @@
     flex-direction: column;
   }
 
+  .filters-summary {
+    align-items: stretch;
+    flex-direction: column;
+    white-space: normal;
+  }
+
   .course-row {
     grid-template-columns: 42px minmax(0, 1fr);
   }

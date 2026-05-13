@@ -27,6 +27,17 @@ const statusLabels: Record<TaskStatusFilter, string> = {
   "needs-theory": getStatusLabel("needs-theory"),
 };
 
+function taskCountLabel(count: number) {
+  const lastTwoDigits = count % 100;
+  const lastDigit = count % 10;
+
+  if (lastTwoDigits >= 11 && lastTwoDigits <= 14) return `${count} задач`;
+  if (lastDigit === 1) return `${count} задача`;
+  if (lastDigit >= 2 && lastDigit <= 4) return `${count} задачи`;
+
+  return `${count} задач`;
+}
+
 function createTaskProgressMap(progress: ProgressOverview | null) {
   const taskProgressById = new Map<string, TaskProgressStatus>();
 
@@ -209,8 +220,9 @@ export function TasksIndexPage() {
             ))}
           </select>
         </label>
-        <div className="filters-summary">
-          <span>{filteredTasks.length} найдено</span>
+        <div className="filters-summary" aria-live="polite">
+          <strong>{taskCountLabel(filteredTasks.length)}</strong>
+          <span>найдено</span>
           {hasActiveFilters && (
             <button className="button button--small button--ghost" type="button" onClick={resetFilters}>
               Сбросить
@@ -244,7 +256,7 @@ export function TasksIndexPage() {
           <section className="task-section" key={section}>
             <div className="section-heading">
               <h2>{section}</h2>
-              <span>{count} задач</span>
+              <span>{taskCountLabel(count)}</span>
             </div>
             <TaskListPage
               section={section}

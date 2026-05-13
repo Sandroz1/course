@@ -202,7 +202,15 @@ export function TaskPage({ taskId }: { taskId: string }) {
                   ? "Отметить решённой"
                   : "Начать"}
           </button>
-          {progressMessage ? <span>{progressMessage}</span> : null}
+          <span
+            className={classNames(
+              styles.progressMessage,
+              !progressMessage && styles.progressMessageEmpty,
+            )}
+            aria-live="polite"
+          >
+            {progressMessage || " "}
+          </span>
         </section>
       )}
 
