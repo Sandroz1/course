@@ -9,7 +9,7 @@ const plannedTopics = [
   "функции",
   "массивы",
   "строки",
-  "базовая работа с файлами, если она понадобится перед ООП",
+  "базовая работа с файлами",
 ];
 
 export function BaseCppCoursePage() {
@@ -24,7 +24,7 @@ export function BaseCppCoursePage() {
         <p className="eyebrow">Будущий курс</p>
         <h1>База C++</h1>
         <span className={`status-badge status-badge--${meta.tone}`}>{meta.label}</span>
-        <p className="lead">Базовые конструкции C++ перед классами и объектами.</p>
+        <p className="lead">Раздел появится позже. Сейчас открыт курс ООП C++.</p>
       </header>
 
       <section className="panel course-placeholder">
@@ -34,10 +34,9 @@ export function BaseCppCoursePage() {
             <li key={topic}>{topic}</li>
           ))}
         </ul>
-        <p>Курс в разработке. Сейчас открыт курс ООП C++.</p>
         <div className="actions">
           <a className="button button--primary" href={toPath("/course")}>
-            Открыть курс
+            Открыть ООП C++
           </a>
           <a className="button button--ghost" href={toPath("/courses")}>
             Все курсы

@@ -7,7 +7,7 @@ import {
   getLocalAiUsage,
 } from "../lib/aiUsage";
 import { changePassword, sendPhoneVerificationCode, verifyPhoneCode } from "../lib/authApi";
-import { getProgress } from "../lib/progressApi";
+import { getCachedCourseProgress, readCachedCourseProgress } from "../lib/progressApi";
 import { classNames } from "../shared/lib/classNames";
 import type { AiUsage, ProgressOverview } from "../types/api";
 import { navigateTo } from "../utils/navigation";
@@ -26,7 +26,8 @@ function getCooldown(error: ApiError) {
 }
 
 export function ProfilePage() {
-  const { user, isLoading, logout, refreshProfile, updateProfile } = useAuth();
+  const { user, isLoading, logout, refreshProfile, updateProfile, accessToken } = useAuth();
+  const authKey = accessToken ?? "";
   const [phone, setPhone] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
   const [messageText, setMessageText] = useState("");
@@ -84,7 +85,7 @@ export function ProfilePage() {
   }, [cooldownSeconds]);
 
   useEffect(() => {
-    if (!user) {
+    if (!user || !authKey) {
       setStudyProgress(null);
       setIsStudyProgressLoading(false);
       setStudyProgressError("");
@@ -92,13 +93,21 @@ export function ProfilePage() {
     }
 
     let cancelled = false;
+    const cachedProgress = readCachedCourseProgress(authKey);
+
+    if (cachedProgress) {
+      setStudyProgress(cachedProgress);
+      setIsStudyProgressLoading(false);
+      setStudyProgressError("");
+      return;
+    }
 
     async function loadStudyProgress() {
       setIsStudyProgressLoading(true);
       setStudyProgressError("");
 
       try {
-        const progress = await getProgress();
+        const progress = await getCachedCourseProgress(authKey);
         if (!cancelled) {
           setStudyProgress(progress);
         }
@@ -119,7 +128,7 @@ export function ProfilePage() {
     return () => {
       cancelled = true;
     };
-  }, [user]);
+  }, [authKey, user]);
 
   async function handleSave(event: FormEvent) {
     event.preventDefault();
@@ -278,32 +287,20 @@ export function ProfilePage() {
   const solvedTasksCount = studyProgress?.tasks.filter((task) => task.status === "solved").length ?? 0;
   const activeTasksCount = studyProgress?.tasks.filter((task) => task.status === "in_progress").length ?? 0;
   const aiStatusText = isPhoneVerified
-    ? "AI доступен для этого аккаунта."
-    : "AI недоступен, пока телефон не подтверждён.";
+    ? "Можно задавать вопросы AI."
+    : "Подтверди телефон, чтобы открыть AI.";
   const displayedAiUsage = isPhoneVerified ? aiUsage : { ...aiUsage, remaining: 0 };
 
   return (
     <article className={styles.root}>
       <header className={styles.header}>
         <p className={styles.eyebrow}>Аккаунт</p>
-        <h1 className={styles.title}>Настройки</h1>
+        <h1 className={styles.title}>Профиль</h1>
+        <p className={styles.description}>Логин: {user.username}</p>
       </header>
 
       <div className={styles.layout}>
         <div className={styles.mainColumn}>
-          <section className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>Данные аккаунта</h2>
-            </div>
-
-            <div className={styles.form}>
-              <label className={styles.field}>
-                <span className={styles.label}>Логин</span>
-                <input className={styles.input} value={user.username} readOnly />
-              </label>
-            </div>
-          </section>
-
           <section className={styles.card}>
             <div className={styles.cardHeader}>
               <h2 className={styles.cardTitle}>Телефон</h2>
@@ -311,7 +308,7 @@ export function ProfilePage() {
 
             <form className={styles.form} onSubmit={handleSave} aria-busy={isSaving}>
               <label className={styles.field}>
-                <span className={styles.label}>Телефон</span>
+                <span className={styles.label}>Номер</span>
                 <input
                   className={styles.input}
                   aria-invalid={Boolean(phoneError)}
@@ -331,7 +328,6 @@ export function ProfilePage() {
                   isPhoneVerified ? styles.phoneStatusVerified : styles.phoneStatusPending,
                 )}
               >
-                <span>Статус телефона</span>
                 <strong>{isPhoneVerified ? "Подтверждён" : "Не подтверждён"}</strong>
               </div>
 
@@ -541,10 +537,7 @@ export function ProfilePage() {
           </section>
 
           <section className={classNames(styles.card, styles.sessionCard)}>
-            <div>
-              <h2 className={styles.cardTitle}>Выход</h2>
-              <p className={styles.mutedText}>Завершить текущую сессию.</p>
-            </div>
+            <h2 className={styles.cardTitle}>Сессия</h2>
             <button className={styles.dangerButton} type="button" onClick={() => void handleLogout()}>
               Выйти
             </button>

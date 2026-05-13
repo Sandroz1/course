@@ -401,6 +401,9 @@ export function AiAssistant() {
         isPhoneVerified,
     });
     const canUseAi = !aiAccessMessage;
+    const isLimitReached = canUseAi && Boolean(user) && aiUsage.remaining <= 0;
+    const canSendAi = canUseAi && !isLimitReached;
+    const isLockedPanel = !canUseAi && messages.length === 0;
     const usageText = formatAiUsage(aiUsage);
 
     const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -747,7 +750,7 @@ export function AiAssistant() {
             return;
         }
 
-        if (user && aiUsage.remaining <= 0) {
+        if (isLimitReached) {
             setErrorText("Лимит AI-запросов на сегодня исчерпан.");
             return;
         }
@@ -836,11 +839,11 @@ export function AiAssistant() {
 
             {isOpen ? (
                 <aside
-                    className={styles.panel}
+                    className={classNames(styles.panel, isLockedPanel && styles.panelLocked)}
                     aria-label="AI помощник"
                     style={{
                         width: `${panelSize.width}px`,
-                        height: `${panelSize.height}px`,
+                        height: isLockedPanel ? undefined : `${panelSize.height}px`,
                     }}
                 >
                     <div className={styles.panelHeader}>
@@ -891,79 +894,83 @@ export function AiAssistant() {
                     {canUseAi ? (
                         <div className={styles.usageNotice}>
                             <span>{usageText}</span>
-                            {aiUsage.remaining <= 0 ? <strong>Лимит на сегодня исчерпан</strong> : null}
+                            {isLimitReached ? <strong>Лимит на сегодня исчерпан</strong> : null}
                         </div>
                     ) : null}
 
-                    <div className={styles.messagesWrap}>
-                        <div
-                            className={styles.messages}
-                            ref={messagesRef}
-                            onScroll={handleMessagesScroll}
-                        >
-                            {messages.length === 0 && canUseAi ? (
-                                <div className={styles.empty}>
-                                    <p>Задай вопрос по C++ или выделенному фрагменту.</p>
-                                </div>
-                            ) : null}
+                    {canUseAi || messages.length > 0 ? (
+                        <div className={styles.messagesWrap}>
+                            <div
+                                className={styles.messages}
+                                ref={messagesRef}
+                                onScroll={handleMessagesScroll}
+                            >
+                                {messages.length === 0 && canSendAi ? (
+                                    <div className={styles.empty}>
+                                        <p>Задай вопрос по C++ или выделенному фрагменту.</p>
+                                    </div>
+                                ) : null}
 
-                            {messages.map((message) => (
-                                <div
-                                    className={classNames(
-                                        styles.message,
-                                        message.role === "user" ? styles.messageUser : styles.messageAssistant,
-                                    )}
-                                    key={message.id}
-                                    ref={(node) => setMessageRef(message.id, node)}
+                                {messages.map((message) => (
+                                    <div
+                                        className={classNames(
+                                            styles.message,
+                                            message.role === "user" ? styles.messageUser : styles.messageAssistant,
+                                        )}
+                                        key={message.id}
+                                        ref={(node) => setMessageRef(message.id, node)}
+                                    >
+                                        <span className={styles.messageRole}>
+                                            {message.role === "user" ? "Ты" : "AI"}
+                                        </span>
+                                        <MessageContent content={message.content} role={message.role} />
+                                    </div>
+                                ))}
+
+                                {isLoading ? (
+                                    <div className={classNames(styles.message, styles.messageAssistant)}>
+                                        <span className={styles.messageRole}>AI</span>
+                                        <p>Думаю...</p>
+                                    </div>
+                                ) : null}
+                            </div>
+
+                            {showJumpToBottom ? (
+                                <button
+                                    type="button"
+                                    className={styles.jumpBottom}
+                                    onClick={jumpToLatestMessage}
                                 >
-                                    <span className={styles.messageRole}>
-                                        {message.role === "user" ? "Ты" : "AI"}
-                                    </span>
-                                    <MessageContent content={message.content} role={message.role} />
-                                </div>
-                            ))}
-
-                            {isLoading ? (
-                                <div className={classNames(styles.message, styles.messageAssistant)}>
-                                    <span className={styles.messageRole}>AI</span>
-                                    <p>Думаю...</p>
-                                </div>
+                                    К последнему сообщению
+                                </button>
                             ) : null}
                         </div>
-
-                        {showJumpToBottom ? (
-                            <button
-                                type="button"
-                                className={styles.jumpBottom}
-                                onClick={jumpToLatestMessage}
-                            >
-                                К последнему сообщению
-                            </button>
-                        ) : null}
-                    </div>
+                    ) : null}
 
                     {errorText ? <p className={styles.error}>{errorText}</p> : null}
 
-                    <form className={styles.form} onSubmit={sendQuestion}>
-                        <textarea
-                            ref={textareaRef}
-                            value={question}
-                            onChange={(event) => setQuestion(event.target.value)}
-                            placeholder={
-                                !canUseAi
-                                    ? aiAccessMessage
-                                    : selectedText
-                                    ? "Что объяснить в выделенном фрагменте?"
-                                    : "Спроси что-нибудь по C++..."
-                            }
-                            rows={3}
-                            disabled={!canUseAi || aiUsage.remaining <= 0 || isLoading}
-                        />
+                    {canUseAi ? (
+                        <form className={styles.form} onSubmit={sendQuestion}>
+                            <textarea
+                                ref={textareaRef}
+                                value={question}
+                                onChange={(event) => setQuestion(event.target.value)}
+                                placeholder={
+                                    isLimitReached
+                                        ? "Лимит на сегодня исчерпан"
+                                        : selectedText
+                                        ? "Что объяснить в выделенном фрагменте?"
+                                        : "Спроси что-нибудь по C++..."
+                                }
+                                rows={3}
+                                disabled={!canSendAi || isLoading}
+                            />
 
-                        <button type="submit" disabled={!canUseAi || aiUsage.remaining <= 0 || isLoading || !question.trim()}>
-                            Отправить
-                        </button>
-                    </form>
+                            <button type="submit" disabled={!canSendAi || isLoading || !question.trim()}>
+                                Отправить
+                            </button>
+                        </form>
+                    ) : null}
 
                     <span
                         className={classNames(styles.resizeZone, styles.resizeZoneLeft)}

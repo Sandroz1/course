@@ -7,12 +7,12 @@
 .card {
   display: grid;
   align-content: start;
-  gap: 8px;
-  min-height: 148px;
+  gap: 7px;
+  min-height: 138px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
-  padding: 12px;
+  padding: 11px;
 }
 
 .card:hover {
@@ -40,6 +40,19 @@
 .meta {
   color: var(--muted);
   font-size: 13px;
+}
+
+.theory {
+  color: var(--soft);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.statusRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
 }
 
 .topics {

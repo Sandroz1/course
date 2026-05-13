@@ -3,10 +3,9 @@ import { statusMeta } from "../data/status";
 import { toPath } from "../utils/slug";
 
 const quickLinks = [
-  { title: "Задачи", href: "/tasks" },
-  { title: "Гайд", href: "/guide" },
-  { title: "Ошибки", href: "/common-errors" },
-  { title: "Самопроверка", href: "/check" },
+  { title: "Курс ООП C++", text: "Открытая теория и порядок уроков.", href: "/course" },
+  { title: "Задачи", text: "Практика по темам курса.", href: "/tasks" },
+  { title: "Самопроверка", text: "Короткий чек-лист перед сдачей.", href: "/check" },
 ];
 
 export function HomePage() {
@@ -14,26 +13,26 @@ export function HomePage() {
   const oopCourse = courses.find((course) => course.id === "oop-cpp");
 
   return (
-    <article className="home-page dashboard-page">
-      <section className="home-hero app-hero">
+    <article className="reading-page compact-page route-page">
+      <header className="page-header">
         <p className="eyebrow">Учебная панель</p>
-        <h1>Курс C++</h1>
-        <p className="lead">Теория, задачи и самопроверка в одном месте.</p>
+        <h1>Uchicode</h1>
+        <p className="lead">Курс C++ с уроками, задачами и самопроверкой.</p>
         <div className="actions">
           <a className="button button--primary" href={toPath("/course")}>
-            Продолжить курс
+            Открыть ООП C++
           </a>
-          <a className="button button--ghost" href={toPath("/courses")}>
-            Все курсы
+          <a className="button button--ghost" href={toPath("/tasks")}>
+            Задачи
           </a>
         </div>
-      </section>
+      </header>
 
       <section className="panel base-course-card">
         <div>
-          <p className="eyebrow">Маршрут обучения</p>
+          <p className="eyebrow">Сейчас доступно</p>
           <h2>Курсы</h2>
-          <p>Доступен курс ООП C++. База C++ готовится.</p>
+          <p>ООП C++ открыт. База C++ пока в плане.</p>
         </div>
         <div className="course-mini-list">
           {[baseCourse, oopCourse].filter(Boolean).map((course) => {
@@ -48,32 +47,11 @@ export function HomePage() {
         </div>
       </section>
 
-      <section className="panel study-flow">
-        <h2>Как заниматься</h2>
-        <div className="flow-steps" aria-label="Рабочий порядок">
-          <div>
-            <strong>Теория</strong>
-            <span>Прочитать тему и примеры.</span>
-          </div>
-          <div>
-            <strong>Задача</strong>
-            <span>Открыть карточку задачи.</span>
-          </div>
-          <div>
-            <strong>Код</strong>
-            <span>Написать решение.</span>
-          </div>
-          <div>
-            <strong>Проверка</strong>
-            <span>Свериться с чек-листом.</span>
-          </div>
-        </div>
-      </section>
-
-      <section className="quick-links" aria-label="Быстрые переходы">
+      <section className="quick-links quick-links--cards" aria-label="Быстрые переходы">
         {quickLinks.map((link) => (
           <a href={toPath(link.href)} key={link.href}>
-            {link.title}
+            <strong>{link.title}</strong>
+            <span>{link.text}</span>
           </a>
         ))}
       </section>

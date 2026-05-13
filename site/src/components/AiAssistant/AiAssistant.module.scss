@@ -90,6 +90,10 @@
   box-shadow: var(--shadow-sm);
 }
 
+.panelLocked {
+  min-height: 0;
+}
+
 .resizeZone {
   position: absolute;
   z-index: 2;
@@ -249,7 +253,7 @@
   display: grid;
   flex-shrink: 0;
   gap: 8px;
-  margin: 12px 12px 0;
+  margin: 12px;
   border: 1px solid var(--border);
   border-radius: 10px;
   background: var(--surface-2);

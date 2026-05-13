@@ -47,7 +47,7 @@ export function LoginPage() {
   return (
     <AuthLayout
       title="Вход"
-      description="Для сохранения прогресса."
+      description="Для прогресса и AI-помощника."
       footer={
         <>
           Нет аккаунта? <a href={toPath("/register")}>Зарегистрироваться</a>
@@ -93,7 +93,7 @@ export function LoginPage() {
         </p>
 
         <button className={styles.submit} type="submit" disabled={isSubmitting}>
-          {isSubmitting ? "Вход..." : "Войти"}
+          {isSubmitting ? "Входим..." : "Войти"}
         </button>
       </form>
     </AuthLayout>

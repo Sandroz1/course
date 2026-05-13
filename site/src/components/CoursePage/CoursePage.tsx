@@ -8,7 +8,6 @@ import {
   readCachedCourseProgress,
   setCachedCourseStudyState,
   setCachedLessonProgress,
-  setCachedOpenedLessonProgress,
   updateStudyState,
   upsertLessonProgress,
 } from "../../lib/progressApi";
@@ -281,7 +280,26 @@ function collectTocItems(content: string) {
 
 const openedLessonSyncRequests = new Map<string, Promise<void>>();
 
-function syncOpenedLessonProgress(authKey: string, courseSlug: string, lessonSlug: string) {
+function shouldSyncOpenedLessonState(
+  progress: ProgressOverview | null,
+  courseSlug: string,
+  lessonSlug: string,
+) {
+  const state = progress?.state;
+
+  return !state || state.last_course_slug !== courseSlug || state.last_lesson_slug !== lessonSlug;
+}
+
+function syncOpenedLessonState(
+  authKey: string,
+  courseSlug: string,
+  lessonSlug: string,
+  progress: ProgressOverview | null,
+) {
+  if (!shouldSyncOpenedLessonState(progress, courseSlug, lessonSlug)) {
+    return Promise.resolve();
+  }
+
   const key = `${authKey}:${courseSlug}:${lessonSlug}`;
   const existingRequest = openedLessonSyncRequests.get(key);
 
@@ -295,12 +313,6 @@ function syncOpenedLessonProgress(authKey: string, courseSlug: string, lessonSlu
       last_lesson_slug: lessonSlug,
     });
     setCachedCourseStudyState(authKey, state);
-
-    const progress = await upsertLessonProgress({
-      course_slug: courseSlug,
-      lesson_slug: lessonSlug,
-    });
-    setCachedOpenedLessonProgress(authKey, progress);
   })();
 
   openedLessonSyncRequests.set(key, request);
@@ -393,37 +405,48 @@ export function CoursePage({ slug }: { slug: string }) {
       setIsProgressChecking(true);
     }
 
-    async function loadCourseProgress() {
-      if (cachedProgress) return;
+    async function loadAndSyncCourseProgress() {
+      let progress = cachedProgress;
 
-      try {
-        const progress = await getCachedCourseProgress(authKey);
+      if (!progress) {
+        try {
+          progress = await getCachedCourseProgress(authKey);
 
-        if (cancelled) return;
+          if (cancelled) return;
 
-        applyCourseProgress(progress);
-      } catch {
-        if (!cancelled) {
-          setLessonProgressState(null);
-          setProgressMessage("Прогресс временно недоступен.");
+          applyCourseProgress(progress);
+        } catch {
+          if (!cancelled) {
+            setLessonProgressState(null);
+            setProgressMessage("Прогресс временно недоступен.");
+          }
+          return;
+        } finally {
+          if (!cancelled) {
+            setIsProgressChecking(false);
+          }
         }
-      } finally {
+      }
+
+      if (cancelled) return;
+
+      void syncOpenedLessonState(
+        authKey,
+        currentSection.courseId,
+        currentSection.slug,
+        progress,
+      ).catch(() => {
         if (!cancelled) {
-          setIsProgressChecking(false);
+          setProgressMessage("Прогресс временно не синхронизирован.");
         }
+      });
+
+      if (cachedProgress) {
+        setIsProgressChecking(false);
       }
     }
 
-    void loadCourseProgress();
-    void syncOpenedLessonProgress(
-      authKey,
-      currentSection.courseId,
-      currentSection.slug,
-    ).catch(() => {
-      if (!cancelled) {
-        setProgressMessage("Прогресс временно не синхронизирован.");
-      }
-    });
+    void loadAndSyncCourseProgress();
 
     return () => {
       cancelled = true;

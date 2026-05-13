@@ -165,22 +165,12 @@
   padding: 18px;
 }
 
-.task-theory-note,
 .home-status {
   border-color: rgba(214, 212, 202, 0.16);
   background: var(--surface-2);
-}
-
-.task-theory-note {
-  display: grid;
-  gap: 6px;
-}
-
-.home-status {
   padding: 14px 16px;
 }
 
-.task-theory-note p,
 .home-status p {
   margin: 0;
   color: var(--muted);

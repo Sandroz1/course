@@ -170,8 +170,9 @@ export function CommonErrorsPage() {
       </div>
 
       {filteredErrors.length === 0 && (
-        <section className="panel">
-          <p>Ничего не найдено. Попробуй другое слово из сообщения компилятора.</p>
+        <section className="panel empty-state">
+          <h2>Ничего не найдено</h2>
+          <p>Попробуй другое слово из сообщения компилятора.</p>
         </section>
       )}
     </article>

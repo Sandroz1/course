@@ -58,7 +58,7 @@ export function RegisterPage() {
   return (
     <AuthLayout
       title="Регистрация"
-      description="Аккаунт для прогресса."
+      description="Аккаунт для прогресса и AI."
       footer={
         <>
           Уже есть аккаунт? <a href={toPath("/login")}>Войти</a>

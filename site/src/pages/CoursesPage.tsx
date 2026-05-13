@@ -9,8 +9,8 @@ export function CoursesPage() {
     <article className="reading-page compact-page route-page">
       <header className="page-header">
         <p className="eyebrow">Курсы</p>
-        <h1>Выбор курса</h1>
-        <p className="lead">Доступен курс ООП C++. База C++ появится позже.</p>
+        <h1>Курсы</h1>
+        <p className="lead">Выбери доступный курс или посмотри, что готовится.</p>
       </header>
 
       <div className="course-catalog">
@@ -30,8 +30,8 @@ export function CoursesPage() {
                 <h2>{course.title}</h2>
                 <p>{course.description}</p>
               </div>
-              <a className={isAvailable ? "button button--primary" : "button"} href={toPath(course.path)}>
-                {isAvailable ? "Открыть" : "План"}
+              <a className={isAvailable ? "button button--primary" : "button button--ghost"} href={toPath(course.path)}>
+                {isAvailable ? "Открыть курс" : "Посмотреть план"}
               </a>
             </article>
           );

@@ -63,6 +63,19 @@ function mergeLessonProgress(
   return nextLessons;
 }
 
+function mergeTaskProgress(tasks: TaskProgress[], nextTask: TaskProgress) {
+  const taskIndex = tasks.findIndex((task) => task.task_id === nextTask.task_id);
+
+  if (taskIndex === -1) {
+    return [...tasks, nextTask];
+  }
+
+  const nextTasks = [...tasks];
+  nextTasks[taskIndex] = nextTask;
+
+  return nextTasks;
+}
+
 export function getProgress() {
   return apiRequest<ProgressOverview>("/api/progress/");
 }
@@ -123,10 +136,10 @@ export function setCachedLessonProgress(authKey: string, lessonProgress: LessonP
   }));
 }
 
-export function setCachedOpenedLessonProgress(authKey: string, lessonProgress: LessonProgress) {
+export function setCachedTaskProgress(authKey: string, taskProgress: TaskProgress) {
   updateCachedCourseProgress(authKey, (progress) => ({
     ...progress,
-    lessons: mergeLessonProgress(progress.lessons, lessonProgress, true),
+    tasks: mergeTaskProgress(progress.tasks, taskProgress),
   }));
 }
 

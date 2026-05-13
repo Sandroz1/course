@@ -2,13 +2,19 @@
 
 @media (max-width: 900px) {
   .quick-start,
+  .quick-links--cards,
   .flow-steps,
   .filters-panel,
   .course-catalog,
   .course-progress,
   .base-course-card,
+  .guide-list,
   .lesson-nav {
     grid-template-columns: 1fr;
+  }
+
+  .filters-summary {
+    justify-content: flex-start;
   }
 
   .lesson-toc div {
@@ -17,7 +23,6 @@
 }
 
 @media (max-width: 560px) {
-  .home-hero h1,
   .reading-page h1 {
     max-width: 100%;
     overflow-wrap: anywhere;

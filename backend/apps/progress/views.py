@@ -90,9 +90,17 @@ class StudyStateView(APIView):
         state, _created = UserStudyState.objects.get_or_create(user=request.user)
         serializer = UserStudyStateSerializer(state, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
-        serializer.save()
+        changed_fields = []
 
-        return Response(serializer.data)
+        for field, value in serializer.validated_data.items():
+            if getattr(state, field) != value:
+                setattr(state, field, value)
+                changed_fields.append(field)
+
+        if changed_fields:
+            state.save(update_fields=[*changed_fields, "updated_at"])
+
+        return Response(UserStudyStateSerializer(state).data)
 
 
 class LessonProgressView(APIView):
@@ -123,11 +131,21 @@ class TaskProgressView(APIView):
         serializer.is_valid(raise_exception=True)
 
         data = serializer.validated_data
+
+        if "status" not in data:
+            progress, _created = TaskProgress.objects.get_or_create(
+                user=request.user,
+                task_id=data["task_id"],
+                defaults={"status": TaskProgress.Status.NOT_STARTED},
+            )
+
+            return Response(TaskProgressSerializer(progress).data)
+
         progress, _created = TaskProgress.objects.update_or_create(
             user=request.user,
             task_id=data["task_id"],
             defaults={
-                "status": data.get("status", TaskProgress.Status.IN_PROGRESS),
+                "status": data["status"],
             },
         )
 

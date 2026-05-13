@@ -1,13 +1,16 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { TaskListPage } from "../components/TaskListPage/TaskListPage";
+import { useAuth } from "../context/AuthContext";
 import { courseSections, isCourseSectionReady } from "../data/courseSections";
 import { courses, type CourseId } from "../data/courses";
 import { getStatusLabel } from "../data/status";
 import { tasks, type TaskLevel } from "../data/tasks";
+import { getCachedCourseProgress, readCachedCourseProgress } from "../lib/progressApi";
+import type { ProgressOverview, TaskProgressStatus } from "../types/api";
 
 type LevelFilter = "all" | TaskLevel;
 type CourseFilter = "all" | CourseId;
-type TaskStatusFilter = "all" | "available" | "needs-theory";
+type TaskStatusFilter = "all" | "available" | "in_progress" | "solved" | "needs-theory";
 
 const levelLabels: Record<LevelFilter, string> = {
   all: "все",
@@ -19,24 +22,89 @@ const levelLabels: Record<LevelFilter, string> = {
 const statusLabels: Record<TaskStatusFilter, string> = {
   all: "любой статус",
   available: getStatusLabel("available"),
+  in_progress: "В работе",
+  solved: "Пройдено",
   "needs-theory": getStatusLabel("needs-theory"),
 };
 
+function createTaskProgressMap(progress: ProgressOverview | null) {
+  const taskProgressById = new Map<string, TaskProgressStatus>();
+
+  progress?.tasks.forEach((taskProgress) => {
+    taskProgressById.set(taskProgress.task_id, taskProgress.status);
+  });
+
+  return taskProgressById;
+}
+
+function getTaskFilterStatus(
+  task: (typeof tasks)[number],
+  taskProgressById: Map<string, TaskProgressStatus>,
+): TaskStatusFilter {
+  const progressStatus = taskProgressById.get(task.id);
+
+  if (progressStatus === "solved") return "solved";
+  if (progressStatus === "in_progress") return "in_progress";
+
+  const theory = courseSections.find((section) => section.slug === task.theorySlug);
+  const hasClosedTheory =
+    task.status === "needs-theory" || (theory ? !isCourseSectionReady(theory) : false);
+
+  return hasClosedTheory ? "needs-theory" : "available";
+}
+
 export function TasksIndexPage() {
+  const { accessToken, isAuthenticated } = useAuth();
+  const authKey = accessToken ?? "";
   const [query, setQuery] = useState("");
   const [courseFilter, setCourseFilter] = useState<CourseFilter>("all");
   const [statusFilter, setStatusFilter] = useState<TaskStatusFilter>("all");
   const [levelFilter, setLevelFilter] = useState<LevelFilter>("all");
   const [sectionFilter, setSectionFilter] = useState("all");
+  const [taskProgressById, setTaskProgressById] = useState<Map<string, TaskProgressStatus>>(
+    () => new Map(),
+  );
 
   const sections = useMemo(() => Array.from(new Set(tasks.map((task) => task.section))), []);
+
+  useEffect(() => {
+    if (!isAuthenticated || !authKey) {
+      setTaskProgressById(new Map());
+      return;
+    }
+
+    let cancelled = false;
+    const cachedProgress = readCachedCourseProgress(authKey);
+
+    if (cachedProgress) {
+      setTaskProgressById(createTaskProgressMap(cachedProgress));
+      return;
+    }
+
+    getCachedCourseProgress(authKey)
+      .then((progress) => {
+        if (!cancelled) {
+          setTaskProgressById(createTaskProgressMap(progress));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setTaskProgressById(new Map());
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authKey, isAuthenticated]);
 
   const filteredTasks = useMemo(() => {
     const search = query.trim().toLowerCase();
 
     return tasks.filter((task) => {
       const courseOk = courseFilter === "all" || task.courseId === courseFilter;
-      const statusOk = statusFilter === "all" || task.status === statusFilter;
+      const statusOk =
+        statusFilter === "all" || getTaskFilterStatus(task, taskProgressById) === statusFilter;
       const levelOk = levelFilter === "all" || task.level === levelFilter;
       const sectionOk = sectionFilter === "all" || task.section === sectionFilter;
       const courseTitle = courses.find((course) => course.id === task.courseId)?.title ?? "";
@@ -53,20 +121,35 @@ export function TasksIndexPage() {
 
       return courseOk && statusOk && levelOk && sectionOk && searchOk;
     });
-  }, [courseFilter, levelFilter, query, sectionFilter, statusFilter]);
+  }, [courseFilter, levelFilter, query, sectionFilter, statusFilter, taskProgressById]);
 
   const visibleSections = Array.from(new Set(filteredTasks.map((task) => task.section)));
+  const hasActiveFilters = Boolean(
+    query.trim() ||
+      courseFilter !== "all" ||
+      statusFilter !== "all" ||
+      levelFilter !== "all" ||
+      sectionFilter !== "all",
+  );
   const closedTheoryTaskCount = filteredTasks.filter((task) => {
     const theory = courseSections.find((section) => section.slug === task.theorySlug);
     return task.status === "needs-theory" || (theory ? !isCourseSectionReady(theory) : false);
   }).length;
+
+  function resetFilters() {
+    setQuery("");
+    setCourseFilter("all");
+    setStatusFilter("all");
+    setLevelFilter("all");
+    setSectionFilter("all");
+  }
 
   return (
     <article className="reading-page tasks-page">
       <header className="page-header">
         <p className="eyebrow">Практика</p>
         <h1>Задачи</h1>
-        <p className="lead">Фильтр и список задач. Закрытые темы отмечены отдельно.</p>
+        <p className="lead">Фильтруй задачи по курсу, теме и сложности.</p>
       </header>
 
       <section className="panel filters-panel filters-panel--tasks">
@@ -126,18 +209,32 @@ export function TasksIndexPage() {
             ))}
           </select>
         </label>
+        <div className="filters-summary">
+          <span>{filteredTasks.length} найдено</span>
+          {hasActiveFilters && (
+            <button className="button button--small button--ghost" type="button" onClick={resetFilters}>
+              Сбросить
+            </button>
+          )}
+        </div>
       </section>
 
       {closedTheoryTaskCount > 0 && (
-        <section className="panel task-theory-note">
-          <strong>Есть задачи с закрытой теорией</strong>
-          <p>Они отмечены статусом {getStatusLabel("needs-theory")}.</p>
+        <section className="task-theory-note">
+          <strong>Часть задач ждёт теорию.</strong>
+          <span>{getStatusLabel("needs-theory")}: {closedTheoryTaskCount}</span>
         </section>
       )}
 
       {visibleSections.length === 0 && (
-        <section className="panel">
-          <p>Задачи не найдены. Измени фильтры или поисковый запрос.</p>
+        <section className="panel empty-state">
+          <h2>Задачи не найдены</h2>
+          <p>Измени фильтры или поисковый запрос.</p>
+          {hasActiveFilters && (
+            <button className="button button--small" type="button" onClick={resetFilters}>
+              Сбросить фильтры
+            </button>
+          )}
         </section>
       )}
 
@@ -149,7 +246,11 @@ export function TasksIndexPage() {
               <h2>{section}</h2>
               <span>{count} задач</span>
             </div>
-            <TaskListPage section={section} sourceTasks={filteredTasks} />
+            <TaskListPage
+              section={section}
+              sourceTasks={filteredTasks}
+              taskProgressById={taskProgressById}
+            />
           </section>
         );
       })}
