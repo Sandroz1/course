@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Layout } from "../components/Layout/Layout";
+import { AppLayout } from "../components/layout/AppLayout";
 import { currentPath } from "../utils/slug";
 import { renderRoute } from "./router";
 
@@ -44,5 +44,5 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  return <Layout>{renderRoute(path)}</Layout>;
+  return <AppLayout>{renderRoute(path)}</AppLayout>;
 }

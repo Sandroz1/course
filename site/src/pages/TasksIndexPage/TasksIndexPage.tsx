@@ -4,9 +4,12 @@ import { courseSections, isCourseSectionReady } from "../../data/courseSections"
 import { courses, type CourseId } from "../../data/courses";
 import { getStatusLabel } from "../../data/status";
 import { tasks, type TaskLevel } from "../../data/tasks";
+import { getTaskProgressById } from "../../features/course-progress/progressSelectors";
 import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
-import type { ProgressOverview, TaskProgressStatus } from "../../types/api";
-import { TaskListPage } from "./components/TaskListPage";
+import { classNames } from "../../shared/lib/classNames";
+import type { TaskProgressStatus } from "../../types/api";
+import { TaskCardGrid } from "./components/TaskCardGrid";
+import styles from "./TasksIndexPage.module.scss";
 
 type LevelFilter = "all" | TaskLevel;
 type CourseFilter = "all" | CourseId;
@@ -36,16 +39,6 @@ function taskCountLabel(count: number) {
   if (lastDigit >= 2 && lastDigit <= 4) return `${count} задачи`;
 
   return `${count} задач`;
-}
-
-function createTaskProgressMap(progress: ProgressOverview | null) {
-  const taskProgressById = new Map<string, TaskProgressStatus>();
-
-  progress?.tasks.forEach((taskProgress) => {
-    taskProgressById.set(taskProgress.task_id, taskProgress.status);
-  });
-
-  return taskProgressById;
 }
 
 function getTaskFilterStatus(
@@ -88,14 +81,14 @@ export function TasksIndexPage() {
     const cachedProgress = readCachedCourseProgress(authKey);
 
     if (cachedProgress) {
-      setTaskProgressById(createTaskProgressMap(cachedProgress));
+      setTaskProgressById(getTaskProgressById(cachedProgress));
       return;
     }
 
     getCachedCourseProgress(authKey)
       .then((progress) => {
         if (!cancelled) {
-          setTaskProgressById(createTaskProgressMap(progress));
+          setTaskProgressById(getTaskProgressById(progress));
         }
       })
       .catch(() => {
@@ -163,8 +156,8 @@ export function TasksIndexPage() {
         <p className="lead">Фильтруй задачи по курсу, теме и сложности.</p>
       </header>
 
-      <section className="panel filters-panel filters-panel--tasks">
-        <label className="field">
+      <section className={classNames("panel", styles.filters)}>
+        <label className={styles.field}>
           Поиск
           <input
             value={query}
@@ -172,7 +165,7 @@ export function TasksIndexPage() {
             placeholder="Название, тема, курс или файл"
           />
         </label>
-        <label className="field">
+        <label className={styles.field}>
           Курс
           <select value={courseFilter} onChange={(event) => setCourseFilter(event.target.value as CourseFilter)}>
             <option value="all">все курсы</option>
@@ -183,7 +176,7 @@ export function TasksIndexPage() {
             ))}
           </select>
         </label>
-        <label className="field">
+        <label className={styles.field}>
           Статус
           <select
             value={statusFilter}
@@ -196,7 +189,7 @@ export function TasksIndexPage() {
             ))}
           </select>
         </label>
-        <label className="field">
+        <label className={styles.field}>
           Раздел
           <select value={sectionFilter} onChange={(event) => setSectionFilter(event.target.value)}>
             <option value="all">все разделы</option>
@@ -207,7 +200,7 @@ export function TasksIndexPage() {
             ))}
           </select>
         </label>
-        <label className="field">
+        <label className={styles.field}>
           Сложность
           <select
             value={levelFilter}
@@ -220,11 +213,11 @@ export function TasksIndexPage() {
             ))}
           </select>
         </label>
-        <div className="filters-summary" aria-live="polite">
+        <div className={styles.summary} aria-live="polite">
           <strong>{taskCountLabel(filteredTasks.length)}</strong>
           <span>найдено</span>
           <button
-            className="button button--small button--ghost filters-summary__reset"
+            className={classNames("button", "button--small", "button--ghost", styles.reset)}
             type="button"
             onClick={resetFilters}
             disabled={!hasActiveFilters}
@@ -237,14 +230,14 @@ export function TasksIndexPage() {
       </section>
 
       {closedTheoryTaskCount > 0 && (
-        <section className="task-theory-note">
+        <section className={styles.theoryNote}>
           <strong>Часть задач ждёт теорию.</strong>
           <span>{getStatusLabel("needs-theory")}: {closedTheoryTaskCount}</span>
         </section>
       )}
 
       {visibleSections.length === 0 && (
-        <section className="panel empty-state">
+        <section className={classNames("panel", styles.emptyState)}>
           <h2>Задачи не найдены</h2>
           <p>Измени фильтры или поисковый запрос.</p>
           {hasActiveFilters && (
@@ -258,12 +251,12 @@ export function TasksIndexPage() {
       {visibleSections.map((section) => {
         const count = filteredTasks.filter((task) => task.section === section).length;
         return (
-          <section className="task-section" key={section}>
-            <div className="section-heading">
+          <section className={styles.taskSection} key={section}>
+            <div className={styles.sectionHeading}>
               <h2>{section}</h2>
               <span>{taskCountLabel(count)}</span>
             </div>
-            <TaskListPage
+            <TaskCardGrid
               section={section}
               sourceTasks={filteredTasks}
               taskProgressById={taskProgressById}

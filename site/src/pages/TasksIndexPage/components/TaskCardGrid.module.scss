@@ -1,0 +1,13 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 18.75rem), 1fr));
+  grid-auto-rows: 1fr;
+  justify-content: start;
+  gap: 0.625rem;
+}
+
+@media (max-width: 35rem) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,25 +1,25 @@
 .lessonHeader {
   display: grid;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .headerMeta {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
 }
 
 .readingNote {
   display: grid;
-  gap: 5px;
+  gap: 0.3125rem;
   border: 1px solid var(--line);
   border-left: 2px solid var(--border-strong);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background: color-mix(in srgb, var(--surface-2) 72%, transparent);
-  padding: 12px 14px;
+  padding: 0.75rem 0.875rem;
 }
 
 .readingNote strong {
@@ -35,75 +35,75 @@
   display: flex;
   align-items: center;
   flex-wrap: wrap;
-  gap: 10px;
+  gap: 0.625rem;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background: var(--surface-2);
-  padding: 12px 14px;
+  padding: 0.75rem 0.875rem;
 }
 
 .progressPanel span {
   color: var(--muted);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.45;
 }
 
 .progressPanel :global(.button) {
   justify-content: center;
-  min-width: 172px;
+  min-width: 10.75rem;
 }
 
 .sectionPlaceholder {
   display: grid;
-  gap: 14px;
-  width: min(100%, 560px);
-  min-height: 250px;
+  gap: 0.875rem;
+  width: min(100%, 35rem);
+  min-height: 15.625rem;
   align-content: center;
   justify-self: center;
 }
 
 .sectionPlaceholder h1 {
   margin: 0;
-  font-size: clamp(30px, 4vw, 42px);
+  font-size: clamp(1.875rem, 4vw, 2.625rem);
 }
 
 .sectionPlaceholder p:not(:global(.eyebrow)) {
-  max-width: 460px;
+  max-width: 28.75rem;
   margin: 0;
   color: var(--soft);
   line-height: 1.58;
 }
 
 .sectionPlaceholder :global(.actions) {
-  margin-top: 6px;
+  margin-top: 0.375rem;
 }
 
 .sectionPlaceholder :global(.button) {
-  min-width: 150px;
+  min-width: 9.375rem;
 }
 
 .toc {
   display: grid;
-  gap: 9px;
+  gap: 0.5625rem;
   border: 1px solid var(--line);
   border-left: 0;
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background: var(--surface);
-  padding: 12px 14px;
+  padding: 0.75rem 0.875rem;
 }
 
 .toc strong {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 0.5rem;
   color: var(--muted);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 700;
 }
 
 .toc strong::before {
-  width: 5px;
-  height: 5px;
+  width: 0.3125rem;
+  height: 0.3125rem;
   border-radius: 999px;
   background: var(--border-strong);
   content: "";
@@ -112,15 +112,15 @@
 .toc div {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px 8px;
+  gap: 0.375rem 0.5rem;
 }
 
 .toc a {
   border: 1px solid transparent;
-  border-radius: 6px;
+  border-radius: 0.375rem;
   color: var(--muted);
-  font-size: 13px;
-  padding: 3px 7px;
+  font-size: 0.8125rem;
+  padding: 0.1875rem 0.4375rem;
 }
 
 .toc a:hover {
@@ -129,108 +129,22 @@
   color: var(--text);
 }
 
-.content {
-  max-width: 900px;
-  border: 0;
-  background: transparent;
-  padding: 2px 0 0;
-}
-
-.content p {
-  color: var(--soft);
-  margin: 12px 0;
-}
-
-.content ul,
-.content ol {
-  margin: 12px 0 16px;
-  padding-left: 22px;
-}
-
-.content li::marker {
-  color: var(--muted);
-  font-weight: 600;
-}
-
-.content li {
-  padding-left: 2px;
-}
-
-.content code {
-  border: 1px solid var(--course-inline-code-border);
-  border-radius: 4px;
-  background: var(--course-inline-code-bg);
-  color: var(--course-inline-code-text);
-  font-size: 0.92em;
-  font-weight: 500;
-  padding: 0.01em 0.24em;
-}
-
-.content :global(.shiki code),
-.content pre code {
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  color: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  padding: 0;
-}
-
-.content table {
-  width: 100%;
-  border-collapse: separate;
-  border-spacing: 0;
-  margin: 16px 0 20px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  background: var(--surface);
-}
-
-.content blockquote {
-  margin: 16px 0;
-  border-left: 2px solid var(--border-strong);
-  color: var(--soft);
-  padding: 2px 0 2px 14px;
-}
-
-.content th,
-.content td {
-  border-bottom: 1px solid var(--line);
-  padding: 12px 14px;
-  text-align: left;
-}
-
-.content th {
-  background: var(--surface-2);
-  color: var(--text);
-}
-
-.content td {
-  color: var(--soft);
-}
-
-.content tr:last-child td {
-  border-bottom: 0;
-}
-
 .nav {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 10px;
+  gap: 0.625rem;
   border-top: 1px solid var(--line);
-  padding-top: 16px;
+  padding-top: 1rem;
 }
 
 .navLink {
   display: grid;
-  gap: 5px;
-  min-height: 72px;
+  gap: 0.3125rem;
+  min-height: 4.5rem;
   border: 1px solid var(--line);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background: var(--surface);
-  padding: 12px;
+  padding: 0.75rem;
 }
 
 .navLink:hover {
@@ -245,7 +159,7 @@
 
 .navLabel {
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
 }
@@ -255,47 +169,25 @@
   line-height: 1.35;
 }
 
-.heading {
-  position: relative;
-  border-top: 1px solid var(--line);
-  scroll-margin-top: 92px;
-  padding: 26px 0 0;
-  color: var(--text);
-}
-
-.heading:first-child {
-  border-top: 0;
-  padding-top: 0;
-}
-
-.callout {
-  border-left: 2px solid var(--border-strong);
-  border-radius: 7px;
-  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
-  color: var(--soft);
-  margin: 14px 0;
-  padding: 10px 13px;
-}
-
 .relatedTasks {
   display: grid;
-  gap: 12px;
+  gap: 0.75rem;
 }
 
 .relatedTaskList {
   display: grid;
-  gap: 6px;
+  gap: 0.375rem;
 }
 
 .relatedTaskLink {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 0.75rem;
   border: 1px solid rgba(214, 212, 202, 0.12);
-  border-radius: 7px;
+  border-radius: 0.4375rem;
   background: var(--surface);
-  padding: 10px 12px;
+  padding: 0.625rem 0.75rem;
 }
 
 .relatedTaskLink:hover {
@@ -305,11 +197,11 @@
 
 .relatedTaskLink span {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   white-space: nowrap;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 56.25rem) {
   .toc div {
     display: grid;
   }
@@ -319,7 +211,7 @@
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 35rem) {
   .relatedTaskLink {
     align-items: flex-start;
     flex-direction: column;

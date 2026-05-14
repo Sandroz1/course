@@ -1,0 +1,229 @@
+.root {
+  position: relative;
+  flex: 0 0 auto;
+}
+
+.guestActions {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex: 0 0 auto;
+}
+
+.loginLink,
+.registerLink,
+.trigger {
+  min-height: 2.25rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4375rem;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 650;
+  line-height: 1;
+}
+
+.loginLink,
+.registerLink,
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  padding: 0.4375rem 0.625rem;
+  white-space: nowrap;
+}
+
+.loginLink {
+  border-color: transparent;
+  background: transparent;
+  color: var(--muted);
+}
+
+.trigger {
+  background: var(--surface-2);
+}
+
+.registerLink {
+  background: transparent;
+  color: var(--text);
+}
+
+.trigger {
+  gap: 0.4375rem;
+  cursor: pointer;
+  padding: 0.375rem 0.5625rem 0.375rem 0.4375rem;
+}
+
+.trigger[aria-expanded="true"] {
+  border-color: var(--accent);
+  background: var(--surface);
+}
+
+.trigger:hover,
+.loginLink:hover,
+.registerLink:hover,
+.trigger:focus-visible,
+.loginLink:focus-visible,
+.registerLink:focus-visible {
+  border-color: var(--accent);
+}
+
+.registerLink:hover,
+.registerLink:focus-visible {
+  background: var(--surface-3);
+}
+
+.username {
+  max-width: 6.5rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.avatar,
+.summaryAvatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 999px;
+}
+
+.avatar {
+  width: 1.5rem;
+  height: 1.5rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+}
+
+.chevron {
+  color: var(--muted);
+  font-size: 0.6875rem;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  z-index: 20;
+  display: grid;
+  min-width: 11.875rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  box-shadow: var(--shadow-sm);
+  padding: 0.375rem;
+}
+
+.userSummary {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.375rem 0.4375rem 0.4375rem;
+}
+
+.summaryAvatar {
+  width: 1.75rem;
+  height: 1.75rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 850;
+}
+
+.userSummary strong {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.userSummary strong {
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 750;
+}
+
+.divider {
+  height: 1px;
+  margin: 0.125rem 0.1875rem 0.3125rem;
+  background: var(--line);
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  min-height: 2.125rem;
+  border: 0;
+  border-radius: 0.4375rem;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.875rem;
+  font-weight: 650;
+  line-height: 1;
+  text-align: left;
+  padding: 0.4375rem 0.5625rem;
+}
+
+.menuItem + .menuItem {
+  margin-top: 0.125rem;
+}
+
+.menuItem:hover,
+.menuItem:focus-visible {
+  background: var(--surface-2);
+  outline: none;
+}
+
+.logoutItem {
+  color: var(--text);
+}
+
+.logoutItem:hover,
+.logoutItem:focus-visible {
+  background: rgba(232, 139, 131, 0.1);
+  color: var(--danger);
+}
+
+.loading {
+  min-height: 2.25rem;
+  display: inline-flex;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 56.25rem) {
+  .root,
+  .guestActions {
+    width: auto;
+  }
+
+  .guestActions {
+    justify-content: flex-start;
+  }
+
+  .menu {
+    right: auto;
+    left: 0;
+    max-width: calc(100vw - 2rem);
+  }
+}
+
+@media (max-width: 35rem) {
+  .username {
+    display: none;
+  }
+
+  .guestActions {
+    gap: 0.3125rem;
+  }
+}

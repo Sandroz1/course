@@ -1,0 +1,1 @@
+export { CommonErrorsPage } from "./CommonErrorsPage";

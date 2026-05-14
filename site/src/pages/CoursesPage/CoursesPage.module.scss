@@ -1,0 +1,71 @@
+.catalog {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.card {
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  align-content: stretch;
+  gap: 0.75rem;
+  min-height: 9.75rem;
+}
+
+.cardSoon {
+  background: var(--surface-2);
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.625rem;
+}
+
+.number {
+  display: grid;
+  width: 2.125rem;
+  height: 2.125rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 0.4375rem;
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.body {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+}
+
+.body h2,
+.body p {
+  margin: 0;
+}
+
+.body p {
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.card :global(.button) {
+  justify-self: start;
+}
+
+@media (max-width: 56.25rem) {
+  .catalog {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 35rem) {
+  .catalog {
+    gap: 0.625rem;
+  }
+
+  .card {
+    min-height: 0;
+  }
+}

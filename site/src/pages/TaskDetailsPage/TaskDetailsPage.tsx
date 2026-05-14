@@ -13,8 +13,8 @@ import {
 import { classNames } from "../../shared/lib/classNames";
 import type { TaskProgressStatus } from "../../types/api";
 import { toPath } from "../../utils/slug";
-import { CodeBlock } from "../../components/CodeBlock/CodeBlock";
-import { ProgressBadge } from "../../components/ProgressBadge/ProgressBadge";
+import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
+import { ProgressBadge } from "../../components/shared/ProgressBadge/ProgressBadge";
 import styles from "./TaskDetailsPage.module.scss";
 
 function fileCountLabel(count: number) {

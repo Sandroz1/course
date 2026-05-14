@@ -1,0 +1,114 @@
+.content {
+  max-width: 56.25rem;
+  border: 0;
+  background: transparent;
+  padding: 0.125rem 0 0;
+}
+
+.content p {
+  color: var(--soft);
+  margin: 0.75rem 0;
+}
+
+.content ul,
+.content ol {
+  margin: 0.75rem 0 1rem;
+  padding-left: 1.375rem;
+}
+
+.content li::marker {
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.content li {
+  padding-left: 0.125rem;
+}
+
+.content code {
+  border: 1px solid var(--course-inline-code-border);
+  border-radius: 0.25rem;
+  background: var(--course-inline-code-bg);
+  color: var(--course-inline-code-text);
+  font-size: 0.92em;
+  font-weight: 500;
+  padding: 0.01em 0.24em;
+}
+
+.content :global(.shiki code),
+.content pre code {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  padding: 0;
+}
+
+.content table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 1rem 0 1.25rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface);
+}
+
+.content blockquote {
+  margin: 1rem 0;
+  border-left: 2px solid var(--border-strong);
+  color: var(--soft);
+  padding: 0.125rem 0 0.125rem 0.875rem;
+}
+
+.content th,
+.content td {
+  border-bottom: 1px solid var(--line);
+  padding: 0.75rem 0.875rem;
+  text-align: left;
+}
+
+.content th {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.content td {
+  color: var(--soft);
+}
+
+.content tr:last-child td {
+  border-bottom: 0;
+}
+
+.heading {
+  position: relative;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 5.75rem;
+  padding: 1.625rem 0 0;
+  color: var(--text);
+}
+
+.heading:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.callout {
+  border-left: 2px solid var(--border-strong);
+  border-radius: 0.4375rem;
+  background: color-mix(in srgb, var(--surface-2) 60%, transparent);
+  color: var(--soft);
+  margin: 0.875rem 0;
+  padding: 0.625rem 0.8125rem;
+}
+
+@media (max-width: 35rem) {
+  .content table {
+    display: block;
+    overflow-x: auto;
+  }
+}

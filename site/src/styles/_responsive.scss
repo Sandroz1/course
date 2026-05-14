@@ -1,32 +1,10 @@
 /* Global responsive rules */
 
-@media (max-width: 900px) {
-  .quick-start,
-  .quick-links--cards,
-  .flow-steps,
-  .filters-panel,
-  .course-catalog,
-  .course-progress,
-  .base-course-card,
-  .guide-list,
-  .lesson-nav {
-    grid-template-columns: 1fr;
-  }
-
-  .filters-summary {
-    justify-content: flex-start;
-  }
-
-  .lesson-toc div {
-    display: grid;
-  }
-}
-
-@media (max-width: 560px) {
+@media (max-width: 35rem) {
   .reading-page h1 {
     max-width: 100%;
     overflow-wrap: anywhere;
-    font-size: 26px;
+    font-size: 1.625rem;
     line-height: 1.12;
   }
 
@@ -36,70 +14,12 @@
   }
 
   .actions,
-  .task-summary,
   .section-heading {
     align-items: stretch;
     flex-direction: column;
   }
 
-  .filters-summary {
-    align-items: stretch;
-    flex-direction: column;
-    white-space: normal;
-  }
-
-  .course-row {
-    grid-template-columns: 42px minmax(0, 1fr);
-    align-items: start;
-  }
-
-  .course-row__body,
-  .course-row__status,
-  .course-row__action {
-    grid-column: 2;
-  }
-
-  .course-row__status {
-    justify-content: flex-start;
-  }
-
-  .course-row__title {
-    overflow: visible;
-    text-overflow: clip;
-    white-space: normal;
-  }
-
-  .course-row__action {
-    width: fit-content;
-  }
-
   .button {
     width: 100%;
   }
-
-  .route-list {
-    grid-template-columns: 1fr;
-  }
-
-  .course-catalog {
-    gap: 10px;
-  }
-
-  .course-card {
-    min-height: 0;
-  }
-
-  .course-mini-card,
-  .related-task-link {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-
-  .lesson-nav__link--next {
-    justify-items: start;
-    text-align: left;
-  }
-
 }
-
-/* ===== AI Assistant: clean version ===== */

@@ -1,0 +1,164 @@
+.root {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: auto;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+  padding: 1rem;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  width: min(100%, 13.25rem);
+  min-height: 3rem;
+  margin-bottom: 0.875rem;
+}
+
+.brandLogo {
+  display: block;
+  width: 100%;
+  max-height: 2.8125rem;
+  object-fit: contain;
+  object-position: left center;
+}
+
+.nav,
+.chapters {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.chapters {
+  max-height: calc(100vh - 15.625rem);
+  overflow: auto;
+  padding-right: 0.25rem;
+}
+
+.link,
+.chapterLink {
+  border-radius: 0.4375rem;
+  color: var(--muted);
+  padding: 0.4375rem 0.5625rem;
+}
+
+.link:hover,
+.chapterLink:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.active {
+  background: var(--surface-2);
+  color: var(--text);
+  box-shadow: inset 2px 0 0 var(--accent);
+}
+
+.sectionTitle {
+  margin: 1.375rem 0 0.5rem;
+  color: var(--accent);
+  font-size: 0.75rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.chapterLink {
+  display: grid;
+  grid-template-columns: 1.625rem minmax(0, 1fr) auto;
+  gap: 0.375rem;
+  align-items: center;
+  font-size: 0.875rem;
+}
+
+.chapterNumber {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.chapterTitle {
+  min-width: 0;
+}
+
+.chapterStatus {
+  color: var(--muted);
+  font-size: 0.6875rem;
+}
+
+.chapterInProgress {
+  opacity: 0.66;
+}
+
+.chapterInProgress:hover {
+  opacity: 1;
+}
+
+@media (max-width: 56.25rem) {
+  .root {
+    position: static;
+    height: auto;
+    overflow: hidden;
+    max-width: 100vw;
+    min-width: 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+    padding: 0.75rem 0.875rem 0.625rem;
+  }
+
+  .brand {
+    width: min(100%, 11.5rem);
+    min-height: 2.375rem;
+    margin-bottom: 0.625rem;
+  }
+
+  .brandLogo {
+    max-height: 2.375rem;
+  }
+
+  .nav {
+    display: flex;
+    gap: 0.375rem;
+    overflow-x: auto;
+    padding-bottom: 0.125rem;
+    scrollbar-width: none;
+  }
+
+  .nav::-webkit-scrollbar,
+  .chapters::-webkit-scrollbar {
+    display: none;
+  }
+
+  .link {
+    flex: 0 0 auto;
+    padding: 0.4375rem 0.625rem;
+  }
+
+  .sectionTitle {
+    margin: 0.75rem 0 0.4375rem;
+  }
+
+  .chapters {
+    display: flex;
+    gap: 0.375rem;
+    max-height: none;
+    overflow-x: auto;
+    padding-right: 0;
+    scrollbar-width: none;
+  }
+
+  .chapterLink {
+    flex: 0 0 auto;
+    grid-template-columns: auto minmax(0, auto) auto;
+    max-width: 14.375rem;
+    border: 1px solid var(--line);
+    background: var(--surface);
+    padding: 0.4375rem 0.5625rem;
+  }
+
+  .chapterTitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

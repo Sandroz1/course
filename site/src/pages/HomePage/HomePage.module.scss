@@ -1,0 +1,85 @@
+.courseCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 0.85fr);
+  align-items: start;
+  gap: 0.75rem;
+}
+
+.courseCard h2 {
+  margin: 0.25rem 0 0.5rem;
+}
+
+.courseCard p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.courseMiniList {
+  display: grid;
+  gap: 0.375rem;
+}
+
+.courseMiniCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4375rem;
+  background: var(--surface-2);
+  padding: 0.5rem 0.625rem;
+}
+
+.courseMiniCard:hover {
+  border-color: var(--border-strong);
+}
+
+.quickLinks {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+.quickLinks a {
+  display: grid;
+  gap: 0.3125rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.75rem;
+}
+
+.quickLinks a:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-3);
+  color: var(--text);
+}
+
+.quickLinks strong {
+  color: var(--text);
+  font-size: 0.9375rem;
+}
+
+.quickLinks span {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 56.25rem) {
+  .courseCard,
+  .quickLinks {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 35rem) {
+  .courseMiniCard {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

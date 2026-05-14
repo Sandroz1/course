@@ -4,8 +4,8 @@ import { ApiError } from "../lib/api";
 import { classNames } from "../shared/lib/classNames";
 import { navigateTo } from "../utils/navigation";
 import { toPath } from "../utils/slug";
-import { AuthLayout } from "./auth/AuthLayout/AuthLayout";
-import styles from "./auth/AuthLayout/AuthLayout.module.scss";
+import { AuthLayout } from "../components/layout/AuthLayout/AuthLayout";
+import styles from "../components/layout/AuthLayout/AuthLayout.module.scss";
 
 type LoginFieldErrors = Partial<Record<"username" | "password", string[]>>;
 

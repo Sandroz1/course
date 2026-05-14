@@ -1,0 +1,141 @@
+.filters {
+  display: grid;
+  grid-template-columns:
+    minmax(13.125rem, 1.2fr)
+    minmax(7.25rem, 0.7fr)
+    minmax(7.875rem, 0.78fr)
+    minmax(7.875rem, 0.82fr)
+    minmax(6.75rem, 0.64fr)
+    minmax(12.75rem, 12.75rem);
+  align-items: end;
+  gap: 0.5rem;
+  padding: 0.625rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.3125rem;
+  min-width: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+.field input,
+.field select {
+  min-width: 0;
+  min-height: 2.375rem;
+  background: var(--surface-2);
+  padding: 0.5rem 0.625rem;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  align-self: end;
+  gap: 0.375rem;
+  min-width: 0;
+  min-height: 2.375rem;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  white-space: nowrap;
+}
+
+.summary strong {
+  min-width: 3.875rem;
+  color: var(--text);
+  font-size: 0.875rem;
+  text-align: right;
+}
+
+.summary :global(.button) {
+  margin-left: 0.125rem;
+}
+
+.reset:disabled {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.theoryNote {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.375rem 0.625rem;
+  border-left: 2px solid var(--warning);
+  color: var(--muted);
+  font-size: 0.875rem;
+  padding: 0.125rem 0 0.125rem 0.625rem;
+}
+
+.theoryNote strong {
+  color: var(--text);
+}
+
+.emptyState {
+  display: grid;
+  align-content: start;
+  gap: 0.5rem;
+}
+
+.emptyState h2,
+.emptyState p {
+  margin: 0;
+}
+
+.emptyState p {
+  color: var(--muted);
+}
+
+.taskSection {
+  display: grid;
+  gap: 0.625rem;
+  padding-top: 0.125rem;
+}
+
+.taskSection + .taskSection {
+  margin-top: 0.625rem;
+  border-top: 1px solid rgba(214, 212, 202, 0.1);
+  padding-top: 1.125rem;
+}
+
+.sectionHeading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.sectionHeading h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.25;
+}
+
+.sectionHeading span {
+  color: var(--muted);
+  font-size: 0.8125rem;
+}
+
+@media (max-width: 56.25rem) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+
+  .summary {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 35rem) {
+  .summary,
+  .sectionHeading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .summary {
+    white-space: normal;
+  }
+}
