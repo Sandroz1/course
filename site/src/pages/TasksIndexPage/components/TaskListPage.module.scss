@@ -1,15 +1,20 @@
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(278px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  grid-auto-rows: 1fr;
+  justify-content: start;
   gap: 10px;
 }
 
 .card {
   display: grid;
-  grid-template-rows: auto auto auto 1fr auto;
+  grid-template-rows: 66px 26px 20px 28px auto;
   align-content: stretch;
-  gap: 9px;
-  min-height: 184px;
+  gap: 8px;
+  justify-self: start;
+  width: 100%;
+  max-width: 340px;
+  min-height: 222px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
@@ -42,10 +47,15 @@
 }
 
 .card strong {
+  display: -webkit-box;
+  min-height: calc(1.3em * 2);
+  overflow: hidden;
   color: var(--text);
   font-size: 16px;
   line-height: 1.3;
   text-wrap: balance;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
 }
 
 .top {
@@ -62,15 +72,22 @@
 }
 
 .meta {
+  overflow: hidden;
   color: var(--muted);
   font-size: 13px;
   line-height: 1.35;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .theory {
+  display: block;
+  overflow: hidden;
   color: var(--soft);
   font-size: 13px;
   line-height: 1.4;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .statusRow {
@@ -78,6 +95,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
+  min-height: 26px;
 }
 
 .statusBadge {
@@ -120,14 +138,21 @@
 
 .topics {
   align-content: start;
+  flex-wrap: nowrap;
   gap: 4px;
-  min-height: 24px;
+  min-height: 28px;
+  max-height: 28px;
+  overflow: hidden;
 }
 
 .topics span {
+  max-width: 100%;
+  overflow: hidden;
   font-size: 12px;
   line-height: 1.2;
   padding: 3px 6px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fileCount {
@@ -142,13 +167,16 @@
   margin-top: auto;
   border-top: 1px solid rgba(214, 212, 202, 0.1);
   font-size: 13px;
+  min-height: 38px;
   padding-top: 10px;
 }
 
 .cta {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 28px;
+  min-width: 82px;
   border: 1px solid rgba(88, 199, 194, 0.34);
   border-radius: 999px;
   background: rgba(88, 199, 194, 0.08);
@@ -164,12 +192,22 @@
   color: var(--accent);
 }
 
-@media (max-width: 680px) {
+@media (max-width: 560px) {
   .grid {
     grid-template-columns: 1fr;
   }
 
   .card {
+    grid-template-rows: auto auto auto auto auto;
     min-height: 0;
+  }
+
+  .card strong {
+    min-height: 0;
+  }
+
+  .topics {
+    flex-wrap: wrap;
+    max-height: none;
   }
 }

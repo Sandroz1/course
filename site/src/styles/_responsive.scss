@@ -50,10 +50,26 @@
 
   .course-row {
     grid-template-columns: 42px minmax(0, 1fr);
+    align-items: start;
+  }
+
+  .course-row__body,
+  .course-row__status,
+  .course-row__action {
+    grid-column: 2;
+  }
+
+  .course-row__status {
+    justify-content: flex-start;
+  }
+
+  .course-row__title {
+    overflow: visible;
+    text-overflow: clip;
+    white-space: normal;
   }
 
   .course-row__action {
-    grid-column: 2;
     width: fit-content;
   }
 

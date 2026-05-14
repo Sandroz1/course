@@ -7,6 +7,7 @@ import styles from "./CodeBlock.module.scss";
 type CodeBlockProps = {
   code: string;
   language?: string;
+  compact?: boolean;
 };
 
 type SupportedLanguage =
@@ -142,7 +143,7 @@ function getLanguageLabel(language: string) {
   return languageLabels[language.toLowerCase()] ?? language.toUpperCase();
 }
 
-export function CodeBlock({ code, language = "cpp" }: CodeBlockProps) {
+export function CodeBlock({ code, language = "cpp", compact = false }: CodeBlockProps) {
   const [copied, setCopied] = useState(false);
   const [highlightedHtml, setHighlightedHtml] = useState("");
   const normalizedLanguage = useMemo(() => normalizeLanguage(language), [language]);
@@ -177,7 +178,7 @@ export function CodeBlock({ code, language = "cpp" }: CodeBlockProps) {
   }
 
   return (
-    <div className={styles.root}>
+    <div className={classNames(styles.root, compact && styles.compact)}>
       <div className={styles.bar}>
         <span className={styles.language}>{languageLabel}</span>
         <button className={styles.copyButton} type="button" onClick={copyCode}>

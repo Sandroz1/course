@@ -1,11 +1,11 @@
-import { courseSections, isCourseSectionReady } from "../../data/courseSections";
-import { getCourseById } from "../../data/courses";
-import { getStatusLabel } from "../../data/status";
-import { tasks } from "../../data/tasks";
-import { classNames } from "../../shared/lib/classNames";
-import type { TaskProgressStatus } from "../../types/api";
-import { toPath } from "../../utils/slug";
-import { ProgressBadge } from "../ProgressBadge/ProgressBadge";
+import { ProgressBadge } from "../../../components/ProgressBadge/ProgressBadge";
+import { courseSections, isCourseSectionReady } from "../../../data/courseSections";
+import { getCourseById } from "../../../data/courses";
+import { getStatusLabel } from "../../../data/status";
+import { tasks } from "../../../data/tasks";
+import { classNames } from "../../../shared/lib/classNames";
+import type { TaskProgressStatus } from "../../../types/api";
+import { toPath } from "../../../utils/slug";
 import styles from "./TaskListPage.module.scss";
 
 type TaskDisplayStatus = "available" | "needs-theory" | "in_progress" | "solved";

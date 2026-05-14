@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
-import { CoursePage } from "../components/CoursePage/CoursePage";
 import { useAuth } from "../context/AuthContext";
 import { BaseCppCoursePage } from "../pages/BaseCppCoursePage";
 import { CommonErrorsPage } from "../pages/CommonErrorsPage";
+import { CoursePage } from "../pages/CoursePage";
 import { CourseIndexPage } from "../pages/CourseIndexPage";
 import { CoursesPage } from "../pages/CoursesPage";
 import { GuidePage } from "../pages/GuidePage";
@@ -11,7 +11,6 @@ import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
 import { ProfilePage } from "../pages/ProfilePage";
 import { RegisterPage } from "../pages/RegisterPage";
-import { SelfCheckPage } from "../pages/SelfCheckPage";
 import { TaskDetailsPage } from "../pages/TaskDetailsPage";
 import { TasksIndexPage } from "../pages/TasksIndexPage";
 import { navigateTo } from "../utils/navigation";
@@ -46,6 +45,5 @@ export function renderRoute(path: string) {
   }
   if (path === "/guide") return <GuidePage />;
   if (path === "/common-errors") return <CommonErrorsPage />;
-  if (path === "/check") return <SelfCheckPage />;
   return <HomePage />;
 }

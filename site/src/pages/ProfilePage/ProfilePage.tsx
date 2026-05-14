@@ -1,16 +1,16 @@
 import { type FormEvent, useEffect, useState } from "react";
-import { useAuth } from "../context/AuthContext";
-import { ApiError } from "../lib/api";
+import { useAuth } from "../../context/AuthContext";
+import { ApiError } from "../../lib/api";
 import {
   AI_USAGE_UPDATED_EVENT,
   formatAiUsage,
   getLocalAiUsage,
-} from "../lib/aiUsage";
-import { changePassword, sendPhoneVerificationCode, verifyPhoneCode } from "../lib/authApi";
-import { getCachedCourseProgress, readCachedCourseProgress } from "../lib/progressApi";
-import { classNames } from "../shared/lib/classNames";
-import type { AiUsage, ProgressOverview } from "../types/api";
-import { navigateTo } from "../utils/navigation";
+} from "../../lib/aiUsage";
+import { changePassword, sendPhoneVerificationCode, verifyPhoneCode } from "../../lib/authApi";
+import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
+import { classNames } from "../../shared/lib/classNames";
+import type { AiUsage, ProgressOverview } from "../../types/api";
+import { navigateTo } from "../../utils/navigation";
 import styles from "./ProfilePage.module.scss";
 
 type ProfileFieldErrors = Partial<Record<"phone", string[]>>;

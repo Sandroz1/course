@@ -1,12 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
-import { TaskListPage } from "../components/TaskListPage/TaskListPage";
-import { useAuth } from "../context/AuthContext";
-import { courseSections, isCourseSectionReady } from "../data/courseSections";
-import { courses, type CourseId } from "../data/courses";
-import { getStatusLabel } from "../data/status";
-import { tasks, type TaskLevel } from "../data/tasks";
-import { getCachedCourseProgress, readCachedCourseProgress } from "../lib/progressApi";
-import type { ProgressOverview, TaskProgressStatus } from "../types/api";
+import { useAuth } from "../../context/AuthContext";
+import { courseSections, isCourseSectionReady } from "../../data/courseSections";
+import { courses, type CourseId } from "../../data/courses";
+import { getStatusLabel } from "../../data/status";
+import { tasks, type TaskLevel } from "../../data/tasks";
+import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
+import type { ProgressOverview, TaskProgressStatus } from "../../types/api";
+import { TaskListPage } from "./components/TaskListPage";
 
 type LevelFilter = "all" | TaskLevel;
 type CourseFilter = "all" | CourseId;
@@ -223,11 +223,16 @@ export function TasksIndexPage() {
         <div className="filters-summary" aria-live="polite">
           <strong>{taskCountLabel(filteredTasks.length)}</strong>
           <span>найдено</span>
-          {hasActiveFilters && (
-            <button className="button button--small button--ghost" type="button" onClick={resetFilters}>
-              Сбросить
-            </button>
-          )}
+          <button
+            className="button button--small button--ghost filters-summary__reset"
+            type="button"
+            onClick={resetFilters}
+            disabled={!hasActiveFilters}
+            aria-hidden={!hasActiveFilters}
+            tabIndex={hasActiveFilters ? undefined : -1}
+          >
+            Сбросить
+          </button>
         </div>
       </section>
 

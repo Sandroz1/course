@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Layout } from "../components/Layout/Layout";
 import { currentPath } from "../utils/slug";
-import { renderRoute } from "./routes";
+import { renderRoute } from "./router";
 
 export default function App() {
   const [path, setPath] = useState(currentPath());

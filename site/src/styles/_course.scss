@@ -237,11 +237,11 @@
 
 .course-row {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr) auto;
-  gap: 10px;
+  grid-template-columns: 42px minmax(0, 1fr) minmax(124px, auto) 76px;
+  gap: 12px;
   align-items: center;
-  min-height: 76px;
-  padding: 11px 12px;
+  min-height: 82px;
+  padding: 12px;
 }
 
 .course-row__number {
@@ -257,15 +257,18 @@
 
 .course-row__body {
   display: grid;
-  gap: 5px;
+  gap: 6px;
   min-width: 0;
 }
 
 .course-row__title {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+  display: block;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 16px;
+  line-height: 1.25;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .course-row__description {
@@ -278,7 +281,26 @@
   -webkit-line-clamp: 2;
 }
 
+.course-row__status {
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
+.course-row__status .status-badge {
+  display: inline-flex;
+  justify-content: center;
+  min-width: 88px;
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .course-row__action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 72px;
   border: 1px solid var(--border-strong);
   border-radius: 999px;
   color: var(--accent-strong);
@@ -309,7 +331,13 @@
 }
 
 .filters-panel--tasks {
-  grid-template-columns: minmax(220px, 1.4fr) repeat(4, minmax(116px, 0.85fr)) minmax(122px, auto);
+  grid-template-columns:
+    minmax(210px, 1.2fr)
+    minmax(116px, 0.7fr)
+    minmax(126px, 0.78fr)
+    minmax(126px, 0.82fr)
+    minmax(108px, 0.64fr)
+    minmax(204px, 204px);
 }
 
 .filters-panel--single {
@@ -320,6 +348,7 @@
 .field {
   display: grid;
   gap: 5px;
+  min-width: 0;
   color: var(--muted);
   font-size: 13px;
   line-height: 1.35;
@@ -327,6 +356,7 @@
 
 .filters-panel .field input,
 .filters-panel .field select {
+  min-width: 0;
   min-height: 38px;
   background: var(--surface-2);
   padding: 8px 10px;
@@ -345,6 +375,7 @@
   justify-content: flex-end;
   align-self: end;
   gap: 6px;
+  min-width: 0;
   min-height: 38px;
   color: var(--muted);
   font-size: 13px;
@@ -352,12 +383,19 @@
 }
 
 .filters-summary strong {
+  min-width: 62px;
   color: var(--text);
   font-size: 14px;
+  text-align: right;
 }
 
 .filters-summary .button {
   margin-left: 2px;
+}
+
+.filters-summary__reset:disabled {
+  visibility: hidden;
+  pointer-events: none;
 }
 
 .task-theory-note {

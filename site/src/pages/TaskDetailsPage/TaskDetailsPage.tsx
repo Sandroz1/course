@@ -13,9 +13,9 @@ import {
 import { classNames } from "../../shared/lib/classNames";
 import type { TaskProgressStatus } from "../../types/api";
 import { toPath } from "../../utils/slug";
-import { CodeBlock } from "../CodeBlock/CodeBlock";
-import { ProgressBadge } from "../ProgressBadge/ProgressBadge";
-import styles from "./TaskPage.module.scss";
+import { CodeBlock } from "../../components/CodeBlock/CodeBlock";
+import { ProgressBadge } from "../../components/ProgressBadge/ProgressBadge";
+import styles from "./TaskDetailsPage.module.scss";
 
 function fileCountLabel(count: number) {
   if (count === 1) return "1 файл";
@@ -23,7 +23,7 @@ function fileCountLabel(count: number) {
   return `${count} файлов`;
 }
 
-export function TaskPage({ taskId }: { taskId: string }) {
+export function TaskDetailsPage({ taskId }: { taskId: string }) {
   const task = tasks.find((item) => item.id === taskId);
   const { accessToken, isAuthenticated } = useAuth();
   const authKey = accessToken ?? "";

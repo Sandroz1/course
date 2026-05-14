@@ -38,6 +38,8 @@ function CourseSectionRow({
   const { slug, number, title, description, status } = section;
   const isReady = status === "available" || status === "ready";
   const meta = statusMeta[status];
+  const progressLabel = isProgressLoading ? "Проверяем" : isCompleted ? "Пройдено" : "Доступен";
+  const progressTone = isCompleted ? "success" : "muted";
 
   return (
     <a
@@ -46,21 +48,19 @@ function CourseSectionRow({
     >
       <span className="course-row__number">{number}</span>
       <span className="course-row__body">
-        <span className="course-row__title">
-          <strong>{title}</strong>
-          <span className={`status-badge status-badge--${isReady ? "success" : meta.tone}`}>
-            {isReady ? statusMeta.ready.label : meta.label}
-          </span>
-          {isReady && isProgressLoading && (
-            <span className="status-badge status-badge--muted">Проверяем</span>
-          )}
-          {isCompleted && <span className="status-badge status-badge--success">Пройдено</span>}
-        </span>
-        <span className="course-row__description">
+        <strong className="course-row__title">{title}</strong>
+        {/* <span className="course-row__description">
           {isReady
             ? description
             : "Тема пока закрыта, чтобы не показывать недоработанное объяснение."}
-        </span>
+        </span> */}
+      </span>
+      <span className="course-row__status">
+        {isReady ? (
+          <span className={`status-badge status-badge--${progressTone}`}>{progressLabel}</span>
+        ) : (
+          <span className={`status-badge status-badge--${meta.tone}`}>{meta.label}</span>
+        )}
       </span>
       <span className={isReady ? "course-row__action" : "course-row__action course-row__action--muted"}>
         {isReady ? "Открыть" : "Скоро"}

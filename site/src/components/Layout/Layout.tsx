@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { AccountMenu } from "../AccountMenu/AccountMenu";
-import { AiAssistant } from "../AiAssistant/AiAssistant";
+import { AiAssistant } from "../../features/ai-assistant";
 import { SearchBox } from "../SearchBox/SearchBox";
 import { Sidebar } from "../Sidebar/Sidebar";
 import { ThemeSwitcher } from "../ThemeSwitcher/ThemeSwitcher";

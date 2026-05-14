@@ -10,7 +10,6 @@ const mainLinks = [
   { href: "/tasks", label: "Задачи" },
   { href: "/guide", label: "Как учиться" },
   { href: "/common-errors", label: "Частые ошибки" },
-  { href: "/check", label: "Самопроверка" },
 ];
 
 export function Sidebar() {

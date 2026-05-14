@@ -44,7 +44,7 @@
 }
 
 .flowPanel span,
-.summaryPanel span {
+.summaryPanel > span {
   color: var(--accent);
   font-size: 12px;
   font-weight: 800;
@@ -71,12 +71,13 @@
 .stepCard {
   position: relative;
   display: grid;
-  gap: 16px;
-  min-height: 244px;
+  grid-template-rows: minmax(96px, auto) auto;
+  align-content: start;
+  gap: 12px;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface);
-  padding: 16px;
+  padding: 15px 16px 16px;
   overflow: hidden;
 }
 
@@ -96,27 +97,34 @@
 
 .stepHeader {
   display: grid;
-  grid-template-columns: 42px minmax(0, 1fr);
-  gap: 12px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
   align-items: start;
 }
 
 .stepNumber {
-  display: grid;
-  width: 36px;
-  height: 36px;
+  display: inline-grid;
+  width: 34px;
+  height: 28px;
   place-items: center;
   border: 1px solid rgba(88, 199, 194, 0.36);
-  border-radius: 9px;
+  border-radius: 999px;
   background: var(--accent-soft);
   color: var(--accent);
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 900;
+  line-height: 1;
+}
+
+.stepText {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
 }
 
 .stepHeader h2 {
-  margin: 0 0 6px;
-  font-size: 22px;
+  margin: 0;
+  font-size: 20px;
   line-height: 1.15;
 }
 
@@ -124,12 +132,12 @@
   margin: 0;
   color: var(--muted);
   font-size: 14px;
-  line-height: 1.5;
+  line-height: 1.45;
 }
 
 .actionList {
   display: grid;
-  gap: 9px;
+  gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
@@ -137,7 +145,7 @@
 
 .actionList li {
   display: grid;
-  grid-template-columns: 18px minmax(0, 1fr);
+  grid-template-columns: 16px minmax(0, 1fr);
   gap: 8px;
   align-items: start;
   margin: 0;
@@ -146,8 +154,8 @@
 
 .actionList li > span {
   position: relative;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   margin-top: 3px;
   border: 1px solid rgba(88, 199, 194, 0.28);
   border-radius: 999px;
@@ -157,8 +165,8 @@
 .actionList li > span::after {
   content: "";
   position: absolute;
-  top: 4px;
-  left: 6px;
+  top: 3px;
+  left: 5px;
   width: 4px;
   height: 7px;
   border-right: 2px solid var(--accent);
@@ -168,7 +176,7 @@
 
 .actionList p {
   margin: 0;
-  line-height: 1.55;
+  line-height: 1.48;
 }
 
 .actionList code {
@@ -182,7 +190,7 @@
 
 .summaryPanel {
   display: grid;
-  gap: 7px;
+  gap: 10px;
   border: 1px solid rgba(88, 199, 194, 0.22);
   border-left: 3px solid var(--accent);
   border-radius: 10px;
@@ -191,7 +199,8 @@
 }
 
 .summaryPanel h2,
-.summaryPanel p {
+.summaryPanel p,
+.summaryPanel h3 {
   margin: 0;
 }
 
@@ -206,6 +215,33 @@
   line-height: 1.55;
 }
 
+.tipGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.tipGrid article {
+  display: grid;
+  gap: 6px;
+  border: 1px solid rgba(214, 212, 202, 0.12);
+  border-radius: 8px;
+  background: rgba(214, 212, 202, 0.035);
+  padding: 12px;
+}
+
+.tipGrid h3 {
+  color: var(--text);
+  font-size: 15px;
+  line-height: 1.25;
+}
+
+.tipGrid p {
+  color: var(--soft);
+  font-size: 14px;
+  line-height: 1.45;
+}
+
 @media (max-width: 900px) {
   .hero,
   .steps {
@@ -214,6 +250,10 @@
 
   .flowPanel strong {
     max-width: none;
+  }
+
+  .tipGrid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
@@ -231,18 +271,22 @@
   }
 
   .stepCard {
+    grid-template-rows: auto auto;
     min-height: 0;
     padding: 14px;
   }
 
   .stepHeader {
-    grid-template-columns: 1fr;
-    gap: 10px;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 9px;
   }
 
   .stepNumber {
-    width: fit-content;
-    min-width: 36px;
-    height: 30px;
+    width: 32px;
+    height: 26px;
+  }
+
+  .tipGrid {
+    grid-template-columns: 1fr;
   }
 }

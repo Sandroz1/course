@@ -374,6 +374,17 @@ function getAiErrorMessage(error: unknown) {
     return error.message || "Не удалось получить ответ от AI.";
 }
 
+function focusTextareaAtEnd(textarea: HTMLTextAreaElement | null) {
+    if (!textarea || textarea.disabled) {
+        return;
+    }
+
+    textarea.focus({ preventScroll: true });
+
+    const caretPosition = textarea.value.length;
+    textarea.setSelectionRange(caretPosition, caretPosition);
+}
+
 export function AiAssistant() {
     const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
 
@@ -410,6 +421,7 @@ export function AiAssistant() {
     const messagesRef = useRef<HTMLDivElement | null>(null);
     const messageRefs = useRef(new Map<string, HTMLDivElement>());
     const messageIdCounterRef = useRef(0);
+    const wasOpenRef = useRef(false);
     const pendingScrollTargetRef = useRef<{ id: string; align: "start" | "nearest" } | null>(null);
     const isProgrammaticScrollRef = useRef(false);
     const userScrolledDuringPendingAnswerRef = useRef(false);
@@ -557,10 +569,23 @@ export function AiAssistant() {
     }, [isOpen, selectionPopover]);
 
     useEffect(() => {
-        if (isOpen) {
-            textareaRef.current?.focus();
+        if (!isOpen) {
+            wasOpenRef.current = false;
+            return;
         }
-    }, [isOpen]);
+
+        if (wasOpenRef.current) {
+            return;
+        }
+
+        wasOpenRef.current = true;
+
+        const frameId = window.requestAnimationFrame(() => {
+            focusTextareaAtEnd(textareaRef.current);
+        });
+
+        return () => window.cancelAnimationFrame(frameId);
+    }, [isOpen, question]);
 
     useEffect(() => {
         if (!isOpen) {
@@ -811,6 +836,14 @@ export function AiAssistant() {
         setQuestion("Объясни выделенный фрагмент простыми словами");
     }
 
+    function clearSelectedText() {
+        setSelectedText("");
+
+        window.requestAnimationFrame(() => {
+            focusTextareaAtEnd(textareaRef.current);
+        });
+    }
+
     return (
         <>
             {selectedText && selectionPopover && !isOpen && canUseAi ? (
@@ -871,7 +904,7 @@ export function AiAssistant() {
                         <div className={styles.selectedText}>
                             <div className={styles.selectedTextTop}>
                                 <span>Выделенный текст из темы</span>
-                                <button type="button" onClick={() => setSelectedText("")}>
+                                <button type="button" onClick={clearSelectedText}>
                                     убрать
                                 </button>
                             </div>
@@ -891,10 +924,10 @@ export function AiAssistant() {
                         </div>
                     ) : null}
 
-                    {canUseAi ? (
+                    {canUseAi && isLimitReached ? (
                         <div className={styles.usageNotice}>
                             <span>{usageText}</span>
-                            {isLimitReached ? <strong>Лимит на сегодня исчерпан</strong> : null}
+                            <strong>Лимит на сегодня исчерпан</strong>
                         </div>
                     ) : null}
 

@@ -14,7 +14,7 @@ import {
 import { classNames } from "../../shared/lib/classNames";
 import type { ProgressOverview } from "../../types/api";
 import { toPath } from "../../utils/slug";
-import { CodeBlock } from "../CodeBlock/CodeBlock";
+import { CodeBlock } from "../../components/CodeBlock/CodeBlock";
 import styles from "./CoursePage.module.scss";
 
 type TocItem = {

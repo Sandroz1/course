@@ -4,19 +4,19 @@ import { CodeBlock } from "../components/CodeBlock/CodeBlock";
 const errors = [
   {
     title: "Забыли точку с запятой",
-    symptom: "Компилятор часто ругается на следующую строку, хотя ошибка стоит строкой выше.",
-    why: "C++ завершает большинство команд символом `;`. После объявления класса или структуры точка с запятой тоже обязательна.",
+    symptom: "Компилятор ругается на следующую строку, хотя пропуск стоит выше.",
+    why: "В C++ большинство команд заканчивается `;`. После объявления класса или структуры `;` тоже обязателен.",
     bad: "class Student {\n};\n\nint age = 18",
     fixed: "class Student {\n};\n\nint age = 18;",
-    remember: "Если компилятор ругается на следующую строку, часто ошибка находится строкой выше.",
+    remember: "Если ошибка указана на следующей строке, проверь строку выше.",
   },
   {
     title: "Забыли #include",
-    symptom: "Сообщения похожи на `cout was not declared`, `vector was not declared`, `runtime_error was not declared`.",
-    why: "Компилятор должен знать, где объявлены `cout`, `cin`, `string`, `vector`, `sort` и `runtime_error`.",
+    symptom: "В сообщении есть `cout was not declared`, `vector was not declared` или похожий текст.",
+    why: "Компилятору нужны заголовки, где объявлены `cout`, `cin`, `string`, `vector`, `sort` и `runtime_error`.",
     bad: "int main() {\n    cout << \"Hello\";\n}",
     fixed: "#include <iostream>\n\nusing namespace std;\n\nint main() {\n    cout << \"Hello\";\n}",
-    remember: "`iostream` — ввод/вывод, `string` — строки, `vector` — список, `algorithm` — sort, `stdexcept` — runtime_error.",
+    remember: "`iostream` — ввод/вывод, `string` — строки, `vector` — список, `algorithm` — `sort`, `stdexcept` — `runtime_error`.",
   },
   {
     title: "Забыли public:",
@@ -28,11 +28,11 @@ const errors = [
   },
   {
     title: "Обращение к private полю",
-    symptom: "Компилятор пишет, что поле private и недоступно в этом месте.",
-    why: "Закрытое поле нельзя читать или менять напрямую. Для этого нужны методы.",
+    symptom: "Компилятор пишет, что поле `private` и недоступно в этом месте.",
+    why: "Закрытое поле нельзя читать или менять напрямую. Внешний код должен использовать методы класса.",
     bad: "Car car;\ncar.year = 2020;",
     fixed: "class Car {\nprivate:\n    int year;\npublic:\n    void setYear(int year) { this->year = year; }\n};",
-    remember: "Если поле private, внешний код работает через метод.",
+    remember: "Если поле `private`, внешний код обращается к нему через метод.",
   },
   {
     title: "Забыли ClassName:: в .cpp",
@@ -44,11 +44,11 @@ const errors = [
   },
   {
     title: "undefined reference",
-    symptom: "Сборка проходит компиляцию, но на этапе линковки появляется `undefined reference to Bed::print()` или похожий текст.",
-    why: "Объявление метода есть в `.hpp`, но реализация не найдена: метод не написан, имя не совпало или `.cpp` файл реализации не участвует в сборке.",
+    symptom: "Компиляция прошла, но при линковке появился `undefined reference to Bed::print()` или похожий текст.",
+    why: "Метод объявлен в `.hpp`, но реализация не найдена: тело не написано, имя не совпало или нужный `.cpp` не участвует в сборке.",
     bad: "g++ -std=c++17 main.cpp -o program",
     fixed: "g++ -std=c++17 main.cpp Bed.cpp -o program",
-    remember: "Если метод объявлен в `.hpp`, его тело должно быть в `.cpp`, а этот `.cpp` должен участвовать в сборке.",
+    remember: "Если метод объявлен в `.hpp`, его тело должно быть в `.cpp`, а этот файл должен участвовать в сборке.",
   },
   {
     title: "Несколько main",
@@ -69,7 +69,7 @@ const errors = [
   {
     title: "Выход за границы vector",
     symptom: "Программа падает или выводит мусор при обращении к несуществующему элементу.",
-    why: "Нельзя обращаться к элементу, которого нет.",
+    why: "Нельзя обращаться к элементу, которого нет в `vector`.",
     bad: "cout << numbers[3];",
     fixed: "if (index >= 0 && index < static_cast<int>(numbers.size())) {\n    cout << numbers[index];\n}",
     remember: "Перед доступом по индексу проверяйте границы.",
@@ -96,7 +96,7 @@ const errors = [
     why: "Если исключение выброшено и не поймано, программа аварийно завершится.",
     bad: "try {\n    cout << company.getIncome();\n}",
     fixed: "try {\n    cout << company.getIncome();\n} catch (const exception& error) {\n    cout << error.what();\n}",
-    remember: "`try` почти всегда должен идти вместе с `catch`.",
+    remember: "`try` обычно пишут вместе с `catch`, чтобы обработать ошибку.",
   },
   {
     title: "Неправильный include guard",
@@ -108,37 +108,72 @@ const errors = [
   },
 ];
 
+function getFoundLabel(count: number) {
+  return `${count} ${count === 1 ? "найдена" : "найдено"}`;
+}
+
+function InlineText({ text }: { text: string }) {
+  return (
+    <>
+      {text.split(/(`[^`]+`)/g).map((part, index) =>
+        part.startsWith("`") && part.endsWith("`") ? (
+          <code key={index}>{part.slice(1, -1)}</code>
+        ) : (
+          part
+        ),
+      )}
+    </>
+  );
+}
+
 export function CommonErrorsPage() {
   const [query, setQuery] = useState("");
+  const trimmedQuery = query.trim();
   const filteredErrors = useMemo(() => {
-    const value = query.trim().toLowerCase();
+    const value = trimmedQuery.toLowerCase();
     if (!value) return errors;
     return errors.filter((error) =>
-      [error.title, error.symptom, error.why, error.remember]
+      [error.title, error.symptom, error.why, error.bad, error.fixed, error.remember]
         .join(" ")
         .toLowerCase()
         .includes(value),
     );
-  }, [query]);
+  }, [trimmedQuery]);
 
   return (
     <article className="reading-page compact-page errors-page">
       <header className="page-header">
         <p className="eyebrow">Справочник</p>
         <h1>Частые ошибки</h1>
-        <p className="lead">Поиск по типичным ошибкам компиляции и коду.</p>
+        <p className="lead">Короткие разборы типичных ошибок C++: причина, неверный пример и исправление.</p>
       </header>
 
-      <section className="panel filters-panel filters-panel--single">
-        <label className="field">
-          Поиск
-          <input
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            placeholder="Например: vector, include, catch"
-          />
-        </label>
-        <span className="filter-count">{filteredErrors.length} найдено</span>
+      <section className="panel filters-panel filters-panel--single errors-search">
+        <div className="errors-search__field">
+          <label className="field" htmlFor="common-errors-search">
+            <span>Поиск</span>
+            <input
+              id="common-errors-search"
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="vector, include, undefined reference"
+              aria-describedby="common-errors-search-hint"
+            />
+          </label>
+          <p className="errors-search__hint" id="common-errors-search-hint">
+            Ищи по тексту ошибки, теме или фрагменту кода.
+          </p>
+        </div>
+        <div className="errors-search__meta">
+          <span className="filter-count" aria-live="polite">
+            {getFoundLabel(filteredErrors.length)}
+          </span>
+          {trimmedQuery && (
+            <button className="errors-search__clear" type="button" onClick={() => setQuery("")}>
+              Сбросить
+            </button>
+          )}
+        </div>
       </section>
 
       <div className="error-list">
@@ -146,23 +181,29 @@ export function CommonErrorsPage() {
           <details className="panel error-card" key={error.title}>
             <summary>
               <strong>{error.title}</strong>
-              <span>{error.symptom}</span>
+              <span>
+                <InlineText text={error.symptom} />
+              </span>
             </summary>
             <div className="error-card__body">
-              <h3>Причина</h3>
-              <p>{error.why}</p>
+              <section className="error-reason">
+                <h3>Почему так происходит</h3>
+                <p>
+                  <InlineText text={error.why} />
+                </p>
+              </section>
               <div className="example-pair">
                 <section className="example-box example-box--bad">
                   <h3>Ошибка</h3>
-                  <CodeBlock code={error.bad} language="cpp" />
+                  <CodeBlock code={error.bad} language="cpp" compact />
                 </section>
                 <section className="example-box example-box--good">
                   <h3>Правильно</h3>
-                  <CodeBlock code={error.fixed} language="cpp" />
+                  <CodeBlock code={error.fixed} language="cpp" compact />
                 </section>
               </div>
               <p className="remember-note">
-                <strong>Запомнить:</strong> {error.remember}
+                <strong>Запомнить:</strong> <InlineText text={error.remember} />
               </p>
             </div>
           </details>
@@ -172,7 +213,12 @@ export function CommonErrorsPage() {
       {filteredErrors.length === 0 && (
         <section className="panel empty-state">
           <h2>Ничего не найдено</h2>
-          <p>Попробуй другое слово из сообщения компилятора.</p>
+          <p>Попробуй другое слово из сообщения компилятора или сбрось поиск.</p>
+          {trimmedQuery && (
+            <button className="button button--small button--ghost" type="button" onClick={() => setQuery("")}>
+              Сбросить поиск
+            </button>
+          )}
         </section>
       )}
     </article>
