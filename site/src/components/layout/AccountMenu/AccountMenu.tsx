@@ -9,6 +9,7 @@ export function AccountMenu() {
   const { isAuthenticated, logout, user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
   const avatarLetter = user?.username.trim().charAt(0).toUpperCase() || "U";
 
   useEffect(() => {
@@ -23,6 +24,7 @@ export function AccountMenu() {
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         setIsOpen(false);
+        triggerRef.current?.focus();
       }
     }
 
@@ -61,8 +63,11 @@ export function AccountMenu() {
   return (
     <div className={styles.root} ref={rootRef}>
       <button
+        ref={triggerRef}
+        id="account-menu-trigger"
         aria-expanded={isOpen}
         aria-haspopup="menu"
+        aria-controls={isOpen ? "account-menu" : undefined}
         className={styles.trigger}
         type="button"
         onClick={() => setIsOpen((value) => !value)}
@@ -77,7 +82,12 @@ export function AccountMenu() {
       </button>
 
       {isOpen && (
-        <div className={styles.menu} role="menu" aria-label="Меню аккаунта">
+        <div
+          id="account-menu"
+          className={styles.menu}
+          role="menu"
+          aria-labelledby="account-menu-trigger"
+        >
           <div className={styles.userSummary}>
             <span className={styles.summaryAvatar} aria-hidden="true">
               {avatarLetter}

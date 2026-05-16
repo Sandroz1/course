@@ -27,6 +27,12 @@
 }
 
 .code-block button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 6.75rem;
+  min-height: 2rem;
   border: 1px solid var(--code-border);
   border-radius: 5px;
   background: var(--code-panel);
@@ -34,12 +40,19 @@
   cursor: pointer;
   font: inherit;
   font-size: 12px;
+  font-weight: 650;
+  line-height: 1;
   padding: 5px 8px;
+  white-space: nowrap;
 }
 
 .code-block button:hover {
   border-color: var(--border-strong);
   background: var(--code-panel);
+}
+
+.code-block button:active {
+  transform: none;
 }
 
 .code-block__highlight {

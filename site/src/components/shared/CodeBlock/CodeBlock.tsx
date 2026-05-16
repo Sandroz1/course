@@ -10,6 +10,8 @@ type CodeBlockProps = {
   compact?: boolean;
 };
 
+type CopyState = "idle" | "copied" | "failed";
+
 type SupportedLanguage =
   | "cpp"
   | "ts"
@@ -144,7 +146,7 @@ function getLanguageLabel(language: string) {
 }
 
 export function CodeBlock({ code, language = "cpp", compact = false }: CodeBlockProps) {
-  const [copied, setCopied] = useState(false);
+  const [copyState, setCopyState] = useState<CopyState>("idle");
   const [highlightedHtml, setHighlightedHtml] = useState("");
   const normalizedLanguage = useMemo(() => normalizeLanguage(language), [language]);
   const languageLabel = useMemo(() => getLanguageLabel(language), [language]);
@@ -172,17 +174,34 @@ export function CodeBlock({ code, language = "cpp", compact = false }: CodeBlock
   }, [code, normalizedLanguage]);
 
   async function copyCode() {
-    await navigator.clipboard.writeText(code);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1200);
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopyState("copied");
+    } catch {
+      setCopyState("failed");
+    }
+
+    window.setTimeout(() => setCopyState("idle"), 1200);
   }
+
+  const copyButtonText =
+    copyState === "copied"
+      ? "Скопировано"
+      : copyState === "failed"
+        ? "Не удалось скопировать"
+        : "Скопировать";
 
   return (
     <div className={classNames(styles.root, compact && styles.compact)}>
       <div className={styles.bar}>
         <span className={styles.language}>{languageLabel}</span>
-        <button className={styles.copyButton} type="button" onClick={copyCode}>
-          {copied ? "Скопировано" : "Скопировать"}
+        <button
+          className={styles.copyButton}
+          type="button"
+          onClick={copyCode}
+          aria-live="polite"
+        >
+          {copyButtonText}
         </button>
       </div>
       {highlightedHtml ? (

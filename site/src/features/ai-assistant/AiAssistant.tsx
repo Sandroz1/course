@@ -35,6 +35,10 @@ const MAX_PANEL_WIDTH = 760;
 const MIN_PANEL_HEIGHT = 420;
 const MAX_PANEL_HEIGHT_CAP = 820;
 const STORAGE_KEY_PANEL_SIZE = "aiPanelSize";
+const SELECTION_POPOVER_WIDTH = 132;
+const SELECTION_POPOVER_HEIGHT = 34;
+const SELECTION_POPOVER_GAP = 10;
+const SELECTION_POPOVER_MARGIN = 12;
 
 function readStoredPanelSize(): { width: number; height: number } {
     const fallback = { width: 430, height: 620 };
@@ -82,6 +86,7 @@ function getPanelBounds() {
 type SelectionPopover = {
     x: number;
     y: number;
+    placement: "above" | "below";
 };
 
 function getElementFromNode(node: Node | null) {
@@ -100,6 +105,10 @@ function isInsideLessonContent(node: Node | null) {
     return Boolean(element?.closest(".lesson-content"));
 }
 
+function getClosestCodeBlock(node: Node | null) {
+    return getElementFromNode(node)?.closest("pre, .shiki") ?? null;
+}
+
 function isInputSelection() {
     const activeElement = document.activeElement;
     const tagName = activeElement?.tagName?.toLowerCase();
@@ -109,6 +118,36 @@ function isInputSelection() {
 
 function clamp(value: number, min: number, max: number) {
     return Math.min(Math.max(value, min), max);
+}
+
+function getSelectionPopoverPosition(selectionRect: DOMRect, anchorRect: DOMRect) {
+    const maxLeft = Math.max(
+        SELECTION_POPOVER_MARGIN,
+        window.innerWidth - SELECTION_POPOVER_WIDTH - SELECTION_POPOVER_MARGIN
+    );
+    const maxTop = Math.max(
+        SELECTION_POPOVER_MARGIN,
+        window.innerHeight - SELECTION_POPOVER_HEIGHT - SELECTION_POPOVER_MARGIN
+    );
+    const selectionCenter = selectionRect.left + selectionRect.width / 2;
+    const spaceAbove = anchorRect.top - SELECTION_POPOVER_MARGIN;
+    const spaceBelow = window.innerHeight - anchorRect.bottom - SELECTION_POPOVER_MARGIN;
+    const shouldPlaceBelow =
+        spaceAbove < SELECTION_POPOVER_HEIGHT + SELECTION_POPOVER_GAP &&
+        spaceBelow >= spaceAbove;
+    const rawTop = shouldPlaceBelow
+        ? anchorRect.bottom + SELECTION_POPOVER_GAP
+        : anchorRect.top - SELECTION_POPOVER_HEIGHT - SELECTION_POPOVER_GAP;
+
+    return {
+        x: clamp(
+            selectionCenter - SELECTION_POPOVER_WIDTH / 2,
+            SELECTION_POPOVER_MARGIN,
+            maxLeft
+        ),
+        y: clamp(rawTop, SELECTION_POPOVER_MARGIN, maxTop),
+        placement: shouldPlaceBelow ? "below" as const : "above" as const,
+    };
 }
 
 function clampPanelSize(size: { width: number; height: number }) {
@@ -314,12 +353,26 @@ function readLessonSelection() {
         return null;
     }
 
+    const isSelectionOutsideViewport =
+        finalRect.bottom < SELECTION_POPOVER_MARGIN ||
+        finalRect.top > window.innerHeight - SELECTION_POPOVER_MARGIN ||
+        finalRect.right < SELECTION_POPOVER_MARGIN ||
+        finalRect.left > window.innerWidth - SELECTION_POPOVER_MARGIN;
+
+    if (isSelectionOutsideViewport) {
+        return null;
+    }
+
+    const anchorCodeBlock = getClosestCodeBlock(selection.anchorNode);
+    const focusCodeBlock = getClosestCodeBlock(selection.focusNode);
+    const anchorRect =
+        anchorCodeBlock && anchorCodeBlock === focusCodeBlock
+            ? anchorCodeBlock.getBoundingClientRect()
+            : finalRect;
+
     return {
         text: text.slice(0, 5000),
-        position: {
-            x: clamp(finalRect.left + finalRect.width / 2, 110, window.innerWidth - 110),
-            y: Math.max(12, finalRect.top - 10),
-        },
+        position: getSelectionPopoverPosition(finalRect, anchorRect),
     };
 }
 
@@ -834,6 +887,10 @@ export function AiAssistant() {
         setIsOpen(true);
         setSelectionPopover(null);
         setQuestion("Объясни выделенный фрагмент простыми словами");
+
+        window.requestAnimationFrame(() => {
+            focusTextareaAtEnd(textareaRef.current);
+        });
     }
 
     function clearSelectedText() {
@@ -848,8 +905,12 @@ export function AiAssistant() {
         <>
             {selectedText && selectionPopover && !isOpen && canUseAi ? (
                 <button
-                    className={styles.selectionPopover}
+                    className={classNames(
+                        styles.selectionPopover,
+                        selectionPopover.placement === "below" && styles.selectionPopoverBelow,
+                    )}
                     type="button"
+                    data-placement={selectionPopover.placement}
                     style={{
                         left: `${selectionPopover.x}px`,
                         top: `${selectionPopover.y}px`,

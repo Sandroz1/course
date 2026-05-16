@@ -394,7 +394,11 @@ async function sendRequest(path: string, options: ApiRequestOptions, accessToken
       signal: options.signal,
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
     });
-  } catch {
+  } catch (error) {
+    if (error instanceof DOMException && error.name === "AbortError") {
+      throw error;
+    }
+
     throw new ApiError(
       0,
       "Не удалось подключиться к серверу. Проверь, запущен ли backend.",

@@ -33,16 +33,18 @@
 .selectionPopover {
   position: fixed;
   z-index: 140;
-  transform: translate(-50%, calc(-100% - 8px));
   display: inline-flex;
   align-items: center;
-  min-height: 32px;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 132px;
+  min-height: 34px;
   border: 1px solid var(--border-strong);
   border-radius: 999px;
-  background: var(--surface);
+  background: color-mix(in srgb, var(--surface) 92%, var(--bg) 8%);
   color: var(--text);
-  box-shadow: var(--shadow-sm);
-  padding: 7px 11px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+  padding: 0 12px;
   font: inherit;
   font-size: 13px;
   font-weight: 750;
@@ -50,6 +52,7 @@
   cursor: pointer;
   user-select: none;
   white-space: nowrap;
+  transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
 }
 
 .selectionPopover:hover {
@@ -57,17 +60,17 @@
   background: var(--surface-2);
 }
 
-.selectionPopover::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: -5px;
-  width: 9px;
-  height: 9px;
-  transform: translateX(-50%) rotate(45deg);
-  border-right: 1px solid var(--border-strong);
-  border-bottom: 1px solid var(--border-strong);
-  background: var(--surface);
+.selectionPopover:active {
+  transform: none;
+}
+
+.selectionPopover:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 46%, transparent);
+  outline-offset: 2px;
+}
+
+.selectionPopoverBelow {
+  box-shadow: 0 10px 18px rgba(0, 0, 0, 0.22);
 }
 
 .panel {
@@ -418,7 +421,10 @@
   border-radius: 5px;
   background: var(--course-inline-code-bg);
   color: var(--course-inline-code-text);
+  overflow-wrap: normal;
   padding: 0.05em 0.28em;
+  white-space: nowrap;
+  word-break: keep-all;
 }
 
 .messageCode {
@@ -439,8 +445,10 @@
   border-radius: 0;
   background: transparent;
   color: inherit;
+  overflow-wrap: normal;
   padding: 0;
   white-space: pre;
+  word-break: normal;
 }
 
 .messageUser {
@@ -574,9 +582,7 @@
   }
 
   .selectionPopover {
-    max-width: calc(100vw - 28px);
-    overflow: hidden;
-    text-overflow: ellipsis;
+    width: min(132px, calc(100vw - 24px));
   }
 
   .message {

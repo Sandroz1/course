@@ -25,6 +25,12 @@
 }
 
 .copyButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 6.75rem;
+  min-height: 2rem;
   border: 1px solid var(--code-border);
   border-radius: 0.3125rem;
   background: var(--code-panel);
@@ -32,12 +38,19 @@
   cursor: pointer;
   font: inherit;
   font-size: 0.75rem;
+  font-weight: 650;
+  line-height: 1;
   padding: 0.3125rem 0.5rem;
+  white-space: nowrap;
 }
 
 .copyButton:hover {
   border-color: var(--border-strong);
   background: var(--code-panel);
+}
+
+.copyButton:active {
+  transform: none;
 }
 
 .highlight {
@@ -83,6 +96,8 @@
 }
 
 .compact .copyButton {
+  width: 6.25rem;
+  min-height: 1.75rem;
   border-color: transparent;
   background: transparent;
   color: var(--muted);

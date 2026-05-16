@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { type KeyboardEvent, useEffect, useState } from "react";
 import { courseSections, isCourseSectionReady } from "../../data/courseSections";
 import { getCourseById } from "../../data/courses";
 import { getStatusLabel } from "../../data/status";
@@ -21,6 +21,19 @@ function fileCountLabel(count: number) {
   if (count === 1) return "1 файл";
   if (count >= 2 && count <= 4) return `${count} файла`;
   return `${count} файлов`;
+}
+
+function getNextFileIndex(currentIndex: number, key: string, fileCount: number) {
+  if (key === "Home") return 0;
+  if (key === "End") return fileCount - 1;
+  if (key === "ArrowLeft" || key === "ArrowUp") {
+    return (currentIndex - 1 + fileCount) % fileCount;
+  }
+  if (key === "ArrowRight" || key === "ArrowDown") {
+    return (currentIndex + 1) % fileCount;
+  }
+
+  return currentIndex;
 }
 
 export function TaskDetailsPage({ taskId }: { taskId: string }) {
@@ -120,6 +133,15 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
     }
   }
 
+  function handleFileTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    const nextIndex = getNextFileIndex(index, event.key, task?.files.length ?? 0);
+
+    if (nextIndex === index) return;
+
+    event.preventDefault();
+    setActiveFileIndex(nextIndex);
+  }
+
   if (!task) {
     return (
       <div className="panel">
@@ -133,6 +155,8 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
     task.status === "needs-theory" || (theory ? !isCourseSectionReady(theory) : false);
   const course = getCourseById(task.courseId);
   const activeFile = task.files[activeFileIndex];
+  const activeFileTabId = `task-file-tab-${task.id}-${activeFileIndex}`;
+  const activeFilePanelId = `task-file-panel-${task.id}-${activeFileIndex}`;
   const effectiveTaskStatus = taskStatus ?? "not_started";
   const taskStatusBadge =
     effectiveTaskStatus === "solved"
@@ -239,17 +263,25 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
           {task.files.map((file, index) => (
             <button
               key={file.fileName}
+              id={`task-file-tab-${task.id}-${index}`}
               className={classNames(styles.fileTab, index === activeFileIndex && styles.fileTabActive)}
               type="button"
+              role="tab"
+              aria-selected={index === activeFileIndex}
+              aria-controls={`task-file-panel-${task.id}-${index}`}
+              tabIndex={index === activeFileIndex ? 0 : -1}
               onClick={() => setActiveFileIndex(index)}
+              onKeyDown={(event) => handleFileTabKeyDown(event, index)}
             >
               {file.fileName.split("/").pop()}
             </button>
           ))}
         </div>
 
-        <p>{activeFile.description}</p>
-        <CodeBlock code={activeFile.starterCode} language="cpp" />
+        <div id={activeFilePanelId} role="tabpanel" aria-labelledby={activeFileTabId}>
+          <p>{activeFile.description}</p>
+          <CodeBlock code={activeFile.starterCode} language="cpp" />
+        </div>
       </section>
 
       {task.todoGuide && task.todoGuide.length > 0 && (

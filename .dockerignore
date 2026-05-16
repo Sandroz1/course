@@ -1,4 +1,5 @@
 .git/
+.vs/
 .env
 .env.local
 .env.production

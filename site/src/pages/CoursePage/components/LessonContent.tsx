@@ -11,7 +11,7 @@ type TocItem = {
 
 const MAX_TOC_ITEMS = 7;
 
-function renderInline(text: string) {
+export function renderInline(text: string) {
   const parts = text.split(/(`[^`]+`)/g);
   return parts.map((part, index) => {
     if (part.startsWith("`") && part.endsWith("`")) {

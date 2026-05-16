@@ -14,7 +14,7 @@ import {
 import { classNames } from "../../shared/lib/classNames";
 import type { ProgressOverview } from "../../types/api";
 import { toPath } from "../../utils/slug";
-import { collectTocItems, LessonContent } from "./components/LessonContent";
+import { collectTocItems, LessonContent, renderInline } from "./components/LessonContent";
 import styles from "./CoursePage.module.scss";
 
 type LessonProgressState = {
@@ -287,7 +287,7 @@ export function CoursePage({ slug }: { slug: string }) {
             <span className="status-badge status-badge--success">Пройдено</span>
           )}
         </div>
-        <p className="lead">{section.description}</p>
+        <p className="lead">{renderInline(section.description)}</p>
 
         <div className="topic-list topic-list--quiet">
           {section.topics.slice(0, 4).map((topic) => (
