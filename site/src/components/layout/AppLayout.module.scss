@@ -4,6 +4,7 @@
   min-height: 100dvh;
   min-width: 0;
   background: var(--bg);
+  transition: grid-template-columns 180ms ease;
 }
 
 .rootCollapsed {

@@ -11,21 +11,23 @@ type SidebarProps = {
   onToggleCollapse: () => void;
 };
 
+type NavigationIcon = "home" | "courses" | "tasks" | "guide" | "errors" | "login";
+
 type NavigationLink = {
   href: string;
   label: string;
-  shortLabel: string;
+  icon: NavigationIcon;
 };
 
 const primaryLinks: NavigationLink[] = [
-  { href: "/", label: "Главная", shortLabel: "Г" },
-  { href: "/courses", label: "Курсы", shortLabel: "К" },
-  { href: "/tasks", label: "Задачи", shortLabel: "З" },
+  { href: "/", label: "Главная", icon: "home" },
+  { href: "/courses", label: "Курсы", icon: "courses" },
+  { href: "/tasks", label: "Задачи", icon: "tasks" },
 ];
 
 const learningLinks: NavigationLink[] = [
-  { href: "/guide", label: "Как учиться", shortLabel: "У" },
-  { href: "/common-errors", label: "Частые ошибки", shortLabel: "!" },
+  { href: "/guide", label: "Как учиться", icon: "guide" },
+  { href: "/common-errors", label: "Частые ошибки", icon: "errors" },
 ];
 
 function isLinkActive(path: string, href: string) {
@@ -34,12 +36,101 @@ function isLinkActive(path: string, href: string) {
   return path.startsWith(href);
 }
 
+function SidebarIcon({ icon }: { icon: NavigationIcon }) {
+  if (icon === "home") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4.75 10.5 12 4.75l7.25 5.75" />
+        <path d="M6.75 9.5v8.75h10.5V9.5" />
+        <path d="M10 18.25v-5h4v5" />
+      </svg>
+    );
+  }
+
+  if (icon === "courses") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M7 5.25h8.5a2 2 0 0 1 2 2v11.5H8a2.5 2.5 0 0 1 0-5h9.5" />
+        <path d="M7 5.25v8.5" />
+        <path d="M10 8.5h4" />
+      </svg>
+    );
+  }
+
+  if (icon === "tasks") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M8 6.75h10" />
+        <path d="M8 12h10" />
+        <path d="M8 17.25h10" />
+        <path d="m3.75 6.75.75.75 1.5-1.75" />
+        <path d="m3.75 12 .75.75L6 11" />
+        <path d="m3.75 17.25.75.75L6 16.25" />
+      </svg>
+    );
+  }
+
+  if (icon === "guide") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 5.25v13.5" />
+        <path d="M5.5 7.25c2.7 0 4.7.65 6.5 2 1.8-1.35 3.8-2 6.5-2v10.5c-2.7 0-4.7.65-6.5 2-1.8-1.35-3.8-2-6.5-2Z" />
+      </svg>
+    );
+  }
+
+  if (icon === "errors") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 7.25v5.25" />
+        <path d="M12 16.75h.01" />
+        <path d="M10.4 4.9 3.6 17.05a1.7 1.7 0 0 0 1.48 2.55h13.84a1.7 1.7 0 0 0 1.48-2.55L13.6 4.9a1.84 1.84 0 0 0-3.2 0Z" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M9.75 7.25 14.5 12l-4.75 4.75" />
+      <path d="M14 12H3.75" />
+      <path d="M14.5 5.25h3.75a2 2 0 0 1 2 2v9.5a2 2 0 0 1-2 2H14.5" />
+    </svg>
+  );
+}
+
+function SidebarToggleIcon({ direction }: { direction: "collapse" | "expand" }) {
+  if (direction === "collapse") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M9.5 6.5 4.75 12l4.75 5.5" />
+        <path d="M5.25 12h12.5" />
+      </svg>
+    );
+  }
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M14.5 6.5 19.25 12l-4.75 5.5" />
+      <path d="M18.75 12H6.25" />
+    </svg>
+  );
+}
+
+function CloseIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="m7.25 7.25 9.5 9.5" />
+      <path d="m16.75 7.25-9.5 9.5" />
+    </svg>
+  );
+}
+
 function SidebarLink({
   href,
+  icon,
   isCollapsed,
   label,
   onNavigate,
-  shortLabel,
 }: NavigationLink & {
   isCollapsed: boolean;
   onNavigate: () => void;
@@ -57,7 +148,7 @@ function SidebarLink({
       onClick={onNavigate}
     >
       <span className={styles.linkIcon} aria-hidden="true">
-        {shortLabel}
+        <SidebarIcon icon={icon} />
       </span>
       <span className={styles.linkLabel}>{label}</span>
     </a>
@@ -85,7 +176,7 @@ function ProfileBlock({
           onClick={onNavigate}
         >
           <span className={styles.profileAvatar} aria-hidden="true">
-            ↗
+            <SidebarIcon icon="login" />
           </span>
           <span className={styles.profileText}>
             <strong>Войти</strong>
@@ -152,8 +243,20 @@ export function Sidebar({
           onClick={handleNavigate}
         >
           <img className={styles.brandLogo} src="/brand/uchicode-logo.png" alt="Uchicode.ru" />
-          <img className={styles.brandIcon} src="/brand/uchicode-icon.png" alt="" aria-hidden="true" />
         </a>
+
+        <button
+          className={styles.collapsedBrandButton}
+          type="button"
+          aria-label="Развернуть меню"
+          title="Развернуть меню"
+          onClick={onToggleCollapse}
+        >
+          <img className={styles.brandIcon} src="/brand/uchicode-icon.png" alt="" aria-hidden="true" />
+          <span className={styles.collapsedBrandToggle}>
+            <SidebarToggleIcon direction="expand" />
+          </span>
+        </button>
 
         <button
           className={styles.collapseButton}
@@ -163,7 +266,7 @@ export function Sidebar({
           title={isCollapsed ? "Развернуть меню" : "Свернуть меню"}
           onClick={onToggleCollapse}
         >
-          <span aria-hidden="true">{isCollapsed ? "›" : "‹"}</span>
+          <SidebarToggleIcon direction={isCollapsed ? "expand" : "collapse"} />
         </button>
 
         <button
@@ -172,7 +275,7 @@ export function Sidebar({
           aria-label="Закрыть навигацию"
           onClick={onCloseMobile}
         >
-          <span aria-hidden="true">×</span>
+          <CloseIcon />
         </button>
       </div>
 

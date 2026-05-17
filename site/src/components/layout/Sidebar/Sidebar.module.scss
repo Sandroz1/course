@@ -12,6 +12,7 @@
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, var(--bg) 8%), var(--surface)),
     var(--surface);
+  transition: width 180ms ease, border-color 180ms ease, background 180ms ease;
 }
 
 .header {
@@ -31,6 +32,21 @@
   min-height: 2.5rem;
 }
 
+.collapsedBrandButton {
+  position: relative;
+  display: none;
+  width: 2.625rem;
+  height: 2.625rem;
+  place-items: center;
+  border: 1px solid transparent;
+  border-radius: 0.75rem;
+  background: transparent;
+  color: var(--text);
+  cursor: ew-resize;
+  padding: 0;
+  transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
+}
+
 .brandLogo,
 .brandIcon {
   display: block;
@@ -44,9 +60,23 @@
 }
 
 .brandIcon {
-  display: none;
   width: 2.25rem;
   height: 2.25rem;
+  grid-area: 1 / 1;
+  transition: opacity 130ms ease, transform 130ms ease;
+}
+
+.collapsedBrandToggle {
+  grid-area: 1 / 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.625rem;
+  opacity: 0;
+  transform: scale(0.82);
+  transition: opacity 130ms ease, transform 130ms ease;
 }
 
 .collapseButton,
@@ -62,10 +92,23 @@
   color: var(--muted);
   cursor: pointer;
   font: inherit;
-  font-size: 1.125rem;
   line-height: 1;
 }
 
+.collapseButton svg,
+.mobileCloseButton svg,
+.collapsedBrandToggle svg {
+  width: 1.125rem;
+  height: 1.125rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2;
+}
+
+.collapsedBrandButton:hover,
+.collapsedBrandButton:focus-visible,
 .collapseButton:hover,
 .collapseButton:focus-visible,
 .mobileCloseButton:hover,
@@ -74,6 +117,18 @@
   background: var(--surface-2);
   color: var(--text);
   outline: none;
+}
+
+.collapsedBrandButton:hover .brandIcon,
+.collapsedBrandButton:focus-visible .brandIcon {
+  opacity: 0;
+  transform: scale(0.82);
+}
+
+.collapsedBrandButton:hover .collapsedBrandToggle,
+.collapsedBrandButton:focus-visible .collapsedBrandToggle {
+  opacity: 1;
+  transform: scale(1);
 }
 
 .mobileCloseButton {
@@ -165,6 +220,17 @@
   font-size: 0.75rem;
   font-weight: 850;
   line-height: 1;
+}
+
+.linkIcon svg,
+.profileAvatar svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.9;
 }
 
 .linkLabel,
@@ -289,7 +355,8 @@
   padding-inline: 0.625rem;
 }
 
-.collapsed .brandLogo,
+.collapsed .brand,
+.collapsed .collapseButton,
 .collapsed .groupTitle,
 .collapsed .linkLabel,
 .collapsed .courseInfo,
@@ -297,12 +364,8 @@
   display: none;
 }
 
-.collapsed .brandIcon {
-  display: block;
-}
-
-.collapsed .collapseButton {
-  width: 2.25rem;
+.collapsed .collapsedBrandButton {
+  display: grid;
 }
 
 .collapsed .scrollArea,
@@ -361,7 +424,8 @@
     width: min(100%, 11.5rem);
   }
 
-  .brandIcon {
+  .collapsedBrandButton,
+  .collapsed .collapsedBrandButton {
     display: none;
   }
 
@@ -375,16 +439,18 @@
     padding: 0.875rem 0.75rem 0.8125rem 0.875rem;
   }
 
-  .collapsed .brandLogo,
+  .collapsed .brand {
+    display: flex;
+  }
+
   .collapsed .groupTitle,
-  .collapsed .linkLabel,
-  .collapsed .courseInfo,
-  .collapsed .profileText {
+  .collapsed .linkLabel {
     display: block;
   }
 
-  .collapsed .brandIcon {
-    display: none;
+  .collapsed .courseInfo,
+  .collapsed .profileText {
+    display: grid;
   }
 
   .collapsed .scrollArea,
