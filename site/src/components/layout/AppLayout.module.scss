@@ -69,6 +69,9 @@
 }
 
 .content {
+  display: grid;
+  align-content: start;
+  justify-items: center;
   width: min(72rem, 100%);
   margin: 0 auto;
   padding: 1.75rem 1.5rem 4rem;
