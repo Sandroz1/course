@@ -50,6 +50,8 @@ const readyTheorySlugs = new Set([
   "classes",
   "constructors-destructors",
   "this",
+  "multifile-project",
+  "preprocessor",
 ]);
 
 function taskStatusForTheory(theorySlug: string): ContentStatus {
