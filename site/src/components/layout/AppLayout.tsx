@@ -168,7 +168,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
           <div className={styles.topbarActions}>
             <ThemeSwitcher />
-            <AiAssistant />
             <AccountMenu />
           </div>
         </header>
@@ -176,6 +175,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
         <main className={classNames(styles.content, isWideRoute(path) && styles.contentWide)}>
           {children}
         </main>
+        <AiAssistant />
       </div>
     </div>
   );

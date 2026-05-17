@@ -5,7 +5,7 @@
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
   width: 16.75rem;
-  height: 100vh;
+  height: 100dvh;
   min-width: 0;
   overflow: hidden;
   border-right: 1px solid var(--line);
@@ -82,21 +82,20 @@
 
 .scrollArea {
   min-height: 0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: auto;
   padding: 0.75rem;
   scrollbar-color: var(--border-strong) transparent;
 }
 
 .navGroup,
-.courseBlock,
-.chapters {
+.courseBlock {
   display: grid;
   gap: 0.25rem;
 }
 
 .navGroup + .navGroup,
-.courseBlock,
-.chapters {
+.courseBlock {
   margin-top: 0.875rem;
 }
 
@@ -114,8 +113,7 @@
 .link,
 .aiButton,
 .profileLink,
-.courseCard,
-.chapterLink {
+.courseCard {
   min-width: 0;
   border: 1px solid transparent;
   border-radius: 0.5625rem;
@@ -147,9 +145,7 @@
 .profileLink:hover,
 .profileLink:focus-visible,
 .courseCard:hover,
-.courseCard:focus-visible,
-.chapterLink:hover,
-.chapterLink:focus-visible {
+.courseCard:focus-visible {
   border-color: color-mix(in srgb, var(--border-strong) 72%, transparent);
   background: color-mix(in srgb, var(--surface-2) 88%, transparent);
   color: var(--text);
@@ -172,14 +168,12 @@
 }
 
 .linkLabel,
-.chapterTitle,
 .courseInfo,
 .profileText {
   min-width: 0;
 }
 
 .linkLabel,
-.chapterTitle,
 .courseInfo strong,
 .profileText strong,
 .profileText small,
@@ -257,49 +251,6 @@
   line-height: 1.3;
 }
 
-.chapters {
-  max-height: min(28rem, calc(100vh - 26rem));
-  overflow: auto;
-  padding-right: 0.1875rem;
-}
-
-.chapterLink {
-  display: grid;
-  grid-template-columns: 1.625rem minmax(0, 1fr) auto;
-  gap: 0.4375rem;
-  align-items: center;
-  min-height: 2.25rem;
-  padding: 0.3125rem 0.5rem;
-  font-size: 0.8125rem;
-}
-
-.chapterNumber {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 1.625rem;
-  height: 1.625rem;
-  border-radius: 0.4375rem;
-  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
-  color: var(--accent);
-  font-size: 0.75rem;
-  font-weight: 850;
-}
-
-.chapterStatus {
-  color: var(--muted);
-  font-size: 0.6875rem;
-}
-
-.chapterInProgress {
-  opacity: 0.66;
-}
-
-.chapterInProgress:hover,
-.chapterInProgress:focus-visible {
-  opacity: 1;
-}
-
 .footer {
   display: grid;
   gap: 0.5rem;
@@ -342,9 +293,7 @@
 .collapsed .groupTitle,
 .collapsed .linkLabel,
 .collapsed .courseInfo,
-.collapsed .profileText,
-.collapsed .chapterTitle,
-.collapsed .chapterStatus {
+.collapsed .profileText {
   display: none;
 }
 
@@ -364,8 +313,7 @@
 .collapsed .link,
 .collapsed .aiButton,
 .collapsed .profileLink,
-.collapsed .courseCard,
-.collapsed .chapterLink {
+.collapsed .courseCard {
   grid-template-columns: 1fr;
   justify-items: center;
   padding-inline: 0.3125rem;
@@ -377,15 +325,6 @@
 
 .collapsed .profileLink {
   min-height: 2.875rem;
-}
-
-.collapsed .chapters {
-  max-height: min(32rem, calc(100vh - 22rem));
-  padding-right: 0;
-}
-
-.collapsed .chapterNumber {
-  width: 2rem;
 }
 
 @media (max-width: 56.25rem) {
@@ -440,9 +379,7 @@
   .collapsed .groupTitle,
   .collapsed .linkLabel,
   .collapsed .courseInfo,
-  .collapsed .profileText,
-  .collapsed .chapterTitle,
-  .collapsed .chapterStatus {
+  .collapsed .profileText {
     display: block;
   }
 
@@ -458,14 +395,9 @@
   .collapsed .link,
   .collapsed .aiButton,
   .collapsed .profileLink,
-  .collapsed .courseCard,
-  .collapsed .chapterLink {
+  .collapsed .courseCard {
     grid-template-columns: 1.75rem minmax(0, 1fr);
     justify-items: stretch;
     padding-inline: 0.5rem;
-  }
-
-  .collapsed .chapterLink {
-    grid-template-columns: 1.625rem minmax(0, 1fr) auto;
   }
 }

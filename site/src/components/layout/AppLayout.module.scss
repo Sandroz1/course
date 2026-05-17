@@ -1,7 +1,7 @@
 .root {
   display: grid;
   grid-template-columns: 16.75rem minmax(0, 1fr);
-  min-height: 100vh;
+  min-height: 100dvh;
   min-width: 0;
   background: var(--bg);
 }

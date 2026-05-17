@@ -1,6 +1,5 @@
 import { useAuth } from "../../../context/AuthContext";
 import { courseSections, isCourseSectionReady } from "../../../data/courseSections";
-import { statusMeta } from "../../../data/status";
 import { classNames } from "../../../shared/lib/classNames";
 import { currentPath, toPath } from "../../../utils/slug";
 import styles from "./Sidebar.module.scss";
@@ -31,7 +30,6 @@ const learningLinks: NavigationLink[] = [
 
 function isLinkActive(path: string, href: string) {
   if (href === "/") return path === "/";
-  if (href === "/courses") return path.startsWith("/courses") || path.startsWith("/course");
 
   return path.startsWith(href);
 }
@@ -124,9 +122,8 @@ export function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const path = currentPath();
-  const showCourseSections = path === "/course" || path.startsWith("/course/");
-  const readySectionsCount = courseSections.filter(isCourseSectionReady).length;
-  const activeSectionSlug = path.startsWith("/course/") ? path.replace("/course/", "") : "";
+  const readyCourseSections = courseSections.filter(isCourseSectionReady);
+  const readySectionsCount = readyCourseSections.length;
 
   function handleNavigate() {
     onCloseMobile();
@@ -225,35 +222,6 @@ export function Sidebar({
             </span>
           </a>
         </section>
-
-        {showCourseSections && (
-          <nav className={styles.chapters} aria-label="Разделы курса">
-            {courseSections.map((section) => {
-              const sectionPath = `/course/${section.slug}`;
-              const isActive = activeSectionSlug === section.slug;
-              const isReady = isCourseSectionReady(section);
-              return (
-                <a
-                  aria-current={isActive ? "page" : undefined}
-                  aria-label={`${section.number}. ${section.title}`}
-                  className={classNames(
-                    styles.chapterLink,
-                    isActive && styles.active,
-                    !isReady && styles.chapterInProgress,
-                  )}
-                  key={section.slug}
-                  href={toPath(sectionPath)}
-                  title={isCollapsed ? `${section.number}. ${section.title}` : undefined}
-                  onClick={handleNavigate}
-                >
-                  <span className={styles.chapterNumber}>{section.number}</span>
-                  <span className={styles.chapterTitle}>{section.title}</span>
-                  {!isReady && <span className={styles.chapterStatus}>{statusMeta.soon.label}</span>}
-                </a>
-              );
-            })}
-          </nav>
-        )}
       </div>
 
       <div className={styles.footer}>
