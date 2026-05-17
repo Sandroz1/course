@@ -1,84 +1,289 @@
 .root {
   position: sticky;
   top: 0;
+  z-index: 12;
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  width: 16.75rem;
   height: 100vh;
-  overflow: auto;
+  min-width: 0;
+  overflow: hidden;
   border-right: 1px solid var(--line);
-  background: var(--surface);
-  padding: 1rem;
-  scrollbar-color: var(--border-strong) transparent;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface) 92%, var(--bg) 8%), var(--surface)),
+    var(--surface);
+}
+
+.header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 0.5rem;
+  align-items: center;
+  min-height: 4.25rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  padding: 0.875rem 0.75rem 0.8125rem 0.875rem;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  width: min(100%, 13.25rem);
-  min-height: 3rem;
-  margin-bottom: 0.875rem;
+  min-width: 0;
+  min-height: 2.5rem;
 }
 
-.brandLogo {
+.brandLogo,
+.brandIcon {
   display: block;
-  width: 100%;
-  max-height: 2.8125rem;
   object-fit: contain;
   object-position: left center;
 }
 
-.nav,
+.brandLogo {
+  width: min(100%, 11.875rem);
+  max-height: 2.5rem;
+}
+
+.brandIcon {
+  display: none;
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.collapseButton,
+.mobileCloseButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: inherit;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.collapseButton:hover,
+.collapseButton:focus-visible,
+.mobileCloseButton:hover,
+.mobileCloseButton:focus-visible {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  outline: none;
+}
+
+.mobileCloseButton {
+  display: none;
+}
+
+.scrollArea {
+  min-height: 0;
+  overflow: auto;
+  padding: 0.75rem;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.navGroup,
+.courseBlock,
 .chapters {
   display: grid;
   gap: 0.25rem;
 }
 
+.navGroup + .navGroup,
+.courseBlock,
 .chapters {
-  max-height: calc(100vh - 15.625rem);
-  overflow: auto;
-  padding-right: 0.25rem;
+  margin-top: 0.875rem;
+}
+
+.groupTitle {
+  display: block;
+  padding: 0.25rem 0.5rem;
+  color: var(--muted);
+  font-size: 0.6875rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  line-height: 1;
+  text-transform: uppercase;
 }
 
 .link,
+.aiButton,
+.profileLink,
+.courseCard,
 .chapterLink {
-  border-radius: 0.4375rem;
+  min-width: 0;
+  border: 1px solid transparent;
+  border-radius: 0.5625rem;
   color: var(--muted);
-  padding: 0.4375rem 0.5625rem;
+}
+
+.link,
+.aiButton {
+  display: grid;
+  grid-template-columns: 1.75rem minmax(0, 1fr);
+  gap: 0.5rem;
+  align-items: center;
+  min-height: 2.375rem;
+  background: transparent;
+  padding: 0.3125rem 0.5rem;
+}
+
+.aiButton {
+  width: 100%;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
 }
 
 .link:hover,
-.chapterLink:hover {
-  background: var(--surface-2);
+.link:focus-visible,
+.aiButton:hover,
+.aiButton:focus-visible,
+.profileLink:hover,
+.profileLink:focus-visible,
+.courseCard:hover,
+.courseCard:focus-visible,
+.chapterLink:hover,
+.chapterLink:focus-visible {
+  border-color: color-mix(in srgb, var(--border-strong) 72%, transparent);
+  background: color-mix(in srgb, var(--surface-2) 88%, transparent);
   color: var(--text);
+  outline: none;
+}
+
+.linkIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  color: var(--soft);
+  font-size: 0.75rem;
+  font-weight: 850;
+  line-height: 1;
+}
+
+.linkLabel,
+.chapterTitle,
+.courseInfo,
+.profileText {
+  min-width: 0;
+}
+
+.linkLabel,
+.chapterTitle,
+.courseInfo strong,
+.profileText strong,
+.profileText small,
+.courseInfo small {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.linkLabel {
+  font-size: 0.90625rem;
+  font-weight: 700;
 }
 
 .active {
-  background: var(--surface-2);
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--border) 72%);
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-2) 88%);
   color: var(--text);
-  box-shadow: inset 2px 0 0 var(--accent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, transparent);
 }
 
-.sectionTitle {
-  margin: 1.375rem 0 0.5rem;
+.active .linkIcon,
+.courseCardActive .courseMark {
+  border-color: color-mix(in srgb, var(--accent) 34%, var(--border) 66%);
+  background: var(--accent-soft);
   color: var(--accent);
+}
+
+.courseCard {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.625rem;
+  align-items: center;
+  min-height: 3.625rem;
+  padding: 0.5rem;
+}
+
+.courseMark,
+.profileAvatar {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border-radius: 0.625rem;
+  background: var(--surface-2);
+  color: var(--text);
+  font-weight: 850;
+  line-height: 1;
+}
+
+.courseMark {
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid var(--line);
+  font-size: 0.6875rem;
+}
+
+.courseInfo,
+.profileText {
+  display: grid;
+  gap: 0.125rem;
+}
+
+.courseInfo strong,
+.profileText strong {
+  color: var(--text);
+  font-size: 0.875rem;
+  font-weight: 750;
+}
+
+.courseInfo small,
+.profileText small {
+  color: var(--muted);
   font-size: 0.75rem;
-  font-weight: 800;
-  text-transform: uppercase;
+  line-height: 1.3;
+}
+
+.chapters {
+  max-height: min(28rem, calc(100vh - 26rem));
+  overflow: auto;
+  padding-right: 0.1875rem;
 }
 
 .chapterLink {
   display: grid;
   grid-template-columns: 1.625rem minmax(0, 1fr) auto;
-  gap: 0.375rem;
+  gap: 0.4375rem;
   align-items: center;
-  font-size: 0.875rem;
+  min-height: 2.25rem;
+  padding: 0.3125rem 0.5rem;
+  font-size: 0.8125rem;
 }
 
 .chapterNumber {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.625rem;
+  height: 1.625rem;
+  border-radius: 0.4375rem;
+  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
   color: var(--accent);
-  font-weight: 800;
-}
-
-.chapterTitle {
-  min-width: 0;
+  font-size: 0.75rem;
+  font-weight: 850;
 }
 
 .chapterStatus {
@@ -90,75 +295,177 @@
   opacity: 0.66;
 }
 
-.chapterInProgress:hover {
+.chapterInProgress:hover,
+.chapterInProgress:focus-visible {
   opacity: 1;
+}
+
+.footer {
+  display: grid;
+  gap: 0.5rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  padding: 0.75rem;
+}
+
+.profileActions {
+  min-width: 0;
+}
+
+.profileLink {
+  display: grid;
+  grid-template-columns: 2rem minmax(0, 1fr);
+  gap: 0.625rem;
+  align-items: center;
+  min-height: 3.25rem;
+  padding: 0.5rem;
+}
+
+.profileAvatar {
+  width: 2rem;
+  height: 2rem;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 0.8125rem;
+}
+
+.collapsed {
+  width: 5.25rem;
+}
+
+.collapsed .header {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  padding-inline: 0.625rem;
+}
+
+.collapsed .brandLogo,
+.collapsed .groupTitle,
+.collapsed .linkLabel,
+.collapsed .courseInfo,
+.collapsed .profileText,
+.collapsed .chapterTitle,
+.collapsed .chapterStatus {
+  display: none;
+}
+
+.collapsed .brandIcon {
+  display: block;
+}
+
+.collapsed .collapseButton {
+  width: 2.25rem;
+}
+
+.collapsed .scrollArea,
+.collapsed .footer {
+  padding-inline: 0.625rem;
+}
+
+.collapsed .link,
+.collapsed .aiButton,
+.collapsed .profileLink,
+.collapsed .courseCard,
+.collapsed .chapterLink {
+  grid-template-columns: 1fr;
+  justify-items: center;
+  padding-inline: 0.3125rem;
+}
+
+.collapsed .courseCard {
+  min-height: 2.875rem;
+}
+
+.collapsed .profileLink {
+  min-height: 2.875rem;
+}
+
+.collapsed .chapters {
+  max-height: min(32rem, calc(100vh - 22rem));
+  padding-right: 0;
+}
+
+.collapsed .chapterNumber {
+  width: 2rem;
 }
 
 @media (max-width: 56.25rem) {
   .root {
-    position: static;
-    height: auto;
-    overflow: hidden;
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    width: min(20rem, calc(100vw - 2rem));
     max-width: 100vw;
-    min-width: 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
-    padding: 0.75rem 0.875rem 0.625rem;
+    transform: translateX(-105%);
+    border-right: 1px solid var(--line);
+    box-shadow: var(--shadow-md);
+    transition: transform 160ms ease;
   }
 
-  .brand {
-    width: min(100%, 11.5rem);
-    min-height: 2.375rem;
-    margin-bottom: 0.625rem;
+  .mobileOpen {
+    transform: translateX(0);
   }
 
-  .brandLogo {
-    max-height: 2.375rem;
+  .header {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .nav {
-    display: flex;
-    gap: 0.375rem;
-    overflow-x: auto;
-    padding-bottom: 0.125rem;
-    scrollbar-width: none;
-  }
-
-  .nav::-webkit-scrollbar,
-  .chapters::-webkit-scrollbar {
+  .collapseButton {
     display: none;
   }
 
-  .link {
-    flex: 0 0 auto;
-    padding: 0.4375rem 0.625rem;
+  .mobileCloseButton {
+    display: inline-flex;
   }
 
-  .sectionTitle {
-    margin: 0.75rem 0 0.4375rem;
+  .brandLogo {
+    display: block;
+    width: min(100%, 11.5rem);
   }
 
-  .chapters {
-    display: flex;
-    gap: 0.375rem;
-    max-height: none;
-    overflow-x: auto;
-    padding-right: 0;
-    scrollbar-width: none;
+  .brandIcon {
+    display: none;
   }
 
-  .chapterLink {
-    flex: 0 0 auto;
-    grid-template-columns: auto minmax(0, auto) auto;
-    max-width: 14.375rem;
-    border: 1px solid var(--line);
-    background: var(--surface);
-    padding: 0.4375rem 0.5625rem;
+  .collapsed {
+    width: min(20rem, calc(100vw - 2rem));
   }
 
-  .chapterTitle {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+  .collapsed .header {
+    grid-template-columns: minmax(0, 1fr) auto;
+    justify-items: stretch;
+    padding: 0.875rem 0.75rem 0.8125rem 0.875rem;
+  }
+
+  .collapsed .brandLogo,
+  .collapsed .groupTitle,
+  .collapsed .linkLabel,
+  .collapsed .courseInfo,
+  .collapsed .profileText,
+  .collapsed .chapterTitle,
+  .collapsed .chapterStatus {
+    display: block;
+  }
+
+  .collapsed .brandIcon {
+    display: none;
+  }
+
+  .collapsed .scrollArea,
+  .collapsed .footer {
+    padding-inline: 0.75rem;
+  }
+
+  .collapsed .link,
+  .collapsed .aiButton,
+  .collapsed .profileLink,
+  .collapsed .courseCard,
+  .collapsed .chapterLink {
+    grid-template-columns: 1.75rem minmax(0, 1fr);
+    justify-items: stretch;
+    padding-inline: 0.5rem;
+  }
+
+  .collapsed .chapterLink {
+    grid-template-columns: 1.625rem minmax(0, 1fr) auto;
   }
 }

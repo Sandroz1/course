@@ -489,6 +489,21 @@ export function AiAssistant() {
     const panelSizeDuringResizeRef = useRef(panelSize);
 
     useEffect(() => {
+        function handleOpenAiAssistant() {
+            setIsOpen(true);
+            setSelectionPopover(null);
+
+            window.requestAnimationFrame(() => {
+                focusTextareaAtEnd(textareaRef.current);
+            });
+        }
+
+        window.addEventListener("uchicode-open-ai", handleOpenAiAssistant);
+
+        return () => window.removeEventListener("uchicode-open-ai", handleOpenAiAssistant);
+    }, []);
+
+    useEffect(() => {
         panelSizeDuringResizeRef.current = panelSize;
     }, [panelSize]);
 
