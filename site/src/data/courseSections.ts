@@ -93,7 +93,7 @@ const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
     number: "6",
     title: "Многофайловый проект",
     description: "Научишься разделять класс по файлам: объявлять его в `.hpp`, реализовывать методы в `.cpp` и проверять работу в `main.cpp`.",
-    topics: ["hpp", "cpp", "include", "::"],
+    topics: ["hpp", "cpp", "include", "ClassName::method"],
     status: "available",
     content: multifileProjectContent,
     relatedTaskIds: ["05-01-book-multifile", "05-02-bed-training", "task4-1-bed-one-file", "task4-2-bed-multifile", "task4-3-bed-include-guard"],
