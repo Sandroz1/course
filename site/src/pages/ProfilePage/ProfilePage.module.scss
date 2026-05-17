@@ -1,7 +1,8 @@
 .root {
   display: grid;
-  gap: 14px;
-  max-width: 920px;
+  width: min(100%, 64rem);
+  margin-inline: auto;
+  gap: 1rem;
 }
 
 .header {
@@ -41,8 +42,8 @@
 
 .layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(260px, 310px);
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr) minmax(17rem, 19.5rem);
+  gap: 1rem;
   align-items: start;
 }
 

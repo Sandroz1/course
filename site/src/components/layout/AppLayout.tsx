@@ -1,9 +1,8 @@
-import { type ReactNode, useEffect, useMemo, useState } from "react";
+import { type ReactNode, useEffect, useState } from "react";
 
 import { AccountMenu } from "./AccountMenu/AccountMenu";
 import { AiAssistant } from "../../features/ai-assistant";
-import { courseSections } from "../../data/courseSections";
-import { tasks } from "../../data/tasks";
+import { useAuth } from "../../context/AuthContext";
 import { classNames } from "../../shared/lib/classNames";
 import { currentPath } from "../../utils/slug";
 import { SearchBox } from "./SearchBox/SearchBox";
@@ -12,12 +11,6 @@ import { ThemeSwitcher } from "./ThemeSwitcher/ThemeSwitcher";
 import styles from "./AppLayout.module.scss";
 
 const SIDEBAR_COLLAPSED_STORAGE_KEY = "uchicode.sidebar.collapsed";
-
-type RouteContext = {
-  eyebrow: string;
-  title: string;
-  detail?: string;
-};
 
 function readStoredSidebarCollapsed() {
   try {
@@ -35,75 +28,13 @@ function saveSidebarCollapsed(value: boolean) {
   }
 }
 
-function getRouteContext(path: string): RouteContext {
-  if (path === "/") {
-    return { eyebrow: "Uchicode", title: "Главная" };
-  }
-
-  if (path === "/courses") {
-    return { eyebrow: "Навигация", title: "Курсы" };
-  }
-
-  if (path === "/course" || path === "/courses/oop-cpp") {
-    return { eyebrow: "Курс", title: "ООП C++", detail: "Карта разделов" };
-  }
-
-  if (path.startsWith("/course/")) {
-    const slug = path.replace("/course/", "");
-    const section = courseSections.find((item) => item.slug === slug);
-
-    return {
-      eyebrow: "ООП C++",
-      title: section ? `${section.number}. ${section.title}` : "Раздел курса",
-      detail: "Теория и практика",
-    };
-  }
-
-  if (path === "/tasks") {
-    return { eyebrow: "Практика", title: "Задачи" };
-  }
-
-  if (path.startsWith("/tasks/")) {
-    const taskId = path.replace("/tasks/", "");
-    const task = tasks.find((item) => item.id === taskId);
-
-    return {
-      eyebrow: task?.section ?? "Практика",
-      title: task?.title ?? "Задача",
-      detail: task?.practicePath,
-    };
-  }
-
-  if (path === "/guide") {
-    return { eyebrow: "Обучение", title: "Как учиться" };
-  }
-
-  if (path === "/common-errors") {
-    return { eyebrow: "Обучение", title: "Частые ошибки" };
-  }
-
-  if (path === "/profile") {
-    return { eyebrow: "Аккаунт", title: "Профиль" };
-  }
-
-  if (path === "/login") {
-    return { eyebrow: "Аккаунт", title: "Вход" };
-  }
-
-  if (path === "/register") {
-    return { eyebrow: "Аккаунт", title: "Регистрация" };
-  }
-
-  return { eyebrow: "Uchicode", title: "Учебное приложение" };
-}
-
 function isWideRoute(path: string) {
-  return path === "/tasks" || path.startsWith("/tasks/") || path === "/profile";
+  return path === "/tasks" || path.startsWith("/tasks/");
 }
 
 export function AppLayout({ children }: { children: ReactNode }) {
   const path = currentPath();
-  const routeContext = useMemo(() => getRouteContext(path), [path]);
+  const { isAuthenticated } = useAuth();
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(readStoredSidebarCollapsed);
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
@@ -158,16 +89,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
           >
             <span aria-hidden="true">☰</span>
           </button>
-          <div className={styles.context}>
-            <span>{routeContext.eyebrow}</span>
-            <strong>{routeContext.title}</strong>
-          </div>
           <div className={styles.searchSlot}>
             <SearchBox />
           </div>
           <div className={styles.topbarActions}>
             <ThemeSwitcher />
-            <AccountMenu />
+            {!isAuthenticated && <AccountMenu />}
           </div>
         </header>
 
