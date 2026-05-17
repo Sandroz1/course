@@ -176,6 +176,7 @@
   letter-spacing: 0;
   line-height: 1;
   text-transform: uppercase;
+  white-space: nowrap;
 }
 
 .link,
@@ -333,6 +334,7 @@
 .footer {
   display: grid;
   gap: 0.5rem;
+  min-height: 8rem;
   border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
   padding: 0.75rem;
 }
@@ -370,11 +372,14 @@
 
 .collapsed .brand,
 .collapsed .collapseButton,
-.collapsed .groupTitle,
 .collapsed .linkLabel,
 .collapsed .courseInfo,
 .collapsed .profileText {
   display: none;
+}
+
+.collapsed .groupTitle {
+  visibility: hidden;
 }
 
 .collapsed .collapsedBrandButton {
@@ -396,11 +401,11 @@
 }
 
 .collapsed .courseCard {
-  min-height: 2.875rem;
+  min-height: 3.625rem;
 }
 
 .collapsed .profileLink {
-  min-height: 2.875rem;
+  min-height: 3.25rem;
 }
 
 @media (max-width: 56.25rem) {
