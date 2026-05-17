@@ -95,6 +95,10 @@
   line-height: 1;
 }
 
+.collapseButton {
+  cursor: ew-resize;
+}
+
 .collapseButton svg,
 .collapsedBrandToggle svg {
   width: 1.25rem;
