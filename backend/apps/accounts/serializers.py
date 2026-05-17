@@ -14,7 +14,7 @@ from .models import User
 from .tokens import invalidate_user_tokens
 
 
-PHONE_PATTERN = re.compile(r"^\+?[0-9][0-9\s().-]{4,31}$")
+PHONE_PATTERN = re.compile(r"^\+7\d{10}$")
 
 
 def normalize_phone(value: str | None) -> str | None:
@@ -26,9 +26,9 @@ def normalize_phone(value: str | None) -> str | None:
         return None
 
     if not PHONE_PATTERN.fullmatch(phone):
-        raise serializers.ValidationError("Введите телефон в понятном формате, например +79991234567.")
+        raise serializers.ValidationError("Введите российский номер в формате +79991234567.")
 
-    return re.sub(r"[\s().-]", "", phone)
+    return phone
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -54,14 +54,6 @@ class RegisterSerializer(serializers.Serializer):
 
         return username
 
-    def validate_phone(self, value: str) -> str | None:
-        phone = normalize_phone(value)
-
-        if phone and User.objects.filter(phone=phone).exists():
-            raise serializers.ValidationError("Такой телефон уже используется.")
-
-        return phone
-
     def validate(self, attrs: dict) -> dict:
         if attrs["password"] != attrs["password2"]:
             raise serializers.ValidationError({"password2": ["Пароли не совпадают."]})
@@ -75,6 +67,7 @@ class RegisterSerializer(serializers.Serializer):
 
     def create(self, validated_data: dict) -> User:
         validated_data.pop("password2", None)
+        validated_data.pop("phone", None)
         password = validated_data.pop("password")
 
         return User.objects.create_user(password=password, **validated_data)
@@ -109,20 +102,10 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
         fields = ("phone",)
 
     def validate_phone(self, value: str | None) -> str | None:
-        phone = normalize_phone(value)
-
-        if phone and User.objects.exclude(pk=self.instance.pk).filter(phone=phone).exists():
-            raise serializers.ValidationError("Такой телефон уже используется.")
-
-        return phone
+        raise serializers.ValidationError("Телефон подтверждается через SMS-код.")
 
     def update(self, instance: User, validated_data: dict) -> User:
-        if "phone" in validated_data:
-            next_phone = validated_data["phone"]
-            if instance.phone != next_phone:
-                instance.is_phone_verified = False
-
-        return super().update(instance, validated_data)
+        return instance
 
 
 class PhoneSendCodeSerializer(serializers.Serializer):
@@ -135,7 +118,7 @@ class PhoneSendCodeSerializer(serializers.Serializer):
             raise serializers.ValidationError("Введите телефон.")
 
         user = self.context["request"].user
-        if User.objects.exclude(pk=user.pk).filter(phone=phone).exists():
+        if User.objects.exclude(pk=user.pk).filter(phone=phone, is_phone_verified=True).exists():
             raise serializers.ValidationError("Такой телефон уже используется другим пользователем.")
 
         return phone

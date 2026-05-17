@@ -20,7 +20,6 @@ import type {
   AuthTokens,
   AuthUser,
   LoginRequest,
-  ProfileUpdateRequest,
   RegisterRequest,
 } from "../types/api";
 
@@ -33,7 +32,6 @@ type AuthContextValue = {
   register: (payload: RegisterRequest) => Promise<void>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
-  updateProfile: (payload: ProfileUpdateRequest) => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -251,16 +249,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   }, [clearAuth]);
 
-  const updateProfile = useCallback(async (payload: ProfileUpdateRequest) => {
-    const profile = await apiRequest<AuthUser>("/api/me/", {
-      method: "PATCH",
-      body: payload,
-    });
-    const snapshot = toUserSnapshot(profile);
-    writeUserSnapshot(snapshot);
-    setUser(snapshot);
-  }, []);
-
   const value = useMemo<AuthContextValue>(
     () => ({
       user,
@@ -271,7 +259,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       register,
       logout,
       refreshProfile,
-      updateProfile,
     }),
     [
       accessToken,
@@ -280,7 +267,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       logout,
       refreshProfile,
       register,
-      updateProfile,
       user,
     ],
   );

@@ -12,6 +12,16 @@ class User(AbstractUser):
 
     objects = UserManager()
 
+    class Meta:
+        verbose_name = "user"
+        verbose_name_plural = "users"
+        constraints = [
+            models.CheckConstraint(
+                condition=models.Q(phone__isnull=True) | models.Q(is_phone_verified=True),
+                name="phone_requires_verification",
+            ),
+        ]
+
     def __str__(self) -> str:
         return self.username
 

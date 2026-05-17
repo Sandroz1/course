@@ -1,14 +1,21 @@
 from unittest.mock import patch
+from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
+from django.db import IntegrityError, transaction
 from django.test import override_settings
+from django.utils import timezone
 from rest_framework import status
+from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIClient, APITestCase
 
 from apps.ai.models import AiDailyUsage, AiGlobalDailyUsage
 from apps.ai.services import AiProviderResult, UpstreamAiError
+from apps.accounts.models import PhoneVerificationCode
+from apps.accounts.serializers import normalize_phone
 
 
 User = get_user_model()
@@ -63,6 +70,22 @@ class AuthApiTests(APITestCase):
         self.assertNotIn("refresh", response.data["tokens"])
         self.assert_refresh_cookie(response)
         self.assertNotIn("password", response.data["user"])
+        self.assertIsNone(response.data["user"]["phone"])
+        self.assertFalse(response.data["user"]["is_phone_verified"])
+        self.assertIsNone(User.objects.get(username="alex").phone)
+
+    def test_register_does_not_reserve_legacy_phone_payload(self):
+        User.objects.create_user(
+            username="verified",
+            password="StrongPass123!",
+            phone="+79991234567",
+            is_phone_verified=True,
+        )
+
+        response = self.register(username="alex2")
+
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertIsNone(User.objects.get(username="alex2").phone)
 
     def test_register_duplicate_username(self):
         User.objects.create_user(username="alex", password="StrongPass123!")
@@ -139,7 +162,6 @@ class AuthApiTests(APITestCase):
         response = self.client.patch(
             "/api/me/",
             {
-                "phone": "+79991234567",
                 "is_staff": True,
                 "is_superuser": True,
                 "is_phone_verified": True,
@@ -153,9 +175,9 @@ class AuthApiTests(APITestCase):
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
         self.assertFalse(user.is_phone_verified)
-        self.assertEqual(user.phone, "+79991234567")
+        self.assertIsNone(user.phone)
 
-    def test_patch_me_phone_change_resets_phone_verification(self):
+    def test_patch_me_phone_is_rejected_without_sms_verification(self):
         user = User.objects.create_user(
             username="alex",
             password="StrongPass123!",
@@ -172,10 +194,105 @@ class AuthApiTests(APITestCase):
         )
         user.refresh_from_db()
 
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("phone", response.data["fields"])
+        self.assertEqual(user.phone, "+79990000000")
+        self.assertTrue(user.is_phone_verified)
+
+    def test_normalize_phone_accepts_only_russian_plus_seven_format(self):
+        self.assertEqual(normalize_phone("+79991234567"), "+79991234567")
+
+        for phone in ["89991234567", "+19991234567", "+7999123456", "+799912345678", "+7 999 123 45 67"]:
+            with self.subTest(phone=phone):
+                with self.assertRaises(ValidationError):
+                    normalize_phone(phone)
+
+    @patch("apps.accounts.services.phone_verification.generate_code", return_value="123456")
+    @patch("apps.accounts.services.phone_verification.send_sms_code")
+    def test_phone_verification_writes_confirmed_phone(self, mocked_send_sms_code, _mocked_generate_code):
+        user = User.objects.create_user(username="alex", password="StrongPass123!")
+        self.authenticate(user)
+
+        send_response = self.client.post(
+            "/api/auth/phone/send-code/",
+            {"phone": "+79991234567"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+        verify_response = self.client.post(
+            "/api/auth/phone/verify/",
+            {"phone": "+79991234567", "code": "123456"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+        user.refresh_from_db()
+
+        self.assertEqual(send_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(verify_response.status_code, status.HTTP_200_OK)
         self.assertEqual(user.phone, "+79991234567")
+        self.assertTrue(user.is_phone_verified)
+        mocked_send_sms_code.assert_called_once_with("+79991234567", "123456")
+
+    @patch("apps.accounts.services.phone_verification.send_sms_code")
+    def test_send_code_allows_phone_pending_for_another_user(self, mocked_send_sms_code):
+        other_user = User.objects.create_user(username="other", password="StrongPass123!")
+        PhoneVerificationCode.objects.create(
+            user=other_user,
+            phone="+79991234567",
+            code_hash=make_password("123456"),
+            expires_at=timezone.now() + timedelta(minutes=10),
+        )
+        user = User.objects.create_user(username="alex", password="StrongPass123!")
+        self.authenticate(user)
+
+        response = self.client.post(
+            "/api/auth/phone/send-code/",
+            {"phone": "+79991234567"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        mocked_send_sms_code.assert_called_once()
+
+    def test_verify_code_rejects_already_confirmed_phone(self):
+        User.objects.create_user(
+            username="verified",
+            password="StrongPass123!",
+            phone="+79991234567",
+            is_phone_verified=True,
+        )
+        user = User.objects.create_user(username="alex", password="StrongPass123!")
+        PhoneVerificationCode.objects.create(
+            user=user,
+            phone="+79991234567",
+            code_hash=make_password("123456"),
+            expires_at=timezone.now() + timedelta(minutes=10),
+        )
+        self.authenticate(user)
+
+        response = self.client.post(
+            "/api/auth/phone/verify/",
+            {"phone": "+79991234567", "code": "123456"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+        user.refresh_from_db()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("phone", response.data["fields"])
+        self.assertIsNone(user.phone)
         self.assertFalse(user.is_phone_verified)
-        self.assertFalse(response.data["is_phone_verified"])
+
+    def test_unverified_phone_cannot_be_saved_on_user(self):
+        with self.assertRaises(IntegrityError):
+            with transaction.atomic():
+                User.objects.create_user(
+                    username="alex-with-phone",
+                    password="StrongPass123!",
+                    phone="+79991234567",
+                    is_phone_verified=False,
+                )
 
     def test_change_password_wrong_current_password(self):
         user = User.objects.create_user(username="alex", password="StrongPass123!")

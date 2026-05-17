@@ -64,7 +64,7 @@ class AdminUserSerializer(serializers.ModelSerializer):
             if self.instance is not None:
                 queryset = queryset.exclude(pk=self.instance.pk)
 
-            if queryset.exists():
+            if queryset.filter(is_phone_verified=True).exists():
                 raise serializers.ValidationError("Такой телефон уже используется.")
 
         return phone
@@ -97,6 +97,14 @@ class AdminUserSerializer(serializers.ModelSerializer):
             if is_last_superuser(instance):
                 raise serializers.ValidationError({"message": "Нельзя снять права у последнего администратора."})
 
+        next_phone = attrs.get("phone", instance.phone if instance is not None else None)
+        next_is_phone_verified = attrs.get(
+            "is_phone_verified",
+            instance.is_phone_verified if instance is not None else False,
+        )
+        if next_phone and not next_is_phone_verified:
+            raise serializers.ValidationError({"is_phone_verified": ["Телефон можно сохранить только подтверждённым."]})
+
         password = attrs.get("password")
         if password:
             try:
@@ -111,9 +119,6 @@ class AdminUserSerializer(serializers.ModelSerializer):
         return User.objects.create_user(password=password, **validated_data)
 
     def update(self, instance: User, validated_data: dict) -> User:
-        if "phone" in validated_data and instance.phone != validated_data["phone"]:
-            instance.is_phone_verified = False
-
         return super().update(instance, validated_data)
 
 

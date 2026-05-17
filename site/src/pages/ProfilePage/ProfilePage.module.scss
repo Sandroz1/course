@@ -124,6 +124,38 @@
   outline-offset: 2px;
 }
 
+.phoneInputGroup {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+
+.phoneInputGroup:focus-within {
+  outline: 2px solid var(--accent-strong);
+  outline-offset: 2px;
+}
+
+.phoneInputGroup .input {
+  border: 0;
+  border-radius: 0 8px 8px 0;
+  background: transparent;
+}
+
+.phoneInputGroup .input:focus-visible {
+  outline: 0;
+}
+
+.phonePrefix {
+  min-width: 44px;
+  border-right: 1px solid var(--line);
+  color: var(--text);
+  font-weight: 750;
+  padding-inline: 11px 9px;
+}
+
 .fieldError {
   min-height: 17px;
   color: var(--danger);

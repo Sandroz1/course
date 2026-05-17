@@ -13,9 +13,9 @@ import type { AiUsage, ProgressOverview } from "../../types/api";
 import { navigateTo } from "../../utils/navigation";
 import styles from "./ProfilePage.module.scss";
 
-type ProfileFieldErrors = Partial<Record<"phone", string[]>>;
 type PhoneVerifyFieldErrors = Partial<Record<"phone" | "code", string[]>>;
 type PasswordFieldErrors = Partial<Record<"currentPassword" | "newPassword" | "newPassword2", string[]>>;
+const RUSSIAN_PHONE_DIGITS_LENGTH = 10;
 
 function firstError<T extends string>(errors: Partial<Record<T, string[]>>, field: T) {
   return errors[field]?.[0] ?? "";
@@ -38,14 +38,23 @@ function getAiUsagePercent(usage: AiUsage) {
   return clampPercent((remaining / limit) * 100);
 }
 
+function extractRussianPhoneDigits(phone: string | null | undefined) {
+  return phone?.startsWith("+7") ? phone.slice(2).replace(/\D/g, "").slice(0, RUSSIAN_PHONE_DIGITS_LENGTH) : "";
+}
+
+function sanitizeRussianPhoneDigits(value: string) {
+  return value.replace(/\D/g, "").slice(0, RUSSIAN_PHONE_DIGITS_LENGTH);
+}
+
+function buildRussianPhone(digits: string) {
+  return digits.length === RUSSIAN_PHONE_DIGITS_LENGTH ? `+7${digits}` : "";
+}
+
 export function ProfilePage() {
-  const { user, isLoading, logout, refreshProfile, updateProfile, accessToken } = useAuth();
+  const { user, isLoading, logout, refreshProfile, accessToken } = useAuth();
   const authKey = accessToken ?? "";
-  const [phone, setPhone] = useState("");
+  const [phoneDigits, setPhoneDigits] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
-  const [messageText, setMessageText] = useState("");
-  const [errorText, setErrorText] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<ProfileFieldErrors>({});
   const [phoneMessage, setPhoneMessage] = useState("");
   const [phoneErrorText, setPhoneErrorText] = useState("");
   const [phoneFieldErrors, setPhoneFieldErrors] = useState<PhoneVerifyFieldErrors>({});
@@ -55,7 +64,6 @@ export function ProfilePage() {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPassword2, setNewPassword2] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
   const [isSendingCode, setIsSendingCode] = useState(false);
   const [isVerifyingCode, setIsVerifyingCode] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -64,15 +72,14 @@ export function ProfilePage() {
   const [isStudyProgressLoading, setIsStudyProgressLoading] = useState(false);
   const [studyProgressError, setStudyProgressError] = useState("");
   const [aiUsage, setAiUsage] = useState<AiUsage>(() => getLocalAiUsage(user?.id));
-  const phoneError = firstError(fieldErrors, "phone");
-  const phoneVerifyError = firstError(phoneFieldErrors, "phone");
+  const phoneError = firstError(phoneFieldErrors, "phone");
   const codeError = firstError(phoneFieldErrors, "code");
   const currentPasswordError = firstError(passwordFieldErrors, "currentPassword");
   const newPasswordError = firstError(passwordFieldErrors, "newPassword");
   const newPassword2Error = firstError(passwordFieldErrors, "newPassword2");
 
   useEffect(() => {
-    setPhone(user?.phone ?? "");
+    setPhoneDigits(extractRussianPhoneDigits(user?.phone));
   }, [user]);
 
   useEffect(() => {
@@ -143,37 +150,18 @@ export function ProfilePage() {
     };
   }, [authKey, user]);
 
-  async function handleSave(event: FormEvent) {
-    event.preventDefault();
-    setMessageText("");
-    setErrorText("");
-    setFieldErrors({});
-    setIsSaving(true);
-
-    try {
-      await updateProfile({ phone });
-      setPhoneCode("");
-      setMessageText("Профиль обновлён.");
-    } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorText(error.message);
-        setFieldErrors(error.fields ?? {});
-      } else {
-        setErrorText("Не удалось обновить профиль.");
-      }
-    } finally {
-      setIsSaving(false);
-    }
-  }
-
-  async function handleSendCode() {
+  async function handleSendCode(event?: FormEvent) {
+    event?.preventDefault();
     setPhoneMessage("");
     setPhoneErrorText("");
     setPhoneFieldErrors({});
 
-    if (!phone.trim()) {
-      setPhoneErrorText("Введите телефон.");
-      setPhoneFieldErrors({ phone: ["Введите телефон."] });
+    const phone = buildRussianPhone(phoneDigits);
+    if (phone && user?.phone === phone && user.is_phone_verified) return;
+
+    if (!phone) {
+      setPhoneErrorText("Введите 10 цифр российского номера.");
+      setPhoneFieldErrors({ phone: ["Введите 10 цифр российского номера."] });
       return;
     }
 
@@ -182,6 +170,7 @@ export function ProfilePage() {
     try {
       const response = await sendPhoneVerificationCode(phone);
       setPhoneMessage(response.message || "Код отправлен.");
+      setPhoneCode("");
       setCooldownSeconds(60);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -204,6 +193,14 @@ export function ProfilePage() {
     setPhoneMessage("");
     setPhoneErrorText("");
     setPhoneFieldErrors({});
+
+    const phone = buildRussianPhone(phoneDigits);
+    if (!phone) {
+      setPhoneErrorText("Введите 10 цифр российского номера.");
+      setPhoneFieldErrors({ phone: ["Введите 10 цифр российского номера."] });
+      return;
+    }
+
     setIsVerifyingCode(true);
 
     try {
@@ -292,9 +289,12 @@ export function ProfilePage() {
     );
   }
 
-  const isPhoneChanged = phone.trim() !== (user.phone ?? "");
+  const phone = buildRussianPhone(phoneDigits);
+  const isPhoneChanged = phone !== (user.phone ?? "");
   const isPhoneVerified = Boolean(user.phone && user.is_phone_verified && !isPhoneChanged);
-  const canSendCode = Boolean(phone.trim()) && cooldownSeconds === 0 && !isSendingCode;
+  const canSendCode =
+    !isPhoneVerified && phoneDigits.length === RUSSIAN_PHONE_DIGITS_LENGTH && cooldownSeconds === 0 && !isSendingCode;
+  const canVerifyCode = phoneDigits.length === RUSSIAN_PHONE_DIGITS_LENGTH && phoneCode.length === 6 && !isVerifyingCode;
   const completedLessonsCount = studyProgress?.lessons.filter((lesson) => lesson.is_completed).length ?? 0;
   const openedLessonsCount = studyProgress?.lessons.length ?? 0;
   const solvedTasksCount = studyProgress?.tasks.filter((task) => task.status === "solved").length ?? 0;
@@ -320,17 +320,24 @@ export function ProfilePage() {
               <h2 className={styles.cardTitle}>Телефон</h2>
             </div>
 
-            <form className={styles.form} onSubmit={handleSave} aria-busy={isSaving}>
+            <form className={styles.form} onSubmit={handleSendCode} aria-busy={isSendingCode}>
               <label className={styles.field}>
                 <span className={styles.label}>Номер</span>
-                <input
-                  className={styles.input}
-                  aria-invalid={Boolean(phoneError)}
-                  autoComplete="tel"
-                  value={phone}
-                  onChange={(event) => setPhone(event.target.value)}
-                  disabled={isSaving}
-                />
+                <div className={styles.phoneInputGroup}>
+                  <span className={styles.phonePrefix}>+7</span>
+                  <input
+                    className={styles.input}
+                    aria-invalid={Boolean(phoneError)}
+                    autoComplete="tel-national"
+                    inputMode="numeric"
+                    maxLength={RUSSIAN_PHONE_DIGITS_LENGTH}
+                    pattern="\d{10}"
+                    value={phoneDigits}
+                    onChange={(event) => setPhoneDigits(sanitizeRussianPhoneDigits(event.target.value))}
+                    placeholder="9991234567"
+                    disabled={isSendingCode}
+                  />
+                </div>
                 <span className={styles.fieldError} aria-live="polite">
                   {phoneError || "\u00A0"}
                 </span>
@@ -348,25 +355,21 @@ export function ProfilePage() {
               <p
                 className={clsx(
                   styles.formMessage,
-                  errorText && styles.formError,
-                  messageText && styles.formSuccess,
-                  !errorText && !messageText && styles.formMessageEmpty,
+                  phoneErrorText && styles.formError,
+                  phoneMessage && styles.formSuccess,
+                  !phoneErrorText && !phoneMessage && styles.formMessageEmpty,
                 )}
                 aria-live="polite"
               >
-                {errorText || messageText || "\u00A0"}
+                {phoneErrorText || phoneMessage || "\u00A0"}
               </p>
 
               <div className={styles.actions}>
-                <button className={styles.primaryButton} type="submit" disabled={isSaving}>
-                  {isSaving ? "Сохраняем..." : "Сохранить"}
-                </button>
                 {!isPhoneVerified && (
                   <button
                     className={styles.secondaryButton}
-                    type="button"
-                    disabled={!canSendCode || isSaving}
-                    onClick={() => void handleSendCode()}
+                    type="submit"
+                    disabled={!canSendCode}
                   >
                     {isSendingCode
                       ? "Отправляем..."
@@ -380,23 +383,11 @@ export function ProfilePage() {
 
             {!isPhoneVerified && (
               <form className={styles.form} onSubmit={handleVerifyCode} aria-busy={isVerifyingCode}>
-                <p
-                  className={clsx(
-                    styles.formMessage,
-                    phoneErrorText && styles.formError,
-                    phoneMessage && styles.formSuccess,
-                    !phoneErrorText && !phoneMessage && styles.formMessageEmpty,
-                  )}
-                  aria-live="polite"
-                >
-                  {phoneErrorText || phoneMessage || "\u00A0"}
-                </p>
-
                 <label className={styles.field}>
                   <span className={styles.label}>Код из SMS</span>
                   <input
                     className={styles.input}
-                    aria-invalid={Boolean(codeError || phoneVerifyError)}
+                    aria-invalid={Boolean(codeError)}
                     inputMode="numeric"
                     maxLength={6}
                     value={phoneCode}
@@ -405,12 +396,12 @@ export function ProfilePage() {
                     disabled={isVerifyingCode}
                   />
                   <span className={styles.fieldError} aria-live="polite">
-                    {codeError || phoneVerifyError || "\u00A0"}
+                    {codeError || "\u00A0"}
                   </span>
                 </label>
 
                 <div className={styles.actions}>
-                  <button className={styles.secondaryButton} type="submit" disabled={isVerifyingCode}>
+                  <button className={styles.secondaryButton} type="submit" disabled={!canVerifyCode}>
                     {isVerifyingCode ? "Проверяем..." : "Подтвердить"}
                   </button>
                 </div>

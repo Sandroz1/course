@@ -13,7 +13,12 @@ class AdminUserApiTests(APITestCase):
     def setUp(self):
         cache.clear()
         self.staff = User.objects.create_user(username="staff", password="StrongPass123!", is_staff=True)
-        self.user = User.objects.create_user(username="alex", password="StrongPass123!", phone="+79991234567")
+        self.user = User.objects.create_user(
+            username="alex",
+            password="StrongPass123!",
+            phone="+79991234567",
+            is_phone_verified=True,
+        )
 
     def authenticate(self, user):
         self.client.force_authenticate(user=user)
@@ -223,6 +228,7 @@ class AdminUserApiTests(APITestCase):
             {
                 "username": "newuser",
                 "phone": "+79990001122",
+                "is_phone_verified": True,
                 "password": "NewStrongPass123!",
                 "is_active": True,
                 "is_staff": False,

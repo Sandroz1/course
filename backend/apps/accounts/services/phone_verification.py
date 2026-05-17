@@ -5,6 +5,7 @@ from datetime import timedelta
 
 from django.conf import settings
 from django.contrib.auth.hashers import check_password, make_password
+from django.db import IntegrityError, transaction
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import APIException, ValidationError
@@ -213,11 +214,18 @@ def confirm_phone_code(*, user: User, phone: str, code: str) -> User:
 
         raise ValidationError({"code": ["Неверный код."]})
 
-    verification_code.is_used = True
-    verification_code.save(update_fields=["is_used"])
+    if User.objects.exclude(pk=user.pk).filter(phone=phone, is_phone_verified=True).exists():
+        raise ValidationError({"phone": ["Такой телефон уже используется другим пользователем."]})
 
-    user.phone = phone
-    user.is_phone_verified = True
-    user.save(update_fields=["phone", "is_phone_verified"])
+    with transaction.atomic():
+        verification_code.is_used = True
+        verification_code.save(update_fields=["is_used"])
+
+        user.phone = phone
+        user.is_phone_verified = True
+        try:
+            user.save(update_fields=["phone", "is_phone_verified"])
+        except IntegrityError as exc:
+            raise ValidationError({"phone": ["Такой телефон уже используется другим пользователем."]}) from exc
 
     return user

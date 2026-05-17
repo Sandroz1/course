@@ -72,7 +72,6 @@ export type AuthResponse = Partial<AuthTokens> & {
 
 export type RegisterRequest = {
   username: string;
-  phone: string;
   password: string;
   password2: string;
 };
@@ -80,10 +79,6 @@ export type RegisterRequest = {
 export type LoginRequest = {
   username: string;
   password: string;
-};
-
-export type ProfileUpdateRequest = {
-  phone: string;
 };
 
 export type PhoneSendCodeRequest = {
