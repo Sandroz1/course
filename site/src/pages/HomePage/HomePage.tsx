@@ -1,6 +1,6 @@
 import { courses } from "../../data/courses";
 import { statusMeta } from "../../data/status";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import { toPath } from "../../utils/slug";
 import styles from "./HomePage.module.scss";
 
@@ -30,7 +30,7 @@ export function HomePage() {
         </div>
       </header>
 
-      <section className={classNames("panel", styles.courseCard)}>
+      <section className={clsx("panel", styles.courseCard)}>
         <div>
           <p className="eyebrow">Сейчас доступно</p>
           <h2>Курсы</h2>

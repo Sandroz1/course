@@ -330,6 +330,30 @@ class AiApiValidationTests(APITestCase):
         mocked_call_qwen.assert_called_once()
 
     @patch("apps.ai.views.call_qwen", return_value="Ответ")
+    def test_ai_verified_user_gets_429_after_burst_limit(self, mocked_call_qwen):
+        self.authenticate()
+
+        for _index in range(10):
+            response = self.client.post(
+                "/api/ai/chat/",
+                {"question": "class?"},
+                format="json",
+                HTTP_HOST="localhost",
+            )
+            self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        response = self.client.post(
+            "/api/ai/chat/",
+            {"question": "class?"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_429_TOO_MANY_REQUESTS)
+        self.assertEqual(mocked_call_qwen.call_count, 10)
+
+    @patch("apps.ai.throttles.AiUserBurstThrottle.rate", "100/min", create=True)
+    @patch("apps.ai.views.call_qwen", return_value="Ответ")
     def test_ai_verified_user_is_limited_to_15_requests_per_day(self, mocked_call_qwen):
         self.authenticate()
 

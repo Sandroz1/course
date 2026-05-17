@@ -11,7 +11,7 @@ import {
   updateStudyState,
   upsertLessonProgress,
 } from "../../lib/progressApi";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import type { ProgressOverview } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import { collectTocItems, LessonContent, renderInline } from "./components/LessonContent";
@@ -215,7 +215,7 @@ export function CoursePage({ slug }: { slug: string }) {
   if (!isCourseSectionReady(section)) {
     return (
       <article className="reading-page lesson-page">
-        <section className={classNames("panel", styles.sectionPlaceholder)}>
+        <section className={clsx("panel", styles.sectionPlaceholder)}>
           <p className="eyebrow">Раздел {section.number}</p>
           <span className={`status-badge status-badge--${statusMeta[section.status].tone}`}>
             {statusMeta[section.status].label}
@@ -299,7 +299,7 @@ export function CoursePage({ slug }: { slug: string }) {
       {isAuthenticated && (
         <section className={styles.progressPanel}>
           <button
-            className={isLessonCompleted && !isProgressPending ? "button" : "button button--primary"}
+            className={clsx("button", (!isLessonCompleted || isProgressPending) && "button--primary")}
             disabled={isProgressSaving || isProgressPending || !hasLessonProgressState}
             type="button"
             onClick={() => void handleToggleCompleted()}
@@ -356,7 +356,7 @@ export function CoursePage({ slug }: { slug: string }) {
             <span />
           )}
           {nextSection ? (
-            <a className={classNames(styles.navLink, styles.navLinkNext)} href={toPath(`/course/${nextSection.slug}`)}>
+            <a className={clsx(styles.navLink, styles.navLinkNext)} href={toPath(`/course/${nextSection.slug}`)}>
               <span className={styles.navLabel}>Следующий</span>
               <strong>
                 {nextSection.number}. {nextSection.title}

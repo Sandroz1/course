@@ -7,7 +7,7 @@ import {
   getLessonProgressKey,
 } from "../../features/course-progress/progressSelectors";
 import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import { toPath } from "../../utils/slug";
 import styles from "./CourseIndexPage.module.scss";
 
@@ -40,7 +40,7 @@ function CourseSectionRow({
 
   return (
     <a
-      className={classNames("panel", styles.row, !isReady && styles.rowInProgress)}
+      className={clsx("panel", styles.row, !isReady && styles.rowInProgress)}
       href={toPath(`/course/${slug}`)}
     >
       <span className={styles.number}>{number}</span>
@@ -54,7 +54,7 @@ function CourseSectionRow({
           <span className={`status-badge status-badge--${meta.tone}`}>{meta.label}</span>
         )}
       </span>
-      <span className={classNames(styles.action, !isReady && styles.actionMuted)}>
+      <span className={clsx(styles.action, !isReady && styles.actionMuted)}>
         {isReady ? "Открыть" : "Скоро"}
       </span>
     </a>
@@ -124,7 +124,7 @@ export function CourseIndexPage() {
   }, [authKey, isAuthenticated]);
 
   return (
-    <article className={classNames("reading-page", "compact-page", "route-page", styles.root)}>
+    <article className={clsx("reading-page", "compact-page", "route-page", styles.root)}>
       <header className="page-header">
         <a className="back-link" href={toPath("/courses")}>
           Все курсы
@@ -137,7 +137,7 @@ export function CourseIndexPage() {
         </p>
       </header>
 
-      <section className={classNames("panel", styles.progress)}>
+      <section className={clsx("panel", styles.progress)}>
         <div className={styles.progressItem}>
           <strong>Порядок прохождения</strong>
           <span>Теория → задача → .cpp файл → самопроверка</span>
@@ -149,7 +149,7 @@ export function CourseIndexPage() {
       </section>
 
       {progressError && (
-        <section className={classNames("panel", styles.progressState)}>
+        <section className={clsx("panel", styles.progressState)}>
           <span>{progressError}</span>
         </section>
       )}

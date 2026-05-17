@@ -10,7 +10,7 @@ import {
   setCachedTaskProgress,
   upsertTaskProgress,
 } from "../../lib/progressApi";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import type { TaskProgressStatus } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
@@ -174,7 +174,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         : "in_progress";
 
   return (
-    <article className={classNames("reading-page", styles.root)}>
+    <article className={clsx("reading-page", styles.root)}>
       <header className={styles.header}>
         <a className="back-link" href={toPath("/tasks")}>
           К задачам
@@ -192,14 +192,14 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
       </header>
 
       {hasClosedTheory && (
-        <section className={classNames("panel", styles.theoryNote)}>
+        <section className={clsx("panel", styles.theoryNote)}>
           <strong>Теория к этой задаче ещё закрыта</strong>
           <p>Лучше пройти готовые разделы до this. Объяснение темы пока на доработке.</p>
         </section>
       )}
 
       {isAuthenticated && (
-        <section className={classNames("panel", styles.progressPanel)}>
+        <section className={clsx("panel", styles.progressPanel)}>
           <div>
             <strong>Прогресс задачи</strong>
             <span>
@@ -213,7 +213,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
             </span>
           </div>
           <button
-            className={effectiveTaskStatus === "solved" ? "button" : "button button--primary"}
+            className={clsx("button", effectiveTaskStatus !== "solved" && "button--primary")}
             type="button"
             disabled={isProgressLoading || isProgressSaving}
             onClick={() => void handleSetTaskStatus(nextTaskStatus)}
@@ -227,7 +227,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
                   : "Начать"}
           </button>
           <span
-            className={classNames(
+            className={clsx(
               styles.progressMessage,
               !progressMessage && styles.progressMessageEmpty,
             )}
@@ -238,13 +238,13 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </section>
       )}
 
-      <section className={classNames("panel", styles.goal)}>
+      <section className={clsx("panel", styles.goal)}>
         <h2>Условие</h2>
         <p>{task.goal}</p>
         <p>{task.description}</p>
       </section>
 
-      <section className={classNames("panel", styles.plainPanel)}>
+      <section className={clsx("panel", styles.plainPanel)}>
         <h2>Что создать</h2>
         <ul>
           {task.whatToCreate.map((item) => (
@@ -253,7 +253,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </ul>
       </section>
 
-      <section className={classNames("panel", styles.codePanel)}>
+      <section className={clsx("panel", styles.codePanel)}>
         <h2>Файлы и каркас кода</h2>
         <p className="muted-text">
           Основной файл: <code>{task.practicePath}</code>
@@ -264,7 +264,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
             <button
               key={file.fileName}
               id={`task-file-tab-${task.id}-${index}`}
-              className={classNames(styles.fileTab, index === activeFileIndex && styles.fileTabActive)}
+              className={clsx(styles.fileTab, index === activeFileIndex && styles.fileTabActive)}
               type="button"
               role="tab"
               aria-selected={index === activeFileIndex}
@@ -285,7 +285,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
       </section>
 
       {task.todoGuide && task.todoGuide.length > 0 && (
-        <section className={classNames("panel", styles.plainPanel)}>
+        <section className={clsx("panel", styles.plainPanel)}>
           <h2>Что писать вместо TODO</h2>
           <ol>
             {task.todoGuide.map((item) => (
@@ -295,7 +295,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </section>
       )}
 
-      <section className={classNames("panel", styles.plainPanel)}>
+      <section className={clsx("panel", styles.plainPanel)}>
         <h2>План решения</h2>
         <ol>
           {task.steps.map((step) => (
@@ -304,7 +304,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </ol>
       </section>
 
-      <section className={classNames("panel", styles.plainPanel)}>
+      <section className={clsx("panel", styles.plainPanel)}>
         <h2>Подсказки</h2>
         <ul>
           {task.hints.map((hint) => (
@@ -313,7 +313,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </ul>
       </section>
 
-      <section className={classNames("panel", styles.plainPanel)}>
+      <section className={clsx("panel", styles.plainPanel)}>
         <h2>Частые ошибки</h2>
         <ul>
           {task.commonMistakes.map((mistake) => (
@@ -322,7 +322,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </ul>
       </section>
 
-      <section className={classNames("panel", styles.plainPanel)}>
+      <section className={clsx("panel", styles.plainPanel)}>
         <h2>Самопроверка</h2>
         <ul>
           {task.selfCheck.map((item) => (
@@ -331,13 +331,13 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </ul>
       </section>
 
-      <section className={classNames("panel", styles.plainPanel, styles.notePanel)}>
+      <section className={clsx("panel", styles.plainPanel, styles.notePanel)}>
         <h2>Не открывай готовый ответ сразу</h2>
         <p>Напиши свой вариант и проверь его по чек-листу. Ответ полезен после попытки.</p>
       </section>
 
       {theory && (
-        <section className={classNames("panel", styles.plainPanel)}>
+        <section className={clsx("panel", styles.plainPanel)}>
           <h2>Повторить теорию</h2>
           <p>
             {hasClosedTheory

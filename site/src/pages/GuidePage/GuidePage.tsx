@@ -1,4 +1,4 @@
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import styles from "./GuidePage.module.scss";
 
 const steps = [
@@ -71,7 +71,7 @@ function renderText(text: string) {
 
 export function GuidePage() {
   return (
-    <article className={classNames("reading-page", styles.root)}>
+    <article className={clsx("reading-page", styles.root)}>
       <header className={styles.hero}>
         <div className={styles.heroText}>
           <p className="eyebrow">Методика</p>

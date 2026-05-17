@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import styles from "./CommonErrorsPage.module.scss";
 
 const errors = [
@@ -143,14 +143,14 @@ export function CommonErrorsPage() {
   }, [trimmedQuery]);
 
   return (
-    <article className={classNames("reading-page", "compact-page", styles.root)}>
-      <header className={classNames("page-header", styles.header)}>
+    <article className={clsx("reading-page", "compact-page", styles.root)}>
+      <header className={clsx("page-header", styles.header)}>
         <p className="eyebrow">Справочник</p>
         <h1>Частые ошибки</h1>
         <p className="lead">Короткие разборы типичных ошибок C++: причина, неверный пример и исправление.</p>
       </header>
 
-      <section className={classNames("panel", styles.search)}>
+      <section className={clsx("panel", styles.search)}>
         <div className={styles.searchField}>
           <label className={styles.field} htmlFor="common-errors-search">
             <span>Поиск</span>
@@ -180,7 +180,7 @@ export function CommonErrorsPage() {
 
       <div className={styles.list}>
         {filteredErrors.map((error) => (
-          <details className={classNames("panel", styles.card)} key={error.title}>
+          <details className={clsx("panel", styles.card)} key={error.title}>
             <summary className={styles.summary}>
               <strong className={styles.summaryTitle}>{error.title}</strong>
               <span className={styles.summaryText}>
@@ -195,11 +195,11 @@ export function CommonErrorsPage() {
                 </p>
               </section>
               <div className={styles.examplePair}>
-                <section className={classNames(styles.exampleBox, styles.exampleBoxBad)}>
+                <section className={clsx(styles.exampleBox, styles.exampleBoxBad)}>
                   <h3>Ошибка</h3>
                   <CodeBlock code={error.bad} language="cpp" compact />
                 </section>
-                <section className={classNames(styles.exampleBox, styles.exampleBoxGood)}>
+                <section className={clsx(styles.exampleBox, styles.exampleBoxGood)}>
                   <h3>Правильно</h3>
                   <CodeBlock code={error.fixed} language="cpp" compact />
                 </section>
@@ -213,7 +213,7 @@ export function CommonErrorsPage() {
       </div>
 
       {filteredErrors.length === 0 && (
-        <section className={classNames("panel", styles.emptyState)}>
+        <section className={clsx("panel", styles.emptyState)}>
           <h2>Ничего не найдено</h2>
           <p>Попробуй другое слово из сообщения компилятора или сбрось поиск.</p>
           {trimmedQuery && (

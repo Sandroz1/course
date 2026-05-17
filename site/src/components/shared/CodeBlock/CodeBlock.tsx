@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import type { HighlighterCore, LanguageInput } from "shiki/core";
 
-import { classNames } from "../../../shared/lib/classNames";
+import clsx from "clsx";
 import styles from "./CodeBlock.module.scss";
 
 type CodeBlockProps = {
@@ -192,7 +192,7 @@ export function CodeBlock({ code, language = "cpp", compact = false }: CodeBlock
         : "Скопировать";
 
   return (
-    <div className={classNames(styles.root, compact && styles.compact)}>
+    <div className={clsx(styles.root, compact && styles.compact)}>
       <div className={styles.bar}>
         <span className={styles.language}>{languageLabel}</span>
         <button
@@ -207,7 +207,7 @@ export function CodeBlock({ code, language = "cpp", compact = false }: CodeBlock
       {highlightedHtml ? (
         <div className={styles.highlight} dangerouslySetInnerHTML={{ __html: highlightedHtml }} />
       ) : (
-        <pre className={classNames(styles.pre, styles.preFallback)}>
+        <pre className={clsx(styles.pre, styles.preFallback)}>
           <code className={styles.code}>{code}</code>
         </pre>
       )}

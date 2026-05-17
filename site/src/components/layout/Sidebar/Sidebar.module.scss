@@ -4,7 +4,7 @@
   z-index: 12;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  width: 16.75rem;
+  width: 16rem;
   height: 100dvh;
   min-width: 0;
   overflow: hidden;
@@ -16,52 +16,95 @@
 }
 
 .header {
+  position: relative;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.5rem;
+  gap: 0.75rem;
   align-items: center;
-  min-height: 4.25rem;
+  min-height: 4rem;
   border-bottom: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
-  padding: 0.875rem 0.75rem 0.8125rem 0.875rem;
+  padding: 0.75rem 0.75rem 0.75rem 0.875rem;
 }
 
 .brand {
   display: flex;
   align-items: center;
+  gap: 0.4375rem;
+  justify-self: start;
+  width: fit-content;
+  max-width: 100%;
   min-width: 0;
   min-height: 2.5rem;
+  overflow: hidden;
+  opacity: 1;
+  visibility: visible;
 }
 
 .collapsedBrandButton {
-  position: relative;
-  display: none;
-  width: 2.625rem;
-  height: 2.625rem;
+  position: absolute;
+  top: 50%;
+  left: 0.625rem;
+  display: grid;
+  width: 2.5rem;
+  height: 2.5rem;
   place-items: center;
   border: 1px solid transparent;
   border-radius: 0.75rem;
   background: transparent;
   color: var(--text);
   cursor: ew-resize;
+  opacity: 0;
   padding: 0;
-  transition: border-color 140ms ease, background 140ms ease, color 140ms ease;
+  pointer-events: none;
+  transform: translateY(-50%);
+  visibility: hidden;
+  transition:
+    border-color 140ms ease,
+    background 140ms ease,
+    color 140ms ease;
 }
 
-.brandLogo,
+.brandMark,
 .brandIcon {
   display: block;
   object-fit: contain;
-  object-position: left center;
+  object-position: center;
 }
 
-.brandLogo {
-  width: min(100%, 11.875rem);
-  max-height: 2.5rem;
+.brandMark {
+  flex: 0 0 auto;
+  width: 2rem;
+  height: 2rem;
+}
+
+.brandText {
+  display: inline-flex;
+  align-items: baseline;
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-size: 1.1875rem;
+  font-weight: 850;
+  letter-spacing: 0;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.brandTextLead {
+  color: color-mix(in srgb, var(--accent) 42%, var(--text) 58%);
+}
+
+.brandTextAccent {
+  color: var(--accent);
+}
+
+.brandTextDomain {
+  color: var(--muted);
 }
 
 .brandIcon {
-  width: 2.25rem;
-  height: 2.25rem;
+  width: 2rem;
+  height: 2rem;
   grid-area: 1 / 1;
   transition: opacity 130ms ease, transform 130ms ease;
 }
@@ -84,8 +127,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2.625rem;
-  height: 2.625rem;
+  width: 2.375rem;
+  height: 2.375rem;
   border: 1px solid var(--line);
   border-radius: 0.5rem;
   background: transparent;
@@ -152,7 +195,7 @@
   min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 1.375rem 0.75rem 0.75rem;
+  padding: 1.125rem 0.75rem 1rem;
   scrollbar-color: var(--border-strong) transparent;
 }
 
@@ -160,7 +203,7 @@
 .courseBlock {
   position: relative;
   display: grid;
-  gap: 0.25rem;
+  gap: 0.375rem;
 }
 
 .navGroup + .navGroup,
@@ -169,10 +212,7 @@
 }
 
 .groupTitle {
-  position: absolute;
-  top: -0.9375rem;
-  left: 0.5rem;
-  display: block;
+  display: none;
   max-width: calc(100% - 1rem);
   overflow: hidden;
   padding: 0;
@@ -189,9 +229,10 @@
 .aiButton,
 .profileLink,
 .courseCard {
+  position: relative;
   min-width: 0;
   border: 1px solid transparent;
-  border-radius: 0.5625rem;
+  border-radius: 0.625rem;
   color: var(--muted);
 }
 
@@ -199,11 +240,11 @@
 .aiButton {
   display: grid;
   grid-template-columns: 1.75rem minmax(0, 1fr);
-  gap: 0.5rem;
+  gap: 0.625rem;
   align-items: center;
-  min-height: 2.375rem;
+  min-height: 2.625rem;
   background: transparent;
-  padding: 0.3125rem 0.5rem;
+  padding: 0.4375rem 0.75rem 0.4375rem 0.28125rem;
 }
 
 .aiButton {
@@ -227,36 +268,61 @@
   outline: none;
 }
 
-.linkIcon {
+.link:hover .linkIcon,
+.link:focus-visible .linkIcon,
+.aiButton:hover .linkIcon,
+.aiButton:focus-visible .linkIcon,
+.courseCard:hover .courseMark,
+.courseCard:focus-visible .courseMark {
+  color: var(--text);
+}
+
+.linkIcon,
+.courseMark {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 1.75rem;
   height: 1.75rem;
-  border: 1px solid color-mix(in srgb, var(--line) 82%, transparent);
+  border: 1px solid transparent;
   border-radius: 0.5rem;
-  background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  background: transparent;
   color: var(--soft);
   font-size: 0.75rem;
   font-weight: 850;
   line-height: 1;
 }
 
-.linkIcon svg,
+.linkIcon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.courseMark svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
 .profileAvatar svg {
-  width: 1rem;
-  height: 1rem;
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.linkIcon svg,
+.courseMark svg,
+.profileAvatar svg {
   fill: none;
   stroke: currentColor;
   stroke-linecap: round;
   stroke-linejoin: round;
-  stroke-width: 1.9;
+  stroke-width: 2;
 }
 
 .linkLabel,
 .courseInfo,
 .profileText {
   min-width: 0;
+  transition: opacity 120ms ease, visibility 120ms ease;
 }
 
 .linkLabel,
@@ -270,11 +336,12 @@
 }
 
 .linkLabel {
-  font-size: 0.90625rem;
+  font-size: 0.875rem;
   font-weight: 700;
 }
 
-.active {
+.active,
+.courseCardActive {
   border-color: color-mix(in srgb, var(--accent) 28%, var(--border) 72%);
   background: color-mix(in srgb, var(--accent) 12%, var(--surface-2) 88%);
   color: var(--text);
@@ -283,18 +350,27 @@
 
 .active .linkIcon,
 .courseCardActive .courseMark {
-  border-color: color-mix(in srgb, var(--accent) 34%, var(--border) 66%);
-  background: var(--accent-soft);
   color: var(--accent);
+}
+
+.courseCardActive .courseMark {
+  border-color: transparent;
+  background: transparent;
+}
+
+.active .linkIcon {
+  border-color: transparent;
+  background: transparent;
 }
 
 .courseCard {
   display: grid;
-  grid-template-columns: 2rem minmax(0, 1fr);
+  grid-template-columns: 1.75rem minmax(0, 1fr);
   gap: 0.625rem;
   align-items: center;
-  min-height: 3.625rem;
-  padding: 0.5rem;
+  min-height: 2.625rem;
+  background: transparent;
+  padding: 0.4375rem 0.75rem 0.4375rem 0.28125rem;
 }
 
 .courseMark,
@@ -311,10 +387,14 @@
 }
 
 .courseMark {
-  width: 2rem;
-  height: 2rem;
-  border: 1px solid var(--line);
-  font-size: 0.6875rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
+  background: transparent;
+  color: var(--soft);
+}
+
+.courseCard .courseInfo small {
+  display: none;
 }
 
 .courseInfo,
@@ -340,9 +420,8 @@
 .footer {
   display: grid;
   gap: 0.5rem;
-  min-height: 8rem;
   border-top: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
-  padding: 0.75rem;
+  padding: 0.875rem 0.75rem;
 }
 
 .profileActions {
@@ -354,8 +433,8 @@
   grid-template-columns: 2rem minmax(0, 1fr);
   gap: 0.625rem;
   align-items: center;
-  min-height: 3.25rem;
-  padding: 0.5rem;
+  min-height: 3.375rem;
+  padding: 0.625rem 0.625rem 0.625rem 0.15625rem;
 }
 
 .profileAvatar {
@@ -367,21 +446,27 @@
 }
 
 .collapsed {
-  width: 5.25rem;
+  width: 4rem;
 }
 
 .collapsed .header {
-  grid-template-columns: 1fr;
-  justify-items: center;
-  padding-inline: 0.625rem;
+  grid-template-columns: minmax(0, 1fr) auto;
 }
 
-.collapsed .brand,
-.collapsed .collapseButton,
+.collapsed .collapseButton {
+  display: none;
+}
+
+.collapsed .brand {
+  opacity: 0;
+  pointer-events: none;
+  visibility: hidden;
+}
+
 .collapsed .linkLabel,
 .collapsed .courseInfo,
 .collapsed .profileText {
-  display: none;
+  opacity: 0;
 }
 
 .collapsed .groupTitle {
@@ -390,29 +475,21 @@
 }
 
 .collapsed .collapsedBrandButton {
-  display: grid;
+  opacity: 1;
+  pointer-events: auto;
+  visibility: visible;
 }
 
-.collapsed .scrollArea,
+.collapsed .scrollArea {
+  padding-inline: 0.75rem;
+}
+
 .collapsed .footer {
-  padding-inline: 0.625rem;
-}
-
-.collapsed .link,
-.collapsed .aiButton,
-.collapsed .profileLink,
-.collapsed .courseCard {
-  grid-template-columns: 1fr;
-  justify-items: center;
-  padding-inline: 0.3125rem;
-}
-
-.collapsed .courseCard {
-  min-height: 3.625rem;
+  padding-inline: 0.75rem;
 }
 
 .collapsed .profileLink {
-  min-height: 3.25rem;
+  min-height: 3.375rem;
 }
 
 @media (max-width: 56.25rem) {
@@ -444,11 +521,6 @@
     display: inline-flex;
   }
 
-  .brandLogo {
-    display: block;
-    width: min(100%, 11.5rem);
-  }
-
   .collapsedBrandButton,
   .collapsed .collapsedBrandButton {
     display: none;
@@ -466,11 +538,29 @@
 
   .collapsed .brand {
     display: flex;
+    opacity: 1;
+    pointer-events: auto;
+    visibility: visible;
+  }
+
+  .groupTitle {
+    position: static;
+    display: block;
+    max-width: none;
+    margin-bottom: 0.125rem;
+    padding: 0.25rem 0.5rem;
   }
 
   .collapsed .groupTitle,
   .collapsed .linkLabel {
     display: block;
+  }
+
+  .collapsed .linkLabel,
+  .collapsed .courseInfo,
+  .collapsed .profileText {
+    opacity: 1;
+    visibility: visible;
   }
 
   .collapsed .groupTitle {
@@ -493,7 +583,16 @@
   .collapsed .profileLink,
   .collapsed .courseCard {
     grid-template-columns: 1.75rem minmax(0, 1fr);
+    gap: 0.5rem;
     justify-items: stretch;
     padding-inline: 0.5rem;
+  }
+
+  .collapsed .profileLink {
+    grid-template-columns: 2rem minmax(0, 1fr);
+  }
+
+  .collapsed .courseCardActive .courseMark {
+    color: var(--accent);
   }
 }

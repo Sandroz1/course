@@ -3,7 +3,7 @@ import { courseSections, isCourseSectionReady } from "../../../data/courseSectio
 import { getCourseById } from "../../../data/courses";
 import { getStatusLabel } from "../../../data/status";
 import { tasks } from "../../../data/tasks";
-import { classNames } from "../../../shared/lib/classNames";
+import clsx from "clsx";
 import type { TaskProgressStatus } from "../../../types/api";
 import { toPath } from "../../../utils/slug";
 import styles from "./TaskCard.module.scss";
@@ -67,7 +67,7 @@ export function TaskCard({
 
   return (
     <a
-      className={classNames(styles.card, hasClosedTheory && styles.closedTheory)}
+      className={clsx(styles.card, hasClosedTheory && styles.closedTheory)}
       href={toPath(`/tasks/${task.id}`)}
       aria-label={`Открыть задачу: ${task.title}`}
     >
@@ -82,7 +82,7 @@ export function TaskCard({
       </div>
       <div className={styles.statusRow}>
         <span
-          className={classNames(
+          className={clsx(
             styles.statusBadge,
             getTaskStatusClass(displayStatus),
           )}
@@ -91,7 +91,7 @@ export function TaskCard({
         </span>
       </div>
       <span className={styles.theory}>Тема: {theoryTitle}</span>
-      <div className={classNames("topic-list topic-list--compact", styles.topics)}>
+      <div className={clsx("topic-list topic-list--compact", styles.topics)}>
         {visibleTopics.map((topic) => (
           <span key={topic}>{topic}</span>
         ))}

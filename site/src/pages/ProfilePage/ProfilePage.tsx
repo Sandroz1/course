@@ -8,7 +8,7 @@ import {
 } from "../../lib/aiUsage";
 import { changePassword, sendPhoneVerificationCode, verifyPhoneCode } from "../../lib/authApi";
 import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import type { AiUsage, ProgressOverview } from "../../types/api";
 import { navigateTo } from "../../utils/navigation";
 import styles from "./ProfilePage.module.scss";
@@ -265,7 +265,7 @@ export function ProfilePage() {
           <h1 className={styles.title}>Профиль</h1>
         </header>
         <section className={styles.card}>
-          <p className={classNames(styles.formMessage, styles.formError)}>Не удалось загрузить профиль.</p>
+          <p className={clsx(styles.formMessage, styles.formError)}>Не удалось загрузить профиль.</p>
           <div className={styles.actions}>
             <button className={styles.secondaryButton} type="button" onClick={() => void refreshProfile()}>
               Повторить
@@ -323,7 +323,7 @@ export function ProfilePage() {
               </label>
 
               <div
-                className={classNames(
+                className={clsx(
                   styles.phoneStatus,
                   isPhoneVerified ? styles.phoneStatusVerified : styles.phoneStatusPending,
                 )}
@@ -332,7 +332,7 @@ export function ProfilePage() {
               </div>
 
               <p
-                className={classNames(
+                className={clsx(
                   styles.formMessage,
                   errorText && styles.formError,
                   messageText && styles.formSuccess,
@@ -367,7 +367,7 @@ export function ProfilePage() {
             {!isPhoneVerified && (
               <form className={styles.form} onSubmit={handleVerifyCode} aria-busy={isVerifyingCode}>
                 <p
-                  className={classNames(
+                  className={clsx(
                     styles.formMessage,
                     phoneErrorText && styles.formError,
                     phoneMessage && styles.formSuccess,
@@ -462,7 +462,7 @@ export function ProfilePage() {
               </label>
 
               <p
-                className={classNames(
+                className={clsx(
                   styles.formMessage,
                   passwordErrorText && styles.formError,
                   passwordMessage && styles.formSuccess,
@@ -486,7 +486,7 @@ export function ProfilePage() {
           <section className={styles.card}>
             <h2 className={styles.cardTitle}>AI-лимит</h2>
             <div
-              className={classNames(
+              className={clsx(
                 styles.aiStatus,
                 isPhoneVerified ? styles.aiStatusAvailable : styles.aiStatusBlocked,
               )}
@@ -506,12 +506,12 @@ export function ProfilePage() {
             </div>
           </section>
 
-          <section className={classNames(styles.card, styles.progressCard)}>
+          <section className={clsx(styles.card, styles.progressCard)}>
             <h2 className={styles.cardTitle}>Прогресс</h2>
             {isStudyProgressLoading ? (
-              <p className={classNames(styles.mutedText, styles.progressState)}>Загружаем прогресс...</p>
+              <p className={clsx(styles.mutedText, styles.progressState)}>Загружаем прогресс...</p>
             ) : studyProgressError ? (
-              <p className={classNames(styles.formMessage, styles.formError, styles.progressState)}>
+              <p className={clsx(styles.formMessage, styles.formError, styles.progressState)}>
                 {studyProgressError}
               </p>
             ) : (
@@ -536,7 +536,7 @@ export function ProfilePage() {
             )}
           </section>
 
-          <section className={classNames(styles.card, styles.sessionCard)}>
+          <section className={clsx(styles.card, styles.sessionCard)}>
             <h2 className={styles.cardTitle}>Сессия</h2>
             <button className={styles.dangerButton} type="button" onClick={() => void handleLogout()}>
               Выйти

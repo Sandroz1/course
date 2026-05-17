@@ -1,6 +1,6 @@
 import { useAuth } from "../../../context/AuthContext";
 import { courseSections, isCourseSectionReady } from "../../../data/courseSections";
-import { classNames } from "../../../shared/lib/classNames";
+import clsx from "clsx";
 import { currentPath, toPath } from "../../../utils/slug";
 import styles from "./Sidebar.module.scss";
 
@@ -11,7 +11,7 @@ type SidebarProps = {
   onToggleCollapse: () => void;
 };
 
-type NavigationIcon = "home" | "courses" | "tasks" | "guide" | "errors" | "login";
+type NavigationIcon = "home" | "courses" | "tasks" | "guide" | "errors" | "course" | "login" | "ai";
 
 type NavigationLink = {
   href: string;
@@ -89,6 +89,29 @@ function SidebarIcon({ icon }: { icon: NavigationIcon }) {
     );
   }
 
+  if (icon === "course") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M6.75 5.25h9.5a2 2 0 0 1 2 2v11.5H8a2.5 2.5 0 0 1 0-5h10.25" />
+        <path d="M6.75 5.25v8.5" />
+        <path d="m11.25 9.25-1.5 1.5 1.5 1.5" />
+        <path d="m14.75 9.25 1.5 1.5-1.5 1.5" />
+      </svg>
+    );
+  }
+
+  if (icon === "ai") {
+    return (
+      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 4.75 13.65 9 18 10.65 13.65 12.3 12 16.75 10.35 12.3 6 10.65 10.35 9Z" />
+        <path d="M18.25 4.75v3.5" />
+        <path d="M20 6.5h-3.5" />
+        <path d="M5.75 15.75v3.5" />
+        <path d="M7.5 17.5H4" />
+      </svg>
+    );
+  }
+
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
       <path d="M9.75 7.25 14.5 12l-4.75 4.75" />
@@ -142,7 +165,7 @@ function SidebarLink({
     <a
       aria-current={isActive ? "page" : undefined}
       aria-label={isCollapsed ? label : undefined}
-      className={classNames(styles.link, isActive && styles.active)}
+      className={clsx(styles.link, isActive && styles.active)}
       href={toPath(href)}
       title={isCollapsed ? label : undefined}
       onClick={onNavigate}
@@ -228,7 +251,7 @@ export function Sidebar({
   return (
     <aside
       id="app-sidebar"
-      className={classNames(
+      className={clsx(
         styles.root,
         isCollapsed && styles.collapsed,
         isMobileOpen && styles.mobileOpen,
@@ -242,7 +265,12 @@ export function Sidebar({
           aria-label="Uchicode — на главную"
           onClick={handleNavigate}
         >
-          <img className={styles.brandLogo} src="/brand/uchicode-logo.png" alt="Uchicode.ru" />
+          <img className={styles.brandMark} src="/brand/uchicode-icon.png" alt="" aria-hidden="true" />
+          <span className={styles.brandText} aria-hidden="true">
+            <span className={styles.brandTextLead}>uchi</span>
+            <span className={styles.brandTextAccent}>code</span>
+            <span className={styles.brandTextDomain}>.ru</span>
+          </span>
         </a>
 
         <button
@@ -307,7 +335,7 @@ export function Sidebar({
         <section className={styles.courseBlock} aria-labelledby="current-course-title">
           <span className={styles.groupTitle}>Текущий курс</span>
           <a
-            className={classNames(
+            className={clsx(
               styles.courseCard,
               isLinkActive(path, "/course") && styles.courseCardActive,
             )}
@@ -317,7 +345,7 @@ export function Sidebar({
             onClick={handleNavigate}
           >
             <span className={styles.courseMark} aria-hidden="true">
-              C++
+              <SidebarIcon icon="course" />
             </span>
             <span className={styles.courseInfo}>
               <strong id="current-course-title">ООП C++</strong>
@@ -331,12 +359,12 @@ export function Sidebar({
         <button
           className={styles.aiButton}
           type="button"
-          aria-label={isCollapsed ? "Открыть AI помощник" : undefined}
+          aria-label={isCollapsed ? "AI помощник" : undefined}
           title={isCollapsed ? "AI помощник" : undefined}
           onClick={openAiAssistant}
         >
           <span className={styles.linkIcon} aria-hidden="true">
-            AI
+            <SidebarIcon icon="ai" />
           </span>
           <span className={styles.linkLabel}>AI помощник</span>
         </button>

@@ -6,7 +6,7 @@ import { getStatusLabel } from "../../data/status";
 import { tasks, type TaskLevel } from "../../data/tasks";
 import { getTaskProgressById } from "../../features/course-progress/progressSelectors";
 import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import type { TaskProgressStatus } from "../../types/api";
 import { TaskCardGrid } from "./components/TaskCardGrid";
 import styles from "./TasksIndexPage.module.scss";
@@ -156,7 +156,7 @@ export function TasksIndexPage() {
         <p className="lead">Фильтруй задачи по курсу, теме и сложности.</p>
       </header>
 
-      <section className={classNames("panel", styles.filters)}>
+      <section className={clsx("panel", styles.filters)}>
         <label className={styles.field}>
           Поиск
           <input
@@ -217,7 +217,7 @@ export function TasksIndexPage() {
           <strong>{taskCountLabel(filteredTasks.length)}</strong>
           <span>найдено</span>
           <button
-            className={classNames("button", "button--small", "button--ghost", styles.reset)}
+            className={clsx("button", "button--small", "button--ghost", styles.reset)}
             type="button"
             onClick={resetFilters}
             disabled={!hasActiveFilters}
@@ -237,7 +237,7 @@ export function TasksIndexPage() {
       )}
 
       {visibleSections.length === 0 && (
-        <section className={classNames("panel", styles.emptyState)}>
+        <section className={clsx("panel", styles.emptyState)}>
           <h2>Задачи не найдены</h2>
           <p>Измени фильтры или поисковый запрос.</p>
           {hasActiveFilters && (

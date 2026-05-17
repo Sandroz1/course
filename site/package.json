@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@vitejs/plugin-react": "^5.1.1",
+    "clsx": "^2.1.1",
     "react": "^19.2.1",
     "react-dom": "^19.2.1",
     "shiki": "^4.0.2",

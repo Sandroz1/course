@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import clsx from "clsx";
 
 import { useAuth } from "../../../context/AuthContext";
 import { navigateTo } from "../../../utils/navigation";
@@ -101,7 +102,7 @@ export function AccountMenu() {
             Профиль
           </a>
           <button
-            className={`${styles.menuItem} ${styles.logoutItem}`}
+            className={clsx(styles.menuItem, styles.logoutItem)}
             type="button"
             role="menuitem"
             onClick={() => void handleLogout()}

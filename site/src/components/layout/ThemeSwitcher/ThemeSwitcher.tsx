@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import clsx from "clsx";
 import {
   applyThemePreference,
   getStoredThemePreference,
@@ -12,6 +13,9 @@ const themeOptions: ThemePreference[] = ["system", "light", "dark", "blue"];
 
 export function ThemeSwitcher() {
   const [preference, setPreference] = useState<ThemePreference>(() => getStoredThemePreference());
+  const [isOpen, setIsOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement | null>(null);
+  const triggerRef = useRef<HTMLButtonElement | null>(null);
 
   useEffect(() => {
     applyThemePreference(preference);
@@ -26,21 +30,74 @@ export function ThemeSwitcher() {
     return () => media.removeEventListener("change", onChange);
   }, [preference]);
 
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function handlePointerDown(event: PointerEvent) {
+      if (!rootRef.current?.contains(event.target as Node)) {
+        setIsOpen(false);
+      }
+    }
+
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+        triggerRef.current?.focus();
+      }
+    }
+
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isOpen]);
+
+  function selectTheme(option: ThemePreference) {
+    setPreference(option);
+    setIsOpen(false);
+    triggerRef.current?.focus();
+  }
+
   return (
-    <label className={styles.root}>
-      <span className={styles.label}>Тема</span>
-      <select
-        className={styles.select}
-        value={preference}
-        onChange={(event) => setPreference(event.target.value as ThemePreference)}
+    <div className={styles.root} ref={rootRef}>
+      <button
+        ref={triggerRef}
+        className={styles.trigger}
+        type="button"
+        aria-haspopup="listbox"
+        aria-expanded={isOpen}
+        aria-controls={isOpen ? "theme-switcher-options" : undefined}
         aria-label="Выбор темы оформления"
+        onClick={() => setIsOpen((value) => !value)}
       >
-        {themeOptions.map((option) => (
-          <option key={option} value={option}>
-            {themeLabels[option]}
-          </option>
-        ))}
-      </select>
-    </label>
+        <span>{themeLabels[preference]}</span>
+        <span className={styles.chevron} aria-hidden="true" />
+      </button>
+
+      {isOpen && (
+        <div
+          id="theme-switcher-options"
+          className={styles.menu}
+          role="listbox"
+          aria-label="Тема"
+        >
+          {themeOptions.map((option) => (
+            <button
+              key={option}
+              className={clsx(styles.option, option === preference && styles.optionActive)}
+              type="button"
+              role="option"
+              aria-selected={option === preference}
+              onClick={() => selectTheme(option)}
+            >
+              {themeLabels[option]}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

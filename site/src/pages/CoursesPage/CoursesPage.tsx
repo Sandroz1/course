@@ -1,6 +1,6 @@
 import { courses } from "../../data/courses";
 import { statusMeta } from "../../data/status";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import { toPath } from "../../utils/slug";
 import styles from "./CoursesPage.module.scss";
 
@@ -21,7 +21,7 @@ export function CoursesPage() {
           const isAvailable = course.status === "available";
           return (
             <article
-              className={classNames("panel", styles.card, !isAvailable && styles.cardSoon)}
+              className={clsx("panel", styles.card, !isAvailable && styles.cardSoon)}
               key={course.id}
             >
               <div className={styles.header}>
@@ -32,7 +32,7 @@ export function CoursesPage() {
                 <h2>{course.title}</h2>
                 <p>{course.description}</p>
               </div>
-              <a className={isAvailable ? "button button--primary" : "button button--ghost"} href={toPath(course.path)}>
+              <a className={clsx("button", isAvailable ? "button--primary" : "button--ghost")} href={toPath(course.path)}>
                 {isAvailable ? "Открыть курс" : "Посмотреть план"}
               </a>
             </article>

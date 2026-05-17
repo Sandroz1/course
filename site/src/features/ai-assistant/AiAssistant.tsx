@@ -16,7 +16,7 @@ import {
     recordAiSuccess,
 } from "../../lib/aiUsage";
 import { sendAiChat } from "../../lib/aiApi";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import type { AiChatMessage, AiUsage } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import styles from "./AiAssistant.module.scss";
@@ -920,7 +920,7 @@ export function AiAssistant() {
         <>
             {selectedText && selectionPopover && !isOpen && canUseAi ? (
                 <button
-                    className={classNames(
+                    className={clsx(
                         styles.selectionPopover,
                         selectionPopover.placement === "below" && styles.selectionPopoverBelow,
                     )}
@@ -948,7 +948,7 @@ export function AiAssistant() {
 
             {isOpen ? (
                 <aside
-                    className={classNames(styles.panel, isLockedPanel && styles.panelLocked)}
+                    className={clsx(styles.panel, isLockedPanel && styles.panelLocked)}
                     aria-label="AI помощник"
                     style={{
                         width: `${panelSize.width}px`,
@@ -1022,7 +1022,7 @@ export function AiAssistant() {
 
                                 {messages.map((message) => (
                                     <div
-                                        className={classNames(
+                                        className={clsx(
                                             styles.message,
                                             message.role === "user" ? styles.messageUser : styles.messageAssistant,
                                         )}
@@ -1037,7 +1037,7 @@ export function AiAssistant() {
                                 ))}
 
                                 {isLoading ? (
-                                    <div className={classNames(styles.message, styles.messageAssistant)}>
+                                    <div className={clsx(styles.message, styles.messageAssistant)}>
                                         <span className={styles.messageRole}>AI</span>
                                         <p>Думаю...</p>
                                     </div>
@@ -1082,17 +1082,17 @@ export function AiAssistant() {
                     ) : null}
 
                     <span
-                        className={classNames(styles.resizeZone, styles.resizeZoneLeft)}
+                        className={clsx(styles.resizeZone, styles.resizeZoneLeft)}
                         onPointerDown={(event) => startResize(event, "left")}
                         aria-hidden="true"
                     />
                     <span
-                        className={classNames(styles.resizeZone, styles.resizeZoneTop)}
+                        className={clsx(styles.resizeZone, styles.resizeZoneTop)}
                         onPointerDown={(event) => startResize(event, "top")}
                         aria-hidden="true"
                     />
                     <span
-                        className={classNames(styles.resizeZone, styles.resizeZoneCorner)}
+                        className={clsx(styles.resizeZone, styles.resizeZoneCorner)}
                         onPointerDown={(event) => startResize(event, "corner")}
                         aria-hidden="true"
                     />

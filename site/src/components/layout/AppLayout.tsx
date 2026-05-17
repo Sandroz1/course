@@ -3,7 +3,7 @@ import { type ReactNode, useEffect, useState } from "react";
 import { AccountMenu } from "./AccountMenu/AccountMenu";
 import { AiAssistant } from "../../features/ai-assistant";
 import { useAuth } from "../../context/AuthContext";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import { currentPath } from "../../utils/slug";
 import { SearchBox } from "./SearchBox/SearchBox";
 import { Sidebar } from "./Sidebar/Sidebar";
@@ -62,7 +62,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
   }, [isMobileNavOpen]);
 
   return (
-    <div className={classNames(styles.root, isSidebarCollapsed && styles.rootCollapsed)}>
+    <div className={clsx(styles.root, isSidebarCollapsed && styles.rootCollapsed)}>
       <Sidebar
         isCollapsed={isSidebarCollapsed}
         isMobileOpen={isMobileNavOpen}
@@ -98,7 +98,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
           </div>
         </header>
 
-        <main className={classNames(styles.content, isWideRoute(path) && styles.contentWide)}>
+        <main className={clsx(styles.content, isWideRoute(path) && styles.contentWide)}>
           {children}
         </main>
         <AiAssistant />

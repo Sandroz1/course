@@ -1,5 +1,5 @@
 import type { TaskLevel } from "../../../data/tasks";
-import { classNames } from "../../../shared/lib/classNames";
+import clsx from "clsx";
 import styles from "./ProgressBadge.module.scss";
 
 const labels: Record<TaskLevel, string> = {
@@ -9,5 +9,5 @@ const labels: Record<TaskLevel, string> = {
 };
 
 export function ProgressBadge({ level }: { level: TaskLevel }) {
-  return <span className={classNames(styles.root, styles[level])}>{labels[level]}</span>;
+  return <span className={clsx(styles.root, styles[level])}>{labels[level]}</span>;
 }

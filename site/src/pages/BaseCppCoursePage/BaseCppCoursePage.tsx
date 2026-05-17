@@ -1,5 +1,5 @@
 import { statusMeta } from "../../data/status";
-import { classNames } from "../../shared/lib/classNames";
+import clsx from "clsx";
 import { toPath } from "../../utils/slug";
 import styles from "./BaseCppCoursePage.module.scss";
 
@@ -29,7 +29,7 @@ export function BaseCppCoursePage() {
         <p className="lead">Раздел появится позже. Сейчас открыт курс ООП C++.</p>
       </header>
 
-      <section className={classNames("panel", styles.placeholder)}>
+      <section className={clsx("panel", styles.placeholder)}>
         <h2>Планируемые темы</h2>
         <ul className="plain-list">
           {plannedTopics.map((topic) => (

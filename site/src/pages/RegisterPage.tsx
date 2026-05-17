@@ -1,7 +1,7 @@
 import { type FormEvent, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { ApiError } from "../lib/api";
-import { classNames } from "../shared/lib/classNames";
+import clsx from "clsx";
 import { navigateTo } from "../utils/navigation";
 import { toPath } from "../utils/slug";
 import { AuthLayout } from "../components/layout/AuthLayout/AuthLayout";
@@ -132,7 +132,7 @@ export function RegisterPage() {
           </span>
         </label>
 
-        <p className={classNames(styles.formError, !errorText && styles.formErrorEmpty)} aria-live="polite">
+        <p className={clsx(styles.formError, !errorText && styles.formErrorEmpty)} aria-live="polite">
           {errorText || "\u00A0"}
         </p>
 

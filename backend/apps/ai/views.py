@@ -6,6 +6,7 @@ from rest_framework.views import APIView
 from .permissions import IsPhoneVerified
 from .serializers import ChatRequestSerializer
 from .services import UpstreamAiError, build_qwen_messages, call_qwen
+from .throttles import AiUserBurstThrottle
 from .usage import AiDailyLimitExceeded, release_ai_request, reserve_ai_request
 
 
@@ -25,6 +26,7 @@ class AiHealthView(APIView):
 
 class AiChatView(APIView):
     permission_classes = [permissions.IsAuthenticated, IsPhoneVerified]
+    throttle_classes = [AiUserBurstThrottle]
 
     def post(self, request):
         serializer = ChatRequestSerializer(data=request.data)

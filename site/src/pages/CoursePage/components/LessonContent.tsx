@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 
 import { CodeBlock } from "../../../components/shared/CodeBlock/CodeBlock";
-import { classNames } from "../../../shared/lib/classNames";
+import clsx from "clsx";
 import styles from "./LessonContent.module.scss";
 
 type TocItem = {
@@ -254,7 +254,7 @@ export function collectTocItems(content: string): TocItem[] {
 
 export function LessonContent({ content }: { content: string }) {
   return (
-    <section className={classNames("panel", "lesson-content", styles.content)}>
+    <section className={clsx("panel", "lesson-content", styles.content)}>
       {renderLessonContent(content)}
     </section>
   );
