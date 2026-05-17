@@ -161,7 +161,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <div className={styles.context}>
             <span>{routeContext.eyebrow}</span>
             <strong>{routeContext.title}</strong>
-            {routeContext.detail && <em>{routeContext.detail}</em>}
           </div>
           <div className={styles.searchSlot}>
             <SearchBox />
