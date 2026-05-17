@@ -2,7 +2,7 @@ import type { AiUsage, ApiErrorPayload, ApiRequestOptions } from "../types/api";
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
 export const ACCESS_TOKEN_STORAGE_KEY = "uchicodeAccessToken";
-export const REFRESH_TOKEN_STORAGE_KEY = "uchicodeRefreshToken";
+const LEGACY_REFRESH_TOKEN_STORAGE_KEY = "uchicodeRefreshToken";
 export const AUTH_CLEARED_EVENT = "uchicode-auth-cleared";
 
 const AUTH_REFRESH_PATH = "/api/auth/token/refresh/";
@@ -81,13 +81,9 @@ function getAccessToken() {
   return readStorage(ACCESS_TOKEN_STORAGE_KEY);
 }
 
-function getRefreshToken() {
-  return readStorage(REFRESH_TOKEN_STORAGE_KEY);
-}
-
 function clearStoredAuth() {
   removeStorage(ACCESS_TOKEN_STORAGE_KEY);
-  removeStorage(REFRESH_TOKEN_STORAGE_KEY);
+  removeStorage(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
   window.dispatchEvent(new Event(AUTH_CLEARED_EVENT));
 }
 
@@ -201,6 +197,13 @@ function normalizeUsage(value: unknown): AiUsage | undefined {
   const usage = value as Partial<AiUsage>;
   const limit = typeof usage.limit === "number" ? usage.limit : undefined;
   const remaining = typeof usage.remaining === "number" ? usage.remaining : undefined;
+  const tokens =
+    usage.tokens &&
+    typeof usage.tokens.prompt === "number" &&
+    typeof usage.tokens.completion === "number" &&
+    typeof usage.tokens.total === "number"
+      ? usage.tokens
+      : undefined;
 
   if (limit === undefined || remaining === undefined) return undefined;
 
@@ -209,6 +212,7 @@ function normalizeUsage(value: unknown): AiUsage | undefined {
     remaining,
     used: typeof usage.used === "number" ? usage.used : Math.max(limit - remaining, 0),
     resetAt: typeof usage.resetAt === "string" ? usage.resetAt : undefined,
+    tokens,
     retryAfterSeconds:
       typeof usage.retryAfterSeconds === "number" && Number.isFinite(usage.retryAfterSeconds)
         ? Math.max(Math.ceil(usage.retryAfterSeconds), 1)
@@ -286,9 +290,9 @@ async function readPayload(response: Response) {
 }
 
 async function refreshAccessToken() {
-  const refreshToken = getRefreshToken();
+  const accessToken = getAccessToken();
 
-  if (!refreshToken) {
+  if (!accessToken) {
     clearStoredAuth();
     throw new ApiError(401, "Сессия истекла. Войди снова.");
   }
@@ -304,7 +308,7 @@ async function refreshAccessToken() {
             Accept: "application/json",
             "Content-Type": "application/json",
           },
-          body: JSON.stringify({ refresh: refreshToken }),
+          credentials: "include",
         });
       } catch {
         throw new ApiError(
@@ -325,7 +329,6 @@ async function refreshAccessToken() {
       }
 
       const nextAccess = pickString(payload, ["access", "access_token"]);
-      const nextRefresh = pickString(payload, ["refresh", "refresh_token"]);
 
       if (!nextAccess) {
         clearStoredAuth();
@@ -333,10 +336,7 @@ async function refreshAccessToken() {
       }
 
       writeStorage(ACCESS_TOKEN_STORAGE_KEY, nextAccess);
-
-      if (nextRefresh) {
-        writeStorage(REFRESH_TOKEN_STORAGE_KEY, nextRefresh);
-      }
+      removeStorage(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
 
       return nextAccess;
     })().finally(() => {
@@ -352,7 +352,7 @@ function shouldTryRefresh(path: string, options: ApiRequestOptions) {
     return false;
   }
 
-  return Boolean(getRefreshToken());
+  return Boolean(getAccessToken());
 }
 
 async function getUsableAccessToken(path: string, options: ApiRequestOptions) {
@@ -392,6 +392,7 @@ async function sendRequest(path: string, options: ApiRequestOptions, accessToken
       method: options.method ?? "GET",
       headers,
       signal: options.signal,
+      credentials: "include",
       body: options.body === undefined ? undefined : JSON.stringify(options.body),
     });
   } catch (error) {

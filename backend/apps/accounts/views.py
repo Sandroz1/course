@@ -1,9 +1,13 @@
+from urllib.parse import urlparse
+
+from django.conf import settings
 from rest_framework import permissions, status
-from rest_framework.exceptions import ValidationError
+from rest_framework.exceptions import AuthenticationFailed, PermissionDenied
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.exceptions import TokenError
+from rest_framework_simplejwt.exceptions import InvalidToken, TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.views import TokenRefreshView
 
 from apps.core.throttles import (
     ChangePasswordThrottle,
@@ -22,18 +26,99 @@ from .serializers import (
     UserSerializer,
 )
 from .services.phone_verification import confirm_phone_code, create_and_send_code
+from .tokens import refresh_for_user, validate_refresh_token_version
 
 
-def auth_payload(user):
-    refresh = RefreshToken.for_user(user)
+def set_refresh_cookie(response: Response, refresh_token: str) -> None:
+    lifetime = settings.SIMPLE_JWT["REFRESH_TOKEN_LIFETIME"]
+    response.set_cookie(
+        key=settings.AUTH_REFRESH_COOKIE_NAME,
+        value=refresh_token,
+        max_age=int(lifetime.total_seconds()),
+        path=settings.AUTH_REFRESH_COOKIE_PATH,
+        domain=settings.AUTH_REFRESH_COOKIE_DOMAIN,
+        secure=settings.AUTH_REFRESH_COOKIE_SECURE,
+        httponly=True,
+        samesite=settings.AUTH_REFRESH_COOKIE_SAMESITE,
+    )
 
-    return {
-        "user": UserSerializer(user).data,
-        "tokens": {
-            "access": str(refresh.access_token),
-            "refresh": str(refresh),
+
+def clear_refresh_cookie(response: Response) -> None:
+    response.delete_cookie(
+        key=settings.AUTH_REFRESH_COOKIE_NAME,
+        path=settings.AUTH_REFRESH_COOKIE_PATH,
+        domain=settings.AUTH_REFRESH_COOKIE_DOMAIN,
+        samesite=settings.AUTH_REFRESH_COOKIE_SAMESITE,
+    )
+
+
+def auth_response(user, response_status=status.HTTP_200_OK):
+    refresh = refresh_for_user(user)
+    response = Response(
+        {
+            "user": UserSerializer(user).data,
+            "tokens": {
+                "access": str(refresh.access_token),
+            },
         },
+        status=response_status,
+    )
+    set_refresh_cookie(response, str(refresh))
+
+    return response
+
+
+def get_refresh_token_from_request(request) -> str | None:
+    cookie_token = request.COOKIES.get(settings.AUTH_REFRESH_COOKIE_NAME)
+    if cookie_token:
+        return cookie_token
+
+    body_token = request.data.get("refresh")
+    return body_token if isinstance(body_token, str) and body_token.strip() else None
+
+
+def normalize_origin(value: str | None) -> str | None:
+    if not value:
+        return None
+
+    parsed = urlparse(value)
+    if not parsed.scheme or not parsed.netloc:
+        return None
+
+    return f"{parsed.scheme.lower()}://{parsed.netloc.lower()}"
+
+
+def get_auth_request_origin(request) -> str | None:
+    origin = normalize_origin(request.headers.get("Origin"))
+    if origin:
+        return origin
+
+    return normalize_origin(request.headers.get("Referer"))
+
+
+def get_trusted_auth_origins(request) -> set[str]:
+    origins = {
+        origin
+        for origin in (
+            normalize_origin(value)
+            for value in [*settings.CSRF_TRUSTED_ORIGINS, *settings.CORS_ALLOWED_ORIGINS]
+        )
+        if origin
     }
+    current_origin = normalize_origin(f"{request.scheme}://{request.get_host()}")
+    if current_origin:
+        origins.add(current_origin)
+
+    return origins
+
+
+def enforce_cookie_refresh_origin(request) -> None:
+    if not request.COOKIES.get(settings.AUTH_REFRESH_COOKIE_NAME):
+        return
+
+    origin = get_auth_request_origin(request)
+    if not origin or origin not in get_trusted_auth_origins(request):
+        raise PermissionDenied("Trusted Origin or Referer header is required.")
 
 
 class RegisterView(APIView):
@@ -45,7 +130,7 @@ class RegisterView(APIView):
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
 
-        return Response(auth_payload(user), status=status.HTTP_201_CREATED)
+        return auth_response(user, status.HTTP_201_CREATED)
 
 
 class LoginView(APIView):
@@ -56,24 +141,52 @@ class LoginView(APIView):
         serializer = LoginSerializer(data=request.data, context={"request": request})
         serializer.is_valid(raise_exception=True)
 
-        return Response(auth_payload(serializer.validated_data["user"]))
+        return auth_response(serializer.validated_data["user"])
+
+
+class CookieTokenRefreshView(TokenRefreshView):
+    def post(self, request, *args, **kwargs):
+        refresh_token = get_refresh_token_from_request(request)
+
+        if not refresh_token:
+            raise AuthenticationFailed("Refresh token cookie is missing.")
+
+        enforce_cookie_refresh_origin(request)
+
+        try:
+            validate_refresh_token_version(refresh_token)
+            serializer = self.get_serializer(data={"refresh": refresh_token})
+            serializer.is_valid(raise_exception=True)
+        except TokenError as exc:
+            raise InvalidToken(str(exc)) from exc
+
+        payload = dict(serializer.validated_data)
+        next_refresh = payload.pop("refresh", None)
+        response = Response(payload, status=status.HTTP_200_OK)
+
+        if next_refresh:
+            set_refresh_cookie(response, next_refresh)
+
+        return response
 
 
 class LogoutView(APIView):
     permission_classes = [permissions.AllowAny]
 
     def post(self, request):
-        refresh_token = request.data.get("refresh")
+        refresh_token = get_refresh_token_from_request(request)
+        response = Response(status=status.HTTP_204_NO_CONTENT)
 
-        if not isinstance(refresh_token, str) or not refresh_token.strip():
-            raise ValidationError({"refresh": ["Передайте refresh token."]})
+        if refresh_token:
+            enforce_cookie_refresh_origin(request)
+            try:
+                RefreshToken(refresh_token).blacklist()
+            except TokenError:
+                pass
 
-        try:
-            RefreshToken(refresh_token).blacklist()
-        except TokenError:
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        clear_refresh_cookie(response)
 
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return response
 
 
 class MeView(APIView):

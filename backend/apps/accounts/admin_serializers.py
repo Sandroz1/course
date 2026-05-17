@@ -6,6 +6,7 @@ from rest_framework import serializers
 
 from .models import User
 from .serializers import normalize_phone
+from .tokens import invalidate_user_tokens
 
 
 def is_last_superuser(user: User) -> bool:
@@ -136,4 +137,5 @@ class AdminPasswordResetSerializer(serializers.Serializer):
         user = self.context["user"]
         user.set_password(self.validated_data["newPassword"])
         user.save(update_fields=["password"])
+        invalidate_user_tokens(user)
         return user

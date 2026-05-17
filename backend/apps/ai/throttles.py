@@ -25,5 +25,15 @@ class AiUserBurstThrottle(BaseAiThrottle):
         return super().allow_request(request, view)
 
 
+class AiGlobalBurstThrottle(SimpleRateThrottle):
+    scope = "ai_global_burst"
+
+    def get_cache_key(self, request, view):
+        return self.cache_format % {
+            "scope": self.scope,
+            "ident": "global",
+        }
+
+
 class AiUserDailyThrottle(AiUserBurstThrottle):
     scope = "ai_user_daily"

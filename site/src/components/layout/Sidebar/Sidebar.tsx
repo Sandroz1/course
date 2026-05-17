@@ -121,20 +121,11 @@ function SidebarIcon({ icon }: { icon: NavigationIcon }) {
   );
 }
 
-function SidebarToggleIcon({ direction }: { direction: "collapse" | "expand" }) {
-  if (direction === "collapse") {
-    return (
-      <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M9.5 6.5 4.75 12l4.75 5.5" />
-        <path d="M5.25 12h12.5" />
-      </svg>
-    );
-  }
-
+function SidebarToggleIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-      <path d="M14.5 6.5 19.25 12l-4.75 5.5" />
-      <path d="M18.75 12H6.25" />
+      <rect x="4.75" y="5.25" width="14.5" height="13.5" rx="2.25" />
+      <path d="M10 5.25v13.5" />
     </svg>
   );
 }
@@ -282,7 +273,7 @@ export function Sidebar({
         >
           <img className={styles.brandIcon} src="/brand/uchicode-icon.png" alt="" aria-hidden="true" />
           <span className={styles.collapsedBrandToggle}>
-            <SidebarToggleIcon direction="expand" />
+            <SidebarToggleIcon />
           </span>
         </button>
 
@@ -294,7 +285,7 @@ export function Sidebar({
           title={isCollapsed ? "Развернуть меню" : "Свернуть меню"}
           onClick={onToggleCollapse}
         >
-          <SidebarToggleIcon direction={isCollapsed ? "expand" : "collapse"} />
+          <SidebarToggleIcon />
         </button>
 
         <button

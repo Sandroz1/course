@@ -14,7 +14,7 @@ from .admin_serializers import (
     is_last_superuser,
 )
 from .models import User
-from .permissions import IsAdminUserOnly
+from .permissions import IsAdminUserOnly, IsSuperUserOnly
 
 
 def _as_bool(value: str | None) -> bool | None:
@@ -49,6 +49,15 @@ class AdminUserViewSet(
     permission_classes = [IsAdminUserOnly]
     pagination_class = AdminUserPagination
     lookup_field = "id"
+    sensitive_actions = {
+        "create",
+        "update",
+        "partial_update",
+        "destroy",
+        "activate",
+        "deactivate",
+        "reset_password",
+    }
     ordering_fields = {
         "id",
         "username",
@@ -60,6 +69,14 @@ class AdminUserViewSet(
         "date_joined",
         "last_login",
     }
+
+    def get_permissions(self):
+        permission_classes = (
+            [IsSuperUserOnly]
+            if getattr(self, "action", None) in self.sensitive_actions
+            else self.permission_classes
+        )
+        return [permission() for permission in permission_classes]
 
     def get_queryset(self):
         queryset = User.objects.all().order_by("id")

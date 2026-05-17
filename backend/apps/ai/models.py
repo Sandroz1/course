@@ -10,6 +10,9 @@ class AiDailyUsage(models.Model):
     )
     date = models.DateField()
     requests_count = models.PositiveIntegerField(default=0)
+    prompt_tokens_count = models.PositiveBigIntegerField(default=0)
+    completion_tokens_count = models.PositiveBigIntegerField(default=0)
+    total_tokens_count = models.PositiveBigIntegerField(default=0)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -27,3 +30,19 @@ class AiDailyUsage(models.Model):
 
     def __str__(self) -> str:
         return f"{self.user_id}: {self.date} = {self.requests_count}"
+
+
+class AiGlobalDailyUsage(models.Model):
+    date = models.DateField(unique=True)
+    requests_count = models.PositiveIntegerField(default=0)
+    prompt_tokens_count = models.PositiveBigIntegerField(default=0)
+    completion_tokens_count = models.PositiveBigIntegerField(default=0)
+    total_tokens_count = models.PositiveBigIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-date"]
+
+    def __str__(self) -> str:
+        return f"{self.date} = {self.requests_count}"

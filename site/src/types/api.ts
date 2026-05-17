@@ -16,6 +16,11 @@ export type AiUsage = {
   used?: number;
   resetAt?: string;
   retryAfterSeconds?: number;
+  tokens?: {
+    prompt: number;
+    completion: number;
+    total: number;
+  };
 };
 
 export type ApiRequestOptions = {
@@ -54,13 +59,14 @@ export type AuthUser = {
 
 export type AuthTokens = {
   access: string;
-  refresh: string;
 };
 
 export type AuthResponse = Partial<AuthTokens> & {
   access_token?: string;
   refresh_token?: string;
-  tokens?: Partial<AuthTokens>;
+  tokens?: Partial<AuthTokens> & {
+    refresh?: string;
+  };
   user?: AuthUser;
 };
 

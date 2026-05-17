@@ -11,7 +11,6 @@ import {
   ACCESS_TOKEN_STORAGE_KEY,
   AUTH_CLEARED_EVENT,
   ApiError,
-  REFRESH_TOKEN_STORAGE_KEY,
   apiRequest,
 } from "../lib/api";
 import { clearLocalAiUsage } from "../lib/aiUsage";
@@ -28,7 +27,6 @@ import type {
 type AuthContextValue = {
   user: AuthUser | null;
   accessToken: string | null;
-  refreshToken: string | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (payload: LoginRequest) => Promise<void>;
@@ -40,6 +38,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 const USER_SNAPSHOT_STORAGE_KEY = "uchicode.auth.user";
+const LEGACY_REFRESH_TOKEN_STORAGE_KEY = "uchicodeRefreshToken";
 
 function readStorage(key: string) {
   try {
@@ -109,18 +108,16 @@ function removeUserSnapshot() {
 
 function extractTokens(response: AuthResponse): AuthTokens {
   const access = response.access ?? response.access_token ?? response.tokens?.access;
-  const refresh = response.refresh ?? response.refresh_token ?? response.tokens?.refresh;
 
-  if (!access || !refresh) {
+  if (!access) {
     throw new ApiError(500, "Сервер не вернул токены авторизации.");
   }
 
-  return { access, refresh };
+  return { access };
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [accessToken, setAccessToken] = useState(() => readStorage(ACCESS_TOKEN_STORAGE_KEY));
-  const [refreshToken, setRefreshToken] = useState(() => readStorage(REFRESH_TOKEN_STORAGE_KEY));
   const [user, setUser] = useState<AuthUser | null>(() =>
     readStorage(ACCESS_TOKEN_STORAGE_KEY) ? readUserSnapshot() : null,
   );
@@ -130,20 +127,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const userId = readUserSnapshot()?.id;
 
     removeStorage(ACCESS_TOKEN_STORAGE_KEY);
-    removeStorage(REFRESH_TOKEN_STORAGE_KEY);
+    removeStorage(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
     removeUserSnapshot();
     clearLocalAiUsage(userId);
     clearCachedCourseProgress();
     setAccessToken(null);
-    setRefreshToken(null);
     setUser(null);
   }, []);
 
   const saveAuth = useCallback((tokens: AuthTokens, nextUser?: AuthUser) => {
     writeStorage(ACCESS_TOKEN_STORAGE_KEY, tokens.access);
-    writeStorage(REFRESH_TOKEN_STORAGE_KEY, tokens.refresh);
+    removeStorage(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
     setAccessToken(tokens.access);
-    setRefreshToken(tokens.refresh);
 
     if (nextUser) {
       const snapshot = toUserSnapshot(nextUser);
@@ -245,15 +240,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const logout = useCallback(async () => {
-    const currentRefresh = readStorage(REFRESH_TOKEN_STORAGE_KEY);
-
     try {
-      if (currentRefresh) {
-        await apiRequest("/api/auth/logout/", {
-          method: "POST",
-          body: { refresh: currentRefresh },
-        });
-      }
+      await apiRequest("/api/auth/logout/", {
+        method: "POST",
+      });
     } catch {
       // Local logout must still complete if the API is temporarily unavailable.
     } finally {
@@ -275,7 +265,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     () => ({
       user,
       accessToken,
-      refreshToken,
       isAuthenticated: Boolean(accessToken),
       isLoading,
       login,
@@ -290,7 +279,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       logout,
       refreshProfile,
-      refreshToken,
       register,
       updateProfile,
       user,

@@ -176,6 +176,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CORS_ALLOWED_ORIGINS = env_list("DJANGO_CORS_ALLOWED_ORIGINS", LOCAL_FRONTEND_ORIGINS if DEBUG else "")
+CORS_ALLOW_CREDENTIALS = env_bool("DJANGO_CORS_ALLOW_CREDENTIALS", True)
 CSRF_TRUSTED_ORIGINS = env_list("DJANGO_CSRF_TRUSTED_ORIGINS", LOCAL_FRONTEND_ORIGINS if DEBUG else "")
 
 QWEN_API_KEY = env("QWEN_API_KEY")
@@ -183,6 +184,7 @@ QWEN_BASE_URL = env("QWEN_BASE_URL") or "https://dashscope-intl.aliyuncs.com/com
 QWEN_MODEL = env("QWEN_MODEL") or "qwen-plus"
 QWEN_TIMEOUT_SECONDS = env_int("QWEN_TIMEOUT_SECONDS", 30)
 AI_DAILY_REQUEST_LIMIT = env_int("AI_DAILY_REQUEST_LIMIT", 15)
+AI_GLOBAL_DAILY_REQUEST_LIMIT = env_int("AI_GLOBAL_DAILY_REQUEST_LIMIT", 1000)
 
 SMS_PROVIDER = env("SMS_PROVIDER") or "console"
 SMS_API_KEY = env("SMS_API_KEY")
@@ -196,6 +198,11 @@ SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", False)
 CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", False)
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = env_bool("DJANGO_CSRF_COOKIE_HTTPONLY", False)
+AUTH_REFRESH_COOKIE_NAME = env("AUTH_REFRESH_COOKIE_NAME") or "uchicode_refresh"
+AUTH_REFRESH_COOKIE_PATH = env("AUTH_REFRESH_COOKIE_PATH") or "/api/auth/"
+AUTH_REFRESH_COOKIE_DOMAIN = env("AUTH_REFRESH_COOKIE_DOMAIN") or None
+AUTH_REFRESH_COOKIE_SECURE = env_bool("AUTH_REFRESH_COOKIE_SECURE", SESSION_COOKIE_SECURE)
+AUTH_REFRESH_COOKIE_SAMESITE = env("AUTH_REFRESH_COOKIE_SAMESITE") or "Lax"
 SECURE_HSTS_SECONDS = env_int("DJANGO_SECURE_HSTS_SECONDS", 0)
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
 SECURE_HSTS_PRELOAD = env_bool("DJANGO_SECURE_HSTS_PRELOAD", False)
@@ -212,7 +219,7 @@ REST_FRAMEWORK = {
         "rest_framework.parsers.JSONParser",
     ],
     "DEFAULT_AUTHENTICATION_CLASSES": [
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
+        "apps.accounts.authentication.VersionedJWTAuthentication",
     ],
     "EXCEPTION_HANDLER": "apps.core.exceptions.api_exception_handler",
     "DEFAULT_THROTTLE_CLASSES": [
@@ -229,6 +236,7 @@ REST_FRAMEWORK = {
         "phone_send_code_daily": "10/day",
         "phone_verify_code": "5/min",
         "change_password": "5/hour",
+        "ai_global_burst": "60/min",
         "ai_user_burst": "10/min",
     },
 }

@@ -25,6 +25,19 @@ function getCooldown(error: ApiError) {
   return typeof error.retryAfterSeconds === "number" ? Math.max(error.retryAfterSeconds, 1) : 0;
 }
 
+function clampPercent(value: number) {
+  if (!Number.isFinite(value)) return 0;
+  return Math.min(Math.max(Math.round(value), 0), 100);
+}
+
+function getAiUsagePercent(usage: AiUsage) {
+  const limit = Number.isFinite(usage.limit) && usage.limit > 0 ? usage.limit : 0;
+  if (!limit) return 0;
+
+  const remaining = Number.isFinite(usage.remaining) ? Math.min(Math.max(usage.remaining, 0), limit) : 0;
+  return clampPercent((remaining / limit) * 100);
+}
+
 export function ProfilePage() {
   const { user, isLoading, logout, refreshProfile, updateProfile, accessToken } = useAuth();
   const authKey = accessToken ?? "";
@@ -290,6 +303,7 @@ export function ProfilePage() {
     ? "Можно задавать вопросы AI."
     : "Подтверди телефон, чтобы открыть AI.";
   const displayedAiUsage = isPhoneVerified ? aiUsage : { ...aiUsage, remaining: 0 };
+  const aiUsagePercent = getAiUsagePercent(displayedAiUsage);
 
   return (
     <article className={styles.root}>
@@ -499,7 +513,7 @@ export function ProfilePage() {
               <div aria-hidden="true">
                 <span
                   style={{
-                    width: `${Math.round((displayedAiUsage.remaining / displayedAiUsage.limit) * 100)}%`,
+                    width: `${aiUsagePercent}%`,
                   }}
                 />
               </div>

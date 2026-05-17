@@ -11,6 +11,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import AuthenticationFailed
 
 from .models import User
+from .tokens import invalidate_user_tokens
 
 
 PHONE_PATTERN = re.compile(r"^\+?[0-9][0-9\s().-]{4,31}$")
@@ -183,6 +184,7 @@ class ChangePasswordSerializer(serializers.Serializer):
         user = request.user
         user.set_password(self.validated_data["newPassword"])
         user.save(update_fields=["password"])
+        invalidate_user_tokens(user)
         django_request = getattr(request, "_request", request)
         if hasattr(django_request, "session"):
             update_session_auth_hash(django_request, user)

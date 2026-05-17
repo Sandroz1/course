@@ -48,7 +48,7 @@ POST /api/ai/chat/
 
 `QWEN_API_KEY` берётся только из env. Если ключ не задан, backend возвращает понятную ошибку `503`.
 
-Доступ к `/api/ai/chat/` разрешён только авторизованным пользователям с `is_phone_verified=True`. Backend-лимит: 15 AI-запросов в день на пользователя.
+Доступ к `/api/ai/chat/` разрешён только авторизованным пользователям с `is_phone_verified=True`. Backend-лимиты: 15 AI-запросов в день на пользователя и глобальный дневной лимит из `AI_GLOBAL_DAILY_REQUEST_LIMIT`.
 
 ### Auth
 
@@ -202,6 +202,8 @@ Backend:
 - `QWEN_API_KEY`
 - `QWEN_BASE_URL`
 - `QWEN_MODEL`
+- `AI_DAILY_REQUEST_LIMIT`
+- `AI_GLOBAL_DAILY_REQUEST_LIMIT`
 - `SMS_PROVIDER`
 - `SMS_API_KEY`
 - `SMS_LOGIN`

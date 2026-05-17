@@ -38,6 +38,18 @@ class UpstreamAiError(Exception):
     status_code: int = status.HTTP_502_BAD_GATEWAY
 
 
+@dataclass(frozen=True)
+class AiProviderResult:
+    answer: str
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+
+    @property
+    def has_token_usage(self) -> bool:
+        return any([self.prompt_tokens, self.completion_tokens, self.total_tokens])
+
+
 def build_qwen_messages(question: str, selected_text: str = "", history: list[dict[str, str]] | None = None):
     safe_history = history or []
     user_content = (
@@ -81,7 +93,27 @@ def extract_answer(payload: dict[str, Any]) -> str:
     return answer.strip()
 
 
-def call_qwen(messages: list[dict[str, str]]) -> str:
+def _positive_int(value: Any) -> int:
+    return value if isinstance(value, int) and value > 0 else 0
+
+
+def extract_token_usage(payload: dict[str, Any]) -> dict[str, int]:
+    usage = payload.get("usage")
+    if not isinstance(usage, dict):
+        return {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
+
+    prompt_tokens = _positive_int(usage.get("prompt_tokens"))
+    completion_tokens = _positive_int(usage.get("completion_tokens"))
+    total_tokens = max(_positive_int(usage.get("total_tokens")), prompt_tokens + completion_tokens)
+
+    return {
+        "prompt_tokens": prompt_tokens,
+        "completion_tokens": completion_tokens,
+        "total_tokens": total_tokens,
+    }
+
+
+def call_qwen(messages: list[dict[str, str]]) -> AiProviderResult:
     if not settings.QWEN_API_KEY:
         raise UpstreamAiError(
             "AI-сервис временно не настроен.",
@@ -125,4 +157,4 @@ def call_qwen(messages: list[dict[str, str]]) -> str:
     except ValueError as exc:
         raise UpstreamAiError("AI-сервис вернул некорректный ответ.") from exc
 
-    return extract_answer(payload)
+    return AiProviderResult(answer=extract_answer(payload), **extract_token_usage(payload))

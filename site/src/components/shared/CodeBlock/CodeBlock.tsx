@@ -145,6 +145,101 @@ function getLanguageLabel(language: string) {
   return languageLabels[language.toLowerCase()] ?? language.toUpperCase();
 }
 
+const safeHighlightTags = new Set(["PRE", "CODE", "SPAN"]);
+const safeClassNamePattern = /^[a-z0-9_:\-\s]+$/i;
+const safeColorPattern = /^(#[0-9a-f]{3,8}|rgba?\([0-9.,%\s]+\)|hsla?\([0-9.,%\s]+\)|[a-z]+)$/i;
+const safeStyleProperties = new Set([
+  "background-color",
+  "color",
+  "font-style",
+  "font-weight",
+  "text-decoration",
+]);
+
+function isSafeStyleValue(property: string, value: string) {
+  if (!value || /url\s*\(|expression\s*\(|javascript:/i.test(value)) return false;
+  if (property === "background-color" || property === "color") return safeColorPattern.test(value);
+  if (property === "font-style") return /^(normal|italic|oblique)$/i.test(value);
+  if (property === "font-weight") return /^(normal|bold|[1-9]00)$/i.test(value);
+  if (property === "text-decoration") return /^[a-z\s-]+$/i.test(value);
+
+  return false;
+}
+
+function sanitizeStyleAttribute(style: string | null) {
+  if (!style) return "";
+
+  const probe = document.createElement("span");
+  probe.setAttribute("style", style);
+
+  return Array.from(safeStyleProperties)
+    .map((property) => {
+      const value = probe.style.getPropertyValue(property).trim();
+      return isSafeStyleValue(property, value) ? `${property}: ${value}` : "";
+    })
+    .filter(Boolean)
+    .join("; ");
+}
+
+function sanitizeHighlightedNode(node: Node): Node {
+  if (node.nodeType === Node.TEXT_NODE) {
+    return document.createTextNode(node.textContent ?? "");
+  }
+
+  if (node.nodeType !== Node.ELEMENT_NODE) {
+    return document.createTextNode("");
+  }
+
+  const element = node as HTMLElement;
+
+  if (!safeHighlightTags.has(element.tagName)) {
+    const fragment = document.createDocumentFragment();
+    Array.from(element.childNodes).forEach((child) => {
+      fragment.appendChild(sanitizeHighlightedNode(child));
+    });
+    return fragment;
+  }
+
+  const safeElement = document.createElement(element.tagName.toLowerCase());
+  const className = element.getAttribute("class");
+  const style = sanitizeStyleAttribute(element.getAttribute("style"));
+
+  if (className && safeClassNamePattern.test(className)) {
+    safeElement.setAttribute("class", className);
+  }
+
+  if (style) {
+    safeElement.setAttribute("style", style);
+  }
+
+  if (element.tagName === "PRE") {
+    const tabIndex = element.getAttribute("tabindex");
+    if (tabIndex === "0" || tabIndex === "-1") {
+      safeElement.setAttribute("tabindex", tabIndex);
+    }
+  }
+
+  Array.from(element.childNodes).forEach((child) => {
+    safeElement.appendChild(sanitizeHighlightedNode(child));
+  });
+
+  return safeElement;
+}
+
+function sanitizeHighlightedHtml(html: string) {
+  if (typeof DOMParser === "undefined") return "";
+
+  const parser = new DOMParser();
+  const parsed = parser.parseFromString(html, "text/html");
+  const container = document.createElement("div");
+
+  Array.from(parsed.body.childNodes).forEach((child) => {
+    container.appendChild(sanitizeHighlightedNode(child));
+  });
+
+  return container.innerHTML;
+}
+
 export function CodeBlock({ code, language = "cpp", compact = false }: CodeBlockProps) {
   const [copyState, setCopyState] = useState<CopyState>("idle");
   const [highlightedHtml, setHighlightedHtml] = useState("");
@@ -162,7 +257,7 @@ export function CodeBlock({ code, language = "cpp", compact = false }: CodeBlock
         }),
       )
       .then((html) => {
-        if (isMounted) setHighlightedHtml(html);
+        if (isMounted) setHighlightedHtml(sanitizeHighlightedHtml(html));
       })
       .catch(() => {
         if (isMounted) setHighlightedHtml("");
