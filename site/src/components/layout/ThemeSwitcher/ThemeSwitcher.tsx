@@ -9,7 +9,7 @@ import {
 } from "../../../utils/theme";
 import styles from "./ThemeSwitcher.module.scss";
 
-const themeOptions: ThemePreference[] = ["system", "light", "dark", "blue"];
+const themeOptions: ThemePreference[] = ["system", "light", "dark", "deep-dark", "blue"];
 
 export function ThemeSwitcher() {
   const [preference, setPreference] = useState<ThemePreference>(() => getStoredThemePreference());

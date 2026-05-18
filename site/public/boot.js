@@ -7,7 +7,7 @@
       resolvedTheme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
     }
 
-    if (["light", "dark", "blue"].indexOf(resolvedTheme) === -1) {
+    if (["light", "dark", "deep-dark", "blue"].indexOf(resolvedTheme) === -1) {
       resolvedTheme = "dark";
       themePreference = "system";
     }

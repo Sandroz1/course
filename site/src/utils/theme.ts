@@ -1,4 +1,4 @@
-export type ThemePreference = "system" | "light" | "dark" | "blue";
+export type ThemePreference = "system" | "light" | "dark" | "deep-dark" | "blue";
 export type ResolvedTheme = Exclude<ThemePreference, "system">;
 
 export const THEME_STORAGE_KEY = "cppLearnTheme";
@@ -7,10 +7,11 @@ export const themeLabels: Record<ThemePreference, string> = {
   system: "Системная",
   light: "Светлая",
   dark: "Тёмная",
+  "deep-dark": "Очень тёмная",
   blue: "Синяя",
 };
 
-const themePreferences: ThemePreference[] = ["system", "light", "dark", "blue"];
+const themePreferences: ThemePreference[] = ["system", "light", "dark", "deep-dark", "blue"];
 
 export function isThemePreference(value: string | null): value is ThemePreference {
   return value !== null && themePreferences.includes(value as ThemePreference);
