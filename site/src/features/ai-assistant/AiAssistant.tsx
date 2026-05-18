@@ -1,7 +1,5 @@
 import {
     FormEvent,
-    type ReactNode,
-    type PointerEvent as ReactPointerEvent,
     useEffect,
     useRef,
     useState,
@@ -19,353 +17,18 @@ import { sendAiChat } from "../../lib/aiApi";
 import clsx from "clsx";
 import type { AiChatMessage, AiUsage } from "../../types/api";
 import { toPath } from "../../utils/slug";
+import { MessageContent } from "./components/MessageContent";
+import { useAiPanelSize } from "./hooks/useAiPanelSize";
+import { isNearBottom } from "./panelSize";
+import { getAiAccessMessage, getAiErrorMessage } from "./utils/errors";
 import {
-    clamp,
-    clampPanelSize,
-    getPanelBounds,
-    isNearBottom,
-    readStoredPanelSize,
-    writeStoredPanelSize,
-} from "./panelSize";
+    isPointerInsideAiAssistant,
+    readLessonSelection,
+    type SelectionPopover,
+} from "./utils/selection";
 import styles from "./AiAssistant.module.scss";
 
-type ResizeDirection = "left" | "top" | "corner";
 type ChatMessage = AiChatMessage & { id: string };
-
-type MessageBlock =
-    | { type: "paragraph"; text: string }
-    | { type: "heading"; text: string }
-    | { type: "list"; items: string[] }
-    | { type: "code"; code: string; language: string };
-
-const SELECTION_POPOVER_WIDTH = 132;
-const SELECTION_POPOVER_HEIGHT = 34;
-const SELECTION_POPOVER_GAP = 10;
-const SELECTION_POPOVER_MARGIN = 12;
-
-type SelectionPopover = {
-    x: number;
-    y: number;
-    placement: "above" | "below";
-};
-
-function getElementFromNode(node: Node | null) {
-    if (!node) {
-        return null;
-    }
-
-    return node.nodeType === Node.ELEMENT_NODE
-        ? (node as Element)
-        : node.parentElement;
-}
-
-function isInsideLessonContent(node: Node | null) {
-    const element = getElementFromNode(node);
-
-    return Boolean(element?.closest(".lesson-content"));
-}
-
-function getClosestCodeBlock(node: Node | null) {
-    return getElementFromNode(node)?.closest("pre, .shiki") ?? null;
-}
-
-function isInputSelection() {
-    const activeElement = document.activeElement;
-    const tagName = activeElement?.tagName?.toLowerCase();
-
-    return tagName === "textarea" || tagName === "input";
-}
-
-function getSelectionPopoverPosition(selectionRect: DOMRect, anchorRect: DOMRect) {
-    const maxLeft = Math.max(
-        SELECTION_POPOVER_MARGIN,
-        window.innerWidth - SELECTION_POPOVER_WIDTH - SELECTION_POPOVER_MARGIN
-    );
-    const maxTop = Math.max(
-        SELECTION_POPOVER_MARGIN,
-        window.innerHeight - SELECTION_POPOVER_HEIGHT - SELECTION_POPOVER_MARGIN
-    );
-    const selectionCenter = selectionRect.left + selectionRect.width / 2;
-    const spaceAbove = anchorRect.top - SELECTION_POPOVER_MARGIN;
-    const spaceBelow = window.innerHeight - anchorRect.bottom - SELECTION_POPOVER_MARGIN;
-    const shouldPlaceBelow =
-        spaceAbove < SELECTION_POPOVER_HEIGHT + SELECTION_POPOVER_GAP &&
-        spaceBelow >= spaceAbove;
-    const rawTop = shouldPlaceBelow
-        ? anchorRect.bottom + SELECTION_POPOVER_GAP
-        : anchorRect.top - SELECTION_POPOVER_HEIGHT - SELECTION_POPOVER_GAP;
-
-    return {
-        x: clamp(
-            selectionCenter - SELECTION_POPOVER_WIDTH / 2,
-            SELECTION_POPOVER_MARGIN,
-            maxLeft
-        ),
-        y: clamp(rawTop, SELECTION_POPOVER_MARGIN, maxTop),
-        placement: shouldPlaceBelow ? "below" as const : "above" as const,
-    };
-}
-
-function removeDecorativeText(text: string) {
-    return text
-        .replace(/\p{Extended_Pictographic}/gu, "")
-        .replace(/[\uFE0E\uFE0F]/g, "")
-        .trim();
-}
-
-function stripIntro(text: string) {
-    let result = text.trimStart();
-    let previous = "";
-
-    while (result !== previous) {
-        previous = result;
-        result = result
-            .replace(/^(конечно[!,.]?\s*)/i, "")
-            .replace(/^(отлично[!,.]?\s*)/i, "")
-            .replace(/^(давай(?:те)?\s+разбер[её]м[^\n.]*[.!]?\s*)/i, "")
-            .trimStart();
-    }
-
-    return result.trim();
-}
-
-function isDecorativeSeparator(line: string) {
-    return /^[-*_]{3,}$/.test(line.trim());
-}
-
-function normalizeAssistantText(content: string) {
-    return stripIntro(content.replace(/\r\n/g, "\n"));
-}
-
-function parseMessageBlocks(content: string): MessageBlock[] {
-    const lines = normalizeAssistantText(content).split("\n");
-    const blocks: MessageBlock[] = [];
-    let paragraphLines: string[] = [];
-    let listItems: string[] = [];
-
-    function flushParagraph() {
-        if (paragraphLines.length === 0) return;
-        blocks.push({ type: "paragraph", text: paragraphLines.join(" ").trim() });
-        paragraphLines = [];
-    }
-
-    function flushList() {
-        if (listItems.length === 0) return;
-        blocks.push({ type: "list", items: listItems });
-        listItems = [];
-    }
-
-    for (let index = 0; index < lines.length; index += 1) {
-        const rawLine = lines[index];
-        const trimmedLine = rawLine.trim();
-
-        if (trimmedLine.startsWith("```")) {
-            flushParagraph();
-            flushList();
-
-            const language = trimmedLine.replace(/^```/, "").trim();
-            const codeLines: string[] = [];
-            index += 1;
-
-            while (index < lines.length && !lines[index].trim().startsWith("```")) {
-                codeLines.push(lines[index]);
-                index += 1;
-            }
-
-            blocks.push({ type: "code", code: codeLines.join("\n").trimEnd(), language });
-            continue;
-        }
-
-        const cleanLine = removeDecorativeText(rawLine);
-
-        if (!cleanLine || isDecorativeSeparator(cleanLine)) {
-            flushParagraph();
-            flushList();
-            continue;
-        }
-
-        const headingMatch = cleanLine.match(/^#{1,6}\s+(.+)$/);
-
-        if (headingMatch) {
-            flushParagraph();
-            flushList();
-            blocks.push({ type: "heading", text: headingMatch[1].replace(/\*\*/g, "").trim() });
-            continue;
-        }
-
-        const listMatch = cleanLine.match(/^(?:[-*]|\d+[.)])\s+(.+)$/);
-
-        if (listMatch) {
-            flushParagraph();
-            listItems.push(listMatch[1].trim());
-            continue;
-        }
-
-        flushList();
-        paragraphLines.push(cleanLine);
-    }
-
-    flushParagraph();
-    flushList();
-
-    return blocks.length > 0 ? blocks : [{ type: "paragraph", text: "" }];
-}
-
-function renderInline(text: string): ReactNode[] {
-    return text.split(/(`[^`]+`)/g).map((part, index) => {
-        if (part.startsWith("`") && part.endsWith("`")) {
-            return <code key={index}>{part.slice(1, -1)}</code>;
-        }
-
-        return <span key={index}>{part.replace(/\*\*/g, "").replace(/__/g, "")}</span>;
-    });
-}
-
-function MessageContent({ content, role }: { content: string; role: AiChatMessage["role"] }) {
-    if (role === "user") {
-        return <p>{content}</p>;
-    }
-
-    const blocks = parseMessageBlocks(content);
-
-    return (
-        <div className={styles.messageContent}>
-            {blocks.map((block, index) => {
-                if (block.type === "heading") {
-                    return <h3 key={index}>{renderInline(block.text)}</h3>;
-                }
-
-                if (block.type === "list") {
-                    return (
-                        <ul key={index}>
-                            {block.items.map((item, itemIndex) => (
-                                <li key={`${index}-${itemIndex}`}>{renderInline(item)}</li>
-                            ))}
-                        </ul>
-                    );
-                }
-
-                if (block.type === "code") {
-                    return (
-                        <pre className={styles.messageCode} key={index}>
-                            <code>{block.code}</code>
-                        </pre>
-                    );
-                }
-
-                return <p key={index}>{renderInline(block.text)}</p>;
-            })}
-        </div>
-    );
-}
-
-function readLessonSelection() {
-    const selection = window.getSelection();
-
-    if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
-        return null;
-    }
-
-    if (isInputSelection()) {
-        return null;
-    }
-
-    const text = selection.toString().trim();
-
-    if (text.length < 3) {
-        return null;
-    }
-
-    const anchorInsideLesson = isInsideLessonContent(selection.anchorNode);
-    const focusInsideLesson = isInsideLessonContent(selection.focusNode);
-
-    if (!anchorInsideLesson || !focusInsideLesson) {
-        return null;
-    }
-
-    const range = selection.getRangeAt(0);
-    const rect = range.getBoundingClientRect();
-    const firstRect = range.getClientRects()[0];
-
-    const finalRect = rect.width > 0 && rect.height > 0 ? rect : firstRect;
-
-    if (!finalRect) {
-        return null;
-    }
-
-    const isSelectionOutsideViewport =
-        finalRect.bottom < SELECTION_POPOVER_MARGIN ||
-        finalRect.top > window.innerHeight - SELECTION_POPOVER_MARGIN ||
-        finalRect.right < SELECTION_POPOVER_MARGIN ||
-        finalRect.left > window.innerWidth - SELECTION_POPOVER_MARGIN;
-
-    if (isSelectionOutsideViewport) {
-        return null;
-    }
-
-    const anchorCodeBlock = getClosestCodeBlock(selection.anchorNode);
-    const focusCodeBlock = getClosestCodeBlock(selection.focusNode);
-    const anchorRect =
-        anchorCodeBlock && anchorCodeBlock === focusCodeBlock
-            ? anchorCodeBlock.getBoundingClientRect()
-            : finalRect;
-
-    return {
-        text: text.slice(0, 5000),
-        position: getSelectionPopoverPosition(finalRect, anchorRect),
-    };
-}
-
-function getAiAccessMessage({
-    isAuthenticated,
-    isAuthLoading,
-    isPhoneVerified,
-}: {
-    isAuthenticated: boolean;
-    isAuthLoading: boolean;
-    isPhoneVerified: boolean;
-}) {
-    if (isAuthLoading) {
-        return "Проверяем аккаунт...";
-    }
-
-    if (!isAuthenticated) {
-        return "Войдите, чтобы использовать AI.";
-    }
-
-    if (!isPhoneVerified) {
-        return "Подтвердите телефон в профиле.";
-    }
-
-    return "";
-}
-
-function getAiErrorMessage(error: unknown) {
-    if (!(error instanceof ApiError)) {
-        return "Не удалось получить ответ от AI.";
-    }
-
-    if (error.status === 401) {
-        return "Сессия истекла. Войдите снова.";
-    }
-
-    if (error.status === 403) {
-        return "Подтвердите телефон в профиле.";
-    }
-
-    if (error.status === 429) {
-        const retryText = error.retryAfterSeconds
-            ? ` Попробуйте через ${error.retryAfterSeconds} с.`
-            : "";
-        return `${error.message || "Лимит запросов к AI исчерпан."}${retryText}`;
-    }
-
-    if (error.status >= 500 || error.status === 0) {
-        return error.message || "AI-сервис временно недоступен.";
-    }
-
-    return error.message || "Не удалось получить ответ от AI.";
-}
 
 function focusTextareaAtEnd(textarea: HTMLTextAreaElement | null) {
     if (!textarea || textarea.disabled) {
@@ -394,9 +57,7 @@ export function AiAssistant() {
     const [isLoading, setIsLoading] = useState(false);
     const [errorText, setErrorText] = useState("");
     const [showJumpToBottom, setShowJumpToBottom] = useState(false);
-    const [panelSize, setPanelSize] = useState(() =>
-        clampPanelSize(readStoredPanelSize())
-    );
+    const { panelSize, startResize } = useAiPanelSize();
     const [aiUsage, setAiUsage] = useState<AiUsage>(() => getLocalAiUsage(user?.id));
     const isPhoneVerified = Boolean(user?.is_phone_verified);
     const aiAccessMessage = getAiAccessMessage({
@@ -419,14 +80,6 @@ export function AiAssistant() {
     const isProgrammaticScrollRef = useRef(false);
     const userScrolledDuringPendingAnswerRef = useRef(false);
     const shouldStickToBottomRef = useRef(true);
-    const resizeSessionRef = useRef<{
-        direction: ResizeDirection;
-        startX: number;
-        startY: number;
-        startWidth: number;
-        startHeight: number;
-    } | null>(null);
-    const panelSizeDuringResizeRef = useRef(panelSize);
 
     useEffect(() => {
         function handleOpenAiAssistant() {
@@ -444,10 +97,6 @@ export function AiAssistant() {
     }, []);
 
     useEffect(() => {
-        panelSizeDuringResizeRef.current = panelSize;
-    }, [panelSize]);
-
-    useEffect(() => {
         setAiUsage(getLocalAiUsage(user?.id));
 
         function syncUsage() {
@@ -458,17 +107,6 @@ export function AiAssistant() {
 
         return () => window.removeEventListener(AI_USAGE_UPDATED_EVENT, syncUsage);
     }, [user?.id]);
-
-    useEffect(() => {
-        function handleWindowResize() {
-            setPanelSize((prev) => clampPanelSize(prev));
-        }
-
-        handleWindowResize();
-        window.addEventListener("resize", handleWindowResize);
-
-        return () => window.removeEventListener("resize", handleWindowResize);
-    }, []);
 
     useEffect(() => {
         let selectionTimer: number | null = null;
@@ -511,16 +149,13 @@ export function AiAssistant() {
         }
 
         function handlePointerDown(event: PointerEvent) {
-            const target = event.target;
-
-            if (!(target instanceof Element)) {
-                return;
-            }
-
             if (
-                target.closest(`.${styles.selectionPopover}`) ||
-                target.closest(`.${styles.panel}`) ||
-                target.closest(`.${styles.floatingButton}`)
+                !(event.target instanceof Element) ||
+                isPointerInsideAiAssistant(event.target, {
+                    selectionPopover: styles.selectionPopover,
+                    panel: styles.panel,
+                    floatingButton: styles.floatingButton,
+                })
             ) {
                 return;
             }
@@ -686,63 +321,6 @@ export function AiAssistant() {
         } else {
             messageRefs.current.delete(id);
         }
-    }
-
-    function startResize(
-        event: ReactPointerEvent<HTMLSpanElement>,
-        direction: ResizeDirection
-    ) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        const size = panelSizeDuringResizeRef.current;
-
-        resizeSessionRef.current = {
-            direction,
-            startX: event.clientX,
-            startY: event.clientY,
-            startWidth: size.width,
-            startHeight: size.height,
-        };
-
-        function onPointerMove(moveEvent: PointerEvent) {
-            const session = resizeSessionRef.current;
-
-            if (!session) {
-                return;
-            }
-
-            const { minWidth, maxWidth, minHeight, maxHeight } = getPanelBounds();
-            let nextW = session.startWidth;
-            let nextH = session.startHeight;
-
-            if (session.direction === "left" || session.direction === "corner") {
-                nextW = session.startWidth + (session.startX - moveEvent.clientX);
-            }
-
-            if (session.direction === "top" || session.direction === "corner") {
-                nextH = session.startHeight + (session.startY - moveEvent.clientY);
-            }
-
-            const clamped = {
-                width: clamp(nextW, minWidth, maxWidth),
-                height: clamp(nextH, minHeight, maxHeight),
-            };
-
-            panelSizeDuringResizeRef.current = clamped;
-            setPanelSize(clamped);
-        }
-
-        function onPointerUp() {
-            resizeSessionRef.current = null;
-            document.removeEventListener("pointermove", onPointerMove);
-            document.removeEventListener("pointerup", onPointerUp);
-
-            writeStoredPanelSize(panelSizeDuringResizeRef.current);
-        }
-
-        document.addEventListener("pointermove", onPointerMove);
-        document.addEventListener("pointerup", onPointerUp);
     }
 
     function jumpToLatestMessage() {
