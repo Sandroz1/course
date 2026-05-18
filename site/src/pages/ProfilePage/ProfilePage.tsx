@@ -43,11 +43,31 @@ function extractRussianPhoneDigits(phone: string | null | undefined) {
 }
 
 function sanitizeRussianPhoneDigits(value: string) {
-  return value.replace(/\D/g, "").slice(0, RUSSIAN_PHONE_DIGITS_LENGTH);
+  const digits = value.replace(/\D/g, "");
+  const nationalDigits = digits.length > RUSSIAN_PHONE_DIGITS_LENGTH && digits.startsWith("7")
+    ? digits.slice(1)
+    : digits;
+  return nationalDigits.slice(0, RUSSIAN_PHONE_DIGITS_LENGTH);
 }
 
 function buildRussianPhone(digits: string) {
   return digits.length === RUSSIAN_PHONE_DIGITS_LENGTH ? `+7${digits}` : "";
+}
+
+function formatRussianPhoneDigits(digits: string) {
+  const firstPart = digits.slice(0, 3);
+  const secondPart = digits.slice(3, 6);
+  const thirdPart = digits.slice(6, 8);
+  const fourthPart = digits.slice(8, 10);
+
+  if (!firstPart) return "";
+
+  let formatted = `(${firstPart}`;
+  if (firstPart.length === 3) formatted += ")";
+  if (secondPart) formatted += ` ${secondPart}`;
+  if (thirdPart) formatted += `-${thirdPart}`;
+  if (fourthPart) formatted += `-${fourthPart}`;
+  return formatted;
 }
 
 export function ProfilePage() {
@@ -290,11 +310,17 @@ export function ProfilePage() {
   }
 
   const phone = buildRussianPhone(phoneDigits);
+  const isPhoneComplete = phoneDigits.length === RUSSIAN_PHONE_DIGITS_LENGTH;
   const isPhoneChanged = phone !== (user.phone ?? "");
   const isPhoneVerified = Boolean(user.phone && user.is_phone_verified && !isPhoneChanged);
-  const canSendCode =
-    !isPhoneVerified && phoneDigits.length === RUSSIAN_PHONE_DIGITS_LENGTH && cooldownSeconds === 0 && !isSendingCode;
-  const canVerifyCode = phoneDigits.length === RUSSIAN_PHONE_DIGITS_LENGTH && phoneCode.length === 6 && !isVerifyingCode;
+  const phoneStatusLabel = isPhoneVerified ? "Подтверждён" : isPhoneComplete ? "Нужен код" : "Не подтверждён";
+  const phoneHelpText = isPhoneVerified
+    ? "Номер подтверждён и привязан к аккаунту."
+    : isPhoneComplete
+      ? "Отправьте SMS-код и подтвердите номер."
+      : "Введите 10 цифр российского номера после +7.";
+  const canSendCode = !isPhoneVerified && isPhoneComplete && cooldownSeconds === 0 && !isSendingCode;
+  const canVerifyCode = isPhoneComplete && phoneCode.length === 6 && !isVerifyingCode;
   const completedLessonsCount = studyProgress?.lessons.filter((lesson) => lesson.is_completed).length ?? 0;
   const openedLessonsCount = studyProgress?.lessons.length ?? 0;
   const solvedTasksCount = studyProgress?.tasks.filter((task) => task.status === "solved").length ?? 0;
@@ -315,59 +341,52 @@ export function ProfilePage() {
 
       <div className={styles.layout}>
         <div className={styles.mainColumn}>
-          <section className={styles.card}>
+          <section className={clsx(styles.card, styles.phoneCard)}>
             <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>Телефон</h2>
+              <div className={styles.cardTitleRow}>
+                <h2 className={styles.cardTitle}>Телефон</h2>
+                <span
+                  className={clsx(
+                    styles.phoneStatus,
+                    isPhoneVerified ? styles.phoneStatusVerified : styles.phoneStatusPending,
+                  )}
+                >
+                  {phoneStatusLabel}
+                </span>
+              </div>
+              <p className={styles.mutedText}>{phoneHelpText}</p>
             </div>
 
-            <form className={styles.form} onSubmit={handleSendCode} aria-busy={isSendingCode}>
-              <label className={styles.field}>
-                <span className={styles.label}>Номер</span>
-                <div className={styles.phoneInputGroup}>
-                  <span className={styles.phonePrefix}>+7</span>
-                  <input
-                    className={styles.input}
-                    aria-invalid={Boolean(phoneError)}
-                    autoComplete="tel-national"
-                    inputMode="numeric"
-                    maxLength={RUSSIAN_PHONE_DIGITS_LENGTH}
-                    pattern="\d{10}"
-                    value={phoneDigits}
-                    onChange={(event) => setPhoneDigits(sanitizeRussianPhoneDigits(event.target.value))}
-                    placeholder="9991234567"
-                    disabled={isSendingCode}
-                  />
-                </div>
-                <span className={styles.fieldError} aria-live="polite">
-                  {phoneError || "\u00A0"}
-                </span>
-              </label>
+            <form className={clsx(styles.form, styles.phoneForm)} onSubmit={handleSendCode} aria-busy={isSendingCode}>
+              <div className={styles.phoneControls}>
+                <label className={clsx(styles.field, styles.phoneField)}>
+                  <span className={styles.label}>Номер</span>
+                  <div
+                    className={clsx(styles.phoneInputGroup, phoneError && styles.phoneInputGroupInvalid)}
+                  >
+                    <span className={styles.phonePrefix}>+7</span>
+                    <input
+                      className={styles.input}
+                      aria-invalid={Boolean(phoneError)}
+                      autoComplete="tel-national"
+                      inputMode="numeric"
+                      maxLength={18}
+                      type="tel"
+                      value={formatRussianPhoneDigits(phoneDigits)}
+                      onChange={(event) => setPhoneDigits(sanitizeRussianPhoneDigits(event.target.value))}
+                      placeholder="(999) 123-45-67"
+                      disabled={isSendingCode}
+                    />
+                    <span className={styles.phoneCounter}>{phoneDigits.length}/10</span>
+                  </div>
+                  <span className={styles.fieldError} aria-live="polite">
+                    {phoneError || "\u00A0"}
+                  </span>
+                </label>
 
-              <div
-                className={clsx(
-                  styles.phoneStatus,
-                  isPhoneVerified ? styles.phoneStatusVerified : styles.phoneStatusPending,
-                )}
-              >
-                <strong>{isPhoneVerified ? "Подтверждён" : "Не подтверждён"}</strong>
-              </div>
-
-              <p
-                className={clsx(
-                  styles.formMessage,
-                  phoneErrorText && styles.formError,
-                  phoneMessage && styles.formSuccess,
-                  !phoneErrorText && !phoneMessage && styles.formMessageEmpty,
-                )}
-                aria-live="polite"
-              >
-                {phoneErrorText || phoneMessage || "\u00A0"}
-              </p>
-
-              <div className={styles.actions}>
                 {!isPhoneVerified && (
                   <button
-                    className={styles.secondaryButton}
+                    className={clsx(styles.secondaryButton, styles.phoneSendButton)}
                     type="submit"
                     disabled={!canSendCode}
                   >
@@ -379,10 +398,27 @@ export function ProfilePage() {
                   </button>
                 )}
               </div>
+
+              {(phoneErrorText || phoneMessage) && (
+                <p
+                  className={clsx(
+                    styles.formMessage,
+                    phoneErrorText && styles.formError,
+                    phoneMessage && styles.formSuccess,
+                  )}
+                  aria-live="polite"
+                >
+                  {phoneErrorText || phoneMessage}
+                </p>
+              )}
             </form>
 
             {!isPhoneVerified && (
-              <form className={styles.form} onSubmit={handleVerifyCode} aria-busy={isVerifyingCode}>
+              <form
+                className={clsx(styles.form, styles.phoneCodeForm)}
+                onSubmit={handleVerifyCode}
+                aria-busy={isVerifyingCode}
+              >
                 <label className={styles.field}>
                   <span className={styles.label}>Код из SMS</span>
                   <input
@@ -401,7 +437,11 @@ export function ProfilePage() {
                 </label>
 
                 <div className={styles.actions}>
-                  <button className={styles.secondaryButton} type="submit" disabled={!canVerifyCode}>
+                  <button
+                    className={clsx(styles.secondaryButton, styles.phoneVerifyButton)}
+                    type="submit"
+                    disabled={!canVerifyCode}
+                  >
                     {isVerifyingCode ? "Проверяем..." : "Подтвердить"}
                   </button>
                 </div>

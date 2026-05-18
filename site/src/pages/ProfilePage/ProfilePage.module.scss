@@ -68,6 +68,15 @@
   gap: 5px;
 }
 
+.cardTitleRow {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 10px;
+  min-width: 0;
+}
+
 .cardTitle {
   color: var(--text);
   font-size: 17px;
@@ -124,13 +133,38 @@
   outline-offset: 2px;
 }
 
+.phoneCard {
+  gap: 13px;
+}
+
+.phoneForm {
+  gap: 8px;
+}
+
+.phoneControls {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 10px;
+}
+
+.phoneField {
+  min-width: 0;
+}
+
 .phoneInputGroup {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
+  min-height: 44px;
+  overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface-2);
+}
+
+.phoneInputGroupInvalid {
+  border-color: rgba(232, 139, 131, 0.72);
 }
 
 .phoneInputGroup:focus-within {
@@ -139,9 +173,12 @@
 }
 
 .phoneInputGroup .input {
+  min-height: 42px;
   border: 0;
-  border-radius: 0 8px 8px 0;
+  border-radius: 0;
   background: transparent;
+  font-variant-numeric: tabular-nums;
+  padding-inline: 11px 6px;
 }
 
 .phoneInputGroup .input:focus-visible {
@@ -149,11 +186,24 @@
 }
 
 .phonePrefix {
-  min-width: 44px;
+  display: grid;
+  align-self: stretch;
+  min-width: 52px;
+  place-items: center;
   border-right: 1px solid var(--line);
+  background: color-mix(in srgb, var(--surface-3) 64%, transparent);
   color: var(--text);
   font-weight: 750;
-  padding-inline: 11px 9px;
+  padding-inline: 12px 10px;
+}
+
+.phoneCounter {
+  border-left: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1;
+  padding-inline: 10px;
+  white-space: nowrap;
 }
 
 .fieldError {
@@ -164,36 +214,61 @@
 }
 
 .phoneStatus {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
-  min-height: 36px;
-  border: 1px solid var(--line);
-  border-radius: 7px;
+  justify-content: center;
+  width: fit-content;
+  min-height: 26px;
+  gap: 6px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
   background: var(--surface-2);
-  color: var(--muted);
-  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1;
+  padding: 5px 9px;
+  white-space: nowrap;
 }
 
-.phoneStatus strong {
-  color: var(--text);
-  font-size: 14px;
+.phoneStatus::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: currentColor;
 }
 
 .phoneStatusVerified {
   background: color-mix(in srgb, var(--success) 10%, var(--surface-2));
+  color: var(--success);
 }
 
 .phoneStatusPending {
   background: color-mix(in srgb, var(--warning) 10%, var(--surface-2));
-}
-
-.phoneStatusVerified strong {
-  color: var(--success);
-}
-
-.phoneStatusPending strong {
   color: var(--warning);
+}
+
+.phoneSendButton {
+  min-height: 44px;
+  margin-top: 24px;
+  white-space: nowrap;
+}
+
+.phoneCodeForm {
+  grid-template-columns: minmax(10rem, 12rem) auto;
+  align-items: start;
+  gap: 10px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.phoneCodeForm .actions {
+  padding-top: 24px;
+}
+
+.phoneVerifyButton {
+  min-height: 40px;
+  white-space: nowrap;
 }
 
 .formMessage {
@@ -385,10 +460,23 @@
     padding: 15px;
   }
 
-  .phoneStatus {
+  .phoneControls,
+  .phoneCodeForm {
+    grid-template-columns: 1fr;
+  }
+
+  .cardTitleRow {
     align-items: flex-start;
-    flex-direction: column;
-    gap: 4px;
+  }
+
+  .phoneSendButton,
+  .phoneVerifyButton {
+    width: 100%;
+    margin-top: 0;
+  }
+
+  .phoneCodeForm .actions {
+    padding-top: 0;
   }
 
   .sessionCard {
