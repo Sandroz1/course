@@ -16,13 +16,17 @@ import { TasksIndexPage } from "../pages/TasksIndexPage";
 import { navigateTo } from "../utils/navigation";
 
 function ProtectedProfilePage() {
-  const { accessToken } = useAuth();
+  const { accessToken, isLoading } = useAuth();
 
   useEffect(() => {
-    if (!accessToken) {
+    if (!isLoading && !accessToken) {
       navigateTo("/login", true);
     }
-  }, [accessToken]);
+  }, [accessToken, isLoading]);
+
+  if (isLoading) {
+    return <ProfilePage />;
+  }
 
   return accessToken ? <ProfilePage /> : <LoginPage />;
 }

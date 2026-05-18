@@ -111,6 +111,36 @@ class LessonProgressApiTests(APITestCase):
             ).is_completed,
         )
 
+    def test_lesson_progress_rejects_too_long_slug(self):
+        response = self.client.post(
+            "/api/progress/lessons/",
+            {
+                "course_slug": "a" * 121,
+                "lesson_slug": "basics",
+            },
+            format="json",
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("course_slug", response.data["fields"])
+        self.assertEqual(LessonProgress.objects.count(), 0)
+
+    def test_lesson_progress_rejects_invalid_slug_characters(self):
+        response = self.client.post(
+            "/api/progress/lessons/",
+            {
+                "course_slug": "base-cpp",
+                "lesson_slug": "../basics",
+            },
+            format="json",
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("lesson_slug", response.data["fields"])
+        self.assertEqual(LessonProgress.objects.count(), 0)
+
 
 class ProgressOverviewApiTests(APITestCase):
     def setUp(self):
@@ -252,6 +282,30 @@ class TaskProgressApiTests(APITestCase):
         self.assertEqual(solved_response.status_code, status.HTTP_200_OK)
         self.assertEqual(solved_response.data["status"], TaskProgress.Status.SOLVED)
         self.assertEqual(TaskProgress.objects.count(), 1)
+
+    def test_task_progress_rejects_invalid_task_id(self):
+        response = self.client.post(
+            "/api/progress/tasks/",
+            {"task_id": "cpp/oop/intro"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("task_id", response.data["fields"])
+        self.assertEqual(TaskProgress.objects.count(), 0)
+
+    def test_task_progress_rejects_too_long_task_id(self):
+        response = self.client.post(
+            "/api/progress/tasks/",
+            {"task_id": "a" * 161},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("task_id", response.data["fields"])
+        self.assertEqual(TaskProgress.objects.count(), 0)
 
     def test_anonymous_user_does_not_create_task_progress(self):
         self.client.force_authenticate(user=None)

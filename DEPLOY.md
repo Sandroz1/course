@@ -18,6 +18,16 @@ nano .env.production
 - `SMS_API_KEY` или `SMS_LOGIN`/`SMS_PASSWORD`
 - `POSTGRES_PASSWORD`
 
+Перед запуском production проверь, что в `.env.production` не осталось placeholder values:
+
+- `change-me`
+- `changeme`
+- `password`
+- `secret`
+- `example`
+
+Backend дополнительно падает при `DEBUG=False`, если `DATABASE_URL` содержит placeholder, `POSTGRES_PASSWORD` оставлен шаблонным или `AI_GLOBAL_DAILY_REQUEST_LIMIT <= 0`.
+
 Сначала получи SSL по `DEPLOY_SSL.md`, затем запускай:
 
 ```bash

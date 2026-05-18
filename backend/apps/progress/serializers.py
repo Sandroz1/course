@@ -1,6 +1,24 @@
+import re
+
 from rest_framework import serializers
 
 from .models import LessonProgress, TaskProgress, UserStudyState
+
+
+PROGRESS_IDENTIFIER_PATTERN = re.compile(r"^[a-z0-9][a-z0-9-]*$")
+
+
+def validate_progress_identifier(value: str, label: str, max_length: int) -> str:
+    if value == "":
+        return value
+
+    if len(value) > max_length:
+        raise serializers.ValidationError(f"{label} is too long.")
+
+    if not PROGRESS_IDENTIFIER_PATTERN.fullmatch(value):
+        raise serializers.ValidationError(f"{label} must contain only lowercase letters, numbers and hyphens.")
+
+    return value
 
 
 class LessonProgressSerializer(serializers.ModelSerializer):
@@ -19,6 +37,12 @@ class LessonProgressSerializer(serializers.ModelSerializer):
             "last_opened_at": {"required": False, "allow_null": True},
         }
 
+    def validate_course_slug(self, value: str) -> str:
+        return validate_progress_identifier(value, "course_slug", 120)
+
+    def validate_lesson_slug(self, value: str) -> str:
+        return validate_progress_identifier(value, "lesson_slug", 160)
+
 
 class TaskProgressSerializer(serializers.ModelSerializer):
     class Meta:
@@ -29,6 +53,9 @@ class TaskProgressSerializer(serializers.ModelSerializer):
             "status": {"required": False},
         }
 
+    def validate_task_id(self, value: str) -> str:
+        return validate_progress_identifier(value, "task_id", 160)
+
 
 class UserStudyStateSerializer(serializers.ModelSerializer):
     class Meta:
@@ -36,9 +63,14 @@ class UserStudyStateSerializer(serializers.ModelSerializer):
         fields = ["last_course_slug", "last_lesson_slug", "updated_at"]
         read_only_fields = ["updated_at"]
 
+    def validate_last_course_slug(self, value: str) -> str:
+        return validate_progress_identifier(value, "last_course_slug", 120)
+
+    def validate_last_lesson_slug(self, value: str) -> str:
+        return validate_progress_identifier(value, "last_lesson_slug", 160)
+
 
 class ProgressOverviewSerializer(serializers.Serializer):
     state = UserStudyStateSerializer(allow_null=True)
     lessons = LessonProgressSerializer(many=True)
     tasks = TaskProgressSerializer(many=True)
-

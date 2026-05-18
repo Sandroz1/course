@@ -16,6 +16,7 @@ const AUTH_TOKENLESS_PATHS = new Set(AUTH_REFRESH_DISABLED_PATHS);
 const ACCESS_REFRESH_SKEW_SECONDS = 30;
 
 let refreshAccessPromise: Promise<string> | null = null;
+let memoryAccessToken: string | null = null;
 
 export class ApiError extends Error {
   status: number;
@@ -53,22 +54,6 @@ function normalizePath(path: string) {
   return normalizedPath.split("?")[0];
 }
 
-function readStorage(key: string) {
-  try {
-    return window.localStorage.getItem(key);
-  } catch {
-    return null;
-  }
-}
-
-function writeStorage(key: string, value: string) {
-  try {
-    window.localStorage.setItem(key, value);
-  } catch {
-    // Auth requests can still proceed; persistence is best-effort.
-  }
-}
-
 function removeStorage(key: string) {
   try {
     window.localStorage.removeItem(key);
@@ -77,13 +62,18 @@ function removeStorage(key: string) {
   }
 }
 
-function getAccessToken() {
-  return readStorage(ACCESS_TOKEN_STORAGE_KEY);
+export function getAccessToken() {
+  return memoryAccessToken;
+}
+
+export function setAccessToken(token: string | null) {
+  memoryAccessToken = token;
+  removeStorage(ACCESS_TOKEN_STORAGE_KEY);
+  removeStorage(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
 }
 
 function clearStoredAuth() {
-  removeStorage(ACCESS_TOKEN_STORAGE_KEY);
-  removeStorage(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
+  setAccessToken(null);
   window.dispatchEvent(new Event(AUTH_CLEARED_EVENT));
 }
 
@@ -289,14 +279,7 @@ async function readPayload(response: Response) {
   return enrichPayloadFromHeaders(response, payload);
 }
 
-async function refreshAccessToken() {
-  const accessToken = getAccessToken();
-
-  if (!accessToken) {
-    clearStoredAuth();
-    throw new ApiError(401, "Сессия истекла. Войди снова.");
-  }
-
+export async function refreshAccessToken() {
   if (!refreshAccessPromise) {
     refreshAccessPromise = (async () => {
       let response: Response;
@@ -335,8 +318,7 @@ async function refreshAccessToken() {
         throw new ApiError(500, "Сервер не вернул новый токен авторизации.");
       }
 
-      writeStorage(ACCESS_TOKEN_STORAGE_KEY, nextAccess);
-      removeStorage(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
+      setAccessToken(nextAccess);
 
       return nextAccess;
     })().finally(() => {
@@ -352,7 +334,7 @@ function shouldTryRefresh(path: string, options: ApiRequestOptions) {
     return false;
   }
 
-  return Boolean(getAccessToken());
+  return true;
 }
 
 async function getUsableAccessToken(path: string, options: ApiRequestOptions) {
@@ -362,7 +344,7 @@ async function getUsableAccessToken(path: string, options: ApiRequestOptions) {
 
   const token = getAccessToken();
 
-  if (token && shouldTryRefresh(path, options) && isAccessTokenExpiringSoon(token)) {
+  if (shouldTryRefresh(path, options) && (!token || isAccessTokenExpiringSoon(token))) {
     return refreshAccessToken();
   }
 

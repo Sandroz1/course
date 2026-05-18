@@ -32,6 +32,8 @@ curl -fsS https://api.uchicode.ru/api/health/
 - `DJANGO_SECRET_KEY` не равен dev-значению.
 - `DJANGO_ALLOWED_HOSTS`, `DJANGO_CORS_ALLOWED_ORIGINS` и `DJANGO_CSRF_TRUSTED_ORIGINS` соответствуют публичным доменам.
 - `DATABASE_URL`, `REDIS_URL`, `QWEN_API_KEY` и SMS credentials заданы только в серверных env-файлах.
+- В `.env.production` нет placeholder values: `change-me`, `changeme`, `password`, `secret`, `example`.
+- `AI_GLOBAL_DAILY_REQUEST_LIMIT` больше `0`.
 - `site/.env.production` или build args frontend указывают на публичный API origin, не на localhost.
 - Реальные `.env` файлы не staged в git.
 

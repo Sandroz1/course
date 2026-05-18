@@ -1,5 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
+from urllib.parse import urlparse
 
 import dj_database_url
 from dotenv import load_dotenv
@@ -33,6 +34,27 @@ def env_int(name: str, default: int) -> int:
 def env_list(name: str, default: str = "") -> list[str]:
     value = env(name, default)
     return [item.strip() for item in value.split(",") if item.strip()]
+
+
+PLACEHOLDER_VALUES = {"change-me", "changeme", "password", "secret", "example"}
+PLACEHOLDER_MARKERS = {"change-me", "changeme", "example"}
+
+
+def is_placeholder_value(value: str) -> bool:
+    return value.strip().lower() in PLACEHOLDER_VALUES
+
+
+def contains_placeholder_marker(value: str) -> bool:
+    normalized = value.strip().lower()
+    return any(marker in normalized for marker in PLACEHOLDER_MARKERS)
+
+
+def database_url_has_placeholder(value: str) -> bool:
+    if not value:
+        return False
+
+    parsed = urlparse(value)
+    return contains_placeholder_marker(value) or is_placeholder_value(parsed.password or "")
 
 
 DEBUG = env_bool("DJANGO_DEBUG", False)
@@ -192,6 +214,17 @@ SMS_LOGIN = env("SMS_LOGIN")
 SMS_PASSWORD = env("SMS_PASSWORD")
 SMS_FROM = env("SMS_FROM") or "Uchicode"
 SMS_TIMEOUT_SECONDS = env_int("SMS_TIMEOUT_SECONDS", 10)
+
+if not DEBUG:
+    if AI_GLOBAL_DAILY_REQUEST_LIMIT <= 0:
+        raise ImproperlyConfigured("AI_GLOBAL_DAILY_REQUEST_LIMIT must be greater than 0 in production.")
+
+    if database_url_has_placeholder(DATABASE_URL):
+        raise ImproperlyConfigured("DATABASE_URL contains a placeholder value.")
+
+    postgres_password = env("POSTGRES_PASSWORD")
+    if postgres_password and is_placeholder_value(postgres_password):
+        raise ImproperlyConfigured("POSTGRES_PASSWORD must be changed for production.")
 
 SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", False)
 SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", False)

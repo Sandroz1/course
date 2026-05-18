@@ -17,7 +17,7 @@
 }
 
 .input::placeholder {
-  color: #77786f;
+  color: var(--placeholder);
 }
 
 .input:hover {

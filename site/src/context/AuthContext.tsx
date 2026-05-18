@@ -8,10 +8,11 @@ import {
   useState,
 } from "react";
 import {
-  ACCESS_TOKEN_STORAGE_KEY,
   AUTH_CLEARED_EVENT,
   ApiError,
   apiRequest,
+  getAccessToken,
+  setAccessToken as setMemoryAccessToken,
 } from "../lib/api";
 import { clearLocalAiUsage } from "../lib/aiUsage";
 import { clearCachedCourseProgress } from "../lib/progressApi";
@@ -115,16 +116,14 @@ function extractTokens(response: AuthResponse): AuthTokens {
 }
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [accessToken, setAccessToken] = useState(() => readStorage(ACCESS_TOKEN_STORAGE_KEY));
-  const [user, setUser] = useState<AuthUser | null>(() =>
-    readStorage(ACCESS_TOKEN_STORAGE_KEY) ? readUserSnapshot() : null,
-  );
-  const [isLoading, setIsLoading] = useState(Boolean(accessToken));
+  const [accessToken, setAccessToken] = useState(() => getAccessToken());
+  const [user, setUser] = useState<AuthUser | null>(() => readUserSnapshot());
+  const [isLoading, setIsLoading] = useState(true);
 
   const clearAuth = useCallback(() => {
     const userId = readUserSnapshot()?.id;
 
-    removeStorage(ACCESS_TOKEN_STORAGE_KEY);
+    setMemoryAccessToken(null);
     removeStorage(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
     removeUserSnapshot();
     clearLocalAiUsage(userId);
@@ -134,7 +133,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const saveAuth = useCallback((tokens: AuthTokens, nextUser?: AuthUser) => {
-    writeStorage(ACCESS_TOKEN_STORAGE_KEY, tokens.access);
+    setMemoryAccessToken(tokens.access);
     removeStorage(LEGACY_REFRESH_TOKEN_STORAGE_KEY);
     setAccessToken(tokens.access);
 
@@ -158,6 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       const profile = await apiRequest<AuthUser>("/api/me/");
       const snapshot = toUserSnapshot(profile);
       writeUserSnapshot(snapshot);
+      setAccessToken(getAccessToken());
       setUser(snapshot);
     } catch (error) {
       if (error instanceof ApiError && error.status === 401) {
@@ -169,12 +169,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [clearAuth]);
 
   useEffect(() => {
-    if (!accessToken) {
-      removeUserSnapshot();
-      setIsLoading(false);
-      return;
-    }
-
     let cancelled = false;
 
     async function loadProfile() {
@@ -185,6 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (!cancelled) {
           const snapshot = toUserSnapshot(profile);
           writeUserSnapshot(snapshot);
+          setAccessToken(getAccessToken());
           setUser(snapshot);
         }
       } catch (error) {

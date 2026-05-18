@@ -102,7 +102,7 @@ Nginx настроен на HTTPS и ожидает Let's Encrypt сертифи
 
 ## 2. Что уже выполнено
 
-- Подготовлена ветка `dev/vps-migration`.
+- Подготовлена рабочая ветка для pre-release и UI/security hardening.
 - Создан Django backend.
 - Добавлены cache/throttling настройки под Redis.
 - Добавлен backend AI proxy.

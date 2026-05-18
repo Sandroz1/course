@@ -27,8 +27,8 @@
   align-items: center;
   min-height: 4rem;
   min-width: 0;
-  border-bottom: 1px solid var(--line);
-  background: color-mix(in srgb, var(--bg) 92%, var(--surface) 8%);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 46%, transparent);
+  background: color-mix(in srgb, var(--bg) 94%, var(--surface) 6%);
   padding: 0.625rem 1.25rem;
   backdrop-filter: blur(12px);
 }
@@ -39,7 +39,7 @@
   justify-content: center;
   width: 2.25rem;
   height: 2.25rem;
-  border: 1px solid var(--line);
+  border: 1px solid color-mix(in srgb, var(--line) 58%, transparent);
   border-radius: 0.5rem;
   background: var(--surface);
   color: var(--text);
@@ -49,8 +49,8 @@
 
 .mobileMenuButton:hover,
 .mobileMenuButton:focus-visible {
-  border-color: var(--border-strong);
-  background: var(--surface-2);
+  border-color: color-mix(in srgb, var(--border-strong) 64%, transparent);
+  background: color-mix(in srgb, var(--surface-2) 76%, transparent);
   outline: none;
 }
 

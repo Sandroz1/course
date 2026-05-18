@@ -69,12 +69,7 @@ def auth_response(user, response_status=status.HTTP_200_OK):
 
 
 def get_refresh_token_from_request(request) -> str | None:
-    cookie_token = request.COOKIES.get(settings.AUTH_REFRESH_COOKIE_NAME)
-    if cookie_token:
-        return cookie_token
-
-    body_token = request.data.get("refresh")
-    return body_token if isinstance(body_token, str) and body_token.strip() else None
+    return request.COOKIES.get(settings.AUTH_REFRESH_COOKIE_NAME)
 
 
 def normalize_origin(value: str | None) -> str | None:
@@ -113,9 +108,6 @@ def get_trusted_auth_origins(request) -> set[str]:
 
 
 def enforce_cookie_refresh_origin(request) -> None:
-    if not request.COOKIES.get(settings.AUTH_REFRESH_COOKIE_NAME):
-        return
-
     origin = get_auth_request_origin(request)
     if not origin or origin not in get_trusted_auth_origins(request):
         raise PermissionDenied("Trusted Origin or Referer header is required.")
@@ -175,14 +167,17 @@ class LogoutView(APIView):
 
     def post(self, request):
         refresh_token = get_refresh_token_from_request(request)
+
+        if not refresh_token:
+            raise AuthenticationFailed("Refresh token cookie is missing.")
+
+        enforce_cookie_refresh_origin(request)
         response = Response(status=status.HTTP_204_NO_CONTENT)
 
-        if refresh_token:
-            enforce_cookie_refresh_origin(request)
-            try:
-                RefreshToken(refresh_token).blacklist()
-            except TokenError:
-                pass
+        try:
+            RefreshToken(refresh_token).blacklist()
+        except TokenError:
+            pass
 
         clear_refresh_cookie(response)
 

@@ -47,8 +47,9 @@ summary code,
   border-radius: 4px;
   background: color-mix(in srgb, var(--surface-2) 70%, transparent);
   color: var(--soft);
+  max-width: 100%;
   padding: 0.03em 0.24em;
-  overflow-wrap: normal;
-  white-space: nowrap;
-  word-break: keep-all;
+  overflow-wrap: break-word;
+  white-space: normal;
+  word-break: normal;
 }

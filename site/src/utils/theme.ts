@@ -40,9 +40,9 @@ export function saveThemePreference(preference: ThemePreference) {
 
 export function resolveTheme(preference: ThemePreference): ResolvedTheme {
   if (preference !== "system") return preference;
-  if (typeof window === "undefined") return "dark";
+  if (typeof window === "undefined") return "deep-dark";
 
-  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "deep-dark";
 }
 
 export function applyThemePreference(preference: ThemePreference) {

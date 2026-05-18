@@ -19,6 +19,14 @@ import { sendAiChat } from "../../lib/aiApi";
 import clsx from "clsx";
 import type { AiChatMessage, AiUsage } from "../../types/api";
 import { toPath } from "../../utils/slug";
+import {
+    clamp,
+    clampPanelSize,
+    getPanelBounds,
+    isNearBottom,
+    readStoredPanelSize,
+    writeStoredPanelSize,
+} from "./panelSize";
 import styles from "./AiAssistant.module.scss";
 
 type ResizeDirection = "left" | "top" | "corner";
@@ -30,58 +38,10 @@ type MessageBlock =
     | { type: "list"; items: string[] }
     | { type: "code"; code: string; language: string };
 
-const MIN_PANEL_WIDTH = 340;
-const MAX_PANEL_WIDTH = 760;
-const MIN_PANEL_HEIGHT = 420;
-const MAX_PANEL_HEIGHT_CAP = 820;
-const STORAGE_KEY_PANEL_SIZE = "aiPanelSize";
 const SELECTION_POPOVER_WIDTH = 132;
 const SELECTION_POPOVER_HEIGHT = 34;
 const SELECTION_POPOVER_GAP = 10;
 const SELECTION_POPOVER_MARGIN = 12;
-
-function readStoredPanelSize(): { width: number; height: number } {
-    const fallback = { width: 430, height: 620 };
-    let saved: string | null = null;
-
-    try {
-        saved = localStorage.getItem(STORAGE_KEY_PANEL_SIZE);
-    } catch {
-        return fallback;
-    }
-
-    if (!saved) {
-        return fallback;
-    }
-
-    try {
-        const parsed = JSON.parse(saved) as { width?: unknown; height?: unknown };
-
-        if (
-            typeof parsed.width !== "number" ||
-            typeof parsed.height !== "number" ||
-            !Number.isFinite(parsed.width) ||
-            !Number.isFinite(parsed.height)
-        ) {
-            return fallback;
-        }
-
-        return { width: parsed.width, height: parsed.height };
-    } catch {
-        return fallback;
-    }
-}
-
-function getPanelBounds() {
-    const vw = window.innerWidth;
-    const vh = window.innerHeight;
-    const maxWidth = Math.min(MAX_PANEL_WIDTH, vw - 32);
-    const maxHeight = Math.min(MAX_PANEL_HEIGHT_CAP, Math.max(MIN_PANEL_HEIGHT, vh - 112));
-    const minWidth = Math.min(MIN_PANEL_WIDTH, maxWidth);
-    const minHeight = Math.min(MIN_PANEL_HEIGHT, maxHeight);
-
-    return { minWidth, maxWidth, minHeight, maxHeight };
-}
 
 type SelectionPopover = {
     x: number;
@@ -116,10 +76,6 @@ function isInputSelection() {
     return tagName === "textarea" || tagName === "input";
 }
 
-function clamp(value: number, min: number, max: number) {
-    return Math.min(Math.max(value, min), max);
-}
-
 function getSelectionPopoverPosition(selectionRect: DOMRect, anchorRect: DOMRect) {
     const maxLeft = Math.max(
         SELECTION_POPOVER_MARGIN,
@@ -148,22 +104,6 @@ function getSelectionPopoverPosition(selectionRect: DOMRect, anchorRect: DOMRect
         y: clamp(rawTop, SELECTION_POPOVER_MARGIN, maxTop),
         placement: shouldPlaceBelow ? "below" as const : "above" as const,
     };
-}
-
-function clampPanelSize(size: { width: number; height: number }) {
-    const { minWidth, maxWidth, minHeight, maxHeight } = getPanelBounds();
-
-    return {
-        width: clamp(size.width, minWidth, maxWidth),
-        height: clamp(size.height, minHeight, maxHeight),
-    };
-}
-
-function isNearBottom(element: HTMLDivElement) {
-    const distanceFromBottom =
-        element.scrollHeight - element.scrollTop - element.clientHeight;
-
-    return distanceFromBottom < 80;
 }
 
 function removeDecorativeText(text: string) {
@@ -798,14 +738,7 @@ export function AiAssistant() {
             document.removeEventListener("pointermove", onPointerMove);
             document.removeEventListener("pointerup", onPointerUp);
 
-            try {
-                localStorage.setItem(
-                    STORAGE_KEY_PANEL_SIZE,
-                    JSON.stringify(panelSizeDuringResizeRef.current)
-                );
-            } catch {
-                // Resizing should not fail when storage is unavailable.
-            }
+            writeStoredPanelSize(panelSizeDuringResizeRef.current);
         }
 
         document.addEventListener("pointermove", onPointerMove);

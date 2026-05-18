@@ -4,7 +4,7 @@
     var resolvedTheme = themePreference;
 
     if (themePreference === "system") {
-      resolvedTheme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+      resolvedTheme = window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "deep-dark";
     }
 
     if (["light", "dark", "deep-dark", "blue"].indexOf(resolvedTheme) === -1) {

@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import make_password
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
-from django.test import override_settings
+from django.test import SimpleTestCase, override_settings
 from django.utils import timezone
 from rest_framework import status
 from rest_framework.exceptions import ValidationError
@@ -16,9 +16,19 @@ from apps.ai.models import AiDailyUsage, AiGlobalDailyUsage
 from apps.ai.services import AiProviderResult, UpstreamAiError
 from apps.accounts.models import PhoneVerificationCode
 from apps.accounts.serializers import normalize_phone
+from config.settings import database_url_has_placeholder
 
 
 User = get_user_model()
+
+
+class ProductionEnvValidationTests(SimpleTestCase):
+    def test_database_url_placeholder_detection(self):
+        self.assertTrue(database_url_has_placeholder("postgres://uchicode:change-me@db:5432/uchicode"))
+        self.assertTrue(database_url_has_placeholder("postgres://uchicode:password@db:5432/uchicode"))
+        self.assertTrue(database_url_has_placeholder("postgres://uchicode:secret@db:5432/uchicode"))
+        self.assertTrue(database_url_has_placeholder("postgres://uchicode:strong-pass@example-db:5432/uchicode"))
+        self.assertFalse(database_url_has_placeholder("postgres://uchicode:strong-pass-123@db:5432/uchicode"))
 
 
 class HealthApiTests(APITestCase):
@@ -428,6 +438,38 @@ class AuthApiTests(APITestCase):
         self.assertNotIn("refresh", response.data)
         self.assert_refresh_cookie(response)
 
+    def test_refresh_rejects_legacy_body_token_without_cookie(self):
+        User.objects.create_user(username="alex", password="StrongPass123!")
+        login_response = self.client.post(
+            "/api/auth/login/",
+            {"username": "alex", "password": "StrongPass123!"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+        refresh_token = login_response.cookies[settings.AUTH_REFRESH_COOKIE_NAME].value
+        stateless_client = APIClient()
+
+        response = stateless_client.post(
+            "/api/auth/token/refresh/",
+            {"refresh": refresh_token},
+            format="json",
+            HTTP_HOST="localhost",
+            HTTP_ORIGIN=self.trusted_origin,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_refresh_rejects_missing_cookie(self):
+        response = APIClient().post(
+            "/api/auth/token/refresh/",
+            {},
+            format="json",
+            HTTP_HOST="localhost",
+            HTTP_ORIGIN=self.trusted_origin,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
     def test_refresh_rejects_cookie_without_origin(self):
         User.objects.create_user(username="alex", password="StrongPass123!")
         self.client.post(
@@ -482,6 +524,38 @@ class AuthApiTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+
+    def test_logout_rejects_legacy_body_token_without_cookie(self):
+        User.objects.create_user(username="alex", password="StrongPass123!")
+        login_response = self.client.post(
+            "/api/auth/login/",
+            {"username": "alex", "password": "StrongPass123!"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+        refresh_token = login_response.cookies[settings.AUTH_REFRESH_COOKIE_NAME].value
+        stateless_client = APIClient()
+
+        response = stateless_client.post(
+            "/api/auth/logout/",
+            {"refresh": refresh_token},
+            format="json",
+            HTTP_HOST="localhost",
+            HTTP_ORIGIN=self.trusted_origin,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+
+    def test_logout_rejects_missing_cookie(self):
+        response = APIClient().post(
+            "/api/auth/logout/",
+            {},
+            format="json",
+            HTTP_HOST="localhost",
+            HTTP_ORIGIN=self.trusted_origin,
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
 
 class AiApiValidationTests(APITestCase):
