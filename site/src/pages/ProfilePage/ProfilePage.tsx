@@ -1,4 +1,12 @@
-import { type FormEvent, useEffect, useState } from "react";
+import {
+  type ChangeEvent,
+  type FormEvent,
+  type KeyboardEvent,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../lib/api";
 import {
@@ -70,9 +78,29 @@ function formatRussianPhoneDigits(digits: string) {
   return formatted;
 }
 
+function countDigitsBefore(value: string, position: number) {
+  return value.slice(0, position).replace(/\D/g, "").length;
+}
+
+function getCaretPositionForDigitOffset(value: string, digitOffset: number) {
+  if (digitOffset <= 0) return value.startsWith("(") ? 1 : 0;
+
+  let digitsSeen = 0;
+  for (let index = 0; index < value.length; index += 1) {
+    if (!/\d/.test(value[index])) continue;
+
+    digitsSeen += 1;
+    if (digitsSeen >= digitOffset) return index + 1;
+  }
+
+  return value.length;
+}
+
 export function ProfilePage() {
   const { user, isLoading, logout, refreshProfile, accessToken } = useAuth();
   const authKey = accessToken ?? "";
+  const phoneInputRef = useRef<HTMLInputElement>(null);
+  const phoneCaretDigitOffsetRef = useRef<number | null>(null);
   const [phoneDigits, setPhoneDigits] = useState("");
   const [phoneCode, setPhoneCode] = useState("");
   const [phoneMessage, setPhoneMessage] = useState("");
@@ -101,6 +129,16 @@ export function ProfilePage() {
   useEffect(() => {
     setPhoneDigits(extractRussianPhoneDigits(user?.phone));
   }, [user]);
+
+  useLayoutEffect(() => {
+    const digitOffset = phoneCaretDigitOffsetRef.current;
+    const input = phoneInputRef.current;
+    if (digitOffset === null || !input) return;
+
+    const caretPosition = getCaretPositionForDigitOffset(input.value, digitOffset);
+    input.setSelectionRange(caretPosition, caretPosition);
+    phoneCaretDigitOffsetRef.current = null;
+  }, [phoneDigits]);
 
   useEffect(() => {
     setAiUsage(getLocalAiUsage(user?.id));
@@ -277,6 +315,37 @@ export function ProfilePage() {
     navigateTo("/login", true);
   }
 
+  function handlePhoneChange(event: ChangeEvent<HTMLInputElement>) {
+    const nextDigits = sanitizeRussianPhoneDigits(event.target.value);
+    const selectionStart = event.target.selectionStart ?? event.target.value.length;
+    phoneCaretDigitOffsetRef.current = Math.min(
+      countDigitsBefore(event.target.value, selectionStart),
+      nextDigits.length,
+    );
+    setPhoneDigits(nextDigits);
+  }
+
+  function handlePhoneKeyDown(event: KeyboardEvent<HTMLInputElement>) {
+    if (event.key !== "Backspace" && event.key !== "Delete") return;
+
+    const input = event.currentTarget;
+    const selectionStart = input.selectionStart ?? 0;
+    const selectionEnd = input.selectionEnd ?? selectionStart;
+    if (selectionStart !== selectionEnd) return;
+
+    const isBackspace = event.key === "Backspace";
+    const targetChar = isBackspace ? input.value[selectionStart - 1] : input.value[selectionStart];
+    if (!targetChar || /\d/.test(targetChar)) return;
+
+    const digitsBefore = countDigitsBefore(input.value, selectionStart);
+    const digitIndexToRemove = isBackspace ? digitsBefore - 1 : digitsBefore;
+    if (digitIndexToRemove < 0 || digitIndexToRemove >= phoneDigits.length) return;
+
+    event.preventDefault();
+    phoneCaretDigitOffsetRef.current = digitIndexToRemove;
+    setPhoneDigits((digits) => digits.slice(0, digitIndexToRemove) + digits.slice(digitIndexToRemove + 1));
+  }
+
   if (isLoading && !user) {
     return (
       <article className={styles.root}>
@@ -366,6 +435,7 @@ export function ProfilePage() {
                   >
                     <span className={styles.phonePrefix}>+7</span>
                     <input
+                      ref={phoneInputRef}
                       className={styles.input}
                       aria-invalid={Boolean(phoneError)}
                       autoComplete="tel-national"
@@ -373,7 +443,8 @@ export function ProfilePage() {
                       maxLength={18}
                       type="tel"
                       value={formatRussianPhoneDigits(phoneDigits)}
-                      onChange={(event) => setPhoneDigits(sanitizeRussianPhoneDigits(event.target.value))}
+                      onChange={handlePhoneChange}
+                      onKeyDown={handlePhoneKeyDown}
                       placeholder="(999) 123-45-67"
                       disabled={isSendingCode}
                     />
