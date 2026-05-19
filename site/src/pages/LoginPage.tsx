@@ -1,4 +1,4 @@
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useId, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 import { ApiError } from "../lib/api";
 import clsx from "clsx";
@@ -20,6 +20,8 @@ export function LoginPage() {
   const [errorText, setErrorText] = useState("");
   const [fieldErrors, setFieldErrors] = useState<LoginFieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const usernameId = useId();
+  const passwordId = useId();
   const usernameError = firstError(fieldErrors, "username");
   const passwordError = firstError(fieldErrors, "password");
 
@@ -47,7 +49,7 @@ export function LoginPage() {
   return (
     <AuthLayout
       title="Вход"
-      description="Для прогресса и AI-помощника."
+      description="Для сохранения прогресса и доступа к AI-помощнику."
       footer={
         <>
           Нет аккаунта? <a href={toPath("/register")}>Зарегистрироваться</a>
@@ -55,12 +57,16 @@ export function LoginPage() {
       }
     >
       <form className={styles.form} onSubmit={handleSubmit} aria-busy={isSubmitting}>
-        <label className={styles.field}>
-          <span className={styles.label}>Логин</span>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor={usernameId}>
+            Логин
+          </label>
           <input
+            id={usernameId}
             className={styles.input}
             aria-invalid={Boolean(usernameError)}
             autoComplete="username"
+            placeholder="Введите логин"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             required
@@ -69,15 +75,19 @@ export function LoginPage() {
           <span className={styles.fieldError} aria-live="polite">
             {usernameError || "\u00A0"}
           </span>
-        </label>
+        </div>
 
-        <label className={styles.field}>
-          <span className={styles.label}>Пароль</span>
+        <div className={styles.field}>
+          <label className={styles.label} htmlFor={passwordId}>
+            Пароль
+          </label>
           <input
+            id={passwordId}
             className={styles.input}
             aria-invalid={Boolean(passwordError)}
             autoComplete="current-password"
             type="password"
+            placeholder="Введите пароль"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required
@@ -86,7 +96,7 @@ export function LoginPage() {
           <span className={styles.fieldError} aria-live="polite">
             {passwordError || "\u00A0"}
           </span>
-        </label>
+        </div>
 
         <p className={clsx(styles.formError, !errorText && styles.formErrorEmpty)} aria-live="polite">
           {errorText || "\u00A0"}
