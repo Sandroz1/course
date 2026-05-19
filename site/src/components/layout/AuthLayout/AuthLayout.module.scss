@@ -76,7 +76,7 @@
 }
 
 .input[aria-invalid="true"] {
-  border-color: rgba(232, 139, 131, 0.72);
+  border-color: var(--danger-border-strong);
 }
 
 .input:focus-visible {
@@ -104,7 +104,7 @@
   display: flex;
   align-items: center;
   min-height: 2rem;
-  border: 1px solid rgba(232, 139, 131, 0.35);
+  border: 1px solid var(--danger-border-muted);
   border-radius: 0.5rem;
   background: var(--surface-2);
   color: var(--danger);

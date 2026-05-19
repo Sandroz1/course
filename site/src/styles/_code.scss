@@ -91,7 +91,7 @@ pre:not(.code-block__pre) {
 }
 
 pre:not(.code-block__pre) code {
-  color: #e7e1cf;
+  color: var(--code-text);
   font-size: 14px;
   line-height: 1.55;
 }

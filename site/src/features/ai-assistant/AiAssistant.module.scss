@@ -177,9 +177,9 @@
   display: inline-flex;
   width: fit-content;
   margin-top: 7px;
-  border: 1px solid rgba(88, 199, 194, 0.22);
+  border: 1px solid var(--accent-border-muted);
   border-radius: 999px;
-  background: rgba(88, 199, 194, 0.07);
+  background: var(--accent-surface);
   color: var(--soft);
   font-size: 12px;
   font-weight: 650;
@@ -212,10 +212,10 @@
   flex-shrink: 0;
   gap: 7px;
   margin: 10px 12px 0;
-  border: 1px solid rgba(88, 199, 194, 0.22);
+  border: 1px solid var(--accent-border-muted);
   border-left: 3px solid var(--accent);
   border-radius: 9px;
-  background: color-mix(in srgb, var(--accent) 7%, var(--surface) 93%);
+  background: var(--accent-surface);
   padding: 9px 11px 10px;
 }
 
@@ -235,7 +235,7 @@
 .selectedTextTop button {
   border: 1px solid transparent;
   border-radius: 999px;
-  background: rgba(214, 212, 202, 0.04);
+  background: var(--surface-subtle);
   color: var(--muted);
   font: inherit;
   font-size: 12px;
@@ -245,7 +245,7 @@
 }
 
 .selectedTextTop button:hover {
-  border-color: rgba(214, 212, 202, 0.16);
+  border-color: var(--border-muted);
   color: var(--text);
 }
 
@@ -295,9 +295,9 @@
   justify-content: space-between;
   gap: 10px;
   margin: 12px 12px 0;
-  border: 1px solid rgba(232, 139, 131, 0.28);
+  border: 1px solid var(--danger-border-muted);
   border-radius: 9px;
-  background: rgba(232, 139, 131, 0.07);
+  background: var(--danger-surface);
   color: var(--soft);
   padding: 8px 11px;
   font-size: 13px;
@@ -351,9 +351,9 @@
 .empty {
   display: grid;
   gap: 8px;
-  border: 1px dashed rgba(214, 212, 202, 0.2);
+  border: 1px dashed var(--border-muted);
   border-radius: 8px;
-  background: rgba(214, 212, 202, 0.035);
+  background: var(--surface-subtle);
   color: var(--soft);
   padding: 12px;
   font-size: 14px;
@@ -453,7 +453,7 @@
 
 .messageUser {
   margin-left: auto;
-  border-color: rgba(88, 199, 194, 0.34);
+  border-color: var(--accent-border);
   border-bottom-right-radius: 5px;
   background: color-mix(in srgb, var(--accent) 13%, var(--surface-2) 87%);
   color: var(--text);
@@ -461,7 +461,7 @@
 
 .messageAssistant {
   margin-right: auto;
-  border-color: rgba(214, 212, 202, 0.16);
+  border-color: var(--border-muted);
   border-bottom-left-radius: 5px;
   background: color-mix(in srgb, var(--surface-2) 88%, var(--surface) 12%);
   color: var(--soft);
@@ -470,9 +470,9 @@
 .error {
   flex-shrink: 0;
   margin: 0 12px 12px;
-  border: 1px solid rgba(232, 139, 131, 0.48);
+  border: 1px solid var(--danger-border);
   border-radius: 8px;
-  background: rgba(232, 139, 131, 0.08);
+  background: var(--danger-surface);
   color: var(--danger);
   padding: 9px 11px;
   font-size: 13px;
@@ -510,7 +510,7 @@
 }
 
 .form textarea:focus {
-  outline: 2px solid rgba(88, 199, 194, 0.32);
+  outline: 2px solid var(--accent-border);
   outline-offset: 2px;
   border-color: var(--accent-strong);
   background: color-mix(in srgb, var(--bg) 72%, var(--surface) 28%);
@@ -527,7 +527,7 @@
 .form button {
   justify-self: end;
   min-width: 112px;
-  border: 1px solid rgba(88, 199, 194, 0.7);
+  border: 1px solid color-mix(in srgb, var(--accent) 70%, transparent);
   border-radius: 8px;
   background: color-mix(in srgb, var(--accent) 82%, var(--surface) 18%);
   color: var(--accent-contrast);
@@ -546,7 +546,7 @@
 }
 
 .form button:focus-visible {
-  outline: 2px solid rgba(88, 199, 194, 0.38);
+  outline: 2px solid var(--accent-border);
   outline-offset: 2px;
 }
 

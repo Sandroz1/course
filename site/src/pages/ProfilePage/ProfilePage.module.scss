@@ -120,7 +120,7 @@
 }
 
 .input[aria-invalid="true"] {
-  border-color: rgba(232, 139, 131, 0.72);
+  border-color: var(--danger-border-strong);
 }
 
 .input:disabled {
@@ -164,7 +164,7 @@
 }
 
 .phoneInputGroupInvalid {
-  border-color: rgba(232, 139, 131, 0.72);
+  border-color: var(--danger-border-strong);
 }
 
 .phoneInputGroup:focus-within {
@@ -286,13 +286,13 @@
 }
 
 .formError {
-  border: 1px solid rgba(232, 139, 131, 0.35);
+  border: 1px solid var(--danger-border-muted);
   background: var(--surface-2);
   color: var(--danger);
 }
 
 .formSuccess {
-  border: 1px solid rgba(138, 203, 143, 0.35);
+  border: 1px solid var(--success-border);
   background: var(--surface-2);
   color: var(--success);
 }
@@ -368,12 +368,12 @@
 }
 
 .aiStatusAvailable {
-  border-color: rgba(138, 203, 143, 0.35);
+  border-color: var(--success-border);
   background: color-mix(in srgb, var(--success) 9%, var(--surface-2));
 }
 
 .aiStatusBlocked {
-  border-color: rgba(232, 139, 131, 0.32);
+  border-color: var(--danger-border-muted);
   background: color-mix(in srgb, var(--danger) 8%, var(--surface-2));
 }
 

@@ -134,7 +134,7 @@
 }
 
 .actionMuted {
-  border-color: rgba(214, 212, 202, 0.14);
+  border-color: var(--border-subtle);
   color: var(--muted);
 }
 

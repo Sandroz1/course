@@ -11,7 +11,6 @@ import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../lib/api";
 import {
   AI_USAGE_UPDATED_EVENT,
-  formatAiUsage,
   getLocalAiUsage,
 } from "../../lib/aiUsage";
 import { changePassword, sendPhoneVerificationCode, verifyPhoneCode } from "../../lib/authApi";
@@ -19,11 +18,15 @@ import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/pro
 import clsx from "clsx";
 import type { AiUsage, ProgressOverview } from "../../types/api";
 import { navigateTo } from "../../utils/navigation";
+import { AiUsagePanel } from "./components/AiUsagePanel";
+import { PasswordChangePanel } from "./components/PasswordChangePanel";
+import { PhoneVerificationPanel } from "./components/PhoneVerificationPanel";
+import { ProgressSummaryPanel } from "./components/ProgressSummaryPanel";
+import { SessionPanel } from "./components/SessionPanel";
 import {
   buildRussianPhone,
   countDigitsBefore,
   extractRussianPhoneDigits,
-  formatRussianPhoneDigits,
   getCaretPositionForDigitOffset,
   RUSSIAN_PHONE_DIGITS_LENGTH,
   sanitizeRussianPhoneDigits,
@@ -39,19 +42,6 @@ function firstError<T extends string>(errors: Partial<Record<T, string[]>>, fiel
 
 function getCooldown(error: ApiError) {
   return typeof error.retryAfterSeconds === "number" ? Math.max(error.retryAfterSeconds, 1) : 0;
-}
-
-function clampPercent(value: number) {
-  if (!Number.isFinite(value)) return 0;
-  return Math.min(Math.max(Math.round(value), 0), 100);
-}
-
-function getAiUsagePercent(usage: AiUsage) {
-  const limit = Number.isFinite(usage.limit) && usage.limit > 0 ? usage.limit : 0;
-  if (!limit) return 0;
-
-  const remaining = Number.isFinite(usage.remaining) ? Math.min(Math.max(usage.remaining, 0), limit) : 0;
-  return clampPercent((remaining / limit) * 100);
 }
 
 export function ProfilePage() {
@@ -348,15 +338,9 @@ export function ProfilePage() {
       : "Введите 10 цифр российского номера после +7.";
   const canSendCode = !isPhoneVerified && isPhoneComplete && cooldownSeconds === 0 && !isSendingCode;
   const canVerifyCode = isPhoneComplete && phoneCode.length === 6 && !isVerifyingCode;
-  const completedLessonsCount = studyProgress?.lessons.filter((lesson) => lesson.is_completed).length ?? 0;
-  const openedLessonsCount = studyProgress?.lessons.length ?? 0;
-  const solvedTasksCount = studyProgress?.tasks.filter((task) => task.status === "solved").length ?? 0;
-  const activeTasksCount = studyProgress?.tasks.filter((task) => task.status === "in_progress").length ?? 0;
   const aiStatusText = isPhoneVerified
     ? "Можно задавать вопросы AI."
     : "Подтверди телефон, чтобы открыть AI.";
-  const displayedAiUsage = isPhoneVerified ? aiUsage : { ...aiUsage, remaining: 0 };
-  const aiUsagePercent = getAiUsagePercent(displayedAiUsage);
 
   return (
     <article className={styles.root}>
@@ -368,254 +352,58 @@ export function ProfilePage() {
 
       <div className={styles.layout}>
         <div className={styles.mainColumn}>
-          <section className={clsx(styles.card, styles.phoneCard)}>
-            <div className={styles.cardHeader}>
-              <div className={styles.cardTitleRow}>
-                <h2 className={styles.cardTitle}>Телефон</h2>
-                <span
-                  className={clsx(
-                    styles.phoneStatus,
-                    isPhoneVerified ? styles.phoneStatusVerified : styles.phoneStatusPending,
-                  )}
-                >
-                  {phoneStatusLabel}
-                </span>
-              </div>
-              <p className={styles.mutedText}>{phoneHelpText}</p>
-            </div>
+          <PhoneVerificationPanel
+            phoneInputRef={phoneInputRef}
+            phoneDigits={phoneDigits}
+            phoneCode={phoneCode}
+            phoneError={phoneError}
+            codeError={codeError}
+            phoneErrorText={phoneErrorText}
+            phoneMessage={phoneMessage}
+            phoneStatusLabel={phoneStatusLabel}
+            phoneHelpText={phoneHelpText}
+            isPhoneVerified={isPhoneVerified}
+            isSendingCode={isSendingCode}
+            isVerifyingCode={isVerifyingCode}
+            cooldownSeconds={cooldownSeconds}
+            canSendCode={canSendCode}
+            canVerifyCode={canVerifyCode}
+            onSendCode={handleSendCode}
+            onVerifyCode={handleVerifyCode}
+            onPhoneChange={handlePhoneChange}
+            onPhoneKeyDown={handlePhoneKeyDown}
+            onPhoneCodeChange={setPhoneCode}
+          />
 
-            <form className={clsx(styles.form, styles.phoneForm)} onSubmit={handleSendCode} aria-busy={isSendingCode}>
-              <div className={styles.phoneControls}>
-                <label className={clsx(styles.field, styles.phoneField)}>
-                  <span className={styles.label}>Номер</span>
-                  <div
-                    className={clsx(styles.phoneInputGroup, phoneError && styles.phoneInputGroupInvalid)}
-                  >
-                    <span className={styles.phonePrefix}>+7</span>
-                    <input
-                      ref={phoneInputRef}
-                      className={styles.input}
-                      aria-invalid={Boolean(phoneError)}
-                      autoComplete="tel-national"
-                      inputMode="numeric"
-                      maxLength={18}
-                      type="tel"
-                      value={formatRussianPhoneDigits(phoneDigits)}
-                      onChange={handlePhoneChange}
-                      onKeyDown={handlePhoneKeyDown}
-                      placeholder="(999) 123-45-67"
-                      disabled={isSendingCode}
-                    />
-                    <span className={styles.phoneCounter}>{phoneDigits.length}/10</span>
-                  </div>
-                  <span className={styles.fieldError} aria-live="polite">
-                    {phoneError || "\u00A0"}
-                  </span>
-                </label>
-
-                {!isPhoneVerified && (
-                  <button
-                    className={clsx(styles.secondaryButton, styles.phoneSendButton)}
-                    type="submit"
-                    disabled={!canSendCode}
-                  >
-                    {isSendingCode
-                      ? "Отправляем..."
-                      : cooldownSeconds > 0
-                        ? `Повтор через ${cooldownSeconds} с`
-                        : "Отправить SMS-код"}
-                  </button>
-                )}
-              </div>
-
-              {(phoneErrorText || phoneMessage) && (
-                <p
-                  className={clsx(
-                    styles.formMessage,
-                    phoneErrorText && styles.formError,
-                    phoneMessage && styles.formSuccess,
-                  )}
-                  aria-live="polite"
-                >
-                  {phoneErrorText || phoneMessage}
-                </p>
-              )}
-            </form>
-
-            {!isPhoneVerified && (
-              <form
-                className={clsx(styles.form, styles.phoneCodeForm)}
-                onSubmit={handleVerifyCode}
-                aria-busy={isVerifyingCode}
-              >
-                <label className={styles.field}>
-                  <span className={styles.label}>Код из SMS</span>
-                  <input
-                    className={styles.input}
-                    aria-invalid={Boolean(codeError)}
-                    inputMode="numeric"
-                    maxLength={6}
-                    value={phoneCode}
-                    onChange={(event) => setPhoneCode(event.target.value.replace(/\D/g, "").slice(0, 6))}
-                    placeholder="123456"
-                    disabled={isVerifyingCode}
-                  />
-                  <span className={styles.fieldError} aria-live="polite">
-                    {codeError || "\u00A0"}
-                  </span>
-                </label>
-
-                <div className={styles.actions}>
-                  <button
-                    className={clsx(styles.secondaryButton, styles.phoneVerifyButton)}
-                    type="submit"
-                    disabled={!canVerifyCode}
-                  >
-                    {isVerifyingCode ? "Проверяем..." : "Подтвердить"}
-                  </button>
-                </div>
-              </form>
-            )}
-          </section>
-
-          <section className={styles.card}>
-            <div className={styles.cardHeader}>
-              <h2 className={styles.cardTitle}>Смена пароля</h2>
-            </div>
-
-            <form className={styles.form} onSubmit={handleChangePassword} aria-busy={isChangingPassword}>
-              <label className={styles.field}>
-                <span className={styles.label}>Текущий пароль</span>
-                <input
-                  className={styles.input}
-                  aria-invalid={Boolean(currentPasswordError)}
-                  autoComplete="current-password"
-                  type="password"
-                  value={currentPassword}
-                  onChange={(event) => setCurrentPassword(event.target.value)}
-                  required
-                  disabled={isChangingPassword}
-                />
-                <span className={styles.fieldError} aria-live="polite">
-                  {currentPasswordError || "\u00A0"}
-                </span>
-              </label>
-
-              <label className={styles.field}>
-                <span className={styles.label}>Новый пароль</span>
-                <input
-                  className={styles.input}
-                  aria-invalid={Boolean(newPasswordError)}
-                  autoComplete="new-password"
-                  type="password"
-                  value={newPassword}
-                  onChange={(event) => setNewPassword(event.target.value)}
-                  required
-                  disabled={isChangingPassword}
-                />
-                <span className={styles.fieldError} aria-live="polite">
-                  {newPasswordError || "\u00A0"}
-                </span>
-              </label>
-
-              <label className={styles.field}>
-                <span className={styles.label}>Повтор нового пароля</span>
-                <input
-                  className={styles.input}
-                  aria-invalid={Boolean(newPassword2Error)}
-                  autoComplete="new-password"
-                  type="password"
-                  value={newPassword2}
-                  onChange={(event) => setNewPassword2(event.target.value)}
-                  required
-                  disabled={isChangingPassword}
-                />
-                <span className={styles.fieldError} aria-live="polite">
-                  {newPassword2Error || "\u00A0"}
-                </span>
-              </label>
-
-              <p
-                className={clsx(
-                  styles.formMessage,
-                  passwordErrorText && styles.formError,
-                  passwordMessage && styles.formSuccess,
-                  !passwordErrorText && !passwordMessage && styles.formMessageEmpty,
-                )}
-                aria-live="polite"
-              >
-                {passwordErrorText || passwordMessage || "\u00A0"}
-              </p>
-
-              <div className={styles.actions}>
-                <button className={styles.secondaryButton} type="submit" disabled={isChangingPassword}>
-                  {isChangingPassword ? "Меняем..." : "Сменить пароль"}
-                </button>
-              </div>
-            </form>
-          </section>
+          <PasswordChangePanel
+            currentPassword={currentPassword}
+            newPassword={newPassword}
+            newPassword2={newPassword2}
+            currentPasswordError={currentPasswordError}
+            newPasswordError={newPasswordError}
+            newPassword2Error={newPassword2Error}
+            passwordErrorText={passwordErrorText}
+            passwordMessage={passwordMessage}
+            isChangingPassword={isChangingPassword}
+            onChangePassword={handleChangePassword}
+            onCurrentPasswordChange={setCurrentPassword}
+            onNewPasswordChange={setNewPassword}
+            onNewPassword2Change={setNewPassword2}
+          />
         </div>
 
         <div className={styles.sideColumn}>
-          <section className={styles.card}>
-            <h2 className={styles.cardTitle}>AI-лимит</h2>
-            <div
-              className={clsx(
-                styles.aiStatus,
-                isPhoneVerified ? styles.aiStatusAvailable : styles.aiStatusBlocked,
-              )}
-            >
-              <strong>{isPhoneVerified ? "Доступен" : "Недоступен"}</strong>
-              <span>{aiStatusText}</span>
-            </div>
-            <div className={styles.aiLimit}>
-              <span>{formatAiUsage(displayedAiUsage)}</span>
-              <div aria-hidden="true">
-                <span
-                  style={{
-                    width: `${aiUsagePercent}%`,
-                  }}
-                />
-              </div>
-            </div>
-          </section>
-
-          <section className={clsx(styles.card, styles.progressCard)}>
-            <h2 className={styles.cardTitle}>Прогресс</h2>
-            {isStudyProgressLoading ? (
-              <p className={clsx(styles.mutedText, styles.progressState)}>Загружаем прогресс...</p>
-            ) : studyProgressError ? (
-              <p className={clsx(styles.formMessage, styles.formError, styles.progressState)}>
-                {studyProgressError}
-              </p>
-            ) : (
-              <div className={styles.progressStats}>
-                <div>
-                  <strong>{completedLessonsCount}</strong>
-                  <span>уроков пройдено</span>
-                </div>
-                <div>
-                  <strong>{openedLessonsCount}</strong>
-                  <span>уроков открыто</span>
-                </div>
-                <div>
-                  <strong>{solvedTasksCount}</strong>
-                  <span>задач решено</span>
-                </div>
-                <div>
-                  <strong>{activeTasksCount}</strong>
-                  <span>задач в работе</span>
-                </div>
-              </div>
-            )}
-          </section>
-
-          <section className={clsx(styles.card, styles.sessionCard)}>
-            <h2 className={styles.cardTitle}>Сессия</h2>
-            <button className={styles.dangerButton} type="button" onClick={() => void handleLogout()}>
-              Выйти
-            </button>
-          </section>
+          <AiUsagePanel
+            usage={aiUsage}
+            isPhoneVerified={isPhoneVerified}
+            statusText={aiStatusText}
+          />
+          <ProgressSummaryPanel
+            progress={studyProgress}
+            isLoading={isStudyProgressLoading}
+            error={studyProgressError}
+          />
+          <SessionPanel onLogout={() => void handleLogout()} />
         </div>
       </div>
     </article>

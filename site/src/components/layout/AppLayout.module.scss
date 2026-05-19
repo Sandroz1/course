@@ -146,7 +146,7 @@
     z-index: 35;
     display: block;
     border: 0;
-    background: rgba(0, 0, 0, 0.48);
+    background: var(--overlay-scrim);
     cursor: pointer;
     padding: 0;
   }

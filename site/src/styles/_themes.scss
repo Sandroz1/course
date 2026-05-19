@@ -157,6 +157,27 @@
   --course-inline-code-border: color-mix(in srgb, var(--accent) 18%, var(--border) 82%);
 }
 
+:root {
+  --surface-muted: color-mix(in srgb, var(--surface-2) 70%, transparent);
+  --surface-subtle: color-mix(in srgb, var(--surface-2) 35%, transparent);
+  --border-muted: color-mix(in srgb, var(--line) 64%, transparent);
+  --border-subtle: color-mix(in srgb, var(--line) 45%, transparent);
+  --accent-border: color-mix(in srgb, var(--accent) 36%, transparent);
+  --accent-border-muted: color-mix(in srgb, var(--accent) 24%, transparent);
+  --accent-surface: color-mix(in srgb, var(--accent) 8%, transparent);
+  --success-border: color-mix(in srgb, var(--success) 42%, transparent);
+  --success-border-muted: color-mix(in srgb, var(--success) 26%, transparent);
+  --success-surface: color-mix(in srgb, var(--success) 8%, transparent);
+  --warning-border: color-mix(in srgb, var(--warning) 42%, transparent);
+  --warning-border-muted: color-mix(in srgb, var(--warning) 34%, transparent);
+  --warning-surface: color-mix(in srgb, var(--warning) 8%, transparent);
+  --danger-border: color-mix(in srgb, var(--danger) 42%, transparent);
+  --danger-border-muted: color-mix(in srgb, var(--danger) 32%, transparent);
+  --danger-border-strong: color-mix(in srgb, var(--danger) 72%, transparent);
+  --danger-surface: color-mix(in srgb, var(--danger) 8%, transparent);
+  --overlay-scrim: rgba(0, 0, 0, 0.48);
+}
+
 html {
   background: var(--bg);
   text-rendering: optimizeLegibility;

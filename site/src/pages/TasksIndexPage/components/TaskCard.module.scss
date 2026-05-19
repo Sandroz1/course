@@ -34,7 +34,7 @@
 }
 
 .closedTheory {
-  border-color: rgba(214, 212, 202, 0.16);
+  border-color: var(--border-muted);
   background: color-mix(in srgb, var(--surface-2) 78%, transparent);
 }
 
@@ -92,9 +92,9 @@
 
 .statusBadge {
   width: fit-content;
-  border: 1px solid rgba(214, 212, 202, 0.18);
+  border: 1px solid var(--border-muted);
   border-radius: 999px;
-  background: rgba(214, 212, 202, 0.05);
+  background: var(--surface-subtle);
   color: var(--muted);
   font-size: 0.75rem;
   font-weight: 800;
@@ -105,26 +105,26 @@
 }
 
 .statusAvailable {
-  border-color: rgba(138, 203, 143, 0.24);
-  background: rgba(138, 203, 143, 0.05);
+  border-color: var(--success-border-muted);
+  background: var(--success-surface);
   color: var(--success);
 }
 
 .statusInProgress {
-  border-color: rgba(88, 199, 194, 0.36);
+  border-color: var(--accent-border);
   background: var(--accent-soft);
   color: var(--accent);
 }
 
 .statusSolved {
-  border-color: rgba(138, 203, 143, 0.42);
-  background: rgba(138, 203, 143, 0.1);
+  border-color: var(--success-border);
+  background: var(--success-surface);
   color: var(--success);
 }
 
 .statusLocked {
-  border-color: rgba(214, 167, 95, 0.34);
-  background: rgba(214, 167, 95, 0.07);
+  border-color: var(--warning-border-muted);
+  background: var(--warning-surface);
   color: var(--warning);
 }
 
@@ -157,7 +157,7 @@
   justify-content: space-between;
   gap: 0.625rem;
   margin-top: auto;
-  border-top: 1px solid rgba(214, 212, 202, 0.1);
+  border-top: 1px solid var(--border-subtle);
   font-size: 0.8125rem;
   min-height: 2.375rem;
   padding-top: 0.625rem;
@@ -169,9 +169,9 @@
   justify-content: center;
   min-height: 1.75rem;
   min-width: 5.125rem;
-  border: 1px solid rgba(88, 199, 194, 0.34);
+  border: 1px solid var(--accent-border);
   border-radius: 999px;
-  background: rgba(88, 199, 194, 0.08);
+  background: var(--accent-surface);
   color: var(--accent-strong);
   font-weight: 800;
   padding: 0.3125rem 0.625rem;

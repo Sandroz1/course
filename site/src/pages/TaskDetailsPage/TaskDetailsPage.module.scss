@@ -25,7 +25,7 @@
 
 .theoryNote,
 .homeStatus {
-  border-color: rgba(214, 212, 202, 0.16);
+  border-color: var(--border-muted);
   background: var(--surface-2);
 }
 
@@ -52,7 +52,7 @@
   align-content: center;
   gap: 8px 14px;
   min-height: 104px;
-  border-color: rgba(214, 212, 202, 0.16);
+  border-color: var(--border-muted);
   background: var(--surface);
 }
 
@@ -89,13 +89,13 @@
 }
 
 .plainPanel {
-  border-color: rgba(214, 212, 202, 0.1);
+  border-color: var(--border-subtle);
   background: transparent;
   padding: 16px 0;
 }
 
 .plainPanel + .plainPanel {
-  border-top: 1px solid rgba(214, 212, 202, 0.12);
+  border-top: 1px solid var(--border-subtle);
   border-radius: 0;
 }
 
@@ -104,7 +104,7 @@
 }
 
 .codePanel {
-  border-color: rgba(214, 212, 202, 0.18);
+  border-color: var(--border-muted);
   background: var(--surface);
   padding: 18px;
 }

@@ -188,7 +188,7 @@
 
 .logoutItem:hover,
 .logoutItem:focus-visible {
-  background: rgba(232, 139, 131, 0.1);
+  background: var(--danger-surface);
   color: var(--danger);
 }
 

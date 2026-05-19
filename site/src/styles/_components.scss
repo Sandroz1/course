@@ -2,9 +2,9 @@
 
 .status-badge {
   width: fit-content;
-  border: 1px solid rgba(214, 212, 202, 0.18);
+  border: 1px solid var(--border-muted);
   border-radius: 999px;
-  background: rgba(214, 212, 202, 0.05);
+  background: var(--surface-subtle);
   color: var(--muted);
   font-size: 0.75rem;
   font-weight: 700;
@@ -13,24 +13,24 @@
 }
 
 .status-badge--ready {
-  border-color: rgba(138, 203, 143, 0.26);
+  border-color: var(--success-border-muted);
   color: var(--ok);
 }
 
 .status-badge--success {
-  border-color: rgba(138, 203, 143, 0.38);
-  background: rgba(138, 203, 143, 0.08);
+  border-color: var(--success-border);
+  background: var(--success-surface);
   color: var(--success);
 }
 
 .status-badge--warning {
-  border-color: rgba(214, 167, 95, 0.42);
-  background: rgba(214, 167, 95, 0.09);
+  border-color: var(--warning-border);
+  background: var(--warning-surface);
   color: var(--warning);
 }
 
 .status-badge--info {
-  border-color: rgba(88, 199, 194, 0.36);
+  border-color: var(--accent-border);
   background: var(--accent-soft);
   color: var(--accent);
 }
@@ -69,7 +69,7 @@
 }
 
 .topic-list span {
-  border: 1px solid rgba(214, 212, 202, 0.12);
+  border: 1px solid var(--border-subtle);
   border-radius: 999px;
   color: var(--muted);
   font-size: 0.8125rem;
@@ -101,20 +101,20 @@
 
 .important-panel,
 .hint-panel {
-  border-color: rgba(214, 212, 202, 0.16);
+  border-color: var(--border-muted);
 }
 
 .warning-panel,
 .todo-panel {
-  border-color: rgba(214, 212, 202, 0.16);
+  border-color: var(--border-muted);
 }
 
 .error-panel {
-  border-color: rgba(214, 212, 202, 0.16);
+  border-color: var(--border-muted);
 }
 
 .check-panel {
-  border-color: rgba(214, 212, 202, 0.16);
+  border-color: var(--border-muted);
 }
 
 .todo-panel li,
