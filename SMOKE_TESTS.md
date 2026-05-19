@@ -36,6 +36,8 @@ curl -fsS https://api.uchicode.ru/api/health/
 - `AI_GLOBAL_DAILY_REQUEST_LIMIT` больше `0`.
 - `site/.env.production` или build args frontend указывают на публичный API origin, не на localhost.
 - Реальные `.env` файлы не staged в git.
+- Python-зависимости backend проверены перед deploy:
+  `python -m pip_audit -r backend/requirements.txt`.
 
 ## Docker и логи
 

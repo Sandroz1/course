@@ -110,6 +110,16 @@ cd backend
 .venv\Scripts\python.exe manage.py test
 ```
 
+Backend dependency audit перед release:
+
+```powershell
+cd backend
+.venv\Scripts\python.exe -m pip install pip-audit
+.venv\Scripts\python.exe -m pip_audit -r requirements.txt
+```
+
+`pip-audit` не входит в production `requirements.txt`. Если audit найдёт уязвимости, обновлять зависимости нужно отдельной задачей с проверкой регрессий.
+
 Docker:
 
 ```bash

@@ -38,6 +38,17 @@ docker compose -f docker-compose.prod.yml ps
 
 Backend container сам запускает `migrate` и `collectstatic` перед `gunicorn`.
 
+## Перед deploy
+
+Проверить Python-зависимости backend на известные уязвимости без добавления `pip-audit` в production runtime:
+
+```bash
+python -m pip install pip-audit
+python -m pip_audit -r backend/requirements.txt
+```
+
+Если audit найдёт уязвимости, не обновлять зависимости автоматически на production. Зафиксировать пакеты, подобрать минимальные безопасные версии и проверить upgrade отдельной задачей.
+
 Логи:
 
 ```bash
