@@ -112,6 +112,7 @@
   background: var(--surface-2);
   color: var(--text);
   font: inherit;
+  line-height: 1.35;
   padding: 8px 11px;
 }
 
@@ -207,10 +208,12 @@
 }
 
 .fieldError {
-  min-height: 17px;
+  display: block;
+  min-height: 18px;
   color: var(--danger);
   font-size: 13px;
   line-height: 1.35;
+  overflow-wrap: anywhere;
 }
 
 .phoneStatus {
@@ -275,8 +278,10 @@
   display: flex;
   align-items: center;
   min-height: 32px;
+  border: 1px solid transparent;
   border-radius: 7px;
   line-height: 1.45;
+  overflow-wrap: anywhere;
   padding: 7px 10px;
   font-size: 14px;
 }
@@ -406,6 +411,9 @@
 .primaryButton,
 .secondaryButton,
 .dangerButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   width: fit-content;
   min-height: 36px;
   border: 1px solid var(--line);
@@ -426,6 +434,10 @@
 .secondaryButton {
   background: var(--surface-2);
   color: var(--text);
+}
+
+.passwordSubmitButton {
+  min-width: 10.25rem;
 }
 
 .dangerButton {

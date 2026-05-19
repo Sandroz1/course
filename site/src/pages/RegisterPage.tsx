@@ -1,17 +1,26 @@
 import { type FormEvent, useId, useState } from "react";
 import { useAuth } from "../context/AuthContext";
-import { ApiError } from "../lib/api";
 import clsx from "clsx";
 import { navigateTo } from "../utils/navigation";
 import { toPath } from "../utils/slug";
 import { AuthLayout } from "../components/layout/AuthLayout/AuthLayout";
+import {
+  firstFieldError,
+  getApiFieldErrors,
+  getFriendlyFormError,
+  hasFieldErrors,
+  type FieldErrorMap,
+} from "../utils/formErrors";
 import styles from "../components/layout/AuthLayout/AuthLayout.module.scss";
 
-type RegisterFieldErrors = Partial<Record<"username" | "password" | "password2", string[]>>;
+const registerFields = ["username", "password", "password2"] as const;
+type RegisterField = (typeof registerFields)[number];
 
-function firstError(errors: RegisterFieldErrors, field: keyof RegisterFieldErrors) {
-  return errors[field]?.[0] ?? "";
-}
+const registerFieldFallbacks: Record<RegisterField, string> = {
+  username: "Проверьте логин.",
+  password: "Проверьте пароль.",
+  password2: "Проверьте повтор пароля.",
+};
 
 export function RegisterPage() {
   const { register } = useAuth();
@@ -19,14 +28,18 @@ export function RegisterPage() {
   const [password, setPassword] = useState("");
   const [password2, setPassword2] = useState("");
   const [errorText, setErrorText] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<RegisterFieldErrors>({});
+  const [fieldErrors, setFieldErrors] = useState<FieldErrorMap<RegisterField>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const usernameId = useId();
   const passwordId = useId();
   const passwordRepeatId = useId();
-  const usernameError = firstError(fieldErrors, "username");
-  const passwordError = firstError(fieldErrors, "password");
-  const password2Error = firstError(fieldErrors, "password2");
+  const usernameErrorId = useId();
+  const passwordErrorId = useId();
+  const passwordRepeatErrorId = useId();
+  const formErrorId = useId();
+  const usernameError = firstFieldError(fieldErrors, "username");
+  const passwordError = firstFieldError(fieldErrors, "password");
+  const password2Error = firstFieldError(fieldErrors, "password2");
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
@@ -34,7 +47,6 @@ export function RegisterPage() {
     setFieldErrors({});
 
     if (password !== password2) {
-      setErrorText("Проверь повтор пароля.");
       setFieldErrors({ password2: ["Пароли не совпадают."] });
       return;
     }
@@ -45,12 +57,14 @@ export function RegisterPage() {
       await register({ username, password, password2 });
       navigateTo("/profile", true);
     } catch (error) {
-      if (error instanceof ApiError) {
-        setErrorText(error.message);
-        setFieldErrors(error.fields ?? {});
-      } else {
-        setErrorText("Не удалось зарегистрироваться.");
-      }
+      const nextFieldErrors = getApiFieldErrors(error, registerFields, registerFieldFallbacks);
+
+      setFieldErrors(nextFieldErrors);
+      setErrorText(
+        hasFieldErrors(nextFieldErrors)
+          ? ""
+          : getFriendlyFormError(error, "Не удалось создать аккаунт."),
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -59,14 +73,19 @@ export function RegisterPage() {
   return (
     <AuthLayout
       title="Регистрация"
-      description="Аккаунт нужен для прогресса, профиля и AI-помощника."
+      description="Создайте аккаунт, чтобы сохранять прогресс."
       footer={
         <>
           Уже есть аккаунт? <a href={toPath("/login")}>Войти</a>
         </>
       }
     >
-      <form className={styles.form} onSubmit={handleSubmit} aria-busy={isSubmitting}>
+      <form
+        className={styles.form}
+        onSubmit={handleSubmit}
+        aria-busy={isSubmitting}
+        aria-describedby={formErrorId}
+      >
         <div className={styles.field}>
           <label className={styles.label} htmlFor={usernameId}>
             Логин
@@ -75,6 +94,7 @@ export function RegisterPage() {
             id={usernameId}
             className={styles.input}
             aria-invalid={Boolean(usernameError)}
+            aria-describedby={usernameErrorId}
             autoComplete="username"
             placeholder="Введите логин"
             value={username}
@@ -82,7 +102,7 @@ export function RegisterPage() {
             required
             disabled={isSubmitting}
           />
-          <span className={styles.fieldError} aria-live="polite">
+          <span id={usernameErrorId} className={styles.fieldError} aria-live="polite">
             {usernameError || "\u00A0"}
           </span>
         </div>
@@ -95,6 +115,7 @@ export function RegisterPage() {
             id={passwordId}
             className={styles.input}
             aria-invalid={Boolean(passwordError)}
+            aria-describedby={passwordErrorId}
             autoComplete="new-password"
             type="password"
             placeholder="Новый пароль"
@@ -103,7 +124,7 @@ export function RegisterPage() {
             required
             disabled={isSubmitting}
           />
-          <span className={styles.fieldError} aria-live="polite">
+          <span id={passwordErrorId} className={styles.fieldError} aria-live="polite">
             {passwordError || "\u00A0"}
           </span>
         </div>
@@ -116,6 +137,7 @@ export function RegisterPage() {
             id={passwordRepeatId}
             className={styles.input}
             aria-invalid={Boolean(password2Error)}
+            aria-describedby={passwordRepeatErrorId}
             autoComplete="new-password"
             type="password"
             placeholder="Повтори пароль"
@@ -124,12 +146,16 @@ export function RegisterPage() {
             required
             disabled={isSubmitting}
           />
-          <span className={styles.fieldError} aria-live="polite">
+          <span id={passwordRepeatErrorId} className={styles.fieldError} aria-live="polite">
             {password2Error || "\u00A0"}
           </span>
         </div>
 
-        <p className={clsx(styles.formError, !errorText && styles.formErrorEmpty)} aria-live="polite">
+        <p
+          id={formErrorId}
+          className={clsx(styles.formError, !errorText && styles.formErrorEmpty)}
+          aria-live="polite"
+        >
           {errorText || "\u00A0"}
         </p>
 

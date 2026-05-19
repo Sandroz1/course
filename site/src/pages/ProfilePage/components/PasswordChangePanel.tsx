@@ -1,4 +1,4 @@
-import type { FormEvent } from "react";
+import { type FormEvent, useId } from "react";
 import clsx from "clsx";
 import styles from "../ProfilePage.module.scss";
 
@@ -33,18 +33,30 @@ export function PasswordChangePanel({
   onNewPasswordChange,
   onNewPassword2Change,
 }: PasswordChangePanelProps) {
+  const currentPasswordErrorId = useId();
+  const newPasswordErrorId = useId();
+  const newPassword2ErrorId = useId();
+  const formMessageId = useId();
+
   return (
     <section className={styles.card}>
       <div className={styles.cardHeader}>
         <h2 className={styles.cardTitle}>Смена пароля</h2>
+        <p className={styles.mutedText}>Укажите текущий пароль и новый пароль.</p>
       </div>
 
-      <form className={styles.form} onSubmit={onChangePassword} aria-busy={isChangingPassword}>
+      <form
+        className={styles.form}
+        onSubmit={onChangePassword}
+        aria-busy={isChangingPassword}
+        aria-describedby={formMessageId}
+      >
         <label className={styles.field}>
           <span className={styles.label}>Текущий пароль</span>
           <input
             className={styles.input}
             aria-invalid={Boolean(currentPasswordError)}
+            aria-describedby={currentPasswordErrorId}
             autoComplete="current-password"
             type="password"
             value={currentPassword}
@@ -52,7 +64,7 @@ export function PasswordChangePanel({
             required
             disabled={isChangingPassword}
           />
-          <span className={styles.fieldError} aria-live="polite">
+          <span id={currentPasswordErrorId} className={styles.fieldError} aria-live="polite">
             {currentPasswordError || "\u00A0"}
           </span>
         </label>
@@ -62,6 +74,7 @@ export function PasswordChangePanel({
           <input
             className={styles.input}
             aria-invalid={Boolean(newPasswordError)}
+            aria-describedby={newPasswordErrorId}
             autoComplete="new-password"
             type="password"
             value={newPassword}
@@ -69,7 +82,7 @@ export function PasswordChangePanel({
             required
             disabled={isChangingPassword}
           />
-          <span className={styles.fieldError} aria-live="polite">
+          <span id={newPasswordErrorId} className={styles.fieldError} aria-live="polite">
             {newPasswordError || "\u00A0"}
           </span>
         </label>
@@ -79,6 +92,7 @@ export function PasswordChangePanel({
           <input
             className={styles.input}
             aria-invalid={Boolean(newPassword2Error)}
+            aria-describedby={newPassword2ErrorId}
             autoComplete="new-password"
             type="password"
             value={newPassword2}
@@ -86,12 +100,13 @@ export function PasswordChangePanel({
             required
             disabled={isChangingPassword}
           />
-          <span className={styles.fieldError} aria-live="polite">
+          <span id={newPassword2ErrorId} className={styles.fieldError} aria-live="polite">
             {newPassword2Error || "\u00A0"}
           </span>
         </label>
 
         <p
+          id={formMessageId}
           className={clsx(
             styles.formMessage,
             passwordErrorText && styles.formError,
@@ -104,8 +119,12 @@ export function PasswordChangePanel({
         </p>
 
         <div className={styles.actions}>
-          <button className={styles.secondaryButton} type="submit" disabled={isChangingPassword}>
-            {isChangingPassword ? "Меняем..." : "Сменить пароль"}
+          <button
+            className={clsx(styles.secondaryButton, styles.passwordSubmitButton)}
+            type="submit"
+            disabled={isChangingPassword}
+          >
+            {isChangingPassword ? "Сохраняем..." : "Сохранить пароль"}
           </button>
         </div>
       </form>

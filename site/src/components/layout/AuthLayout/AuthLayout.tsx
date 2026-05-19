@@ -11,16 +11,16 @@ type AuthLayoutProps = {
 
 const benefits = [
   {
-    title: "Сохраняй прогресс",
-    text: "Уроки и задачи остаются в профиле.",
+    title: "Продолжай уроки",
+    text: "Возвращайся к последнему открытому разделу.",
   },
   {
-    title: "Задавай вопросы AI",
-    text: "Помощник доступен после подтверждения телефона.",
+    title: "Подключай AI",
+    text: "Помощник откроется после подтверждения телефона.",
   },
   {
-    title: "Возвращайся к задачам",
-    text: "Продолжай с того места, где остановился.",
+    title: "Управляй профилем",
+    text: "Телефон и сессия находятся в одном месте.",
   },
 ];
 
@@ -43,7 +43,7 @@ export function AuthLayout({ children, description, footer, title }: AuthLayoutP
         <p className={styles.contextEyebrow}>Аккаунт Uchicode</p>
         <h2 className={styles.contextTitle}>Один аккаунт для обучения</h2>
         <p className={styles.contextText}>
-          Вход нужен только для персональных функций: прогресса, профиля и AI-помощника.
+          Вход открывает личные функции без лишних настроек на каждом устройстве.
         </p>
         <ul className={styles.benefits}>
           {benefits.map((benefit) => (

@@ -17,6 +17,13 @@ import { changePassword, sendPhoneVerificationCode, verifyPhoneCode } from "../.
 import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
 import clsx from "clsx";
 import type { AiUsage, ProgressOverview } from "../../types/api";
+import {
+  firstFieldError,
+  getApiFieldErrors,
+  getFriendlyFormError,
+  hasFieldErrors,
+  type FieldErrorMap,
+} from "../../utils/formErrors";
 import { navigateTo } from "../../utils/navigation";
 import { AiUsagePanel } from "./components/AiUsagePanel";
 import { PasswordChangePanel } from "./components/PasswordChangePanel";
@@ -34,7 +41,15 @@ import {
 import styles from "./ProfilePage.module.scss";
 
 type PhoneVerifyFieldErrors = Partial<Record<"phone" | "code", string[]>>;
-type PasswordFieldErrors = Partial<Record<"currentPassword" | "newPassword" | "newPassword2", string[]>>;
+
+const passwordFields = ["currentPassword", "newPassword", "newPassword2"] as const;
+type PasswordField = (typeof passwordFields)[number];
+
+const passwordFieldFallbacks: Record<PasswordField, string> = {
+  currentPassword: "Проверьте текущий пароль.",
+  newPassword: "Проверьте новый пароль.",
+  newPassword2: "Проверьте повтор нового пароля.",
+};
 
 function firstError<T extends string>(errors: Partial<Record<T, string[]>>, field: T) {
   return errors[field]?.[0] ?? "";
@@ -56,7 +71,7 @@ export function ProfilePage() {
   const [phoneFieldErrors, setPhoneFieldErrors] = useState<PhoneVerifyFieldErrors>({});
   const [passwordMessage, setPasswordMessage] = useState("");
   const [passwordErrorText, setPasswordErrorText] = useState("");
-  const [passwordFieldErrors, setPasswordFieldErrors] = useState<PasswordFieldErrors>({});
+  const [passwordFieldErrors, setPasswordFieldErrors] = useState<FieldErrorMap<PasswordField>>({});
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [newPassword2, setNewPassword2] = useState("");
@@ -70,9 +85,9 @@ export function ProfilePage() {
   const [aiUsage, setAiUsage] = useState<AiUsage>(() => getLocalAiUsage(user?.id));
   const phoneError = firstError(phoneFieldErrors, "phone");
   const codeError = firstError(phoneFieldErrors, "code");
-  const currentPasswordError = firstError(passwordFieldErrors, "currentPassword");
-  const newPasswordError = firstError(passwordFieldErrors, "newPassword");
-  const newPassword2Error = firstError(passwordFieldErrors, "newPassword2");
+  const currentPasswordError = firstFieldError(passwordFieldErrors, "currentPassword");
+  const newPasswordError = firstFieldError(passwordFieldErrors, "newPassword");
+  const newPassword2Error = firstFieldError(passwordFieldErrors, "newPassword2");
 
   useEffect(() => {
     setPhoneDigits(extractRussianPhoneDigits(user?.phone));
@@ -233,7 +248,6 @@ export function ProfilePage() {
     setPasswordFieldErrors({});
 
     if (newPassword !== newPassword2) {
-      setPasswordErrorText("Проверь повтор нового пароля.");
       setPasswordFieldErrors({ newPassword2: ["Пароли не совпадают."] });
       return;
     }
@@ -247,12 +261,14 @@ export function ProfilePage() {
       setNewPassword("");
       setNewPassword2("");
     } catch (error) {
-      if (error instanceof ApiError) {
-        setPasswordErrorText(error.message);
-        setPasswordFieldErrors(error.fields ?? {});
-      } else {
-        setPasswordErrorText("Не удалось изменить пароль.");
-      }
+      const nextFieldErrors = getApiFieldErrors(error, passwordFields, passwordFieldFallbacks);
+
+      setPasswordFieldErrors(nextFieldErrors);
+      setPasswordErrorText(
+        hasFieldErrors(nextFieldErrors)
+          ? ""
+          : getFriendlyFormError(error, "Не удалось сохранить пароль."),
+      );
     } finally {
       setIsChangingPassword(false);
     }
