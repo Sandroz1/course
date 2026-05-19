@@ -38,10 +38,16 @@ export function renderRoute(path: string) {
   if (path === "/profile") return <ProtectedProfilePage />;
   if (path === "/courses") return <CoursesPage />;
   if (path === "/courses/base-cpp") return <BaseCppCoursePage />;
-  if (path === "/courses/oop-cpp") return <CourseIndexPage />;
-  if (path === "/course") return <CourseIndexPage />;
+  if (path.startsWith("/courses/base-cpp/")) {
+    return <CoursePage courseId="base-cpp" slug={path.replace("/courses/base-cpp/", "")} />;
+  }
+  if (path === "/courses/oop-cpp") return <CourseIndexPage courseId="oop-cpp" />;
+  if (path.startsWith("/courses/oop-cpp/")) {
+    return <CoursePage courseId="oop-cpp" slug={path.replace("/courses/oop-cpp/", "")} />;
+  }
+  if (path === "/course") return <CourseIndexPage courseId="oop-cpp" />;
   if (path.startsWith("/course/")) {
-    return <CoursePage slug={path.replace("/course/", "")} />;
+    return <CoursePage courseId="oop-cpp" slug={path.replace("/course/", "")} />;
   }
   if (path === "/tasks") return <TasksIndexPage />;
   if (path.startsWith("/tasks/")) {

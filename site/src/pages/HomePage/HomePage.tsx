@@ -5,7 +5,7 @@ import { toPath } from "../../utils/slug";
 import styles from "./HomePage.module.scss";
 
 const quickLinks = [
-  { title: "Курс ООП C++", text: "Открытая теория и порядок уроков.", href: "/course" },
+  { title: "Курс ООП C++", text: "Открытая теория и порядок уроков.", href: "/courses/oop-cpp" },
   { title: "Задачи", text: "Практика по темам курса.", href: "/tasks" },
   { title: "Как учиться", text: "Порядок работы и проверка решения.", href: "/guide" },
 ];
@@ -21,7 +21,7 @@ export function HomePage() {
         <h1>Uchicode</h1>
         <p className="lead">Курс C++ с уроками, задачами и короткой методикой работы.</p>
         <div className="actions">
-          <a className="button button--primary" href={toPath("/course")}>
+          <a className="button button--primary" href={toPath(oopCourse?.path ?? "/course")}>
             Открыть ООП C++
           </a>
           <a className="button button--ghost" href={toPath("/tasks")}>

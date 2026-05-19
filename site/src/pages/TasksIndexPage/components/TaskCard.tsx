@@ -1,5 +1,5 @@
 import { ProgressBadge } from "../../../components/shared/ProgressBadge/ProgressBadge";
-import { courseSections, isCourseSectionReady } from "../../../data/courseSections";
+import { getCourseSectionBySlug, isCourseSectionReady } from "../../../data/courseSections";
 import { getCourseById } from "../../../data/courses";
 import { getStatusLabel } from "../../../data/status";
 import { tasks } from "../../../data/tasks";
@@ -56,7 +56,7 @@ export function TaskCard({
   task: Task;
   taskProgressById?: Map<string, TaskProgressStatus>;
 }) {
-  const theory = courseSections.find((section) => section.slug === task.theorySlug);
+  const theory = getCourseSectionBySlug(task.courseId, task.theorySlug);
   const hasClosedTheory =
     task.status === "needs-theory" || (theory ? !isCourseSectionReady(theory) : false);
   const course = getCourseById(task.courseId);

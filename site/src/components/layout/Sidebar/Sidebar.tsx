@@ -1,5 +1,5 @@
 import { useAuth } from "../../../context/AuthContext";
-import { courseSections, isCourseSectionReady } from "../../../data/courseSections";
+import { getCourseSections, isCourseSectionReady } from "../../../data/courseSections";
 import clsx from "clsx";
 import { currentPath, toPath } from "../../../utils/slug";
 import styles from "./Sidebar.module.scss";
@@ -227,8 +227,10 @@ export function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const path = currentPath();
-  const readyCourseSections = courseSections.filter(isCourseSectionReady);
+  const readyCourseSections = getCourseSections("oop-cpp").filter(isCourseSectionReady);
   const readySectionsCount = readyCourseSections.length;
+  const isOopCourseActive =
+    isLinkActive(path, "/course") || isLinkActive(path, "/courses/oop-cpp");
 
   function handleNavigate() {
     onCloseMobile();
@@ -328,7 +330,7 @@ export function Sidebar({
           <a
             className={clsx(
               styles.courseCard,
-              isLinkActive(path, "/course") && styles.courseCardActive,
+              isOopCourseActive && styles.courseCardActive,
             )}
             href={toPath("/course")}
             aria-label={isCollapsed ? "ООП C++" : undefined}

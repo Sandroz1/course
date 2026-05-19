@@ -14,6 +14,8 @@ export type Course = {
   sections?: string[];
 };
 
+export const baseCppSectionSlugs: string[] = [];
+
 export const oopCppSectionSlugs = [
   "basics",
   "oop",
@@ -35,11 +37,11 @@ export const courses: Course[] = [
     id: "base-cpp",
     title: "База C++",
     shortTitle: "База C++",
-    description: "Переменные, ввод, условия, циклы, функции, массивы и строки.",
+    description: "Основы C++ перед ООП: алгоритмы, переменные, условия, циклы, функции, массивы, указатели, строки и файлы.",
     status: "soon",
     order: 1,
     path: "/courses/base-cpp",
-    sections: [],
+    sections: baseCppSectionSlugs,
   },
   {
     id: "oop-cpp",
@@ -48,7 +50,7 @@ export const courses: Course[] = [
     description: "Структуры, классы, конструкторы, this и практика.",
     status: "available",
     order: 2,
-    path: "/course",
+    path: "/courses/oop-cpp",
     sections: oopCppSectionSlugs,
   },
 ];

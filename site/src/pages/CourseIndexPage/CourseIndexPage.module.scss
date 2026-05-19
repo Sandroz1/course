@@ -28,6 +28,22 @@
   color: var(--muted);
 }
 
+.emptyState {
+  display: grid;
+  gap: 0.625rem;
+  color: var(--muted);
+}
+
+.emptyState h2,
+.emptyState p {
+  margin: 0;
+}
+
+.emptyState h2 {
+  color: var(--text);
+  font-size: 1.125rem;
+}
+
 .group {
   display: grid;
   gap: 0.625rem;

@@ -1,6 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { courseSections, isCourseSectionReady } from "../../data/courseSections";
+import {
+  getCourseSectionBySlug,
+  getCourseSectionPath,
+  getCourseSections,
+  isCourseSectionReady,
+} from "../../data/courseSections";
+import { getCourseById, type CourseId } from "../../data/courses";
 import { statusMeta } from "../../data/status";
 import { tasks } from "../../data/tasks";
 import {
@@ -83,22 +89,24 @@ function syncOpenedLessonState(
   return request;
 }
 
-export function CoursePage({ slug }: { slug: string }) {
+export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId; slug: string }) {
   const { accessToken, isAuthenticated } = useAuth();
   const authKey = accessToken ?? "";
   const normalizedSlug = slug === "structs" ? "struct" : slug;
-  const section = courseSections.find((item) => item.slug === normalizedSlug);
-  const sectionIndex = courseSections.findIndex((item) => item.slug === normalizedSlug);
+  const course = getCourseById(courseId);
+  const sections = getCourseSections(courseId);
+  const section = getCourseSectionBySlug(courseId, normalizedSlug);
+  const sectionIndex = sections.findIndex((item) => item.slug === normalizedSlug);
   const [lessonProgressState, setLessonProgressState] = useState<LessonProgressState | null>(null);
   const [isProgressChecking, setIsProgressChecking] = useState(true);
   const [isProgressSaving, setIsProgressSaving] = useState(false);
   const [progressMessage, setProgressMessage] = useState("");
-  const previousSection = sectionIndex > 0 ? courseSections[sectionIndex - 1] : undefined;
+  const previousSection = sectionIndex > 0 ? sections[sectionIndex - 1] : undefined;
   const nextSection =
-    sectionIndex >= 0 && sectionIndex < courseSections.length - 1
-      ? courseSections[sectionIndex + 1]
+    sectionIndex >= 0 && sectionIndex < sections.length - 1
+      ? sections[sectionIndex + 1]
       : undefined;
-  const readySections = courseSections.filter(isCourseSectionReady);
+  const readySections = sections.filter(isCourseSectionReady);
   const readySectionIndex = readySections.findIndex((item) => item.slug === normalizedSlug);
   const lessonProgressKey = section ? `${section.courseId}:${section.slug}` : "";
   const cachedCourseProgress = authKey ? readCachedCourseProgress(authKey) : null;
@@ -223,11 +231,11 @@ export function CoursePage({ slug }: { slug: string }) {
           <h1>Раздел на доработке</h1>
           <p>
             Тема пока закрыта, чтобы не показывать недоработанное объяснение.
-            Сейчас готовы разделы 0–5.
+            Готовые разделы можно открыть со страницы курса.
           </p>
 
           <div className="actions">
-            <a className="button button--primary" href={toPath("/course")}>
+            <a className="button button--primary" href={toPath(course?.path ?? "/courses")}>
               Вернуться к курсу
             </a>
             <a className="button" href={toPath("/tasks")}>
@@ -275,7 +283,7 @@ export function CoursePage({ slug }: { slug: string }) {
   return (
     <article className="reading-page lesson-page">
       <header className={styles.lessonHeader}>
-        <a className="back-link" href={toPath("/course")}>
+        <a className="back-link" href={toPath(course?.path ?? "/courses")}>
           К курсу
         </a>
         <p className="eyebrow">Раздел {section.number}</p>
@@ -346,7 +354,7 @@ export function CoursePage({ slug }: { slug: string }) {
       {(previousSection || nextSection) && (
         <nav className={styles.nav} aria-label="Навигация между уроками">
           {previousSection ? (
-            <a className={styles.navLink} href={toPath(`/course/${previousSection.slug}`)}>
+            <a className={styles.navLink} href={toPath(getCourseSectionPath(previousSection))}>
               <span className={styles.navLabel}>Предыдущий</span>
               <strong>
                 {previousSection.number}. {previousSection.title}
@@ -356,7 +364,7 @@ export function CoursePage({ slug }: { slug: string }) {
             <span />
           )}
           {nextSection ? (
-            <a className={clsx(styles.navLink, styles.navLinkNext)} href={toPath(`/course/${nextSection.slug}`)}>
+            <a className={clsx(styles.navLink, styles.navLinkNext)} href={toPath(getCourseSectionPath(nextSection))}>
               <span className={styles.navLabel}>Следующий</span>
               <strong>
                 {nextSection.number}. {nextSection.title}

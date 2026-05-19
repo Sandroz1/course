@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { courseSections, isCourseSectionReady } from "../../data/courseSections";
+import { getCourseSectionBySlug, isCourseSectionReady } from "../../data/courseSections";
 import { courses, type CourseId } from "../../data/courses";
 import { getStatusLabel } from "../../data/status";
 import { tasks, type TaskLevel } from "../../data/tasks";
@@ -50,7 +50,7 @@ function getTaskFilterStatus(
   if (progressStatus === "solved") return "solved";
   if (progressStatus === "in_progress") return "in_progress";
 
-  const theory = courseSections.find((section) => section.slug === task.theorySlug);
+  const theory = getCourseSectionBySlug(task.courseId, task.theorySlug);
   const hasClosedTheory =
     task.status === "needs-theory" || (theory ? !isCourseSectionReady(theory) : false);
 
@@ -136,7 +136,7 @@ export function TasksIndexPage() {
       sectionFilter !== "all",
   );
   const closedTheoryTaskCount = filteredTasks.filter((task) => {
-    const theory = courseSections.find((section) => section.slug === task.theorySlug);
+    const theory = getCourseSectionBySlug(task.courseId, task.theorySlug);
     return task.status === "needs-theory" || (theory ? !isCourseSectionReady(theory) : false);
   }).length;
 

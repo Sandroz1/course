@@ -27,6 +27,8 @@ import { delegatingConstructorsContent } from "../content/course/delegatingConst
 import { encapsulationContent } from "../content/course/encapsulation";
 import { exceptionsContent } from "../content/course/exceptions";
 
+const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [];
+
 const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
   {
     slug: "basics",
@@ -160,11 +162,31 @@ const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
   },
 ];
 
-export const courseSections: CourseSection[] = oopCourseSections.map((section) => ({
-  ...section,
-  courseId: "oop-cpp",
-}));
+export const courseSections: CourseSection[] = [
+  ...baseCppCourseSections.map((section) => ({
+    ...section,
+    courseId: "base-cpp" as const,
+  })),
+  ...oopCourseSections.map((section) => ({
+    ...section,
+    courseId: "oop-cpp" as const,
+  })),
+];
 
 export function isCourseSectionReady(section: CourseSection) {
   return section.status === "available" || section.status === "ready";
+}
+
+export function getCourseSections(courseId: CourseId) {
+  return courseSections.filter((section) => section.courseId === courseId);
+}
+
+export function getCourseSectionBySlug(courseId: CourseId, slug: string) {
+  return courseSections.find((section) => section.courseId === courseId && section.slug === slug);
+}
+
+export function getCourseSectionPath(section: CourseSection) {
+  return section.courseId === "oop-cpp"
+    ? `/course/${section.slug}`
+    : `/courses/${section.courseId}/${section.slug}`;
 }
