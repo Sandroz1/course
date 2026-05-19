@@ -42,11 +42,15 @@ function focusTextareaAtEnd(textarea: HTMLTextAreaElement | null) {
 }
 
 export function AiAssistant() {
-    const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
-
     if (!isApiConfigured()) {
         return null;
     }
+
+    return <AiAssistantPanel />;
+}
+
+function AiAssistantPanel() {
+    const { isAuthenticated, isLoading: isAuthLoading, user } = useAuth();
 
     const [isOpen, setIsOpen] = useState(false);
     const [question, setQuestion] = useState("");

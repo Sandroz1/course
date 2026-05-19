@@ -15,7 +15,7 @@ export function clamp(value: number, min: number, max: number) {
 
 export function readStoredPanelSize(): PanelSize {
     const fallback = { width: 430, height: 620 };
-    let saved: string | null = null;
+    let saved: string | null;
 
     try {
         saved = localStorage.getItem(STORAGE_KEY_PANEL_SIZE);
