@@ -21,6 +21,13 @@ type CourseIndexPageProps = {
   courseId?: CourseId;
 };
 
+type CourseSectionDisplayStatus = {
+  actionLabel: string;
+  isReady: boolean;
+  label: string;
+  tone: string;
+};
+
 function progressKey(section: CourseSection) {
   return getLessonProgressKey(section.courseId, section.slug);
 }
@@ -29,6 +36,50 @@ function readCachedCompletedLessons(authKey: string) {
   const progress = readCachedCourseProgress(authKey);
 
   return progress ? getCompletedLessonKeys(progress) : null;
+}
+
+function getCourseSectionDisplayStatus(
+  section: CourseSection,
+  isCompleted: boolean,
+  isProgressLoading: boolean,
+): CourseSectionDisplayStatus {
+  const isReady = isCourseSectionReady(section);
+
+  if (!isReady) {
+    const meta = statusMeta[section.status];
+
+    return {
+      actionLabel: "Скоро",
+      isReady,
+      label: meta.label,
+      tone: meta.tone,
+    };
+  }
+
+  if (isProgressLoading) {
+    return {
+      actionLabel: "Открыть",
+      isReady,
+      label: "Проверяем",
+      tone: "muted",
+    };
+  }
+
+  if (isCompleted) {
+    return {
+      actionLabel: "Открыть",
+      isReady,
+      label: "Пройдено",
+      tone: "success",
+    };
+  }
+
+  return {
+    actionLabel: "Открыть",
+    isReady,
+    label: "Доступен",
+    tone: "muted",
+  };
 }
 
 function CourseSectionRow({
@@ -40,15 +91,12 @@ function CourseSectionRow({
   isCompleted?: boolean;
   isProgressLoading?: boolean;
 }) {
-  const { number, title, status } = section;
-  const isReady = status === "available" || status === "ready";
-  const meta = statusMeta[status];
-  const progressLabel = isProgressLoading ? "Проверяем" : isCompleted ? "Пройдено" : "Доступен";
-  const progressTone = isCompleted ? "success" : "muted";
+  const { number, title } = section;
+  const displayStatus = getCourseSectionDisplayStatus(section, isCompleted, isProgressLoading);
 
   return (
     <a
-      className={clsx("panel", styles.row, !isReady && styles.rowInProgress)}
+      className={clsx("panel", styles.row, !displayStatus.isReady && styles.rowInProgress)}
       href={toPath(getCourseSectionPath(section))}
     >
       <span className={styles.number}>{number}</span>
@@ -56,14 +104,12 @@ function CourseSectionRow({
         <strong className={styles.title}>{title}</strong>
       </span>
       <span className={styles.status}>
-        {isReady ? (
-          <span className={`status-badge status-badge--${progressTone}`}>{progressLabel}</span>
-        ) : (
-          <span className={`status-badge status-badge--${meta.tone}`}>{meta.label}</span>
-        )}
+        <span className={`status-badge status-badge--${displayStatus.tone}`}>
+          {displayStatus.label}
+        </span>
       </span>
-      <span className={clsx(styles.action, !isReady && styles.actionMuted)}>
-        {isReady ? "Открыть" : "Скоро"}
+      <span className={clsx(styles.action, !displayStatus.isReady && styles.actionMuted)}>
+        {displayStatus.actionLabel}
       </span>
     </a>
   );
@@ -77,8 +123,9 @@ export function CourseIndexPage({ courseId = "oop-cpp" }: CourseIndexPageProps) 
   const readySections = sections.filter(isCourseSectionReady);
   const plannedSections = sections.filter((section) => !isCourseSectionReady(section));
   const courseMeta = course ? statusMeta[course.status] : null;
-  const isCourseAvailable = course?.status === "available";
-  const shouldLoadProgress = isAuthenticated && isCourseAvailable && readySections.length > 0;
+  const hasOpenSections = readySections.length > 0;
+  const isCourseAvailable = course?.status === "available" || hasOpenSections;
+  const shouldLoadProgress = isAuthenticated && hasOpenSections;
   const [completedLessonsState, setCompletedLessonsState] = useState<{
     authKey: string;
     lessons: Set<string>;
@@ -91,6 +138,9 @@ export function CourseIndexPage({ courseId = "oop-cpp" }: CourseIndexPageProps) 
   const completedLessons =
     completedLessonsState?.authKey === authKey ? completedLessonsState.lessons : null;
   const isProgressLoading = shouldLoadProgress && completedLessons === null;
+  const completedReadySectionsCount = readySections.filter((section) =>
+    completedLessons?.has(progressKey(section)),
+  ).length;
 
   useEffect(() => {
     if (!shouldLoadProgress || !authKey) {
@@ -169,6 +219,10 @@ export function CourseIndexPage({ courseId = "oop-cpp" }: CourseIndexPageProps) 
           <div className={styles.progressItem}>
             <strong>{readySections.length} открыто</strong>
             <span>{plannedSections.length} тем на доработке</span>
+          </div>
+          <div className={styles.progressItem}>
+            <strong>{isProgressLoading ? "Проверяем" : `${completedReadySectionsCount} пройдено`}</strong>
+            <span>по текущему курсу</span>
           </div>
         </section>
       ) : (

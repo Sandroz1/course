@@ -38,7 +38,7 @@ export const courses: Course[] = [
     title: "База C++",
     shortTitle: "База C++",
     description: "Основы C++ перед ООП: алгоритмы, переменные, условия, циклы, функции, массивы, указатели, строки и файлы.",
-    status: "soon",
+    status: "available",
     order: 1,
     path: "/courses/base-cpp",
     sections: baseCppSectionSlugs,
