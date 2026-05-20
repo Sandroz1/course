@@ -13,6 +13,7 @@ export type CourseSection = {
   relatedTaskIds: string[];
 };
 
+import { algorithmsContent } from "../content/baseCpp/algorithms";
 import { introToolsContent } from "../content/baseCpp/introTools";
 import { basicsContent } from "../content/course/basics";
 import { oopContent } from "../content/course/oop";
@@ -37,6 +38,16 @@ const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [
     topics: ["learning", "IDE", "compiler", "project", "main.cpp", "algorithm"],
     status: "available",
     content: introToolsContent,
+    relatedTaskIds: [],
+  },
+  {
+    slug: "algorithms",
+    number: "1",
+    title: "Алгоритмы",
+    description: "Поймёшь, что такое алгоритм, исполнитель и результат, как записывать шаги обычным текстом, псевдокодом и блок-схемой, а также как находить выбор и повторение до написания кода.",
+    topics: ["algorithm", "executor", "pseudocode", "flowchart", "branching", "cycle"],
+    status: "available",
+    content: algorithmsContent,
     relatedTaskIds: [],
   },
 ];

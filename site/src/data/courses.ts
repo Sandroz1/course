@@ -14,7 +14,7 @@ export type Course = {
   sections?: string[];
 };
 
-export const baseCppSectionSlugs = ["intro-tools"];
+export const baseCppSectionSlugs = ["intro-tools", "algorithms"];
 
 export const oopCppSectionSlugs = [
   "basics",
