@@ -13,6 +13,7 @@ export type CourseSection = {
   relatedTaskIds: string[];
 };
 
+import { introToolsContent } from "../content/baseCpp/introTools";
 import { basicsContent } from "../content/course/basics";
 import { oopContent } from "../content/course/oop";
 import { structsContent } from "../content/course/structs";
@@ -27,7 +28,18 @@ import { delegatingConstructorsContent } from "../content/course/delegatingConst
 import { encapsulationContent } from "../content/course/encapsulation";
 import { exceptionsContent } from "../content/course/exceptions";
 
-const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [];
+const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [
+  {
+    slug: "intro-tools",
+    number: "0",
+    title: "Введение и инструменты",
+    description: "Разберёшься, как учиться программированию, зачем нужны IDE, компилятор, проект и файл `main.cpp`, а также как спокойно работать с задачей и ошибками.",
+    topics: ["learning", "IDE", "compiler", "project", "main.cpp", "algorithm"],
+    status: "available",
+    content: introToolsContent,
+    relatedTaskIds: [],
+  },
+];
 
 const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
   {
