@@ -238,9 +238,11 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
             <a className="button button--primary" href={toPath(course?.path ?? "/courses")}>
               Вернуться к курсу
             </a>
-            <a className="button" href={toPath("/tasks")}>
-              Открыть задачи
-            </a>
+            {section.relatedTaskIds.length > 0 && (
+              <a className="button" href={toPath("/tasks")}>
+                Открыть задачи
+              </a>
+            )}
           </div>
         </section>
       </article>
@@ -289,7 +291,9 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
         <p className="eyebrow">Раздел {section.number}</p>
         <h1>{section.title}</h1>
         <div className={styles.headerMeta}>
-          <span className="status-badge status-badge--success">{statusMeta.ready.label}</span>
+          <span className={`status-badge status-badge--${statusMeta[section.status].tone}`}>
+            {statusMeta[section.status].label}
+          </span>
           <span>Урок {readySectionIndex + 1} из {readySections.length} открытых</span>
           {isAuthenticated && isLessonCompleted && (
             <span className="status-badge status-badge--success">Пройдено</span>

@@ -260,7 +260,7 @@
 
 Основа из презентации: глава 4, слайды 56-73. Основные задания: 4.1-4.2 для `for`, 4.3-4.5 для суммы и `while`, 4.6 для `min/max`. Слайд 62 обязательно использовать для `do while`, даже если отдельного задания на него нет.
 
-Файлы контента: `site/src/content/baseCpp/forLoop.ts`, `site/src/content/baseCpp/whileLoop.ts`, `site/src/content/baseCpp/doWhileLoop.ts`.
+Файлы контента: `site/src/content/baseCpp/forLoop.ts` и `site/src/content/baseCpp/doWhileLoop.ts`. Для `while-loop` файл `whileLoop.ts` пока не создан, раздел остаётся в статусе `needs-theory`.
 
 Сложность: средняя для начинающего. Особенно внимательно объяснить сумму, счётчик и начальные значения минимума/максимума.
 

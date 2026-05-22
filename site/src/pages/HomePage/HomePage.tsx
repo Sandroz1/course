@@ -6,7 +6,7 @@ import styles from "./HomePage.module.scss";
 
 const quickLinks = [
   { title: "Курсы C++", text: "База C++ и ООП C++ отдельными маршрутами.", href: "/courses" },
-  { title: "Задачи", text: "Практика по темам курса.", href: "/tasks" },
+  { title: "Задачи ООП", text: "Практика по темам текущего ООП-курса.", href: "/tasks" },
   { title: "Как учиться", text: "Порядок работы и проверка решения.", href: "/guide" },
 ];
 
@@ -25,7 +25,7 @@ export function HomePage() {
             Открыть курсы
           </a>
           <a className="button button--ghost" href={toPath("/tasks")}>
-            Задачи
+            Задачи ООП
           </a>
         </div>
       </header>
