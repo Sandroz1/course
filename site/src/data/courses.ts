@@ -24,6 +24,8 @@ export const baseCppSectionSlugs = [
   "ternary-operator",
   "switch-case",
   "for-loop",
+  "while-loop",
+  "do-while-loop",
 ];
 
 export const oopCppSectionSlugs = [

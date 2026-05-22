@@ -15,6 +15,7 @@ export type CourseSection = {
 
 import { algorithmsContent } from "../content/baseCpp/algorithms";
 import { conditionsContent } from "../content/baseCpp/conditions";
+import { doWhileLoopContent } from "../content/baseCpp/doWhileLoop";
 import { forLoopContent } from "../content/baseCpp/forLoop";
 import { introToolsContent } from "../content/baseCpp/introTools";
 import { switchCaseContent } from "../content/baseCpp/switchCase";
@@ -122,6 +123,26 @@ const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [
     topics: ["for", "loop", "counter", "range", "step"],
     status: "available",
     content: forLoopContent,
+    relatedTaskIds: [],
+  },
+  {
+    slug: "while-loop",
+    number: "9",
+    title: "Цикл while",
+    description: "Цикл с проверкой условия перед выполнением тела. Теория будет добавлена позже.",
+    topics: ["while", "loop", "condition"],
+    status: "needs-theory",
+    content: "",
+    relatedTaskIds: [],
+  },
+  {
+    slug: "do-while-loop",
+    number: "10",
+    title: "Цикл do while",
+    description: "Разберёшь, как работает цикл, который выполняет тело хотя бы один раз, чем он отличается от `while`, где полезен и почему после условия нужна точка с запятой.",
+    topics: ["do while", "loop", "condition", "menu", "repeat"],
+    status: "available",
+    content: doWhileLoopContent,
     relatedTaskIds: [],
   },
 ];
