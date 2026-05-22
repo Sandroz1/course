@@ -15,6 +15,7 @@ export type CourseSection = {
 
 import { algorithmsContent } from "../content/baseCpp/algorithms";
 import { conditionsContent } from "../content/baseCpp/conditions";
+import { forLoopContent } from "../content/baseCpp/forLoop";
 import { introToolsContent } from "../content/baseCpp/introTools";
 import { switchCaseContent } from "../content/baseCpp/switchCase";
 import { ternaryOperatorContent } from "../content/baseCpp/ternaryOperator";
@@ -111,6 +112,16 @@ const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [
     topics: ["switch", "case", "break", "default", "menu"],
     status: "available",
     content: switchCaseContent,
+    relatedTaskIds: [],
+  },
+  {
+    slug: "for-loop",
+    number: "8",
+    title: "Цикл for",
+    description: "Разберёшь, зачем нужны циклы, как устроен `for`, что такое счётчик, условие продолжения и шаг, а также как выводить диапазоны чисел и повторять действия заданное количество раз.",
+    topics: ["for", "loop", "counter", "range", "step"],
+    status: "available",
+    content: forLoopContent,
     relatedTaskIds: [],
   },
 ];
