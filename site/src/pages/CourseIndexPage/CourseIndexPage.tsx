@@ -205,7 +205,7 @@ export function CourseIndexPage({ courseId = "oop-cpp" }: CourseIndexPageProps) 
         <span className={`status-badge status-badge--${courseMeta.tone}`}>{courseMeta.label}</span>
         <p className="lead">
           {isCourseAvailable
-            ? `Иди сверху вниз. Сейчас открыты первые ${readySections.length} уроков, остальные темы появятся после доработки.`
+            ? `Иди по открытым урокам. Сейчас открыто ${readySections.length}, остальные темы появятся после доработки.`
             : "Контент будет добавляться по разделам. Пока курс не открыт для прохождения."}
         </p>
       </header>

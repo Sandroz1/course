@@ -14,6 +14,7 @@ export type CourseSection = {
 };
 
 import { algorithmsContent } from "../content/baseCpp/algorithms";
+import { conditionsContent } from "../content/baseCpp/conditions";
 import { introToolsContent } from "../content/baseCpp/introTools";
 import { basicsContent } from "../content/course/basics";
 import { oopContent } from "../content/course/oop";
@@ -36,7 +37,7 @@ const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [
     title: "Введение и инструменты",
     description: "Разберёшься, как учиться программированию, зачем нужны IDE, компилятор, проект и файл `main.cpp`, а также как спокойно работать с задачей и ошибками.",
     topics: ["learning", "IDE", "compiler", "project", "main.cpp", "algorithm"],
-    status: "available",
+    status: "needs-theory",
     content: introToolsContent,
     relatedTaskIds: [],
   },
@@ -46,8 +47,48 @@ const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [
     title: "Алгоритмы",
     description: "Поймёшь, что такое алгоритм, исполнитель и результат, как записывать шаги обычным текстом, псевдокодом и блок-схемой, а также как находить выбор и повторение до написания кода.",
     topics: ["algorithm", "executor", "pseudocode", "flowchart", "branching", "cycle"],
-    status: "available",
+    status: "needs-theory",
     content: algorithmsContent,
+    relatedTaskIds: [],
+  },
+  {
+    slug: "first-program",
+    number: "2",
+    title: "Первая программа C++",
+    description: "Минимальный каркас программы, вывод в консоль и первые синтаксические правила. Теория будет добавлена позже.",
+    topics: ["main", "iostream", "cout", "return 0"],
+    status: "needs-theory",
+    content: "",
+    relatedTaskIds: [],
+  },
+  {
+    slug: "variables",
+    number: "3",
+    title: "Переменные, типы и операции",
+    description: "Значения, базовые типы данных и простые вычисления. Теория будет добавлена позже.",
+    topics: ["variables", "types", "int", "double", "operators"],
+    status: "needs-theory",
+    content: "",
+    relatedTaskIds: [],
+  },
+  {
+    slug: "input-output",
+    number: "4",
+    title: "Ввод и вывод",
+    description: "Чтение данных с клавиатуры и вывод результата в консоль. Теория будет добавлена позже.",
+    topics: ["cin", "cout", "input", "output"],
+    status: "needs-theory",
+    content: "",
+    relatedTaskIds: [],
+  },
+  {
+    slug: "conditions",
+    number: "5",
+    title: "Условный оператор if/else",
+    description: "Разберёшь, зачем программе условия, как работают `if`, `else` и `else if`, как сравнивать числа и какие ошибки чаще всего встречаются в первых условных конструкциях.",
+    topics: ["if", "else", "else if", "true", "false", "comparison"],
+    status: "available",
+    content: conditionsContent,
     relatedTaskIds: [],
   },
 ];
