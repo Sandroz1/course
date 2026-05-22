@@ -94,6 +94,18 @@ sudo systemctl start uchicode-compose.service
 sudo systemctl status uchicode-compose.service
 ```
 
+## GitHub Actions deploy
+
+Workflow `.github/workflows/deploy-production.yml` запускается вручную или по тегам `v*`.
+
+В GitHub нужно добавить secrets для environment `production` или repository secrets:
+
+- `PROD_HOST` — IP или DNS VPS, например `203.0.113.10`;
+- `SSH_PRIVATE_KEY` — приватный ключ, которым GitHub Actions входит на VPS как `deploy`;
+- `SSH_KNOWN_HOSTS` — known_hosts для VPS, например результат `ssh-keyscan -H <PROD_HOST>`.
+
+На VPS пользователь `deploy` должен иметь доступ к `/opt/uchicode/app`, а репозиторий должен быть уже клонирован туда.
+
 ## Backup
 
 ```bash
