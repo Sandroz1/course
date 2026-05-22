@@ -16,6 +16,7 @@ export type CourseSection = {
 import { algorithmsContent } from "../content/baseCpp/algorithms";
 import { conditionsContent } from "../content/baseCpp/conditions";
 import { introToolsContent } from "../content/baseCpp/introTools";
+import { ternaryOperatorContent } from "../content/baseCpp/ternaryOperator";
 import { basicsContent } from "../content/course/basics";
 import { oopContent } from "../content/course/oop";
 import { structsContent } from "../content/course/structs";
@@ -89,6 +90,16 @@ const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [
     topics: ["if", "else", "else if", "true", "false", "comparison"],
     status: "available",
     content: conditionsContent,
+    relatedTaskIds: [],
+  },
+  {
+    slug: "ternary-operator",
+    number: "6",
+    title: "Тернарный оператор",
+    description: "Поймёшь, как коротко выбрать одно из двух значений через `условие ? значение_если_истина : значение_если_ложь`, когда такая запись уместна и когда лучше оставить обычный `if/else`.",
+    topics: ["ternary operator", "condition", "value selection", "if else"],
+    status: "available",
+    content: ternaryOperatorContent,
     relatedTaskIds: [],
   },
 ];

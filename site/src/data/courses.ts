@@ -21,6 +21,7 @@ export const baseCppSectionSlugs = [
   "variables",
   "input-output",
   "conditions",
+  "ternary-operator",
 ];
 
 export const oopCppSectionSlugs = [
