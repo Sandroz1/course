@@ -16,6 +16,7 @@ export type CourseSection = {
 import { algorithmsContent } from "../content/baseCpp/algorithms";
 import { conditionsContent } from "../content/baseCpp/conditions";
 import { introToolsContent } from "../content/baseCpp/introTools";
+import { switchCaseContent } from "../content/baseCpp/switchCase";
 import { ternaryOperatorContent } from "../content/baseCpp/ternaryOperator";
 import { basicsContent } from "../content/course/basics";
 import { oopContent } from "../content/course/oop";
@@ -100,6 +101,16 @@ const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [
     topics: ["ternary operator", "condition", "value selection", "if else"],
     status: "available",
     content: ternaryOperatorContent,
+    relatedTaskIds: [],
+  },
+  {
+    slug: "switch-case",
+    number: "7",
+    title: "switch/case",
+    description: "Разберёшь, как выбирать один вариант из нескольких конкретных значений через `switch`, `case`, `break` и `default`, и когда такая запись удобнее цепочки `if/else`.",
+    topics: ["switch", "case", "break", "default", "menu"],
+    status: "available",
+    content: switchCaseContent,
     relatedTaskIds: [],
   },
 ];

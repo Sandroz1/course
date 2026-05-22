@@ -22,6 +22,7 @@ export const baseCppSectionSlugs = [
   "input-output",
   "conditions",
   "ternary-operator",
+  "switch-case",
 ];
 
 export const oopCppSectionSlugs = [
