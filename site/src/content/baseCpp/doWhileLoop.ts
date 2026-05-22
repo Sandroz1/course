@@ -69,7 +69,7 @@ export const doWhileLoopContent = [
   'char answer;',
   '',
   'do {',
-  '    std::cout << "Hello underworld!\\n";',
+  '    std::cout << "Hello!\\n";',
   '    std::cout << "Repeat? y/n: ";',
   '    std::cin >> answer;',
   '} while (answer == \'y\');',

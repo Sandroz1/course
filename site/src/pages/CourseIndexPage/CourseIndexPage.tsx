@@ -49,7 +49,7 @@ function getCourseSectionDisplayStatus(
     const meta = statusMeta[section.status];
 
     return {
-      actionLabel: "Скоро",
+      actionLabel: section.status === "needs-theory" ? "На доработке" : "Скоро",
       isReady,
       label: meta.label,
       tone: meta.tone,

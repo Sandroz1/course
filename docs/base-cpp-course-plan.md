@@ -4,14 +4,16 @@
 
 ## Что уже есть в проекте
 
-- Тип `CourseId` уже поддерживает два курса: `base-cpp` и `oop-cpp`.
-- В `site/src/data/courses.ts` курс "База C++" уже есть как `status: "soon"` и ведёт на `/courses/base-cpp`.
-- Страница `/courses/base-cpp` открывает shell отдельного курса без fake-уроков и без задач.
-- `site/src/data/courseSections.ts` фактически содержит только разделы курса "ООП C++": все секции мапятся в `courseId: "oop-cpp"`.
-- `site/src/data/tasks.ts` сейчас создаёт задачи с `courseId: "oop-cpp"`.
-- `site/src/content/course` сейчас используется для контента ООП-курса, включая раздел 0 "Подготовка".
+- Тип `CourseId` поддерживает два курса: `base-cpp` и `oop-cpp`.
+- В `site/src/data/courses.ts` курс "База C++" добавлен как отдельный курс и ведёт на `/courses/base-cpp`.
+- Страница `/courses/base-cpp` показывает отдельный список разделов курса.
+- `site/src/data/courseSections.ts` содержит отдельные секции для `base-cpp` и `oop-cpp`; ООП-разделы не смешиваются с базовым курсом.
+- Ранние разделы `base-cpp` до условий помечены как `needs-theory`.
+- Сейчас доступны разделы: `conditions`, `ternary-operator`, `switch-case`, `for-loop`, `do-while-loop`. Раздел `while-loop` пока добавлен как `needs-theory`.
+- `site/src/data/tasks.ts` сейчас содержит задачи ООП-курса; практические задания `base-cpp` находятся внутри учебных разделов.
+- `site/src/content/baseCpp` используется для контента "Базы C++", а `site/src/content/course` - для ООП-курса.
 
-Вывод: frontend-shell для `base-cpp` добавлен как отдельный курс, но учебные разделы и задачи пока не созданы. Для "База C++" нужно наполнять отдельный набор секций и отдельный каталог контента, например `site/src/content/baseCpp`, не смешивая его с текущим ООП-контентом.
+Вывод: `base-cpp` уже подключён как отдельный курс с частично готовыми разделами. Дальше нужно наполнять недостающие темы постепенно, не смешивая их с текущим ООП-контентом.
 
 ## Источник и границы
 
@@ -47,16 +49,20 @@
 4. `variables.ts`
 5. `inputOutput.ts`
 6. `conditions.ts`
-7. `loops.ts`
-8. `functions.ts`
-9. `staticArrays.ts`
-10. `multidimensionalArrays.ts`
-11. `pointersReferences.ts`
-12. `dynamicArrays.ts`
-13. `recursionOverloadingTemplates.ts`
-14. `vectorBasics.ts`
-15. `strings.ts`
-16. `files.ts`
+7. `ternaryOperator.ts`
+8. `switchCase.ts`
+9. `forLoop.ts`
+10. `whileLoop.ts`
+11. `doWhileLoop.ts`
+12. `functions.ts`
+13. `staticArrays.ts`
+14. `multidimensionalArrays.ts`
+15. `pointersReferences.ts`
+16. `dynamicArrays.ts`
+17. `recursionOverloadingTemplates.ts`
+18. `vectorBasics.ts`
+19. `strings.ts`
+20. `files.ts`
 
 ## Программа курса
 
@@ -197,9 +203,11 @@
 
 Переход к следующему разделу: после ввода данных программа должна выбирать разные действия по условиям.
 
-### 5. Условия
+### 5-7. Условия
 
 Цель: научить выбирать ветку выполнения по условию.
+
+В текущей реализации этот блок разбит на три раздела: `conditions`, `ternary-operator`, `switch-case`.
 
 Темы:
 - `if`, `else if`, `else`;
@@ -219,15 +227,17 @@
 
 Основа из презентации: глава 3, слайды 47-55. Основные задания: 3.1 для сравнения, 3.2 для модулей без функций и библиотек, 3.3 для меню через условия, 3.4 для меню через `switch case`.
 
-Предполагаемый файл контента: `site/src/content/baseCpp/conditions.ts`.
+Файлы контента: `site/src/content/baseCpp/conditions.ts`, `site/src/content/baseCpp/ternaryOperator.ts`, `site/src/content/baseCpp/switchCase.ts`.
 
 Сложность: базовая с умеренным усложнением на меню. Не добавлять исключения и сложную обработку некорректного ввода.
 
 Переход к следующему разделу: условия позволяют выбрать действие один раз, а циклы позволят повторять действия.
 
-### 6. Циклы
+### 8-10. Циклы
 
 Цель: научить повторять действия и накапливать результат.
+
+В текущей реализации этот блок разбит на разделы `for-loop`, `while-loop`, `do-while-loop`. Раздел `while-loop` пока помечен как `needs-theory`.
 
 Темы:
 - общий смысл цикла;
@@ -250,7 +260,7 @@
 
 Основа из презентации: глава 4, слайды 56-73. Основные задания: 4.1-4.2 для `for`, 4.3-4.5 для суммы и `while`, 4.6 для `min/max`. Слайд 62 обязательно использовать для `do while`, даже если отдельного задания на него нет.
 
-Предполагаемый файл контента: `site/src/content/baseCpp/loops.ts`.
+Файлы контента: `site/src/content/baseCpp/forLoop.ts`, `site/src/content/baseCpp/whileLoop.ts`, `site/src/content/baseCpp/doWhileLoop.ts`.
 
 Сложность: средняя для начинающего. Особенно внимательно объяснить сумму, счётчик и начальные значения минимума/максимума.
 
