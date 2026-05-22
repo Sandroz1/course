@@ -12,7 +12,7 @@ Frontend находится в `site/`.
 - учебные страницы курса;
 - страницы задач;
 - AI Assistant;
-- API-layer через `VITE_API_BASE_URL`;
+- API-layer через same-origin `/api` с опциональным `VITE_API_BASE_URL`;
 - frontend auth pages;
 - подключение progress API;
 - production base в Vite равен `/`.
@@ -20,7 +20,7 @@ Frontend находится в `site/`.
 Production frontend должен обращаться к:
 
 ```text
-https://api.uchicode.ru
+/api
 ```
 
 ### Backend
@@ -87,14 +87,14 @@ Production backend запускается через `gunicorn`.
 
 - `uchicode.ru` отдаёт frontend SPA;
 - `www.uchicode.ru` редиректится на `uchicode.ru`;
-- `api.uchicode.ru` проксирует backend.
+- `/api/` проксирует backend через внутренний Docker nginx.
 
-Nginx настроен на HTTPS и ожидает Let's Encrypt сертификат в `/etc/letsencrypt/live/uchicode.ru/`.
+TLS завершается на host Nginx. Docker nginx работает внутри Docker-схемы без TLS.
 
 ### Domain/VPS
 
 - Домен: `uchicode.ru`.
-- API: `api.uchicode.ru`.
+- API: same-origin `/api`.
 - VPS: Play2Go, Ubuntu 24.04.
 - VPS IP: `2.26.99.141`.
 
@@ -107,7 +107,7 @@ Nginx настроен на HTTPS и ожидает Let's Encrypt сертифи
 - Добавлены cache/throttling настройки под Redis.
 - Добавлен backend AI proxy.
 - AI закрыт для гостей и пользователей без подтверждённого телефона.
-- Frontend переведён на Django API через `VITE_API_BASE_URL`.
+- Frontend переведён на Django API через same-origin `/api`.
 - Добавлен frontend auth scaffold.
 - Добавлен backend progress API.
 - Frontend подключён к progress API для уроков, задач и профиля.

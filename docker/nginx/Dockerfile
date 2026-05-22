@@ -2,7 +2,7 @@ FROM node:22-alpine AS frontend-build
 
 WORKDIR /app
 
-ARG VITE_API_BASE_URL=https://api.uchicode.ru
+ARG VITE_API_BASE_URL=/api
 ENV VITE_API_BASE_URL=$VITE_API_BASE_URL
 
 COPY site/package*.json ./

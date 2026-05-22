@@ -1,0 +1,60 @@
+name: Deploy production
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  compose-config:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare example production env
+        run: cp .env.production.example .env.production
+
+      - name: Check Docker Compose config
+        run: docker compose -f docker-compose.prod.yml config
+
+  deploy:
+    needs: compose-config
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/id_ed25519
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 700 ~/.ssh
+          chmod 600 ~/.ssh/id_ed25519 ~/.ssh/known_hosts
+
+      - name: Deploy selected ref
+        env:
+          PROD_HOST: ${{ secrets.PROD_HOST }}
+          DEPLOY_REF: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          printf -v DEPLOY_REF_Q '%q' "$DEPLOY_REF"
+          ssh deploy@"$PROD_HOST" "DEPLOY_REF=$DEPLOY_REF_Q bash -s" <<'REMOTE'
+          set -euo pipefail
+          cd /opt/uchicode/app
+          git fetch --all --tags
+          if git rev-parse --verify --quiet "refs/tags/$DEPLOY_REF" >/dev/null; then
+            git checkout --force "refs/tags/$DEPLOY_REF"
+          else
+            git checkout --force "$DEPLOY_REF"
+            git reset --hard "origin/$DEPLOY_REF"
+          fi
+          docker compose -f docker-compose.prod.yml build --pull
+          docker compose -f docker-compose.prod.yml up -d --remove-orphans
+          curl -fsS http://127.0.0.1:8080/nginx-health
+          curl -fsS http://127.0.0.1:8080/api/health
+          REMOTE

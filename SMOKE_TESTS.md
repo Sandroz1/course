@@ -5,7 +5,7 @@
 ```bash
 curl -I https://uchicode.ru
 curl -I https://www.uchicode.ru
-curl -fsS https://api.uchicode.ru/api/health/
+curl -fsS https://uchicode.ru/api/health
 ```
 
 Ожидаемо:
@@ -30,11 +30,12 @@ curl -fsS https://api.uchicode.ru/api/health/
 
 - `DEBUG=False` в production.
 - `DJANGO_SECRET_KEY` не равен dev-значению.
-- `DJANGO_ALLOWED_HOSTS`, `DJANGO_CORS_ALLOWED_ORIGINS` и `DJANGO_CSRF_TRUSTED_ORIGINS` соответствуют публичным доменам.
+- `DJANGO_ALLOWED_HOSTS` и `DJANGO_CSRF_TRUSTED_ORIGINS` соответствуют публичным доменам.
+- `DJANGO_CORS_ALLOWED_ORIGINS` пустой, если frontend и API работают same-origin через `/api`.
 - `DATABASE_URL`, `REDIS_URL`, `QWEN_API_KEY` и SMS credentials заданы только в серверных env-файлах.
 - В `.env.production` нет placeholder values: `change-me`, `changeme`, `password`, `secret`, `example`.
 - `AI_GLOBAL_DAILY_REQUEST_LIMIT` больше `0`.
-- `site/.env.production` или build args frontend указывают на публичный API origin, не на localhost.
+- frontend production build использует `/api`, не localhost и не отдельный API-поддомен.
 - Реальные `.env` файлы не staged в git.
 - Python-зависимости backend проверены перед deploy:
   `python -m pip_audit -r backend/requirements.txt`.

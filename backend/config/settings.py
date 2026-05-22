@@ -75,13 +75,15 @@ LOCAL_FRONTEND_ORIGINS = "http://localhost:5173,http://127.0.0.1:5173"
 if not DEBUG:
     for setting_name, values in {
         "DJANGO_ALLOWED_HOSTS": ALLOWED_HOSTS,
-        "DJANGO_CORS_ALLOWED_ORIGINS": env_list("DJANGO_CORS_ALLOWED_ORIGINS"),
         "DJANGO_CSRF_TRUSTED_ORIGINS": env_list("DJANGO_CSRF_TRUSTED_ORIGINS"),
     }.items():
         if not values:
             raise ImproperlyConfigured(f"{setting_name} is required when DJANGO_DEBUG=False.")
         if "*" in values:
             raise ImproperlyConfigured(f"{setting_name} must not contain '*' in production.")
+
+    if "*" in env_list("DJANGO_CORS_ALLOWED_ORIGINS"):
+        raise ImproperlyConfigured("DJANGO_CORS_ALLOWED_ORIGINS must not contain '*' in production.")
 
 
 INSTALLED_APPS = [
@@ -227,8 +229,8 @@ if not DEBUG:
         raise ImproperlyConfigured("POSTGRES_PASSWORD must be changed for production.")
 
 SECURE_SSL_REDIRECT = env_bool("DJANGO_SECURE_SSL_REDIRECT", False)
-SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", False)
-CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", False)
+SESSION_COOKIE_SECURE = env_bool("DJANGO_SESSION_COOKIE_SECURE", not DEBUG)
+CSRF_COOKIE_SECURE = env_bool("DJANGO_CSRF_COOKIE_SECURE", not DEBUG)
 SESSION_COOKIE_HTTPONLY = True
 CSRF_COOKIE_HTTPONLY = env_bool("DJANGO_CSRF_COOKIE_HTTPONLY", False)
 AUTH_REFRESH_COOKIE_NAME = env("AUTH_REFRESH_COOKIE_NAME") or "uchicode_refresh"
@@ -241,7 +243,7 @@ SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS
 SECURE_HSTS_PRELOAD = env_bool("DJANGO_SECURE_HSTS_PRELOAD", False)
 X_FRAME_OPTIONS = "DENY"
 
-if env_bool("DJANGO_SECURE_SSL", False):
+if not DEBUG or env_bool("DJANGO_SECURE_SSL", False):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 REST_FRAMEWORK = {

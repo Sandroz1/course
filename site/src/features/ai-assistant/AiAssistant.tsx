@@ -349,7 +349,7 @@ function AiAssistantPanel() {
         }
 
         if (!isApiConfigured()) {
-            setErrorText("Не задан VITE_API_BASE_URL в site/.env.local");
+            setErrorText("API временно недоступен.");
             return;
         }
 

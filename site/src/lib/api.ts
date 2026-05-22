@@ -1,6 +1,8 @@
 import type { AiUsage, ApiErrorPayload, ApiRequestOptions } from "../types/api";
 
-const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim();
+const DEFAULT_API_BASE_URL = "/api";
+const API_BASE_URL =
+  (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() || DEFAULT_API_BASE_URL;
 export const ACCESS_TOKEN_STORAGE_KEY = "uchicodeAccessToken";
 const LEGACY_REFRESH_TOKEN_STORAGE_KEY = "uchicodeRefreshToken";
 export const AUTH_CLEARED_EVENT = "uchicode-auth-cleared";
@@ -14,6 +16,7 @@ const AUTH_REFRESH_DISABLED_PATHS = new Set([
 ]);
 const AUTH_TOKENLESS_PATHS = new Set(AUTH_REFRESH_DISABLED_PATHS);
 const ACCESS_REFRESH_SKEW_SECONDS = 30;
+const LOCAL_API_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "[::1]"]);
 
 let refreshAccessPromise: Promise<string> | null = null;
 let memoryAccessToken: string | null = null;
@@ -39,14 +42,28 @@ export function isApiConfigured() {
 }
 
 function buildApiUrl(path: string) {
-  if (!API_BASE_URL) {
-    throw new ApiError(0, "API не настроен. Укажи VITE_API_BASE_URL в site/.env.local.");
-  }
-
-  const normalizedBase = API_BASE_URL.replace(/\/+$/, "");
+  const normalizedBase = getApiBaseUrl();
   const normalizedPath = path.startsWith("/") ? path : `/${path}`;
 
   return `${normalizedBase}${normalizedPath}`;
+}
+
+function getApiBaseUrl() {
+  const normalizedBase = API_BASE_URL?.replace(/\/+$/, "") ?? "";
+
+  try {
+    const url = new URL(normalizedBase);
+    const browserHostname = window.location.hostname;
+
+    if (LOCAL_API_HOSTS.has(url.hostname) && LOCAL_API_HOSTS.has(browserHostname)) {
+      url.hostname = browserHostname;
+      return url.toString().replace(/\/+$/, "");
+    }
+  } catch {
+    // Keep the configured base URL if URL parsing or browser globals are unavailable.
+  }
+
+  return normalizedBase;
 }
 
 function normalizePath(path: string) {

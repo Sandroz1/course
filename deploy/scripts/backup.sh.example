@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+APP_DIR="${APP_DIR:-/opt/uchicode/app}"
+COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.prod.yml}"
+ENV_FILE="${ENV_FILE:-.env.production}"
+BACKUP_ROOT="${BACKUP_ROOT:-$APP_DIR/backups}"
+STAMP="$(date -u +%Y%m%dT%H%M%SZ)"
+BACKUP_DIR="$BACKUP_ROOT/$STAMP"
+
+mkdir -p "$BACKUP_DIR"
+
+cd "$APP_DIR"
+
+if [ -f "$ENV_FILE" ]; then
+  set -a
+  # shellcheck disable=SC1090
+  . "$ENV_FILE"
+  set +a
+fi
+
+git rev-parse HEAD > "$BACKUP_DIR/git-sha.txt"
+git describe --tags --always --dirty > "$BACKUP_DIR/git-ref.txt" || true
+
+docker compose -f "$COMPOSE_FILE" run --rm --no-deps \
+  --entrypoint sh \
+  -v "$BACKUP_DIR:/backup" \
+  backend \
+  -c 'tar -czf /backup/media.tar.gz -C /app media && tar -czf /backup/staticfiles.tar.gz -C /app staticfiles'
+
+if docker compose -f "$COMPOSE_FILE" ps --services | grep -qx postgres; then
+  : "${POSTGRES_USER:?POSTGRES_USER is required for pg_dump}"
+  : "${POSTGRES_DB:?POSTGRES_DB is required for pg_dump}"
+  docker compose -f "$COMPOSE_FILE" exec -T postgres \
+    pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" > "$BACKUP_DIR/postgres.sql"
+fi
+
+# SQLite is not the production database in docker-compose.prod.yml.
+# If a future deployment uses SQLite, stop the app or ensure a consistent snapshot,
+# then copy the exact DB file or volume path used by that deployment, for example:
+# docker compose -f "$COMPOSE_FILE" run --rm --no-deps -v "$BACKUP_DIR:/backup" backend \
+#   sh -c 'cp /app/db.sqlite3 /backup/db.sqlite3'
+
+echo "Backup written to $BACKUP_DIR"
