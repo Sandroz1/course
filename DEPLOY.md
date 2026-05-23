@@ -1,75 +1,68 @@
 # DEPLOY
 
-## Production deploy
+Короткий entrypoint для production-деплоя. Полные инструкции находятся в [deploy/docs/README.md](deploy/docs/README.md).
+
+## Важные правила
+
+- `.env.production` создаётся и хранится только на VPS.
+- Не пушить tag `v*`, если не нужен запуск GitHub Actions deploy.
+- После frontend-изменений пересобирать `nginx` image, потому что frontend собирается внутри `docker/nginx/Dockerfile`.
+- Не использовать `git add .` перед release, если в рабочем дереве есть env, `site/dist`, `node_modules`, `.venv`, `.vs`, `db.sqlite3` или backup-файлы.
+
+## Ручной deploy текущего main на VPS
 
 ```bash
-git pull
-cp .env.production.example .env.production
-nano .env.production
-```
-
-Обязательные значения:
-
-- `DJANGO_SECRET_KEY`
-- `DATABASE_URL`
-- `REDIS_URL`
-- `QWEN_API_KEY`
-- `SMS_PROVIDER`
-- `SMS_API_KEY` или `SMS_LOGIN`/`SMS_PASSWORD`
-- `POSTGRES_PASSWORD`
-
-Перед запуском production проверь, что в `.env.production` не осталось placeholder values:
-
-- `change-me`
-- `changeme`
-- `password`
-- `secret`
-- `example`
-
-Backend дополнительно падает при `DEBUG=False`, если `DATABASE_URL` содержит placeholder, `POSTGRES_PASSWORD` оставлен шаблонным или `AI_GLOBAL_DAILY_REQUEST_LIMIT <= 0`.
-
-Сначала получи SSL по `DEPLOY_SSL.md`, затем запускай:
-
-```bash
-docker compose -f docker-compose.prod.yml build
-docker compose -f docker-compose.prod.yml up -d
+cd /opt/uchicode/app
+git fetch origin main
+git checkout origin/main
+docker compose -f docker-compose.prod.yml build --pull
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
 docker compose -f docker-compose.prod.yml ps
+curl -fsS https://uchicode.ru/nginx-health
+curl -fsS https://uchicode.ru/api/health
 ```
 
-Backend container сам запускает `migrate` и `collectstatic` перед `gunicorn`.
-
-## Перед deploy
-
-Проверить Python-зависимости backend на известные уязвимости без добавления `pip-audit` в production runtime:
+Если нужно закрепиться на конкретном commit:
 
 ```bash
-python -m pip install pip-audit
-python -m pip_audit -r backend/requirements.txt
+git checkout 1cfbdb5
 ```
 
-Если audit найдёт уязвимости, не обновлять зависимости автоматически на production. Зафиксировать пакеты, подобрать минимальные безопасные версии и проверить upgrade отдельной задачей.
+## Ручной deploy по tag
 
-Логи:
+Перед использованием tag убедиться, что он опубликован:
 
 ```bash
-docker compose -f docker-compose.prod.yml logs -f backend
-docker compose -f docker-compose.prod.yml logs -f nginx
+git ls-remote --tags origin v0.1.2
 ```
 
-## Перед обновлением production
-
-- Проверить текущие контейнеры: `docker compose -f docker-compose.prod.yml ps`.
-- Проверить свободное место на диске перед сборкой новых images.
-- Создать Postgres backup перед рискованными изменениями.
-- Сделать backup media volume, если используются пользовательские файлы.
-- Не добавлять `.env.production` в git и хранить защищённую копию отдельно.
-
-Пример Postgres backup:
+Если tag существует:
 
 ```bash
-mkdir -p backups
-docker compose -f docker-compose.prod.yml exec -T postgres \
-  pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > backups/uchicode-$(date +%F).sql
+cd /opt/uchicode/app
+git fetch --all --tags
+git checkout v0.1.2
+docker compose -f docker-compose.prod.yml build --pull
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
+curl -fsS https://uchicode.ru/api/health
 ```
 
-После deploy выполнить `SMOKE_TESTS.md` и проверить backend/nginx logs.
+## Rollback
+
+```bash
+cd /opt/uchicode/app
+git fetch --all --tags
+git checkout v0.1.1
+docker compose -f docker-compose.prod.yml build
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
+curl -fsS https://uchicode.ru/api/health
+```
+
+## Где смотреть детали
+
+- Первый деплой: [deploy/docs/02_DEPLOY_FROM_ZERO.md](deploy/docs/02_DEPLOY_FROM_ZERO.md).
+- Обновление и rollback: [deploy/docs/03_UPDATE_ROLLBACK_HOTFIX.md](deploy/docs/03_UPDATE_ROLLBACK_HOTFIX.md).
+- Troubleshooting: [deploy/docs/04_TROUBLESHOOTING.md](deploy/docs/04_TROUBLESHOOTING.md).
+- Security: [deploy/docs/05_SECURITY_SECRETS_ACCESS.md](deploy/docs/05_SECURITY_SECRETS_ACCESS.md).
+- Backup: [deploy/docs/06_BACKUP_RESTORE.md](deploy/docs/06_BACKUP_RESTORE.md).
+- Post-deploy checklist: [deploy/docs/09_POST_DEPLOY_CHECKLIST.md](deploy/docs/09_POST_DEPLOY_CHECKLIST.md).

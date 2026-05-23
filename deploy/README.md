@@ -1,28 +1,38 @@
-# Production Deploy Baseline
+# Production Deploy
 
-Цель: host Nginx на VPS принимает `80/443`, держит HTTPS и проксирует трафик на Docker nginx, опубликованный только на `127.0.0.1:8080`.
+Короткий обзор production-схемы. Полные runbook-файлы лежат в [deploy/docs](docs).
 
-## DNS в REG.RU
+## Схема
 
-- `A @ -> IPv4 VPS`
-- `CNAME www -> uchicode.ru.`
-
-Подождать обновления DNS и проверить `dig uchicode.ru` / `dig www.uchicode.ru`.
-
-## Подготовка VPS
-
-Установить Docker, Docker Compose plugin, nginx, certbot, ufw и fail2ban.
-
-Минимальный набор:
-
-```bash
-sudo apt update
-sudo apt install -y ca-certificates curl gnupg nginx certbot python3-certbot-nginx ufw fail2ban
+```text
+Internet
+  -> host Nginx 80/443 + Let's Encrypt
+  -> http://127.0.0.1:8080
+  -> Docker nginx
+  -> backend:8000
+  -> PostgreSQL / Redis
 ```
 
-Docker ставить по официальной инструкции Docker для текущего Ubuntu/Debian образа VPS.
+Docker наружу публикует только:
 
-## Первый запуск вручную
+```text
+127.0.0.1:8080:80
+```
+
+Backend, PostgreSQL и Redis наружу не публикуются.
+
+## Главные файлы
+
+- `docker-compose.prod.yml` — production compose.
+- `docker/nginx/Dockerfile` — multi-stage frontend build + nginx image.
+- `docker/nginx/nginx.conf` — контейнерный nginx без TLS.
+- `docker/nginx/conf.d/uchicode.conf` — внутренний app-nginx.
+- `deploy/nginx/uchicode.ru.conf.example` — host Nginx example для VPS.
+- `deploy/systemd/uchicode-compose.service.example` — systemd unit.
+- `deploy/scripts/backup.sh.example` — backup example.
+- `deploy/docs/README.md` — полный набор инструкций.
+
+## Первый запуск
 
 ```bash
 sudo mkdir -p /opt/uchicode
@@ -31,111 +41,86 @@ cd /opt/uchicode
 git clone https://github.com/Sandroz1/course.git app
 cd /opt/uchicode/app
 cp .env.production.example .env.production
+chmod 600 .env.production
 nano .env.production
 ```
 
-В `.env.production` заменить все placeholder-значения: `DJANGO_SECRET_KEY`, `DATABASE_URL`, `POSTGRES_PASSWORD`, ключи AI/SMS при использовании.
+В `.env.production` заменить placeholder values:
+
+```text
+DJANGO_SECRET_KEY
+POSTGRES_PASSWORD
+DATABASE_URL
+QWEN_API_KEY, если AI нужен
+SMS_* переменные, если SMS нужен
+```
 
 Проверка и запуск:
 
 ```bash
 docker compose -f docker-compose.prod.yml config
 docker compose -f docker-compose.prod.yml build --pull
-docker compose -f docker-compose.prod.yml up -d
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
+docker compose -f docker-compose.prod.yml ps
 curl -fsS http://127.0.0.1:8080/nginx-health
 curl -fsS http://127.0.0.1:8080/api/health
 ```
 
-Docker nginx должен слушать только loopback:
-
-```bash
-ss -ltnp | grep 8080
-```
-
-Ожидаемо: `127.0.0.1:8080`, не `0.0.0.0:8080`.
-
-## Host Nginx
-
-Скопировать пример:
+## Host Nginx и HTTPS
 
 ```bash
 sudo cp deploy/nginx/uchicode.ru.conf.example /etc/nginx/sites-available/uchicode.ru
-sudo ln -s /etc/nginx/sites-available/uchicode.ru /etc/nginx/sites-enabled/uchicode.ru
-sudo mkdir -p /var/www/certbot
+sudo ln -sf /etc/nginx/sites-available/uchicode.ru /etc/nginx/sites-enabled/uchicode.ru
 sudo nginx -t
 sudo systemctl reload nginx
-```
-
-До выпуска сертификата активный `80` server block проксирует на Docker nginx и отдаёт ACME webroot. После выпуска сертификата раскомментировать `443` server blocks из example-конфига.
-
-## Let's Encrypt
-
-```bash
-sudo certbot certonly --webroot -w /var/www/certbot -d uchicode.ru -d www.uchicode.ru
+sudo certbot --nginx -d uchicode.ru -d www.uchicode.ru
 sudo certbot renew --dry-run
-sudo nginx -t
-sudo systemctl reload nginx
 ```
 
-Проверить:
+Проверка:
 
 ```bash
-curl -fsS https://uchicode.ru
+curl -fsS https://uchicode.ru/nginx-health
 curl -fsS https://uchicode.ru/api/health
 ```
 
-## Systemd unit
+## Update
+
+Текущий безопасный путь — ручной deploy по `main` или конкретному commit:
 
 ```bash
-sudo cp deploy/systemd/uchicode-compose.service.example /etc/systemd/system/uchicode-compose.service
-sudo systemctl daemon-reload
-sudo systemctl enable uchicode-compose.service
-sudo systemctl start uchicode-compose.service
-sudo systemctl status uchicode-compose.service
+cd /opt/uchicode/app
+git fetch origin main
+git checkout origin/main
+docker compose -f docker-compose.prod.yml build --pull
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
+curl -fsS https://uchicode.ru/api/health
 ```
 
-## GitHub Actions deploy
-
-Workflow `.github/workflows/deploy-production.yml` запускается вручную или по тегам `v*`.
-
-В GitHub нужно добавить secrets для environment `production` или repository secrets:
-
-- `PROD_HOST` — IP или DNS VPS, например `203.0.113.10`;
-- `SSH_PRIVATE_KEY` — приватный ключ, которым GitHub Actions входит на VPS как `deploy`;
-- `SSH_KNOWN_HOSTS` — known_hosts для VPS, например результат `ssh-keyscan -H <PROD_HOST>`.
-
-На VPS пользователь `deploy` должен иметь доступ к `/opt/uchicode/app`, а репозиторий должен быть уже клонирован туда.
-
-## Backup
+Если нужен release tag, сначала проверить workflow:
 
 ```bash
-cp deploy/scripts/backup.sh.example deploy/scripts/backup.sh
-chmod +x deploy/scripts/backup.sh
-APP_DIR=/opt/uchicode/app deploy/scripts/backup.sh
+cat .github/workflows/deploy-production.yml
 ```
 
-Скрипт не удаляет старые backup-файлы. Политику хранения нужно выбрать отдельно.
+В текущем проекте push tag `v*` может запускать GitHub Actions deploy.
 
 ## Rollback
 
 ```bash
 cd /opt/uchicode/app
 git fetch --all --tags
-git checkout <previous-tag>
-docker compose -f docker-compose.prod.yml build --pull
+git checkout v0.1.1
+docker compose -f docker-compose.prod.yml build
 docker compose -f docker-compose.prod.yml up -d --remove-orphans
-curl -fsS http://127.0.0.1:8080/nginx-health
-curl -fsS http://127.0.0.1:8080/api/health
+curl -fsS https://uchicode.ru/api/health
 ```
 
-## PostgreSQL migration — отдельный этап
+## Где детали
 
-`docker-compose.prod.yml` уже использует PostgreSQL service. Если нужно переносить данные из SQLite или другого окружения, это отдельная операция:
-
-1. Сделать backup текущей БД и media.
-2. Подготовить `DATABASE_URL` для PostgreSQL.
-3. Выполнить миграции на пустой PostgreSQL.
-4. Перенести данные через `dumpdata`/`loaddata` или отдельный проверенный dump.
-5. Проверить авторизацию, прогресс, AI usage и админку.
-
-Не смешивать миграцию данных с обычным deploy.
+- [docs/02_DEPLOY_FROM_ZERO.md](docs/02_DEPLOY_FROM_ZERO.md) — установка VPS с нуля.
+- [docs/03_UPDATE_ROLLBACK_HOTFIX.md](docs/03_UPDATE_ROLLBACK_HOTFIX.md) — update, rollback, hotfix.
+- [docs/04_TROUBLESHOOTING.md](docs/04_TROUBLESHOOTING.md) — типовые проблемы.
+- [docs/05_SECURITY_SECRETS_ACCESS.md](docs/05_SECURITY_SECRETS_ACCESS.md) — безопасность и доступы.
+- [docs/06_BACKUP_RESTORE.md](docs/06_BACKUP_RESTORE.md) — backup и restore.
+- [docs/09_POST_DEPLOY_CHECKLIST.md](docs/09_POST_DEPLOY_CHECKLIST.md) — post-deploy checklist.

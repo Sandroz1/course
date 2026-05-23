@@ -49,7 +49,9 @@ curl http://127.0.0.1:8000/api/health/
 
 ```bash
 cd site
+npm run typecheck
 npm run build
+npm run lint
 ```
 
 `dist/` создаётся локально, но не должен попадать в Git.
@@ -124,7 +126,7 @@ Production:
 cp .env.production.example .env.production
 ```
 
-После копирования заполнить значения локально. Реальные env-файлы не коммитить.
+После копирования заполнить значения локально или на VPS. Реальные env-файлы не коммитить.
 
 ## Что делать, если PostgreSQL/Redis не запущены локально
 
@@ -149,7 +151,9 @@ git status
 
 ```bash
 cd site
+npm run typecheck
 npm run build
+npm run lint
 ```
 
 ```powershell
@@ -163,6 +167,14 @@ docker compose -f docker-compose.prod.yml config
 ```
 
 Production compose требует заполненный `.env.production`. Nginx HTTPS-конфиг ожидает сертификаты Let's Encrypt в `/etc/letsencrypt/live/uchicode.ru/`.
+
+Если проверяешь production frontend после API-правок, убедись, что нет двойного `/api`:
+
+```bash
+rg "/api/api" site/src site/dist
+```
+
+Ожидаемо: пустой вывод.
 
 Поиск старых production-следов. Команда ниже намеренно содержит legacy-строки, чтобы их можно было быстро найти перед коммитом:
 
