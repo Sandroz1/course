@@ -1,5 +1,6 @@
 import { useAuth } from "../../../context/AuthContext";
 import { getCourseSections, isCourseSectionReady } from "../../../data/courseSections";
+import { courses, type Course } from "../../../data/courses";
 import clsx from "clsx";
 import { currentPath, toPath } from "../../../utils/slug";
 import styles from "./Sidebar.module.scss";
@@ -34,6 +35,22 @@ function isLinkActive(path: string, href: string) {
   if (href === "/") return path === "/";
 
   return path.startsWith(href);
+}
+
+function isCourseActive(path: string, course: Course) {
+  if (path === course.path || path.startsWith(`${course.path}/`)) return true;
+
+  return course.id === "oop-cpp" && (path === "/course" || path.startsWith("/course/"));
+}
+
+function getSidebarCourses() {
+  return [...courses]
+    .sort((first, second) => first.order - second.order)
+    .filter((course) => {
+      const hasReadySections = getCourseSections(course.id).some(isCourseSectionReady);
+
+      return course.status === "available" || hasReadySections;
+    });
 }
 
 function SidebarIcon({ icon }: { icon: NavigationIcon }) {
@@ -227,10 +244,7 @@ export function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const path = currentPath();
-  const readyCourseSections = getCourseSections("oop-cpp").filter(isCourseSectionReady);
-  const readySectionsCount = readyCourseSections.length;
-  const isOopCourseActive =
-    isLinkActive(path, "/course") || isLinkActive(path, "/courses/oop-cpp");
+  const sidebarCourses = getSidebarCourses();
 
   function handleNavigate() {
     onCloseMobile();
@@ -325,26 +339,34 @@ export function Sidebar({
           ))}
         </nav>
 
-        <section className={styles.courseBlock} aria-labelledby="current-course-title">
-          <span className={styles.groupTitle}>Текущий курс</span>
-          <a
-            className={clsx(
-              styles.courseCard,
-              isOopCourseActive && styles.courseCardActive,
-            )}
-            href={toPath("/course")}
-            aria-label={isCollapsed ? "ООП C++" : undefined}
-            title={isCollapsed ? "ООП C++" : undefined}
-            onClick={handleNavigate}
-          >
-            <span className={styles.courseMark} aria-hidden="true">
-              <SidebarIcon icon="course" />
-            </span>
-            <span className={styles.courseInfo}>
-              <strong id="current-course-title">ООП C++</strong>
-              <small>{readySectionsCount} открытых разделов</small>
-            </span>
-          </a>
+        <section className={styles.courseBlock} aria-label="Курсы">
+          <span className={styles.groupTitle}>Курсы</span>
+          {sidebarCourses.map((course) => {
+            const readySectionsCount = getCourseSections(course.id).filter(isCourseSectionReady).length;
+            const isActive = isCourseActive(path, course);
+
+            return (
+              <a
+                className={clsx(
+                  styles.courseCard,
+                  isActive && styles.courseCardActive,
+                )}
+                href={toPath(course.path)}
+                key={course.id}
+                aria-label={isCollapsed ? course.shortTitle : undefined}
+                title={isCollapsed ? course.shortTitle : undefined}
+                onClick={handleNavigate}
+              >
+                <span className={styles.courseMark} aria-hidden="true">
+                  <SidebarIcon icon="course" />
+                </span>
+                <span className={styles.courseInfo}>
+                  <strong>{course.shortTitle}</strong>
+                  <small>{readySectionsCount} открытых разделов</small>
+                </span>
+              </a>
+            );
+          })}
         </section>
       </div>
 
