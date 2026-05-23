@@ -9,7 +9,7 @@
 - Страница `/courses/base-cpp` показывает отдельный список разделов курса.
 - `site/src/data/courseSections.ts` содержит отдельные секции для `base-cpp` и `oop-cpp`; ООП-разделы не смешиваются с базовым курсом.
 - Ранние разделы `base-cpp` до условий помечены как `needs-theory`.
-- Сейчас доступны разделы: `conditions`, `ternary-operator`, `switch-case`, `for-loop`, `do-while-loop`. Раздел `while-loop` пока добавлен как `needs-theory`.
+- Сейчас доступны разделы: `conditions`, `ternary-operator`, `switch-case`, `for-loop`, `while-loop`, `do-while-loop`.
 - `site/src/data/tasks.ts` сейчас содержит задачи ООП-курса; практические задания `base-cpp` находятся внутри учебных разделов.
 - `site/src/content/baseCpp` используется для контента "Базы C++", а `site/src/content/course` - для ООП-курса.
 
@@ -237,7 +237,7 @@
 
 Цель: научить повторять действия и накапливать результат.
 
-В текущей реализации этот блок разбит на разделы `for-loop`, `while-loop`, `do-while-loop`. Раздел `while-loop` пока помечен как `needs-theory`.
+В текущей реализации этот блок разбит на разделы `for-loop`, `while-loop`, `do-while-loop`.
 
 Темы:
 - общий смысл цикла;
@@ -260,7 +260,7 @@
 
 Основа из презентации: глава 4, слайды 56-73. Основные задания: 4.1-4.2 для `for`, 4.3-4.5 для суммы и `while`, 4.6 для `min/max`. Слайд 62 обязательно использовать для `do while`, даже если отдельного задания на него нет.
 
-Файлы контента: `site/src/content/baseCpp/forLoop.ts` и `site/src/content/baseCpp/doWhileLoop.ts`. Для `while-loop` файл `whileLoop.ts` пока не создан, раздел остаётся в статусе `needs-theory`.
+Файлы контента: `site/src/content/baseCpp/forLoop.ts`, `site/src/content/baseCpp/whileLoop.ts`, `site/src/content/baseCpp/doWhileLoop.ts`.
 
 Сложность: средняя для начинающего. Особенно внимательно объяснить сумму, счётчик и начальные значения минимума/максимума.
 

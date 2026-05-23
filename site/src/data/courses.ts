@@ -49,7 +49,7 @@ export const courses: Course[] = [
     id: "base-cpp",
     title: "База C++",
     shortTitle: "База C++",
-    description: "Базовый C++ перед ООП: открыты условия, for и do while; ранние темы и while на доработке.",
+    description: "Базовый C++ перед ООП: открыты условия и циклы for, while, do while; ранние темы на доработке.",
     status: "available",
     order: 1,
     path: "/courses/base-cpp",

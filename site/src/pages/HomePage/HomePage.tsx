@@ -34,7 +34,7 @@ export function HomePage() {
         <div>
           <p className="eyebrow">Сейчас доступно</p>
           <h2>Курсы</h2>
-          <p>База C++ открыта частично: доступны условия, for и do while. Раздел while пока на доработке.</p>
+          <p>Открыты: условия и циклы for, while, do while. На доработке: ранние темы.</p>
         </div>
         <div className={styles.courseMiniList}>
           {[baseCourse, oopCourse].filter(Boolean).map((course) => {

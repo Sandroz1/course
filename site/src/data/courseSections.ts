@@ -20,6 +20,7 @@ import { forLoopContent } from "../content/baseCpp/forLoop";
 import { introToolsContent } from "../content/baseCpp/introTools";
 import { switchCaseContent } from "../content/baseCpp/switchCase";
 import { ternaryOperatorContent } from "../content/baseCpp/ternaryOperator";
+import { whileLoopContent } from "../content/baseCpp/whileLoop";
 import { basicsContent } from "../content/course/basics";
 import { oopContent } from "../content/course/oop";
 import { structsContent } from "../content/course/structs";
@@ -129,10 +130,10 @@ const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [
     slug: "while-loop",
     number: "9",
     title: "Цикл while",
-    description: "Цикл с проверкой условия перед выполнением тела. Теория будет добавлена позже.",
-    topics: ["while", "loop", "condition"],
-    status: "needs-theory",
-    content: "",
+    description: "Разберёшь, как работает цикл с условием перед телом, когда он удобнее `for`, как вводить данные до стоп-значения и считать сумму с количеством.",
+    topics: ["while", "loop", "condition", "sum", "count"],
+    status: "available",
+    content: whileLoopContent,
     relatedTaskIds: [],
   },
   {
