@@ -7,11 +7,11 @@ export const ACCESS_TOKEN_STORAGE_KEY = "uchicodeAccessToken";
 const LEGACY_REFRESH_TOKEN_STORAGE_KEY = "uchicodeRefreshToken";
 export const AUTH_CLEARED_EVENT = "uchicode-auth-cleared";
 
-const AUTH_REFRESH_PATH = "/api/auth/token/refresh/";
+const AUTH_REFRESH_PATH = "/auth/token/refresh/";
 const AUTH_REFRESH_DISABLED_PATHS = new Set([
-  "/api/auth/login/",
-  "/api/auth/register/",
-  "/api/auth/logout/",
+  "/auth/login/",
+  "/auth/register/",
+  "/auth/logout/",
   AUTH_REFRESH_PATH,
 ]);
 const AUTH_TOKENLESS_PATHS = new Set(AUTH_REFRESH_DISABLED_PATHS);

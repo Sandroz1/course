@@ -77,7 +77,7 @@ function mergeTaskProgress(tasks: TaskProgress[], nextTask: TaskProgress) {
 }
 
 export function getProgress() {
-  return apiRequest<ProgressOverview>("/api/progress/");
+  return apiRequest<ProgressOverview>("/progress/");
 }
 
 export function readCachedCourseProgress(authKey: string) {
@@ -144,21 +144,21 @@ export function setCachedTaskProgress(authKey: string, taskProgress: TaskProgres
 }
 
 export function updateStudyState(payload: StudyStateUpdateRequest) {
-  return apiRequest<UserStudyState>("/api/progress/state/", {
+  return apiRequest<UserStudyState>("/progress/state/", {
     method: "PATCH",
     body: payload,
   });
 }
 
 export function upsertLessonProgress(payload: LessonProgressUpdateRequest) {
-  return apiRequest<LessonProgress>("/api/progress/lessons/", {
+  return apiRequest<LessonProgress>("/progress/lessons/", {
     method: "POST",
     body: payload,
   });
 }
 
 export function upsertTaskProgress(payload: TaskProgressUpdateRequest) {
-  return apiRequest<TaskProgress>("/api/progress/tasks/", {
+  return apiRequest<TaskProgress>("/progress/tasks/", {
     method: "POST",
     body: payload,
   });

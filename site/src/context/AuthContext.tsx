@@ -154,7 +154,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const refreshProfile = useCallback(async () => {
     try {
-      const profile = await apiRequest<AuthUser>("/api/me/");
+      const profile = await apiRequest<AuthUser>("/me/");
       const snapshot = toUserSnapshot(profile);
       writeUserSnapshot(snapshot);
       setAccessToken(getAccessToken());
@@ -175,7 +175,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setIsLoading(true);
 
       try {
-        const profile = await apiRequest<AuthUser>("/api/me/");
+        const profile = await apiRequest<AuthUser>("/me/");
         if (!cancelled) {
           const snapshot = toUserSnapshot(profile);
           writeUserSnapshot(snapshot);
@@ -202,7 +202,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const login = useCallback(
     async (payload: LoginRequest) => {
-      const response = await apiRequest<AuthResponse>("/api/auth/login/", {
+      const response = await apiRequest<AuthResponse>("/auth/login/", {
         method: "POST",
         body: payload,
       });
@@ -218,7 +218,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const register = useCallback(
     async (payload: RegisterRequest) => {
-      const response = await apiRequest<AuthResponse>("/api/auth/register/", {
+      const response = await apiRequest<AuthResponse>("/auth/register/", {
         method: "POST",
         body: payload,
       });
@@ -234,7 +234,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const logout = useCallback(async () => {
     try {
-      await apiRequest("/api/auth/logout/", {
+      await apiRequest("/auth/logout/", {
         method: "POST",
       });
     } catch {
