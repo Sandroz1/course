@@ -49,7 +49,7 @@ function getCourseSectionDisplayStatus(
     const meta = statusMeta[section.status];
 
     return {
-      actionLabel: section.status === "needs-theory" ? "На доработке" : "Скоро",
+      actionLabel: section.status === "needs-theory" ? "Позже" : "Скоро",
       isReady,
       label: meta.label,
       tone: meta.tone,
@@ -261,7 +261,7 @@ export function CourseIndexPage({ courseId = "oop-cpp" }: CourseIndexPageProps) 
       {plannedSections.length > 0 && (
         <section className={styles.group}>
           <div className={styles.sectionHeading}>
-            <h2>Позже</h2>
+            <h2>На доработке</h2>
             <span>{plannedSections.length}</span>
           </div>
           <div className={styles.list}>

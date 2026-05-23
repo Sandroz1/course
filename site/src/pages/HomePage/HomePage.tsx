@@ -5,9 +5,8 @@ import { toPath } from "../../utils/slug";
 import styles from "./HomePage.module.scss";
 
 const quickLinks = [
-  { title: "Курсы C++", text: "База C++ и ООП C++ отдельными маршрутами.", href: "/courses" },
-  { title: "Задачи ООП", text: "Практика по темам текущего ООП-курса.", href: "/tasks" },
   { title: "Как учиться", text: "Порядок работы и проверка решения.", href: "/guide" },
+  { title: "Частые ошибки", text: "Пример ошибок с которыми можно столкнуться.", href: "/common-errors" },
 ];
 
 export function HomePage() {
@@ -25,7 +24,7 @@ export function HomePage() {
             Открыть курсы
           </a>
           <a className="button button--ghost" href={toPath("/tasks")}>
-            Задачи ООП
+            Практика ООП
           </a>
         </div>
       </header>
