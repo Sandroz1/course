@@ -1,56 +1,65 @@
 # Uchicode
 
-Uchicode — учебный сайт по C++ и ООП.
+Uchicode — учебная платформа по C++ с отдельными маршрутами для базового C++ и ООП C++.
 
-- Frontend: React + Vite + TypeScript.
+## Текущее состояние
+
+- Frontend: React, Vite, TypeScript.
 - Backend: Django REST Framework.
-- AI-помощник: Qwen через backend endpoint `/api/ai/chat/`.
-- Production: VPS + Docker Compose + Nginx.
-- Домен: `uchicode.ru`.
-- API: same-origin через `/api`.
+- Production: VPS `play2go.cloud`, Docker Compose, host Nginx, HTTPS для `uchicode.ru`.
+- API работает same-origin через `/api`; frontend endpoints должны быть относительными к base URL `/api`.
+- `origin/main` содержит hotfix `1cfbdb5 Fix frontend API paths`, который убирает ошибку `/api/api/...`.
+- `v0.1.2` может запускать production deploy через GitHub Actions при push tag `v*`; tag публиковать только осознанно.
+
+## Курсы
+
+- `base-cpp` — отдельный курс "База C++". Сейчас готовы условия и циклы `for`, `while`, `do while`; ранние темы до условий помечены как теория на доработке.
+- `oop-cpp` — отдельный курс по ООП C++. Он не должен смешиваться с `base-cpp`.
 
 ## Структура проекта
 
 ```text
-site/                    Frontend на React/Vite/TypeScript
+site/                    Frontend React/Vite/TypeScript
 backend/                 Django REST Framework API
-docker/                  Production Nginx конфигурация
-docker-compose.dev.yml    Локальная Docker-среда
-docker-compose.prod.yml   Production Docker Compose
-.env.production.example   Шаблон production env
-README.md                Обзор проекта
-PROJECT_STATUS.md         Текущее состояние проекта
-LOCAL_RUNBOOK.md          Практические команды запуска и проверок
+docker/                  Docker nginx для production
+deploy/                  VPS, nginx, systemd, backup и deploy docs
+docs/                    Планы курсов и общая документация
+practice/                Практические материалы
+docker-compose.dev.yml   Локальная Docker-среда
+docker-compose.prod.yml  Production Docker Compose
+.env.production.example  Шаблон production env
 ```
 
-Актуальные deploy-инструкции находятся в `deploy/README.md`.
+## Карта документации
+
+- [docs/README.md](docs/README.md) — общий индекс документации.
+- [PROJECT_STATUS.md](PROJECT_STATUS.md) — текущее состояние проекта.
+- [LOCAL_RUNBOOK.md](LOCAL_RUNBOOK.md) — локальный запуск и проверки.
+- [SMOKE_TESTS.md](SMOKE_TESTS.md) — smoke-проверки после деплоя.
+- [DEPLOY.md](DEPLOY.md) — короткий deploy entrypoint.
+- [deploy/docs/README.md](deploy/docs/README.md) — полный комплект production-инструкций.
+- [docs/base-cpp-course-plan.md](docs/base-cpp-course-plan.md) — план курса "База C++".
+- [docs/course-content-plan.md](docs/course-content-plan.md) — план курса "ООП C++".
 
 ## Архитектура
 
 ```text
-Frontend SPA
-  -> Django REST API
-      -> PostgreSQL
-      -> Redis
-      -> Qwen API
+Browser
+  -> https://uchicode.ru
+  -> host Nginx 80/443 + Let's Encrypt
+  -> Docker nginx 127.0.0.1:8080
+  -> backend:8000 inside Docker network
+  -> PostgreSQL / Redis inside Docker network
 ```
 
-Production:
+Наружу не должны публиковаться:
 
 ```text
-Internet
-  -> host Nginx :80/:443
-      -> uchicode.ru       -> frontend SPA
-      -> www.uchicode.ru   -> redirect на uchicode.ru
-      -> /api/*            -> Docker nginx 127.0.0.1:8080 -> backend:8000
-
-backend container
-  -> Django + DRF + Gunicorn
-  -> PostgreSQL внутри Docker network
-  -> Redis внутри Docker network
+backend:8000
+postgres:5432
+redis:6379
+Docker nginx на 0.0.0.0:8080
 ```
-
-PostgreSQL, Redis и backend не публикуются наружу напрямую. Docker nginx слушает только `127.0.0.1:8080`, наружу смотрит host Nginx.
 
 ## Локальный запуск frontend
 
@@ -60,9 +69,11 @@ npm install
 npm run dev
 ```
 
-Frontend будет доступен на `http://127.0.0.1:5173`.
+Vite проксирует `/api` и `/admin` на локальный backend `http://127.0.0.1:8000`.
 
 ## Локальный запуск backend
+
+Windows PowerShell:
 
 ```powershell
 cd backend
@@ -73,9 +84,7 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-Backend будет доступен на `http://127.0.0.1:8000`.
-
-Проверка health endpoint:
+Health:
 
 ```bash
 curl http://127.0.0.1:8000/api/health/
@@ -87,19 +96,15 @@ curl http://127.0.0.1:8000/api/health/
 docker compose -f docker-compose.dev.yml up --build
 ```
 
-Миграции в dev Docker:
-
-```bash
-docker compose -f docker-compose.dev.yml exec backend python manage.py migrate
-```
-
-## Локальные проверки
+## Проверки перед push
 
 Frontend:
 
 ```bash
 cd site
+npm run typecheck
 npm run build
+npm run lint
 ```
 
 Backend:
@@ -107,109 +112,76 @@ Backend:
 ```powershell
 cd backend
 .venv\Scripts\python.exe manage.py check
+.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
 .venv\Scripts\python.exe manage.py test
 ```
 
-Backend dependency audit перед release:
-
-```powershell
-cd backend
-.venv\Scripts\python.exe -m pip install pip-audit
-.venv\Scripts\python.exe -m pip_audit -r requirements.txt
-```
-
-`pip-audit` не входит в production `requirements.txt`. Если audit найдёт уязвимости, обновлять зависимости нужно отдельной задачей с проверкой регрессий.
-
-Docker:
+Production compose:
 
 ```bash
-docker compose -f docker-compose.dev.yml config
 docker compose -f docker-compose.prod.yml config
+docker compose -f docker-compose.prod.yml build --pull
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
+curl -fsS http://127.0.0.1:8080/nginx-health
+curl -fsS http://127.0.0.1:8080/api/health
+docker compose -f docker-compose.prod.yml down
 ```
 
 ## Env
 
-Шаблоны:
+Реальные env-файлы не коммитить:
 
-- `site/.env.example` — frontend dev env.
-- `site/.env.production.example` — frontend production API path.
-- `backend/.env.example` — backend dev env.
-- `.env.production.example` — production env для Docker Compose.
+```text
+.env
+.env.production
+site/.env.local
+backend/.env
+```
 
-Реальные `.env`, `.env.local` и `.env.production` нельзя коммитить.
+Production backend читает основные переменные:
 
-Production frontend по умолчанию использует same-origin API:
+```text
+DJANGO_DEBUG
+DJANGO_SECRET_KEY
+DJANGO_ALLOWED_HOSTS
+DJANGO_CSRF_TRUSTED_ORIGINS
+DJANGO_CORS_ALLOWED_ORIGINS
+DATABASE_URL
+POSTGRES_DB
+POSTGRES_USER
+POSTGRES_PASSWORD
+REDIS_URL
+QWEN_API_KEY
+SMS_PROVIDER
+```
+
+Production frontend по умолчанию использует:
 
 ```env
 VITE_API_BASE_URL=/api
 ```
 
-Production backend должен получать секреты только через env:
-
-- `DJANGO_SECRET_KEY`
-- `DATABASE_URL`
-- `REDIS_URL`
-- `QWEN_API_KEY`
-- `SMS_PROVIDER`
-- `SMS_API_KEY` или `SMS_LOGIN`/`SMS_PASSWORD`
-- `POSTGRES_PASSWORD`
+Endpoint в frontend должен быть без второго `/api`, например `/auth/register/`, чтобы итоговый URL был `/api/auth/register/`.
 
 ## Production
 
-Домены:
-
-- `uchicode.ru`
-- `www.uchicode.ru`
-
-Production сервисы:
-
-- `nginx`
-- `backend`
-- `postgres`
-- `redis`
-
-Базовые команды:
-
-```bash
-cp .env.production.example .env.production
-# заполнить .env.production реальными значениями на сервере
-
-docker compose -f docker-compose.prod.yml build
-docker compose -f docker-compose.prod.yml up -d
-```
-
-Production compose запускает `migrate` и `collectstatic` перед `gunicorn`. TLS завершается на host Nginx, Docker nginx работает как внутренний app-nginx без TLS.
-
-## AI endpoint
-
-AI-помощник работает через Django endpoint:
+Основные инструкции:
 
 ```text
-POST /api/ai/chat/
+deploy/docs/02_DEPLOY_FROM_ZERO.md
+deploy/docs/03_UPDATE_ROLLBACK_HOTFIX.md
+deploy/docs/09_POST_DEPLOY_CHECKLIST.md
 ```
 
-Доступ к AI разрешён только авторизованным пользователям с подтверждённым телефоном. Лимиты backend: 15 запросов в день на пользователя и глобальный дневной лимит из `AI_GLOBAL_DAILY_REQUEST_LIMIT`.
+Быстрый health-check:
 
-Frontend использует `/api` по умолчанию. `VITE_API_BASE_URL` нужен только как override для нестандартной локальной схемы.
+```bash
+curl -fsS https://uchicode.ru/nginx-health
+curl -fsS https://uchicode.ru/api/health
+```
 
-## Статус
+## Безопасность
 
-Готово:
-
-- frontend переведён на same-origin `/api` с опциональным `VITE_API_BASE_URL`;
-- backend DRF создан;
-- AI proxy добавлен в backend;
-- AI ограничен подтверждённым телефоном, дневным лимитом пользователя и глобальным дневным лимитом;
-- progress API добавлен;
-- frontend показывает прогресс уроков и задач;
-- Docker Compose для dev и production подготовлены;
-- production Nginx конфигурация подготовлена для `uchicode.ru` и `www.uchicode.ru`;
-- `site/dist/` снят с Git tracking и игнорируется.
-
-Осталось до VPS:
-
-- закоммитить текущую рабочую ветку и проверить чистый `git status`;
-- настроить DNS у REG.RU;
-- получить SSL-сертификаты;
-- развернуть проект на VPS;
-- добавить финальные deploy/smoke-test инструкции.
+- Не отправлять в чат и не коммитить приватные ключи, `.env.production`, `DJANGO_SECRET_KEY`, `POSTGRES_PASSWORD`, `DATABASE_URL`, `QWEN_API_KEY`.
+- Не использовать `git add .` перед release, если в дереве есть env, build artifacts или локальная БД.
+- Push tag `v*` может запустить GitHub Actions deploy workflow.

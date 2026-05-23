@@ -18,6 +18,7 @@ import { conditionsContent } from "../content/baseCpp/conditions";
 import { doWhileLoopContent } from "../content/baseCpp/doWhileLoop";
 import { forLoopContent } from "../content/baseCpp/forLoop";
 import { introToolsContent } from "../content/baseCpp/introTools";
+import { loopAccumulationContent } from "../content/baseCpp/loopAccumulation";
 import { switchCaseContent } from "../content/baseCpp/switchCase";
 import { ternaryOperatorContent } from "../content/baseCpp/ternaryOperator";
 import { whileLoopContent } from "../content/baseCpp/whileLoop";
@@ -144,6 +145,16 @@ const baseCppCourseSections: Array<Omit<CourseSection, "courseId">> = [
     topics: ["do while", "loop", "condition", "menu", "repeat"],
     status: "available",
     content: doWhileLoopContent,
+    relatedTaskIds: [],
+  },
+  {
+    slug: "loop-accumulation",
+    number: "11",
+    title: "Сумма, количество и min/max в циклах",
+    description: "Научишься накапливать сумму, считать количество значений, находить минимум и максимум, выбирать начальные значения и не добавлять стоп-значение в результат.",
+    topics: ["sum", "count", "average", "min", "max", "for", "while"],
+    status: "available",
+    content: loopAccumulationContent,
     relatedTaskIds: [],
   },
 ];

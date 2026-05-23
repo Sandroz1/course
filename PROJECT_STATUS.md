@@ -1,29 +1,58 @@
 # PROJECT_STATUS
 
-## 1. Текущее состояние
+Актуально на 2026-05-24.
 
-### Frontend
+## Git и release
+
+- Основная ветка: `main`.
+- `origin/main` содержит commit `1cfbdb5 Fix frontend API paths`.
+- Локальный tag `v0.1.2` указывает на `1cfbdb5`, но tag нужно публиковать отдельно и осторожно: workflow `.github/workflows/deploy-production.yml` запускается на push tag `v*`.
+- Ветка `dist` используется отдельно для статического frontend-артефакта и не влияет на production Docker deploy.
+
+## Frontend
 
 Frontend находится в `site/`.
 
 Есть:
 
 - React + Vite + TypeScript;
-- учебные страницы курса;
-- страницы задач;
-- AI Assistant;
-- API-layer через same-origin `/api` с опциональным `VITE_API_BASE_URL`;
-- frontend auth pages;
-- подключение progress API;
-- production base в Vite равен `/`.
+- страницы курсов и задач;
+- отдельные маршруты `base-cpp` и `oop-cpp`;
+- auth pages;
+- progress UI;
+- AI Assistant UI;
+- API-layer через same-origin `/api`.
 
-Production frontend должен обращаться к:
+Важное правило API:
 
 ```text
-/api
+baseURL=/api
+endpoint=/auth/register/
+итог=/api/auth/register/
 ```
 
-### Backend
+Неправильно:
+
+```text
+/api/api/auth/register/
+```
+
+## Курсы
+
+`base-cpp`:
+
+- отдельный курс "База C++";
+- ранние темы до условий помечены как `needs-theory`;
+- доступны: `conditions`, `ternary-operator`, `switch-case`, `for-loop`, `while-loop`, `do-while-loop`;
+- практические задания базового курса пока находятся внутри учебных разделов, не в общем списке задач.
+
+`oop-cpp`:
+
+- отдельный курс по ООП;
+- не должен смешиваться с `base-cpp`;
+- sidebar и статусы курсов строятся из общих данных, а не из hardcode одного курса.
+
+## Backend
 
 Backend находится в `backend/`.
 
@@ -31,39 +60,35 @@ Backend находится в `backend/`.
 
 - Django REST Framework;
 - custom `User`;
+- JWT auth;
 - health endpoint `/api/health/`;
-- AI endpoints;
 - progress endpoints;
+- AI endpoint `/api/ai/chat/`;
 - PostgreSQL через `DATABASE_URL`;
 - Redis cache/throttling через `REDIS_URL`;
-- settings через env.
+- production settings через env.
 
-### AI
+Auth endpoints:
 
-Production AI должен идти через Django:
+```text
+POST /api/auth/register/
+POST /api/auth/login/
+POST /api/auth/token/refresh/
+POST /api/auth/logout/
+GET/PATCH /api/me/
+```
+
+## AI
+
+AI идёт через Django:
 
 ```text
 POST /api/ai/chat/
 ```
 
-`QWEN_API_KEY` берётся только из env. Если ключ не задан, backend возвращает понятную ошибку `503`.
+Если `QWEN_API_KEY` пустой, backend ожидаемо возвращает `503`. Это не падение сайта, а незаполненная внешняя интеграция.
 
-Доступ к `/api/ai/chat/` разрешён только авторизованным пользователям с `is_phone_verified=True`. Backend-лимиты: 15 AI-запросов в день на пользователя и глобальный дневной лимит из `AI_GLOBAL_DAILY_REQUEST_LIMIT`.
-
-### Auth
-
-Frontend страницы auth уже подготовлены.
-
-Backend auth реализован через JWT:
-
-- `POST /api/auth/register/`;
-- `POST /api/auth/login/`;
-- `POST /api/auth/token/refresh/`;
-- `POST /api/auth/logout/` blacklist refresh token;
-- `GET/PATCH /api/me/`;
-- подтверждение телефона через SMS-код.
-
-### Docker
+## Docker и production
 
 Есть:
 
@@ -72,95 +97,42 @@ Backend auth реализован через JWT:
 - `backend/Dockerfile`;
 - `site/Dockerfile`;
 - `docker/nginx/Dockerfile`;
-- `.dockerignore` файлы.
-
-Production backend запускается через `gunicorn`.
-
-### Nginx
-
-Есть production Nginx конфигурация:
-
 - `docker/nginx/nginx.conf`;
 - `docker/nginx/conf.d/uchicode.conf`.
 
-Логика:
+Production схема:
 
-- `uchicode.ru` отдаёт frontend SPA;
-- `www.uchicode.ru` редиректится на `uchicode.ru`;
-- `/api/` проксирует backend через внутренний Docker nginx.
+```text
+host Nginx 80/443
+  -> 127.0.0.1:8080
+  -> Docker nginx
+  -> backend:8000
+  -> PostgreSQL / Redis
+```
 
-TLS завершается на host Nginx. Docker nginx работает внутри Docker-схемы без TLS.
+Backend, PostgreSQL и Redis не публикуются наружу напрямую.
 
-### Domain/VPS
+## Документация
 
-- Домен: `uchicode.ru`.
-- API: same-origin `/api`.
-- VPS: Play2Go, Ubuntu 24.04.
-- VPS IP: `2.26.99.141`.
+Основной индекс: [docs/README.md](docs/README.md).
 
-Деплой на VPS ещё не выполнен.
+Production runbooks:
 
-## 2. Что уже выполнено
+- [deploy/docs/README.md](deploy/docs/README.md);
+- [deploy/docs/02_DEPLOY_FROM_ZERO.md](deploy/docs/02_DEPLOY_FROM_ZERO.md);
+- [deploy/docs/03_UPDATE_ROLLBACK_HOTFIX.md](deploy/docs/03_UPDATE_ROLLBACK_HOTFIX.md);
+- [deploy/docs/04_TROUBLESHOOTING.md](deploy/docs/04_TROUBLESHOOTING.md);
+- [deploy/docs/09_POST_DEPLOY_CHECKLIST.md](deploy/docs/09_POST_DEPLOY_CHECKLIST.md).
 
-- Подготовлена рабочая ветка для pre-release и UI/security hardening.
-- Создан Django backend.
-- Добавлены cache/throttling настройки под Redis.
-- Добавлен backend AI proxy.
-- AI закрыт для гостей и пользователей без подтверждённого телефона.
-- Frontend переведён на Django API через same-origin `/api`.
-- Добавлен frontend auth scaffold.
-- Добавлен backend progress API.
-- Frontend подключён к progress API для уроков, задач и профиля.
-- Production frontend base переведён на `/`.
-- Добавлен dev Docker Compose.
-- Добавлен production Docker Compose.
-- Добавлен production Nginx config.
-- Домен обновлён на `uchicode.ru`.
-- `site/dist/` снят с Git tracking.
-- Добавлены `DEPLOY.md`, `DEPLOY_SSL.md`, `SMOKE_TESTS.md`.
-
-## 3. Что ещё не выполнено
-
-- Получить production SSL через Let's Encrypt.
-- DNS настройка у REG.RU.
-- Деплой на VPS.
-- Production smoke tests после деплоя.
-- Финальная проверка frontend UX после стабилизации инфраструктуры.
-
-## 4. Как запускать локально
+## Локальные проверки
 
 Frontend:
 
 ```bash
 cd site
-npm install
-npm run dev
-```
-
-Backend:
-
-```powershell
-cd backend
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-```
-
-Docker dev:
-
-```bash
-docker compose -f docker-compose.dev.yml up --build
-```
-
-## 5. Как проверить локально
-
-Frontend:
-
-```bash
-cd site
+npm run typecheck
 npm run build
+npm run lint
 ```
 
 Backend:
@@ -168,80 +140,25 @@ Backend:
 ```powershell
 cd backend
 .venv\Scripts\python.exe manage.py check
+.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
 .venv\Scripts\python.exe manage.py test
 ```
 
-Backend dependency audit перед release:
-
-```powershell
-cd backend
-.venv\Scripts\python.exe -m pip install pip-audit
-.venv\Scripts\python.exe -m pip_audit -r requirements.txt
-```
-
-Docker:
+Docker production smoke:
 
 ```bash
-docker compose -f docker-compose.dev.yml config
 docker compose -f docker-compose.prod.yml config
+docker compose -f docker-compose.prod.yml build --pull
+docker compose -f docker-compose.prod.yml up -d --remove-orphans
+curl -fsS http://127.0.0.1:8080/nginx-health
+curl -fsS http://127.0.0.1:8080/api/health
+docker compose -f docker-compose.prod.yml down
 ```
 
-Health:
+## Риски
 
-```bash
-curl http://127.0.0.1:8000/api/health/
-```
-
-## 6. Какие env нужны
-
-Frontend:
-
-- `VITE_API_BASE_URL`
-
-Backend:
-
-- `DJANGO_SECRET_KEY`
-- `DJANGO_DEBUG`
-- `DJANGO_ALLOWED_HOSTS`
-- `DJANGO_CORS_ALLOWED_ORIGINS`
-- `DJANGO_CSRF_TRUSTED_ORIGINS`
-- `DATABASE_URL`
-- `REDIS_URL`
-- `QWEN_API_KEY`
-- `QWEN_BASE_URL`
-- `QWEN_MODEL`
-- `AI_DAILY_REQUEST_LIMIT`
-- `AI_GLOBAL_DAILY_REQUEST_LIMIT`
-- `SMS_PROVIDER`
-- `SMS_API_KEY`
-- `SMS_LOGIN`
-- `SMS_PASSWORD`
-- `SMS_FROM`
-
-Postgres:
-
-- `POSTGRES_DB`
-- `POSTGRES_USER`
-- `POSTGRES_PASSWORD`
-
-Реальные env-файлы не коммитить.
-
-## 7. Риски
-
-- SSL ещё нужно получить до запуска HTTPS-конфига nginx.
-- DNS может быть ещё не направлен на VPS.
-- VPS должен быть чистой Ubuntu без конфликтующего LEMP/LAMP.
-- Пароль VPS нужно сменить после выдачи доступа.
-- Нельзя коммитить `.env`, `.env.local`, `.env.production`.
-- `site/dist/` больше не должен попадать в Git.
-
-## 8. Следующие шаги
-
-1. Сделать Git commit текущей стабилизации.
-2. Провести frontend architecture audit.
-3. После аудита выполнить SCSS/refactor, если он действительно нужен.
-4. Провести финальную локальную проверку.
-5. Настроить DNS.
-6. Развернуть на VPS.
-7. Получить SSL.
-8. Провести smoke tests на production.
+- Push tag `v*` может запустить GitHub Actions deploy.
+- Если `QWEN_API_KEY` пустой, AI UI будет получать `503`.
+- Любой hotfix на VPS нужно переносить в репозиторий, иначе он потеряется при `git checkout`.
+- `.env.production`, приватные ключи, backup-архивы и локальная БД не должны попадать в git.
+- После frontend-изменений нужно пересобирать `nginx` image, потому что production frontend собирается внутри `docker/nginx/Dockerfile`.

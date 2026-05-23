@@ -1,44 +1,45 @@
 # DEPLOY_SSL
 
+Короткая памятка по HTTPS на host Nginx. Основной сценарий первого деплоя описан в [deploy/docs/02_DEPLOY_FROM_ZERO.md](deploy/docs/02_DEPLOY_FROM_ZERO.md).
+
 ## Предусловия
 
-- DNS `uchicode.ru` и `www.uchicode.ru` указывает на VPS.
-- На VPS открыты порты `80` и `443`.
-- Реальный `.env.production` заполнен и не коммитится.
+- DNS `uchicode.ru` и `www.uchicode.ru` указывает на VPS `2.26.99.141`.
+- На VPS открыты только нужные публичные порты: `22`, `80`, `443`.
+- Docker nginx доступен локально на VPS через `127.0.0.1:8080`.
+- `.env.production` заполнен и не находится в git.
 
 ## Получить сертификат
 
-После настройки host Nginx получи сертификат через webroot:
-
 ```bash
 sudo apt update
-sudo apt install -y certbot
-sudo mkdir -p /var/www/certbot
-sudo certbot certonly --webroot -w /var/www/certbot \
-  -d uchicode.ru \
-  -d www.uchicode.ru
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d uchicode.ru -d www.uchicode.ru
 ```
 
-Host Nginx использует стандартные пути Let's Encrypt:
+Пути Let's Encrypt:
 
 ```text
 /etc/letsencrypt/live/uchicode.ru/fullchain.pem
 /etc/letsencrypt/live/uchicode.ru/privkey.pem
 ```
 
-После выпуска сертификата раскомментируй `443` blocks в `deploy/nginx/uchicode.ru.conf.example`, перенеси изменения в `/etc/nginx/sites-available/uchicode.ru` и перезагрузи host Nginx.
-
-## Renewal
-
-Проверка renewal:
-
-```bash
-sudo certbot renew --dry-run
-```
-
-После реального renewal перезагрузи host Nginx:
+## Проверить HTTPS
 
 ```bash
 sudo nginx -t
 sudo systemctl reload nginx
+curl -I https://uchicode.ru
+curl -fsS https://uchicode.ru/nginx-health
+curl -fsS https://uchicode.ru/api/health
 ```
+
+## Renewal
+
+```bash
+sudo certbot renew --dry-run
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+Если certbot менял Nginx-конфиг автоматически, сверить его с [deploy/nginx/uchicode.ru.conf.example](deploy/nginx/uchicode.ru.conf.example).
