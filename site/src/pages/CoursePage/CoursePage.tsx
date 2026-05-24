@@ -20,7 +20,13 @@ import {
 import clsx from "clsx";
 import type { ProgressOverview } from "../../types/api";
 import { toPath } from "../../utils/slug";
-import { collectTocItems, LessonContent, renderInline } from "./components/LessonContent";
+import {
+  collectTocItems,
+  extractPracticeItems,
+  LessonContent,
+  type PracticeItem,
+  renderInline,
+} from "./components/LessonContent";
 import styles from "./CoursePage.module.scss";
 
 type LessonProgressState = {
@@ -28,6 +34,19 @@ type LessonProgressState = {
   key: string;
   isCompleted: boolean;
 };
+
+type RelatedTask = (typeof tasks)[number];
+
+const defaultPracticeItems: PracticeItem[] = [
+  {
+    title: "Практика скоро появится",
+    description: "Задачи для этой темы готовятся и будут подключены к общему списку.",
+  },
+  {
+    title: "Пока закрепи теорию",
+    description: "Вернись к мини-проверке и проверь, что основные идеи темы понятны.",
+  },
+];
 
 function findLessonProgress(progress: ProgressOverview, courseSlug: string, lessonSlug: string) {
   return progress.lessons.find(
@@ -87,6 +106,63 @@ function syncOpenedLessonState(
   );
 
   return request;
+}
+
+function RelatedTasksBlock({
+  practiceItems,
+  relatedTasks,
+}: {
+  practiceItems: PracticeItem[];
+  relatedTasks: RelatedTask[];
+}) {
+  const hasRealTasks = relatedTasks.length > 0;
+  const fallbackItems = practiceItems.length > 0 ? practiceItems : defaultPracticeItems;
+
+  return (
+    <section className={styles.relatedTasks} id="tasks-after-topic">
+      <div className={styles.relatedTasksHeader}>
+        <div>
+          <span>Практика</span>
+          <h2>Задачи после темы</h2>
+        </div>
+        <p>
+          {hasRealTasks
+            ? "Открой задачи и закрепи тему в отдельном практическом сценарии."
+            : "Практика для этой темы ещё не подключена как отдельные задачи."}
+        </p>
+      </div>
+
+      <div className={styles.relatedTaskList}>
+        {hasRealTasks
+          ? relatedTasks.map((task) => (
+              <a
+                className={styles.relatedTaskLink}
+                key={task.id}
+                href={toPath(`/tasks/${task.id}`)}
+              >
+                <span className={styles.relatedTaskContent}>
+                  <strong>{task.title}</strong>
+                  <small>Практическая задача по теме</small>
+                </span>
+                <span className={styles.relatedTaskAction}>Открыть</span>
+              </a>
+            ))
+          : fallbackItems.map((item) => (
+              <div
+                className={clsx(styles.relatedTaskLink, styles.relatedTaskPlaceholder)}
+                key={item.title}
+                aria-disabled="true"
+              >
+                <span className={styles.relatedTaskContent}>
+                  <strong>{item.title}</strong>
+                  <small>{item.description}</small>
+                </span>
+                <span className={styles.relatedTaskAction}>Скоро</span>
+              </div>
+            ))}
+      </div>
+    </section>
+  );
 }
 
 export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId; slug: string }) {
@@ -252,6 +328,7 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
   const relatedTasks = tasks.filter((task) =>
     section.relatedTaskIds.includes(task.id),
   );
+  const practiceItems = extractPracticeItems(section.content);
   const tocItems = collectTocItems(section.content);
 
   async function handleToggleCompleted() {
@@ -385,19 +462,7 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
         </nav>
       )}
 
-      <section className={styles.relatedTasks}>
-        <div className="section-heading">
-          <h2>Задачи после темы</h2>
-        </div>
-        <div className={styles.relatedTaskList}>
-          {relatedTasks.map((task) => (
-            <a className={styles.relatedTaskLink} key={task.id} href={toPath(`/tasks/${task.id}`)}>
-              <strong>{task.title}</strong>
-              <span>Открыть</span>
-            </a>
-          ))}
-        </div>
-      </section>
+      <RelatedTasksBlock practiceItems={practiceItems} relatedTasks={relatedTasks} />
     </article>
   );
 }

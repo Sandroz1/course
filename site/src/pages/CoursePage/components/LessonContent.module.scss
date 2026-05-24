@@ -112,9 +112,167 @@
   padding: 0.625rem 0.8125rem;
 }
 
+.specialSection {
+  display: grid;
+  gap: 0.875rem;
+  border-top: 1px solid var(--line);
+  scroll-margin-top: 5.75rem;
+  padding-top: 1.625rem;
+}
+
+.specialHeader {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.specialHeader span {
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.specialHeader h2 {
+  margin: 0;
+}
+
+.specialHeader p {
+  max-width: 42rem;
+  margin: 0.125rem 0 0;
+  color: var(--soft);
+}
+
+.mistakeList {
+  display: grid;
+  gap: 0.625rem;
+}
+
+.mistakeCard {
+  display: grid;
+  gap: 0.625rem;
+  border: 1px solid var(--line);
+  border-radius: 0.625rem;
+  background: color-mix(in srgb, var(--surface) 84%, transparent);
+  padding: 0.875rem;
+}
+
+.mistakeCardHeader {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.mistakeCardHeader span {
+  width: fit-content;
+  border: 1px solid color-mix(in srgb, var(--danger) 42%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--danger) 10%, transparent);
+  color: var(--danger);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.1875rem 0.5rem;
+}
+
+.mistakeCardHeader h3 {
+  margin: 0;
+  color: var(--text);
+  font-size: 1rem;
+}
+
+.mistakeBody {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.mistakeBody p {
+  margin: 0;
+}
+
+.mistakeBody :global(.code-block),
+.mistakeBody pre {
+  margin: 0.125rem 0;
+}
+
+.checkList {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.checkItem {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0.625rem;
+  background: var(--surface);
+  color: var(--soft);
+  cursor: pointer;
+  font: inherit;
+  line-height: 1.45;
+  padding: 0.75rem 0.875rem;
+  text-align: left;
+  transition: border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
+}
+
+.checkItem:hover,
+.checkItem:focus-visible {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+  color: var(--text);
+  outline: none;
+}
+
+.checkItemChecked {
+  border-color: color-mix(in srgb, var(--success) 42%, var(--line));
+  background: color-mix(in srgb, var(--success) 9%, var(--surface));
+}
+
+.checkNumber {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 800;
+}
+
+.checkText {
+  min-width: 0;
+}
+
+.checkState {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  padding: 0.1875rem 0.5rem;
+  white-space: nowrap;
+}
+
+.checkItemChecked .checkNumber,
+.checkItemChecked .checkState {
+  border-color: color-mix(in srgb, var(--success) 48%, var(--line));
+  color: var(--success);
+}
+
 @media (max-width: 35rem) {
   .content table {
     display: block;
     overflow-x: auto;
+  }
+
+  .checkItem {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .checkState {
+    grid-column: 2;
+    width: fit-content;
   }
 }

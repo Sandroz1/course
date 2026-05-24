@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { Fragment, useState, type ReactNode } from "react";
 
 import { CodeBlock } from "../../../components/shared/CodeBlock/CodeBlock";
 import clsx from "clsx";
@@ -7,6 +7,21 @@ import styles from "./LessonContent.module.scss";
 type TocItem = {
   title: string;
   id: string;
+};
+
+export type PracticeItem = {
+  title: string;
+  description: string;
+};
+
+type MarkdownSection = {
+  title?: string;
+  lines: string[];
+};
+
+type MarkdownSubsection = {
+  title: string;
+  lines: string[];
 };
 
 const MAX_TOC_ITEMS = 7;
@@ -30,6 +45,162 @@ function headingId(text: string) {
     .toLowerCase()
     .replace(/[^\p{L}\p{N}]+/gu, "-")
     .replace(/^-|-$/g, "");
+}
+
+function normalizeSectionTitle(text: string) {
+  return cleanHeadingTitle(text).trim().toLowerCase();
+}
+
+function isPracticeHeading(title: string) {
+  const normalized = normalizeSectionTitle(title);
+
+  return (
+    normalized === "задачи после темы" ||
+    normalized === "практические задачи" ||
+    normalized === "практическая задача"
+  );
+}
+
+function isMistakesHeading(title: string) {
+  return normalizeSectionTitle(title).startsWith("частые ошибки");
+}
+
+function isCheckHeading(title: string) {
+  return normalizeSectionTitle(title) === "мини-проверка";
+}
+
+function splitContentSections(content: string): MarkdownSection[] {
+  const sections: MarkdownSection[] = [{ lines: [] }];
+  let inCodeBlock = false;
+
+  content.split("\n").forEach((line) => {
+    const trimmed = line.trim();
+
+    if (!inCodeBlock && trimmed.startsWith("## ")) {
+      sections.push({
+        title: cleanHeadingTitle(trimmed.slice(3).trim()),
+        lines: [],
+      });
+      return;
+    }
+
+    sections[sections.length - 1].lines.push(line);
+
+    if (trimmed.startsWith("```")) {
+      inCodeBlock = !inCodeBlock;
+    }
+  });
+
+  return sections.filter((section) => section.title || section.lines.some((line) => line.trim()));
+}
+
+function splitSubsections(lines: string[]): MarkdownSubsection[] {
+  const sections: MarkdownSubsection[] = [];
+  let current: MarkdownSubsection | null = null;
+  let inCodeBlock = false;
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+
+    if (!inCodeBlock && trimmed.startsWith("### ")) {
+      current = {
+        title: cleanHeadingTitle(trimmed.slice(4).trim()),
+        lines: [],
+      };
+      sections.push(current);
+      return;
+    }
+
+    if (current) {
+      current.lines.push(line);
+    }
+
+    if (trimmed.startsWith("```")) {
+      inCodeBlock = !inCodeBlock;
+    }
+  });
+
+  return sections;
+}
+
+function stripMarkdown(text: string) {
+  return text
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\*([^*]+)\*/g, "$1")
+    .trim();
+}
+
+function extractListItems(lines: string[]) {
+  const items: string[] = [];
+  let inCodeBlock = false;
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+
+    if (trimmed.startsWith("```")) {
+      inCodeBlock = !inCodeBlock;
+      return;
+    }
+
+    if (inCodeBlock) return;
+
+    const match = trimmed.match(/^(?:[-*]\s+|\d+\.\s+)(.+)$/);
+    if (match) {
+      items.push(match[1].trim());
+    }
+  });
+
+  return items;
+}
+
+function firstMeaningfulLine(lines: string[]) {
+  return lines.find((line) => {
+    const trimmed = line.trim();
+    return trimmed && !trimmed.startsWith("```") && !trimmed.startsWith("### ");
+  });
+}
+
+function practiceItemFromText(text: string): PracticeItem {
+  const [rawTitle, ...descriptionParts] = text.split(/\s+[—-]\s+/);
+  const title = stripMarkdown(rawTitle).replace(/\.$/, "");
+  const description = stripMarkdown(descriptionParts.join(" — ")) || "Задача для закрепления темы.";
+
+  return {
+    title: title || "Практическая задача",
+    description,
+  };
+}
+
+export function extractPracticeItems(content: string): PracticeItem[] {
+  const practiceSection = splitContentSections(content).find(
+    (section) => section.title && isPracticeHeading(section.title),
+  );
+
+  if (!practiceSection) return [];
+
+  const subsections = splitSubsections(practiceSection.lines);
+  const subsectionItems = subsections.map((section) => {
+    const title = stripMarkdown(section.title.replace(/^задача\s*\d+\.?\s*/i, ""));
+    const description = stripMarkdown(firstMeaningfulLine(section.lines) ?? "");
+
+    return {
+      title: title || "Практическая задача",
+      description: description || "Задача для закрепления темы.",
+    };
+  });
+
+  const listItems = extractListItems(practiceSection.lines).map(practiceItemFromText);
+  const items = subsectionItems.length > 0 ? subsectionItems : listItems;
+  const unique = new Map<string, PracticeItem>();
+
+  items.forEach((item) => {
+    if (!unique.has(item.title)) {
+      unique.set(item.title, item);
+    }
+  });
+
+  return Array.from(unique.values()).slice(0, 4);
 }
 
 function flushList(nodes: ReactNode[], list: string[], ordered: boolean) {
@@ -83,7 +254,7 @@ function flushTable(nodes: ReactNode[], rows: string[]) {
   );
 }
 
-function renderLessonContent(content: string) {
+function renderMarkdownContent(content: string) {
   const nodes: ReactNode[] = [];
   const blocks = content.split(/```/g);
 
@@ -175,12 +346,161 @@ function renderLessonContent(content: string) {
   return nodes;
 }
 
+function parseMistakeTitle(title: string, index: number) {
+  const match = title.match(/^Ошибка(?:\s+(\d+))?\.?:?\s*(.*)$/i);
+
+  if (!match) {
+    return {
+      label: `Ошибка ${index + 1}`,
+      title,
+    };
+  }
+
+  return {
+    label: match[1] ? `Ошибка ${match[1]}` : `Ошибка ${index + 1}`,
+    title: match[2] || title,
+  };
+}
+
+function MistakesBlock({ title, lines }: { title: string; lines: string[] }) {
+  const subsections = splitSubsections(lines);
+  const listItems = subsections.length === 0 ? extractListItems(lines) : [];
+
+  const mistakes =
+    subsections.length > 0
+      ? subsections
+      : listItems.length > 0
+        ? listItems.map((item) => ({ title: item, lines: [] }))
+        : [{ title, lines }];
+
+  return (
+    <section className={styles.specialSection} id={headingId(title)}>
+      <div className={styles.specialHeader}>
+        <span>Разбор ошибок</span>
+        <h2>{title}</h2>
+      </div>
+
+      <div className={styles.mistakeList}>
+        {mistakes.map((mistake, index) => {
+          const meta = parseMistakeTitle(mistake.title, index);
+
+          return (
+            <article className={styles.mistakeCard} key={`${meta.label}-${meta.title}`}>
+              <header className={styles.mistakeCardHeader}>
+                <span>{meta.label}</span>
+                <h3>{renderInline(meta.title)}</h3>
+              </header>
+              {mistake.lines.length > 0 && (
+                <div className={styles.mistakeBody}>
+                  {renderMarkdownContent(mistake.lines.join("\n"))}
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function extractCheckItems(lines: string[]) {
+  const listItems = extractListItems(lines);
+
+  if (listItems.length > 0) {
+    return listItems;
+  }
+
+  return lines
+    .map((line) => line.trim())
+    .filter((line) => line && !line.startsWith("```") && !line.startsWith("### "));
+}
+
+function MiniCheckBlock({ title, lines }: { title: string; lines: string[] }) {
+  const [checkedItems, setCheckedItems] = useState<Set<number>>(() => new Set());
+  const questions = extractCheckItems(lines);
+
+  function toggleQuestion(index: number) {
+    setCheckedItems((current) => {
+      const next = new Set(current);
+
+      if (next.has(index)) {
+        next.delete(index);
+      } else {
+        next.add(index);
+      }
+
+      return next;
+    });
+  }
+
+  return (
+    <section className={styles.specialSection} id={headingId(title)}>
+      <div className={styles.specialHeader}>
+        <span>Самопроверка</span>
+        <h2>{title}</h2>
+        <p>Ответь коротко своими словами и отметь вопросы, в которых уверен.</p>
+      </div>
+
+      <div className={styles.checkList}>
+        {questions.map((question, index) => {
+          const isChecked = checkedItems.has(index);
+
+          return (
+            <button
+              className={clsx(styles.checkItem, isChecked && styles.checkItemChecked)}
+              key={`${index}-${question}`}
+              type="button"
+              aria-pressed={isChecked}
+              onClick={() => toggleQuestion(index)}
+            >
+              <span className={styles.checkNumber}>{index + 1}</span>
+              <span className={styles.checkText}>{renderInline(question)}</span>
+              <span className={styles.checkState}>{isChecked ? "Готово" : "Отметить"}</span>
+            </button>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function renderLessonContent(content: string) {
+  return splitContentSections(content).map((section, index) => {
+    if (!section.title) {
+      return (
+        <Fragment key={`intro-${index}`}>
+          {renderMarkdownContent(section.lines.join("\n"))}
+        </Fragment>
+      );
+    }
+
+    if (isPracticeHeading(section.title)) {
+      return null;
+    }
+
+    if (isMistakesHeading(section.title)) {
+      return <MistakesBlock key={`mistakes-${section.title}`} title={section.title} lines={section.lines} />;
+    }
+
+    if (isCheckHeading(section.title)) {
+      return <MiniCheckBlock key={`check-${section.title}`} title={section.title} lines={section.lines} />;
+    }
+
+    return (
+      <Fragment key={`section-${section.title}`}>
+        {renderMarkdownContent(`## ${section.title}\n${section.lines.join("\n")}`)}
+      </Fragment>
+    );
+  });
+}
+
 function collectHeadings(content: string) {
-  return content
-    .split("\n")
-    .filter((line) => line.startsWith("## "))
-    .map((line) => {
-      const title = cleanHeadingTitle(line.slice(3).trim());
+  return splitContentSections(content)
+    .filter((section): section is MarkdownSection & { title: string } =>
+      Boolean(section.title && !isPracticeHeading(section.title)),
+    )
+    .map((section) => {
+      const title = cleanHeadingTitle(section.title.trim());
       return { title, id: headingId(title) };
     });
 }
