@@ -1,13 +1,18 @@
-import type { TaskLevel } from "../../../data/tasks";
 import clsx from "clsx";
+import type { TaskLevel } from "../../../data/tasks";
+import { taskLevelLabels } from "../../../utils/taskDisplay";
 import styles from "./ProgressBadge.module.scss";
 
-const labels: Record<TaskLevel, string> = {
-  easy: "легко",
-  medium: "средне",
-  hard: "сложно",
-};
-
 export function ProgressBadge({ level }: { level: TaskLevel }) {
-  return <span className={clsx(styles.root, styles[level])}>{labels[level]}</span>;
+  const label = taskLevelLabels[level];
+
+  return (
+    <span
+      className={clsx(styles.root, styles[level])}
+      aria-label={`Сложность: ${label}`}
+      title={`Сложность: ${label}`}
+    >
+      {label}
+    </span>
+  );
 }

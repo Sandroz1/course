@@ -83,7 +83,7 @@ export function GuidePage() {
         </div>
         <div className={styles.flowPanel} aria-label="Порядок обучения">
           <span>Главный цикл</span>
-          <strong>Понял → написал → запустил → проверил</strong>
+          <strong>Понял, написал, запустил, проверил</strong>
         </div>
       </header>
 

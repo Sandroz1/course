@@ -1,45 +1,20 @@
 import { ProgressBadge } from "../../../components/shared/ProgressBadge/ProgressBadge";
-import { getCourseSectionBySlug, isCourseSectionReady } from "../../../data/courseSections";
 import { getCourseById } from "../../../data/courses";
-import { getStatusLabel } from "../../../data/status";
 import { tasks } from "../../../data/tasks";
 import clsx from "clsx";
 import type { TaskProgressStatus } from "../../../types/api";
+import {
+  fileCountLabel,
+  getTaskDisplayLabel,
+  getTaskDisplayStatus,
+  isTaskTheoryClosed,
+  visibleTaskTopicLimit,
+  type TaskDisplayStatus,
+} from "../../../utils/taskDisplay";
 import { toPath } from "../../../utils/slug";
 import styles from "./TaskCard.module.scss";
 
 type Task = (typeof tasks)[number];
-type TaskDisplayStatus = "available" | "needs-theory" | "in_progress" | "solved";
-
-const VISIBLE_TOPIC_LIMIT = 3;
-
-function fileCountLabel(count: number) {
-  if (count === 1) return "1 файл";
-  if (count >= 2 && count <= 4) return `${count} файла`;
-  return `${count} файлов`;
-}
-
-function getTaskDisplayStatus(
-  task: Task,
-  hasClosedTheory: boolean,
-  taskProgressById?: Map<string, TaskProgressStatus>,
-): TaskDisplayStatus {
-  const progressStatus = taskProgressById?.get(task.id);
-
-  if (progressStatus === "solved") return "solved";
-  if (progressStatus === "in_progress") return "in_progress";
-  if (hasClosedTheory) return "needs-theory";
-
-  return "available";
-}
-
-function getTaskDisplayLabel(status: TaskDisplayStatus) {
-  if (status === "solved") return "Пройдено";
-  if (status === "in_progress") return "В работе";
-  if (status === "needs-theory") return getStatusLabel("needs-theory");
-
-  return getStatusLabel("available");
-}
 
 function getTaskStatusClass(status: TaskDisplayStatus) {
   if (status === "solved") return styles.statusSolved;
@@ -56,26 +31,24 @@ export function TaskCard({
   task: Task;
   taskProgressById?: Map<string, TaskProgressStatus>;
 }) {
-  const theory = getCourseSectionBySlug(task.courseId, task.theorySlug);
-  const hasClosedTheory =
-    task.status === "needs-theory" || (theory ? !isCourseSectionReady(theory) : false);
+  const hasClosedTheory = isTaskTheoryClosed(task);
   const course = getCourseById(task.courseId);
-  const theoryTitle = theory?.title ?? task.section;
-  const displayStatus = getTaskDisplayStatus(task, hasClosedTheory, taskProgressById);
-  const visibleTopics = task.topics.slice(0, VISIBLE_TOPIC_LIMIT);
-  const hiddenTopicCount = Math.max(task.topics.length - VISIBLE_TOPIC_LIMIT, 0);
+  const displayStatus = getTaskDisplayStatus(task, taskProgressById);
+  const displayLabel = getTaskDisplayLabel(displayStatus);
+  const visibleTopics = task.topics.slice(0, visibleTaskTopicLimit);
+  const hiddenTopicCount = Math.max(task.topics.length - visibleTaskTopicLimit, 0);
 
   return (
     <a
       className={clsx(styles.card, hasClosedTheory && styles.closedTheory)}
       href={toPath(`/tasks/${task.id}`)}
-      aria-label={`Открыть задачу: ${task.title}`}
+      aria-label={`${task.title}. ${displayLabel}. ${course?.shortTitle ?? "Курс"}: ${task.section}`}
     >
       <div className={styles.top}>
         <div className={styles.titleBlock}>
           <strong>{task.title}</strong>
           <span className={styles.meta}>
-            {course?.shortTitle ?? "Курс"} · {task.section}
+            {course?.shortTitle ?? "Курс"}: {task.section}
           </span>
         </div>
         <ProgressBadge level={task.level} />
@@ -87,17 +60,17 @@ export function TaskCard({
             getTaskStatusClass(displayStatus),
           )}
         >
-          {getTaskDisplayLabel(displayStatus)}
+          {displayLabel}
         </span>
       </div>
-      <span className={styles.theory}>Тема: {theoryTitle}</span>
+      <span className={styles.goal}>Цель: {task.goal}</span>
       <div className={clsx("topic-list topic-list--compact", styles.topics)}>
         {visibleTopics.map((topic) => (
           <span key={topic}>{topic}</span>
         ))}
-        {hiddenTopicCount > 0 && <span>+{hiddenTopicCount}</span>}
+        {hiddenTopicCount > 0 && <span>ещё {hiddenTopicCount}</span>}
       </div>
-      <span className={styles.footer} aria-hidden="true">
+      <span className={styles.footer}>
         <span className={styles.fileCount}>{fileCountLabel(task.files.length)}</span>
         <span className={styles.cta}>Открыть</span>
       </span>

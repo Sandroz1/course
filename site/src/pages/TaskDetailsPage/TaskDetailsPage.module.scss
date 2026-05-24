@@ -100,19 +100,25 @@
   border-top: 1px solid var(--line);
 }
 
-.plainPanel ul,
-.plainPanel ol {
+.panelDescription {
+  margin: 0.25rem 0 0;
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.taskList {
   display: grid;
   gap: 0.5rem;
   margin: 0.75rem 0 0;
   padding: 0;
 }
 
-.plainPanel ol {
+.taskList:where(ol) {
   counter-reset: task-step;
 }
 
-.plainPanel li {
+.taskList li {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
   gap: 0.625rem;
@@ -127,7 +133,7 @@
   padding: 0.625rem 0.75rem;
 }
 
-.plainPanel ul li::before {
+.taskList:where(ul) li::before {
   width: 0.375rem;
   height: 0.375rem;
   margin-top: 0.55rem;
@@ -136,11 +142,11 @@
   content: "";
 }
 
-.plainPanel ol li {
+.taskList:where(ol) li {
   counter-increment: task-step;
 }
 
-.plainPanel ol li::before {
+.taskList:where(ol) li::before {
   display: grid;
   width: 1.375rem;
   height: 1.375rem;
@@ -153,8 +159,61 @@
   font-weight: 800;
 }
 
-.notePanel {
+.collapsiblePanel {
+  padding: 0;
+}
+
+.collapsiblePanel summary {
+  cursor: pointer;
+  padding: 1rem;
+}
+
+.collapsiblePanel summary::marker {
   color: var(--muted);
+}
+
+.collapsiblePanel summary:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 72%, transparent);
+  outline-offset: 2px;
+}
+
+.collapsiblePanel summary span:first-child {
+  display: inline-grid;
+  gap: 0.1875rem;
+  max-width: calc(100% - 6rem);
+  margin-left: 0.25rem;
+  vertical-align: top;
+}
+
+.collapsiblePanel summary strong {
+  color: var(--text);
+}
+
+.collapsiblePanel summary small {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.4;
+}
+
+.collapsiblePanel summary > span:last-child {
+  float: right;
+  width: fit-content;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 800;
+  margin-left: 0.75rem;
+  padding: 0.1875rem 0.5rem;
+}
+
+.collapsiblePanel[open] summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.collapsiblePanel .taskList {
+  margin: 0;
+  padding: 1rem;
 }
 
 .codePanel {

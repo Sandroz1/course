@@ -48,7 +48,6 @@ export function AuthLayout({ children, description, footer, title }: AuthLayoutP
         <ul className={styles.benefits}>
           {benefits.map((benefit) => (
             <li className={styles.benefit} key={benefit.title}>
-              <span className={styles.benefitMarker} aria-hidden="true" />
               <span>
                 <strong>{benefit.title}</strong>
                 <span>{benefit.text}</span>

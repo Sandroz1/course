@@ -2,10 +2,8 @@ import { type KeyboardEvent, useEffect, useState } from "react";
 import {
   getCourseSectionBySlug,
   getCourseSectionPath,
-  isCourseSectionReady,
 } from "../../data/courseSections";
 import { getCourseById } from "../../data/courses";
-import { getStatusLabel } from "../../data/status";
 import { tasks } from "../../data/tasks";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -19,13 +17,14 @@ import type { TaskProgressStatus } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
 import { ProgressBadge } from "../../components/shared/ProgressBadge/ProgressBadge";
+import {
+  fileCountLabel,
+  getTaskDisplayLabel,
+  getTaskDisplayStatus,
+  getTaskDisplayTone,
+  isTaskTheoryClosed,
+} from "../../utils/taskDisplay";
 import styles from "./TaskDetailsPage.module.scss";
-
-function fileCountLabel(count: number) {
-  if (count === 1) return "1 файл";
-  if (count >= 2 && count <= 4) return `${count} файла`;
-  return `${count} файлов`;
-}
 
 function getNextFileIndex(currentIndex: number, key: string, fileCount: number) {
   if (key === "Home") return 0;
@@ -38,6 +37,65 @@ function getNextFileIndex(currentIndex: number, key: string, fileCount: number) 
   }
 
   return currentIndex;
+}
+
+type TaskListSectionProps = {
+  title: string;
+  items: string[];
+  ordered?: boolean;
+  collapsible?: boolean;
+  description?: string;
+};
+
+function TaskItemList({ items, ordered = false }: { items: string[]; ordered?: boolean }) {
+  const Tag = ordered ? "ol" : "ul";
+
+  return (
+    <Tag className={styles.taskList}>
+      {items.map((item) => (
+        <li key={item}>{item}</li>
+      ))}
+    </Tag>
+  );
+}
+
+function pointCountLabel(count: number) {
+  if (count === 1) return "1 пункт";
+  if (count >= 2 && count <= 4) return `${count} пункта`;
+  return `${count} пунктов`;
+}
+
+function TaskListSection({
+  title,
+  items,
+  ordered = false,
+  collapsible = false,
+  description,
+}: TaskListSectionProps) {
+  if (items.length === 0) return null;
+
+  if (collapsible) {
+    return (
+      <details className={clsx("panel", styles.plainPanel, styles.collapsiblePanel)}>
+        <summary>
+          <span>
+            <strong>{title}</strong>
+            {description && <small>{description}</small>}
+          </span>
+          <span>{pointCountLabel(items.length)}</span>
+        </summary>
+        <TaskItemList items={items} ordered={ordered} />
+      </details>
+    );
+  }
+
+  return (
+    <section className={clsx("panel", styles.plainPanel)}>
+      <h2>{title}</h2>
+      {description && <p className={styles.panelDescription}>{description}</p>}
+      <TaskItemList items={items} ordered={ordered} />
+    </section>
+  );
 }
 
 export function TaskDetailsPage({ taskId }: { taskId: string }) {
@@ -155,21 +213,20 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
   }
 
   const theory = getCourseSectionBySlug(task.courseId, task.theorySlug);
-  const hasClosedTheory =
-    task.status === "needs-theory" || (theory ? !isCourseSectionReady(theory) : false);
+  const hasClosedTheory = isTaskTheoryClosed(task);
   const course = getCourseById(task.courseId);
   const activeFile = task.files[activeFileIndex];
   const activeFileTabId = `task-file-tab-${task.id}-${activeFileIndex}`;
   const activeFilePanelId = `task-file-panel-${task.id}-${activeFileIndex}`;
   const effectiveTaskStatus = taskStatus ?? "not_started";
-  const taskStatusBadge =
-    effectiveTaskStatus === "solved"
-      ? { label: "Пройдено", tone: "success" }
-      : effectiveTaskStatus === "in_progress"
-        ? { label: "В работе", tone: "info" }
-        : hasClosedTheory
-          ? { label: getStatusLabel("needs-theory"), tone: "warning" }
-          : { label: getStatusLabel(task.status ?? "available"), tone: "success" };
+  const displayStatus = getTaskDisplayStatus(
+    task,
+    new Map([[task.id, effectiveTaskStatus]]),
+  );
+  const taskStatusBadge = {
+    label: getTaskDisplayLabel(displayStatus),
+    tone: getTaskDisplayTone(displayStatus),
+  };
   const nextTaskStatus: TaskProgressStatus =
     effectiveTaskStatus === "solved"
       ? "in_progress"
@@ -197,8 +254,12 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
 
       {hasClosedTheory && (
         <section className={clsx("panel", styles.theoryNote)}>
-          <strong>Теория к этой задаче ещё закрыта</strong>
-          <p>Лучше пройти готовые разделы до this. Объяснение темы пока на доработке.</p>
+          <strong>Теория к задаче ещё на доработке</strong>
+          <p>
+            {theory
+              ? `Раздел «${theory.title}» пока не готов. Задачу можно открыть заранее, но лучше вернуться к ней после теории.`
+              : "Теория для этой задачи пока не подключена к курсу."}
+          </p>
         </section>
       )}
 
@@ -248,14 +309,11 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         <p>{task.description}</p>
       </section>
 
-      <section className={clsx("panel", styles.plainPanel)}>
-        <h2>Что создать</h2>
-        <ul>
-          {task.whatToCreate.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </section>
+      <TaskListSection
+        title="Что создать"
+        items={task.whatToCreate}
+        description="Короткий список результата, который должен получиться в файлах задачи."
+      />
 
       <section className={clsx("panel", styles.codePanel)}>
         <h2>Файлы и каркас кода</h2>
@@ -288,57 +346,39 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </div>
       </section>
 
-      {task.todoGuide && task.todoGuide.length > 0 && (
-        <section className={clsx("panel", styles.plainPanel)}>
-          <h2>Что писать вместо TODO</h2>
-          <ol>
-            {task.todoGuide.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ol>
-        </section>
-      )}
+      <TaskListSection
+        title="Что писать вместо TODO"
+        items={task.todoGuide ?? []}
+        ordered
+      />
 
-      <section className={clsx("panel", styles.plainPanel)}>
-        <h2>План решения</h2>
-        <ol>
-          {task.steps.map((step) => (
-            <li key={step}>{step}</li>
-          ))}
-        </ol>
-      </section>
+      <TaskListSection
+        title="План решения"
+        items={task.steps}
+        ordered
+        description="Иди по шагам и запускай код после небольших изменений."
+      />
 
-      <section className={clsx("panel", styles.plainPanel)}>
-        <h2>Подсказки</h2>
-        <ul>
-          {task.hints.map((hint) => (
-            <li key={hint}>{hint}</li>
-          ))}
-        </ul>
-      </section>
+      <TaskListSection
+        title="Подсказки"
+        items={task.hints}
+        collapsible
+        description="Открой, если застрял на первом шаге."
+      />
 
-      <section className={clsx("panel", styles.plainPanel)}>
-        <h2>Частые ошибки</h2>
-        <ul>
-          {task.commonMistakes.map((mistake) => (
-            <li key={mistake}>{mistake}</li>
-          ))}
-        </ul>
-      </section>
+      <TaskListSection
+        title="Частые ошибки"
+        items={task.commonMistakes}
+        collapsible
+        description="Проверь перед тем, как считать задачу готовой."
+      />
 
-      <section className={clsx("panel", styles.plainPanel)}>
-        <h2>Самопроверка</h2>
-        <ul>
-          {task.selfCheck.map((item) => (
-            <li key={item}>{item}</li>
-          ))}
-        </ul>
-      </section>
-
-      <section className={clsx("panel", styles.plainPanel, styles.notePanel)}>
-        <h2>Не открывай готовый ответ сразу</h2>
-        <p>Напиши свой вариант и проверь его по чек-листу. Ответ полезен после попытки.</p>
-      </section>
+      <TaskListSection
+        title="Самопроверка"
+        items={task.selfCheck}
+        collapsible
+        description="Короткий чек-лист перед отметкой задачи."
+      />
 
       {theory && (
         <section className={clsx("panel", styles.plainPanel)}>

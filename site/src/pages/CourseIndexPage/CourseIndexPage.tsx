@@ -214,7 +214,7 @@ export function CourseIndexPage({ courseId = "oop-cpp" }: CourseIndexPageProps) 
         <section className={clsx("panel", styles.progress)}>
           <div className={styles.progressItem}>
             <strong>Порядок прохождения</strong>
-            <span>Теория → задача → .cpp файл → самопроверка</span>
+            <span>Теория, задача, .cpp файл и самопроверка.</span>
           </div>
           <div className={styles.progressItem}>
             <strong>{readySections.length} открыто</strong>

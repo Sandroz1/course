@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
-import { getCourseSectionBySlug, isCourseSectionReady } from "../../data/courseSections";
 import { courses, type CourseId } from "../../data/courses";
 import { getStatusLabel } from "../../data/status";
 import { tasks, type TaskLevel } from "../../data/tasks";
@@ -8,6 +7,12 @@ import { getTaskProgressById } from "../../features/course-progress/progressSele
 import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
 import clsx from "clsx";
 import type { TaskProgressStatus } from "../../types/api";
+import {
+  getTaskDisplayStatus,
+  isTaskTheoryClosed,
+  taskCountLabel,
+  taskLevelLabels,
+} from "../../utils/taskDisplay";
 import { TaskCardGrid } from "./components/TaskCardGrid";
 import styles from "./TasksIndexPage.module.scss";
 
@@ -17,9 +22,9 @@ type TaskStatusFilter = "all" | "available" | "in_progress" | "solved" | "needs-
 
 const levelLabels: Record<LevelFilter, string> = {
   all: "все",
-  easy: "легко",
-  medium: "средне",
-  hard: "сложно",
+  easy: taskLevelLabels.easy,
+  medium: taskLevelLabels.medium,
+  hard: taskLevelLabels.hard,
 };
 
 const statusLabels: Record<TaskStatusFilter, string> = {
@@ -30,31 +35,11 @@ const statusLabels: Record<TaskStatusFilter, string> = {
   "needs-theory": getStatusLabel("needs-theory"),
 };
 
-function taskCountLabel(count: number) {
-  const lastTwoDigits = count % 100;
-  const lastDigit = count % 10;
-
-  if (lastTwoDigits >= 11 && lastTwoDigits <= 14) return `${count} задач`;
-  if (lastDigit === 1) return `${count} задача`;
-  if (lastDigit >= 2 && lastDigit <= 4) return `${count} задачи`;
-
-  return `${count} задач`;
-}
-
 function getTaskFilterStatus(
   task: (typeof tasks)[number],
   taskProgressById: Map<string, TaskProgressStatus>,
 ): TaskStatusFilter {
-  const progressStatus = taskProgressById.get(task.id);
-
-  if (progressStatus === "solved") return "solved";
-  if (progressStatus === "in_progress") return "in_progress";
-
-  const theory = getCourseSectionBySlug(task.courseId, task.theorySlug);
-  const hasClosedTheory =
-    task.status === "needs-theory" || (theory ? !isCourseSectionReady(theory) : false);
-
-  return hasClosedTheory ? "needs-theory" : "available";
+  return getTaskDisplayStatus(task, taskProgressById);
 }
 
 export function TasksIndexPage() {
@@ -135,10 +120,7 @@ export function TasksIndexPage() {
       levelFilter !== "all" ||
       sectionFilter !== "all",
   );
-  const closedTheoryTaskCount = filteredTasks.filter((task) => {
-    const theory = getCourseSectionBySlug(task.courseId, task.theorySlug);
-    return task.status === "needs-theory" || (theory ? !isCourseSectionReady(theory) : false);
-  }).length;
+  const closedTheoryTaskCount = filteredTasks.filter(isTaskTheoryClosed).length;
 
   function resetFilters() {
     setQuery("");
