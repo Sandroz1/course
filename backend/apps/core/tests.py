@@ -138,6 +138,38 @@ class AuthApiTests(APITestCase):
         self.assert_refresh_cookie(response)
         self.assertNotIn("password", response.data["user"])
 
+    def test_superuser_is_active_staff_and_can_login_without_phone(self):
+        superuser = User.objects.create_superuser(username="admin", password="StrongPass123!")
+
+        response = self.client.post(
+            "/api/auth/login/",
+            {"username": "admin", "password": "StrongPass123!"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+        access_token = response.data["tokens"]["access"]
+        me_response = APIClient().get(
+            "/api/me/",
+            HTTP_HOST="localhost",
+            HTTP_AUTHORIZATION=f"Bearer {access_token}",
+        )
+
+        self.assertTrue(superuser.is_active)
+        self.assertTrue(superuser.is_staff)
+        self.assertTrue(superuser.is_superuser)
+        self.assertIsNone(superuser.phone)
+        self.assertFalse(superuser.is_phone_verified)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertNotIn("refresh", response.data["tokens"])
+        self.assert_refresh_cookie(response)
+        self.assertEqual(response.data["user"]["username"], "admin")
+        self.assertIsNone(response.data["user"]["phone"])
+        self.assertFalse(response.data["user"]["is_phone_verified"])
+        self.assertEqual(me_response.status_code, status.HTTP_200_OK)
+        self.assertEqual(me_response.data["username"], "admin")
+        self.assertIsNone(me_response.data["phone"])
+        self.assertFalse(me_response.data["is_phone_verified"])
+
     def test_login_wrong_password(self):
         User.objects.create_user(username="alex", password="StrongPass123!")
 
@@ -591,6 +623,21 @@ class AiApiValidationTests(APITestCase):
         response = self.client.post(
             "/api/ai/chat/",
             {"question": "Что такое class?"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        mocked_call_qwen.assert_not_called()
+
+    @patch("apps.ai.views.call_qwen")
+    def test_ai_requires_verified_phone_for_superuser(self, mocked_call_qwen):
+        superuser = User.objects.create_superuser(username="admin", password="StrongPass123!")
+        self.authenticate(superuser)
+
+        response = self.client.post(
+            "/api/ai/chat/",
+            {"question": "class?"},
             format="json",
             HTTP_HOST="localhost",
         )

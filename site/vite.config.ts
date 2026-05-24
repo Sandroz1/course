@@ -2,10 +2,12 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
 const DEFAULT_API_BASE_URL = "/api";
+const DEFAULT_DEV_API_PROXY_TARGET = "http://127.0.0.1:8000";
 
 export default defineConfig(({ command }) => {
   const productionApiBaseUrl =
     command === "build" ? process.env.VITE_API_BASE_URL?.trim() || DEFAULT_API_BASE_URL : undefined;
+  const devApiProxyTarget = process.env.DEV_API_PROXY_TARGET?.trim() || DEFAULT_DEV_API_PROXY_TARGET;
 
   return {
     plugins: [react()],
@@ -17,8 +19,10 @@ export default defineConfig(({ command }) => {
       : undefined,
     server: {
       proxy: {
-        "/api": "http://127.0.0.1:8000",
-        "/admin": "http://127.0.0.1:8000",
+        "/api": devApiProxyTarget,
+        "/admin": devApiProxyTarget,
+        "/static": devApiProxyTarget,
+        "/media": devApiProxyTarget,
       },
     },
     build: {

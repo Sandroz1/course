@@ -69,7 +69,7 @@ npm install
 npm run dev
 ```
 
-Vite проксирует `/api` и `/admin` на локальный backend `http://127.0.0.1:8000`.
+Vite проксирует `/api`, `/admin`, `/static` и `/media` на локальный backend `http://127.0.0.1:8000`.
 
 ## Локальный запуск backend
 
@@ -95,6 +95,14 @@ curl http://127.0.0.1:8000/api/health/
 ```bash
 docker compose -f docker-compose.dev.yml up --build
 ```
+
+Создать superuser в локальном Docker-окружении:
+
+```bash
+docker compose -f docker-compose.dev.yml exec backend python manage.py createsuperuser
+```
+
+После этого admin доступен на `http://localhost:5173/admin/`, а вход на сайт использует обычную форму `http://localhost:5173/login`.
 
 ## Проверки перед push
 
