@@ -75,8 +75,10 @@ export function TaskActionBar({
   message?: string;
   onAction: () => void;
 }) {
+  const hasMessage = Boolean(message);
+
   return (
-    <section className={clsx("panel", styles.taskActionBar)}>
+    <section className={styles.taskActionBar}>
       <div className={styles.actionText}>
         <strong>{title}</strong>
         <span>{description}</span>
@@ -89,11 +91,12 @@ export function TaskActionBar({
       >
         {actionLabel}
       </button>
-      {message && (
-        <p className={styles.actionMessage} aria-live="polite">
-          {message}
-        </p>
-      )}
+      <p
+        className={clsx(styles.actionMessage, !hasMessage && styles.actionMessageEmpty)}
+        aria-live="polite"
+      >
+        {message || "\u00a0"}
+      </p>
     </section>
   );
 }

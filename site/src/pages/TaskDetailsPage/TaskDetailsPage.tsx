@@ -269,9 +269,9 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
 
   return (
     <article className={clsx("reading-page", styles.root)}>
-      <header className={styles.header}>
+      <header className={clsx("panel", styles.header)}>
         <BackLink href={toPath("/tasks")}>К задачам</BackLink>
-        <p className="eyebrow">{task.section}</p>
+        <p className={styles.sectionLabel}>{task.section}</p>
         <h1>{task.title}</h1>
         <MetaRow>
           <MetaItem label="Курс">
@@ -287,6 +287,17 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
             <StatusBadge tone={taskStatusBadge.tone}>{progressStatusLabel}</StatusBadge>
           </MetaItem>
         </MetaRow>
+        {isAuthenticated && (
+          <TaskActionBar
+            title="Работа с задачей"
+            description="Меняй состояние после проверки решения."
+            actionLabel={progressActionLabel}
+            disabled={isProgressLoading || isProgressSaving}
+            primary={effectiveTaskStatus !== "solved"}
+            message={progressMessage}
+            onAction={() => void handleSetTaskStatus(nextTaskStatus)}
+          />
+        )}
       </header>
 
       {hasClosedTheory && (
@@ -298,30 +309,6 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
               : "Теория для этой задачи пока не подключена к курсу."}
           </p>
         </section>
-      )}
-
-      {isAuthenticated && (
-        <TaskActionBar
-          title={
-            isProgressLoading
-              ? "Загружаем прогресс"
-              : effectiveTaskStatus === "solved"
-                ? "Задача решена"
-                : effectiveTaskStatus === "in_progress"
-                  ? "Задача в работе"
-                  : "Можно начать"
-          }
-          description={
-            effectiveTaskStatus === "solved"
-              ? "Отметку можно снять, если хочешь вернуться к задаче."
-              : "Сохрани состояние, чтобы вернуться к задаче позже."
-          }
-          actionLabel={progressActionLabel}
-          disabled={isProgressLoading || isProgressSaving}
-          primary={effectiveTaskStatus !== "solved"}
-          message={progressMessage}
-          onAction={() => void handleSetTaskStatus(nextTaskStatus)}
-        />
       )}
 
       <section className={clsx("panel", styles.goal)}>
