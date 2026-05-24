@@ -1,7 +1,10 @@
 /* Reusable badges, topics and content panels */
 
 .status-badge {
+  display: inline-flex;
+  align-items: center;
   width: fit-content;
+  min-height: 1.625rem;
   border: 1px solid var(--border-muted);
   border-radius: 999px;
   background: var(--surface-subtle);
@@ -73,6 +76,7 @@
   border-radius: 999px;
   color: var(--muted);
   font-size: 0.8125rem;
+  line-height: 1.25;
   padding: 0.25rem 0.5rem;
 }
 
@@ -93,10 +97,10 @@
 
 .callout {
   border-left: 3px solid var(--accent);
-  border-radius: 0.4375rem;
+  border-radius: 0.625rem;
   color: var(--soft);
-  margin: 0.875rem 0;
-  padding: 0.75rem 0.875rem;
+  margin: 1rem 0;
+  padding: 0.8125rem 0.9375rem;
 }
 
 .important-panel,

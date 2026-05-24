@@ -1,24 +1,25 @@
 /* Shared reading typography and course helpers */
 
 .reading-page h2 {
-  margin: 1.125rem 0 0.5625rem;
-  font-size: 1.3125rem;
-  line-height: 1.18;
+  margin: 1.375rem 0 0.625rem;
+  font-size: 1.375rem;
+  line-height: 1.16;
+  text-wrap: balance;
 }
 
 .reading-page h3 {
-  margin: 1rem 0 0.4375rem;
+  margin: 1.125rem 0 0.5rem;
   color: var(--soft);
   line-height: 1.25;
 }
 
 .reading-page p,
 .reading-page li {
-  line-height: 1.62;
+  line-height: 1.68;
 }
 
 .reading-page li {
-  margin: 0.4375rem 0;
+  margin: 0.375rem 0;
   color: var(--soft);
 }
 
@@ -26,8 +27,10 @@
   width: fit-content;
   color: var(--muted);
   font-size: 0.875rem;
+  font-weight: 650;
 }
 
-.back-link:hover {
+.back-link:hover,
+.back-link:focus-visible {
   color: var(--text);
 }
