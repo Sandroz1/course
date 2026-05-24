@@ -8,12 +8,11 @@ Uchicode — учебная платформа по C++ с отдельными 
 - Backend: Django REST Framework.
 - Production: VPS `play2go.cloud`, Docker Compose, host Nginx, HTTPS для `uchicode.ru`.
 - API работает same-origin через `/api`; frontend endpoints должны быть относительными к base URL `/api`.
-- `origin/main` содержит hotfix `1cfbdb5 Fix frontend API paths`, который убирает ошибку `/api/api/...`.
-- `v0.1.2` может запускать production deploy через GitHub Actions при push tag `v*`; tag публиковать только осознанно.
+- GitHub Actions deploy запускается от tag `v*`; production tag публиковать только осознанно.
 
 ## Курсы
 
-- `base-cpp` — отдельный курс "База C++". Сейчас готовы условия и циклы `for`, `while`, `do while`; ранние темы до условий помечены как теория на доработке.
+- `base-cpp` — отдельный курс "База C++". Сейчас готовы условия, циклы и накопление значений в циклах; ранние темы до условий помечены как теория на доработке.
 - `oop-cpp` — отдельный курс по ООП C++. Он не должен смешиваться с `base-cpp`.
 
 ## Структура проекта
@@ -95,6 +94,8 @@ curl http://127.0.0.1:8000/api/health/
 ```bash
 docker compose -f docker-compose.dev.yml up --build
 ```
+
+Dev compose использует имя проекта `uchicode-dev`, production compose — `uchicode-prod`. Так локальный dev-запуск не пересекается с production smoke-сборкой из той же папки.
 
 Создать superuser в локальном Docker-окружении:
 

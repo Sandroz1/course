@@ -1,3 +1,5 @@
+name: uchicode-dev
+
 services:
   postgres:
     image: postgres:16-alpine
@@ -31,9 +33,11 @@ services:
   backend:
     build:
       context: ./backend
-    command: python manage.py runserver 0.0.0.0:8000
+    command: >
+      sh -c "python manage.py migrate --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
     environment:
-      DJANGO_SECRET_KEY: dev-only-change-me
+      DJANGO_SECRET_KEY: dev-only-uchicode-secret-key-change-me-32
       DJANGO_DEBUG: "True"
       DJANGO_ALLOWED_HOSTS: localhost,127.0.0.1,0.0.0.0,backend
       DJANGO_CORS_ALLOWED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
