@@ -10,6 +10,22 @@ export type TaskDisplayStatus = "available" | "needs-theory" | "in_progress" | "
 
 export const visibleTaskTopicLimit = 3;
 
+const genericSingleFilePlan = [
+  "Откройте указанный файл в папке practice.",
+  "Найдите TODO и прочитайте условие в комментариях.",
+  "Напишите минимальный рабочий вариант, не пытаясь сразу сделать красиво.",
+  "Скомпилируйте файл отдельно как C++17 программу.",
+  "Если есть ошибка компилятора, исправляйте первую ошибку сверху, затем запускайте снова.",
+];
+
+const genericMultiFilePlan = [
+  "Откройте все файлы задачи.",
+  "В .hpp оставьте объявление класса: поля и заголовки методов.",
+  "В .cpp подключите .hpp и реализуйте методы через ClassName::methodName.",
+  "В main.cpp создайте объект и вызовите методы для проверки.",
+  "При сборке компилируйте main.cpp вместе с файлом реализации .cpp.",
+];
+
 export const taskLevelLabels: Record<TaskLevel, string> = {
   easy: "легко",
   medium: "средне",
@@ -66,4 +82,12 @@ export function getTaskDisplayTone(status: TaskDisplayStatus) {
   if (status === "needs-theory") return "warning";
 
   return "success";
+}
+
+function samePlan(first: string[], second: string[]) {
+  return first.length === second.length && first.every((item, index) => item === second[index]);
+}
+
+export function isGenericTaskPlan(steps: string[]) {
+  return samePlan(steps, genericSingleFilePlan) || samePlan(steps, genericMultiFilePlan);
 }

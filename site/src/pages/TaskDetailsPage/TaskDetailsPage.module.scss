@@ -163,57 +163,134 @@
   padding: 0;
 }
 
-.collapsiblePanel summary {
+.disclosureButton {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  min-height: 4.5rem;
+  border: 0;
+  border-radius: inherit;
+  background: transparent;
+  color: inherit;
   cursor: pointer;
+  font: inherit;
   padding: 1rem;
+  text-align: left;
+  transition:
+    background 150ms ease,
+    color 150ms ease;
 }
 
-.collapsiblePanel summary::marker {
-  color: var(--muted);
+.disclosureButton:hover,
+.disclosureButton:focus-visible {
+  background: color-mix(in srgb, var(--surface-2) 58%, transparent);
 }
 
-.collapsiblePanel summary:focus-visible {
+.disclosureButton:focus-visible {
   outline: 2px solid color-mix(in srgb, var(--accent) 72%, transparent);
   outline-offset: 2px;
 }
 
-.collapsiblePanel summary span:first-child {
-  display: inline-grid;
+.disclosureText {
+  display: grid;
   gap: 0.1875rem;
-  max-width: calc(100% - 6rem);
-  margin-left: 0.25rem;
-  vertical-align: top;
+  min-width: 0;
 }
 
-.collapsiblePanel summary strong {
+.disclosureText strong {
   color: var(--text);
 }
 
-.collapsiblePanel summary small {
+.disclosureText small {
   color: var(--muted);
   font-size: 0.8125rem;
   line-height: 1.4;
 }
 
-.collapsiblePanel summary > span:last-child {
-  float: right;
+.disclosureMeta {
   width: fit-content;
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--muted);
   font-size: 0.75rem;
   font-weight: 800;
-  margin-left: 0.75rem;
   padding: 0.1875rem 0.5rem;
+  white-space: nowrap;
 }
 
-.collapsiblePanel[open] summary {
+.disclosureChevron {
+  position: relative;
+  display: inline-flex;
+  width: 1.75rem;
+  height: 1.75rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--surface-2) 56%, transparent);
+}
+
+.disclosureChevron::before {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-right: 2px solid var(--muted);
+  border-bottom: 2px solid var(--muted);
+  content: "";
+  transform: translateY(-0.125rem) rotate(45deg);
+  transition:
+    border-color 150ms ease,
+    transform 150ms ease;
+}
+
+.disclosureButton:hover .disclosureChevron::before,
+.disclosureButton:focus-visible .disclosureChevron::before {
+  border-color: var(--text);
+}
+
+.collapsiblePanelOpen .disclosureButton {
   border-bottom: 1px solid var(--line);
+  border-radius: 0.625rem 0.625rem 0 0;
 }
 
-.collapsiblePanel .taskList {
+.collapsiblePanelOpen .disclosureChevron::before {
+  border-color: var(--accent);
+  transform: translateY(0.125rem) rotate(225deg);
+}
+
+.disclosureContent .taskList {
   margin: 0;
   padding: 1rem;
+}
+
+.guideNote {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--line) 78%);
+  background: color-mix(in srgb, var(--surface-2) 56%, transparent);
+}
+
+.guideNote h2,
+.guideNote p {
+  margin: 0;
+}
+
+.guideNote h2 {
+  font-size: 1.125rem;
+}
+
+.guideNote p {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+.guideNote div {
+  display: grid;
+  gap: 0.25rem;
 }
 
 .codePanel {
@@ -291,5 +368,28 @@
 
   .progressMessage {
     grid-column: auto;
+  }
+
+  .disclosureButton {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .disclosureMeta {
+    grid-column: 1;
+    width: fit-content;
+  }
+
+  .disclosureChevron {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+  }
+
+  .guideNote {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .guideNote :global(.button) {
+    width: 100%;
   }
 }

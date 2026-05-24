@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useEffect, useState } from "react";
+import { type KeyboardEvent, useEffect, useId, useState } from "react";
 import {
   getCourseSectionBySlug,
   getCourseSectionPath,
@@ -22,6 +22,7 @@ import {
   getTaskDisplayLabel,
   getTaskDisplayStatus,
   getTaskDisplayTone,
+  isGenericTaskPlan,
   isTaskTheoryClosed,
 } from "../../utils/taskDisplay";
 import styles from "./TaskDetailsPage.module.scss";
@@ -72,20 +73,39 @@ function TaskListSection({
   collapsible = false,
   description,
 }: TaskListSectionProps) {
+  const contentId = useId();
+  const [isOpen, setIsOpen] = useState(false);
+
   if (items.length === 0) return null;
 
   if (collapsible) {
     return (
-      <details className={clsx("panel", styles.plainPanel, styles.collapsiblePanel)}>
-        <summary>
-          <span>
+      <section
+        className={clsx(
+          "panel",
+          styles.plainPanel,
+          styles.collapsiblePanel,
+          isOpen && styles.collapsiblePanelOpen,
+        )}
+      >
+        <button
+          className={styles.disclosureButton}
+          type="button"
+          aria-expanded={isOpen}
+          aria-controls={contentId}
+          onClick={() => setIsOpen((value) => !value)}
+        >
+          <span className={styles.disclosureText}>
             <strong>{title}</strong>
             {description && <small>{description}</small>}
           </span>
-          <span>{pointCountLabel(items.length)}</span>
-        </summary>
-        <TaskItemList items={items} ordered={ordered} />
-      </details>
+          <span className={styles.disclosureMeta}>{pointCountLabel(items.length)}</span>
+          <span className={styles.disclosureChevron} aria-hidden="true" />
+        </button>
+        <div className={styles.disclosureContent} id={contentId} hidden={!isOpen}>
+          <TaskItemList items={items} ordered={ordered} />
+        </div>
+      </section>
     );
   }
 
@@ -94,6 +114,24 @@ function TaskListSection({
       <h2>{title}</h2>
       {description && <p className={styles.panelDescription}>{description}</p>}
       <TaskItemList items={items} ordered={ordered} />
+    </section>
+  );
+}
+
+function TaskGuideNote({ hasSpecificPlan }: { hasSpecificPlan: boolean }) {
+  return (
+    <section className={clsx("panel", styles.guideNote)}>
+      <div>
+        <h2>{hasSpecificPlan ? "Общий порядок работы" : "Как начать задачу"}</h2>
+        <p>
+          {hasSpecificPlan
+            ? "Общие шаги вынесены в методику. Ниже оставлены только шаги, важные именно для этой задачи."
+            : "Типовой план решения вынесен в методику, чтобы не повторять его в каждой задаче."}
+        </p>
+      </div>
+      <a className="button button--small" href={toPath("/guide")}>
+        Как решать задачи
+      </a>
     </section>
   );
 }
@@ -227,6 +265,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
     label: getTaskDisplayLabel(displayStatus),
     tone: getTaskDisplayTone(displayStatus),
   };
+  const hasSpecificPlan = !isGenericTaskPlan(task.steps);
   const nextTaskStatus: TaskProgressStatus =
     effectiveTaskStatus === "solved"
       ? "in_progress"
@@ -352,12 +391,16 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         ordered
       />
 
-      <TaskListSection
-        title="План решения"
-        items={task.steps}
-        ordered
-        description="Иди по шагам и запускай код после небольших изменений."
-      />
+      <TaskGuideNote hasSpecificPlan={hasSpecificPlan} />
+
+      {hasSpecificPlan && (
+        <TaskListSection
+          title="Шаги для этой задачи"
+          items={task.steps}
+          ordered
+          description="Здесь только действия, которые отличаются от общего порядка."
+        />
+      )}
 
       <TaskListSection
         title="Подсказки"

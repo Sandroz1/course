@@ -141,37 +141,33 @@
   margin: 0;
   padding: 0;
   list-style: none;
+  counter-reset: guide-action;
 }
 
 .actionList li {
+  counter-increment: guide-action;
   display: grid;
-  grid-template-columns: 16px minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 9px;
   align-items: start;
   margin: 0;
   color: var(--soft);
 }
 
-.actionList li > span {
-  position: relative;
-  width: 16px;
-  height: 16px;
-  margin-top: 3px;
+.actionList li::before {
+  content: counter(guide-action);
+  display: inline-grid;
+  min-width: 20px;
+  height: 20px;
+  margin-top: 1px;
+  place-items: center;
   border: 1px solid var(--accent-border-muted);
-  border-radius: 999px;
+  border-radius: 6px;
   background: var(--accent-surface);
-}
-
-.actionList li > span::after {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 5px;
-  width: 4px;
-  height: 7px;
-  border-right: 2px solid var(--accent);
-  border-bottom: 2px solid var(--accent);
-  transform: rotate(42deg);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+  line-height: 1;
 }
 
 .actionList p {
