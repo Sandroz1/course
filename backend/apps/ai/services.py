@@ -114,7 +114,9 @@ def extract_token_usage(payload: dict[str, Any]) -> dict[str, int]:
 
 
 def call_qwen(messages: list[dict[str, str]]) -> AiProviderResult:
-    if not settings.QWEN_API_KEY:
+    api_key = (settings.QWEN_API_KEY or "").strip()
+
+    if not api_key:
         raise UpstreamAiError(
             "AI-сервис временно не настроен.",
             status.HTTP_503_SERVICE_UNAVAILABLE,
@@ -132,7 +134,7 @@ def call_qwen(messages: list[dict[str, str]]) -> AiProviderResult:
         response = requests.post(
             f"{settings.QWEN_BASE_URL.rstrip('/')}/chat/completions",
             headers={
-                "Authorization": f"Bearer {settings.QWEN_API_KEY}",
+                "Authorization": f"Bearer {api_key}",
                 "Content-Type": "application/json",
             },
             json={

@@ -36,6 +36,9 @@ services:
     command: >
       sh -c "python manage.py migrate --noinput &&
              python manage.py runserver 0.0.0.0:8000"
+    env_file:
+      - path: ./backend/.env
+        required: false
     environment:
       DJANGO_SECRET_KEY: dev-only-uchicode-secret-key-change-me-32
       DJANGO_DEBUG: "True"
@@ -44,9 +47,6 @@ services:
       DJANGO_CSRF_TRUSTED_ORIGINS: http://localhost:5173,http://127.0.0.1:5173
       DATABASE_URL: postgres://uchicode:uchicode_dev_password@postgres:5432/uchicode_dev
       REDIS_URL: redis://redis:6379/1
-      QWEN_API_KEY: ""
-      QWEN_BASE_URL: https://dashscope-intl.aliyuncs.com/compatible-mode/v1
-      QWEN_MODEL: qwen-plus
       DJANGO_SECURE_SSL: "False"
       DJANGO_SESSION_COOKIE_SECURE: "False"
       DJANGO_CSRF_COOKIE_SECURE: "False"

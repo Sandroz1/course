@@ -97,6 +97,8 @@ docker compose -f docker-compose.dev.yml up --build
 
 Dev compose использует имя проекта `uchicode-dev`, production compose — `uchicode-prod`. Так локальный dev-запуск не пересекается с production smoke-сборкой из той же папки.
 
+Backend в dev compose читает `backend/.env`, а затем применяет явные Docker-настройки для локальной БД, Redis, hosts и cookies. Не задавайте секреты в `environment` пустыми строками: `environment` перекрывает `env_file`.
+
 Создать superuser в локальном Docker-окружении:
 
 ```bash
@@ -161,8 +163,17 @@ POSTGRES_USER
 POSTGRES_PASSWORD
 REDIS_URL
 QWEN_API_KEY
+QWEN_BASE_URL
+QWEN_MODEL
+AI_DAILY_REQUEST_LIMIT
+AI_GLOBAL_DAILY_REQUEST_LIMIT
 SMS_PROVIDER
+SMS_API_KEY
+SMS_LOGIN
+SMS_PASSWORD
 ```
+
+Для Qwen используется имя `QWEN_BASE_URL`; `QWEN_API_URL` проект не читает. Если `QWEN_API_KEY` пустой, сайт работает, а AI endpoint возвращает контролируемый `503`.
 
 Production frontend по умолчанию использует:
 
@@ -171,6 +182,8 @@ VITE_API_BASE_URL=/api
 ```
 
 Endpoint в frontend должен быть без второго `/api`, например `/auth/register/`, чтобы итоговый URL был `/api/auth/register/`.
+
+Не добавляйте `QWEN_API_KEY`, SMS keys, Django secrets или database credentials в `site/.env*`: все `VITE_*` значения попадают в browser bundle.
 
 ## Production
 

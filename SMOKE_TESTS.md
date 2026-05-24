@@ -88,7 +88,7 @@ Auth/progress:
 AI:
 
 - без подтверждённого телефона AI недоступен;
-- если `QWEN_API_KEY` пустой, `/api/ai/chat/` может возвращать `503`; это ожидаемое состояние незаполненной интеграции.
+- если `QWEN_API_KEY` пустой, `/api/ai/chat/` возвращает контролируемый `503`; frontend должен показать понятное сообщение о временной недоступности AI.
 
 ## Production config
 
@@ -98,6 +98,34 @@ AI:
 cd /opt/uchicode/app
 cut -d= -f1 .env.production | sed '/^#/d;/^$/d'
 grep -n "change-me\|changeme\|password\|secret\|example" .env.production || echo "ok: placeholders not found"
+```
+
+Проверить наличие важных env без вывода значений:
+
+```bash
+python3 - <<'PY'
+from pathlib import Path
+
+env = {}
+for line in Path(".env.production").read_text().splitlines():
+    line = line.strip()
+    if not line or line.startswith("#") or "=" not in line:
+        continue
+    key, value = line.split("=", 1)
+    env[key] = value
+
+for key in [
+    "DJANGO_SECRET_KEY",
+    "DATABASE_URL",
+    "POSTGRES_PASSWORD",
+    "REDIS_URL",
+    "QWEN_API_KEY",
+    "QWEN_BASE_URL",
+    "QWEN_MODEL",
+    "SMS_PROVIDER",
+]:
+    print(f"{key} set:", bool(env.get(key, "").strip()))
+PY
 ```
 
 Критично:

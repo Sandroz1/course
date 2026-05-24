@@ -44,6 +44,10 @@ export function getAiErrorMessage(error: unknown) {
         return `${error.message || "Лимит запросов к AI исчерпан."}${retryText}`;
     }
 
+    if (error.status === 503) {
+        return "AI временно недоступен. Проверьте настройки сервера.";
+    }
+
     if (error.status >= 500 || error.status === 0) {
         return error.message || "AI-сервис временно недоступен.";
     }

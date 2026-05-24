@@ -13,7 +13,7 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.test import APIClient, APITestCase
 
 from apps.ai.models import AiDailyUsage, AiGlobalDailyUsage
-from apps.ai.services import AiProviderResult, UpstreamAiError
+from apps.ai.services import AiProviderResult, UpstreamAiError, call_qwen
 from apps.accounts.models import PhoneVerificationCode
 from apps.accounts.serializers import normalize_phone
 from config.settings import database_url_has_placeholder
@@ -29,6 +29,14 @@ class ProductionEnvValidationTests(SimpleTestCase):
         self.assertTrue(database_url_has_placeholder("postgres://uchicode:secret@db:5432/uchicode"))
         self.assertTrue(database_url_has_placeholder("postgres://uchicode:strong-pass@example-db:5432/uchicode"))
         self.assertFalse(database_url_has_placeholder("postgres://uchicode:strong-pass-123@db:5432/uchicode"))
+
+    @override_settings(QWEN_API_KEY="   ")
+    def test_blank_qwen_api_key_is_treated_as_missing(self):
+        with self.assertRaises(UpstreamAiError) as context:
+            call_qwen([])
+
+        self.assertEqual(context.exception.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+        self.assertEqual(context.exception.message, "AI-сервис временно не настроен.")
 
 
 class HealthApiTests(APITestCase):
@@ -644,6 +652,22 @@ class AiApiValidationTests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         mocked_call_qwen.assert_not_called()
+
+    @override_settings(QWEN_API_KEY="")
+    @patch("requests.post")
+    def test_ai_missing_qwen_key_returns_503_without_provider_request(self, mocked_post):
+        self.authenticate()
+
+        response = self.client.post(
+            "/api/ai/chat/",
+            {"question": "class?"},
+            format="json",
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+        self.assertEqual(response.data["message"], "AI-сервис временно не настроен.")
+        mocked_post.assert_not_called()
 
     def test_ai_validation_empty_question(self):
         self.authenticate()
