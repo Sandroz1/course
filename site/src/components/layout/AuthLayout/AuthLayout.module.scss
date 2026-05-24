@@ -15,7 +15,7 @@
   gap: 1rem;
   width: 100%;
   border: 1px solid var(--border-muted);
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 18%, transparent), transparent 38%),
     var(--surface);
@@ -78,7 +78,7 @@
   width: 100%;
   min-height: 2.75rem;
   border: 1px solid var(--border-muted);
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
   background: color-mix(in srgb, var(--surface-2) 88%, var(--bg) 12%);
   color: var(--text);
   font: inherit;
@@ -97,9 +97,8 @@
 
 .input:focus-visible {
   border-color: var(--accent-border);
-  outline: 2px solid color-mix(in srgb, var(--accent-strong) 76%, transparent);
-  outline-offset: 2px;
-  box-shadow: 0 0 0 4px var(--accent-surface);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+  outline: none;
 }
 
 .input::placeholder {
@@ -125,7 +124,7 @@
   align-items: center;
   min-height: 2.25rem;
   border: 1px solid var(--danger-border-muted);
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
   background: var(--danger-surface);
   color: var(--danger);
   line-height: 1.4;

@@ -289,8 +289,8 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </MetaRow>
         {isAuthenticated && (
           <TaskActionBar
-            title="Работа с задачей"
-            description="Меняй состояние после проверки решения."
+            title="Прогресс"
+            description={progressStatusLabel}
             actionLabel={progressActionLabel}
             disabled={isProgressLoading || isProgressSaving}
             primary={effectiveTaskStatus !== "solved"}
