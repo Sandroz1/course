@@ -1,28 +1,25 @@
-import { ProgressBadge } from "../../../components/shared/ProgressBadge/ProgressBadge";
 import { getCourseById } from "../../../data/courses";
 import { tasks } from "../../../data/tasks";
 import clsx from "clsx";
 import type { TaskProgressStatus } from "../../../types/api";
 import {
+  MetaItem,
+  MetaRow,
+  StatusBadge,
+} from "../../../components/shared/LearningUi/LearningUi";
+import {
   fileCountLabel,
   getTaskDisplayLabel,
   getTaskDisplayStatus,
+  getTaskDisplayTone,
   isTaskTheoryClosed,
+  taskLevelLabels,
   visibleTaskTopicLimit,
-  type TaskDisplayStatus,
 } from "../../../utils/taskDisplay";
 import { toPath } from "../../../utils/slug";
 import styles from "./TaskCard.module.scss";
 
 type Task = (typeof tasks)[number];
-
-function getTaskStatusClass(status: TaskDisplayStatus) {
-  if (status === "solved") return styles.statusSolved;
-  if (status === "in_progress") return styles.statusInProgress;
-  if (status === "needs-theory") return styles.statusLocked;
-
-  return styles.statusAvailable;
-}
 
 export function TaskCard({
   task,
@@ -35,6 +32,7 @@ export function TaskCard({
   const course = getCourseById(task.courseId);
   const displayStatus = getTaskDisplayStatus(task, taskProgressById);
   const displayLabel = getTaskDisplayLabel(displayStatus);
+  const displayTone = getTaskDisplayTone(displayStatus);
   const visibleTopics = task.topics.slice(0, visibleTaskTopicLimit);
   const hiddenTopicCount = Math.max(task.topics.length - visibleTaskTopicLimit, 0);
 
@@ -51,19 +49,14 @@ export function TaskCard({
             {course?.shortTitle ?? "Курс"}: {task.section}
           </span>
         </div>
-        <ProgressBadge level={task.level} />
-      </div>
-      <div className={styles.statusRow}>
-        <span
-          className={clsx(
-            styles.statusBadge,
-            getTaskStatusClass(displayStatus),
-          )}
-        >
+        <StatusBadge tone={displayTone} className={styles.statusBadge}>
           {displayLabel}
-        </span>
+        </StatusBadge>
       </div>
-      <span className={styles.goal}>Цель: {task.goal}</span>
+      <MetaRow compact className={styles.metaRow}>
+        <MetaItem label="Сложность">{taskLevelLabels[task.level]}</MetaItem>
+        <MetaItem label="Файлы">{fileCountLabel(task.files.length)}</MetaItem>
+      </MetaRow>
       <div className={clsx("topic-list topic-list--compact", styles.topics)}>
         {visibleTopics.map((topic) => (
           <span key={topic}>{topic}</span>
@@ -71,7 +64,6 @@ export function TaskCard({
         {hiddenTopicCount > 0 && <span>ещё {hiddenTopicCount}</span>}
       </div>
       <span className={styles.footer}>
-        <span className={styles.fileCount}>{fileCountLabel(task.files.length)}</span>
         <span className={styles.cta}>Открыть</span>
       </span>
     </a>

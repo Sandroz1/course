@@ -27,9 +27,9 @@ const genericMultiFilePlan = [
 ];
 
 export const taskLevelLabels: Record<TaskLevel, string> = {
-  easy: "легко",
-  medium: "средне",
-  hard: "сложно",
+  easy: "базовая",
+  medium: "средняя",
+  hard: "сложная",
 };
 
 export function fileCountLabel(count: number) {
@@ -76,7 +76,7 @@ export function getTaskDisplayLabel(status: TaskDisplayStatus) {
   return getStatusLabel("available");
 }
 
-export function getTaskDisplayTone(status: TaskDisplayStatus) {
+export function getTaskDisplayTone(status: TaskDisplayStatus): "success" | "info" | "warning" {
   if (status === "solved") return "success";
   if (status === "in_progress") return "info";
   if (status === "needs-theory") return "warning";

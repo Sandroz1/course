@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
+import { CollapsibleSection } from "../../components/shared/LearningUi/LearningUi";
 import clsx from "clsx";
 import styles from "./CommonErrorsPage.module.scss";
 
@@ -180,13 +181,12 @@ export function CommonErrorsPage() {
 
       <div className={styles.list}>
         {filteredErrors.map((error) => (
-          <details className={clsx("panel", styles.card)} key={error.title}>
-            <summary className={styles.summary}>
-              <strong className={styles.summaryTitle}>{error.title}</strong>
-              <span className={styles.summaryText}>
-                <InlineText text={error.symptom} />
-              </span>
-            </summary>
+          <CollapsibleSection
+            className={styles.card}
+            key={error.title}
+            title={error.title}
+            description={<InlineText text={error.symptom} />}
+          >
             <div className={styles.cardBody}>
               <section className={styles.reason}>
                 <h3>Почему так происходит</h3>
@@ -208,7 +208,7 @@ export function CommonErrorsPage() {
                 <strong>Запомнить:</strong> <InlineText text={error.remember} />
               </p>
             </div>
-          </details>
+          </CollapsibleSection>
         ))}
       </div>
 

@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useEffect, useId, useState } from "react";
+import { type KeyboardEvent, useEffect, useState } from "react";
 import {
   getCourseSectionBySlug,
   getCourseSectionPath,
@@ -16,7 +16,14 @@ import clsx from "clsx";
 import type { TaskProgressStatus } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
-import { ProgressBadge } from "../../components/shared/ProgressBadge/ProgressBadge";
+import {
+  BackLink,
+  CollapsibleSection,
+  MetaItem,
+  MetaRow,
+  StatusBadge,
+  TaskActionBar,
+} from "../../components/shared/LearningUi/LearningUi";
 import {
   fileCountLabel,
   getTaskDisplayLabel,
@@ -24,6 +31,7 @@ import {
   getTaskDisplayTone,
   isGenericTaskPlan,
   isTaskTheoryClosed,
+  taskLevelLabels,
 } from "../../utils/taskDisplay";
 import styles from "./TaskDetailsPage.module.scss";
 
@@ -73,39 +81,17 @@ function TaskListSection({
   collapsible = false,
   description,
 }: TaskListSectionProps) {
-  const contentId = useId();
-  const [isOpen, setIsOpen] = useState(false);
-
   if (items.length === 0) return null;
 
   if (collapsible) {
     return (
-      <section
-        className={clsx(
-          "panel",
-          styles.plainPanel,
-          styles.collapsiblePanel,
-          isOpen && styles.collapsiblePanelOpen,
-        )}
+      <CollapsibleSection
+        title={title}
+        description={description}
+        countLabel={pointCountLabel(items.length)}
       >
-        <button
-          className={styles.disclosureButton}
-          type="button"
-          aria-expanded={isOpen}
-          aria-controls={contentId}
-          onClick={() => setIsOpen((value) => !value)}
-        >
-          <span className={styles.disclosureText}>
-            <strong>{title}</strong>
-            {description && <small>{description}</small>}
-          </span>
-          <span className={styles.disclosureMeta}>{pointCountLabel(items.length)}</span>
-          <span className={styles.disclosureChevron} aria-hidden="true" />
-        </button>
-        <div className={styles.disclosureContent} id={contentId} hidden={!isOpen}>
-          <TaskItemList items={items} ordered={ordered} />
-        </div>
-      </section>
+        <TaskItemList items={items} ordered={ordered} />
+      </CollapsibleSection>
     );
   }
 
@@ -265,6 +251,14 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
     label: getTaskDisplayLabel(displayStatus),
     tone: getTaskDisplayTone(displayStatus),
   };
+  const progressStatusLabel = isProgressLoading ? "Проверяем..." : taskStatusBadge.label;
+  const progressActionLabel = isProgressSaving
+    ? "Сохраняем..."
+    : effectiveTaskStatus === "solved"
+      ? "Снять отметку"
+      : effectiveTaskStatus === "in_progress"
+        ? "Отметить решённой"
+        : "Начать задачу";
   const hasSpecificPlan = !isGenericTaskPlan(task.steps);
   const nextTaskStatus: TaskProgressStatus =
     effectiveTaskStatus === "solved"
@@ -276,19 +270,23 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
   return (
     <article className={clsx("reading-page", styles.root)}>
       <header className={styles.header}>
-        <a className="back-link" href={toPath("/tasks")}>
-          К задачам
-        </a>
+        <BackLink href={toPath("/tasks")}>К задачам</BackLink>
         <p className="eyebrow">{task.section}</p>
         <h1>{task.title}</h1>
-        <div className={styles.summary}>
-          <ProgressBadge level={task.level} />
-          <span>{course?.shortTitle ?? "Курс"}</span>
-          <span>{fileCountLabel(task.files.length)}</span>
-          <span className={`status-badge status-badge--${taskStatusBadge.tone}`}>
-            {taskStatusBadge.label}
-          </span>
-        </div>
+        <MetaRow>
+          <MetaItem label="Курс">
+            {course?.shortTitle ?? "Курс"}
+          </MetaItem>
+          <MetaItem label="Сложность">
+            {taskLevelLabels[task.level]}
+          </MetaItem>
+          <MetaItem label="Файлы">
+            {fileCountLabel(task.files.length)}
+          </MetaItem>
+          <MetaItem label="Статус">
+            <StatusBadge tone={taskStatusBadge.tone}>{progressStatusLabel}</StatusBadge>
+          </MetaItem>
+        </MetaRow>
       </header>
 
       {hasClosedTheory && (
@@ -303,43 +301,27 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
       )}
 
       {isAuthenticated && (
-        <section className={clsx("panel", styles.progressPanel)}>
-          <div>
-            <strong>Прогресс задачи</strong>
-            <span>
-              {isProgressLoading
-                ? "Проверяем..."
-                : effectiveTaskStatus === "solved"
-                  ? "Решена"
-                  : effectiveTaskStatus === "in_progress"
-                    ? "В работе"
-                    : "Доступно"}
-            </span>
-          </div>
-          <button
-            className={clsx("button", effectiveTaskStatus !== "solved" && "button--primary")}
-            type="button"
-            disabled={isProgressLoading || isProgressSaving}
-            onClick={() => void handleSetTaskStatus(nextTaskStatus)}
-          >
-            {isProgressSaving
-              ? "Сохраняем..."
+        <TaskActionBar
+          title={
+            isProgressLoading
+              ? "Загружаем прогресс"
               : effectiveTaskStatus === "solved"
-                ? "Вернуть в работу"
+                ? "Задача решена"
                 : effectiveTaskStatus === "in_progress"
-                  ? "Отметить решённой"
-                  : "Начать"}
-          </button>
-          <span
-            className={clsx(
-              styles.progressMessage,
-              !progressMessage && styles.progressMessageEmpty,
-            )}
-            aria-live="polite"
-          >
-            {progressMessage || " "}
-          </span>
-        </section>
+                  ? "Задача в работе"
+                  : "Можно начать"
+          }
+          description={
+            effectiveTaskStatus === "solved"
+              ? "Отметку можно снять, если хочешь вернуться к задаче."
+              : "Сохрани состояние, чтобы вернуться к задаче позже."
+          }
+          actionLabel={progressActionLabel}
+          disabled={isProgressLoading || isProgressSaving}
+          primary={effectiveTaskStatus !== "solved"}
+          message={progressMessage}
+          onAction={() => void handleSetTaskStatus(nextTaskStatus)}
+        />
       )}
 
       <section className={clsx("panel", styles.goal)}>

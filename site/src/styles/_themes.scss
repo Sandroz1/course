@@ -40,7 +40,7 @@
   --course-inline-code-border: color-mix(in srgb, var(--accent) 18%, var(--border) 82%);
   --string: #ce9178;
   --comment: #6a9955;
-  font-family: Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
 }
 
 :root[data-theme="light"] {

@@ -24,13 +24,38 @@
 }
 
 .back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4375rem;
   width: fit-content;
+  min-height: 2rem;
+  border: 1px solid transparent;
+  border-radius: 0.5rem;
   color: var(--muted);
   font-size: 0.875rem;
-  font-weight: 650;
+  font-weight: 750;
+  line-height: 1;
+  padding: 0.3125rem 0.5rem 0.3125rem 0;
+  transition:
+    border-color 150ms ease,
+    color 150ms ease,
+    background 150ms ease,
+    padding 150ms ease;
+}
+
+.back-link::before {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-left: 2px solid currentColor;
+  border-bottom: 2px solid currentColor;
+  content: "";
+  transform: rotate(45deg);
 }
 
 .back-link:hover,
 .back-link:focus-visible {
+  border-color: var(--border-subtle);
+  background: var(--surface-2);
   color: var(--text);
+  padding-left: 0.5rem;
 }
