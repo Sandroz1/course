@@ -23,9 +23,9 @@
 Проверка:
 npm run lint
 npm run build
-docker compose -f docker-compose.prod.yml config
-docker compose -f docker-compose.prod.yml build --pull
-docker compose -f docker-compose.prod.yml up -d --remove-orphans
+docker compose -p app -f docker-compose.prod.yml config
+docker compose -p app -f docker-compose.prod.yml build --pull
+docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 curl -fsS http://127.0.0.1:8080/nginx-health
 curl -fsS http://127.0.0.1:8080/api/health
 
@@ -63,8 +63,8 @@ Frontend отправляет запросы на /api/api/auth/register/ или
 Проверка:
 npm run lint
 npm run build
-docker compose -f docker-compose.prod.yml build --pull nginx
-docker compose -f docker-compose.prod.yml up -d --force-recreate --no-deps nginx
+docker compose -p app -f docker-compose.prod.yml build --pull nginx
+docker compose -p app -f docker-compose.prod.yml up -d --force-recreate --no-deps nginx
 curl -fsS http://127.0.0.1:8080/api/health
 
 Ограничения:
@@ -96,8 +96,8 @@ docker/nginx/conf.d/uchicode.conf
 7. Проверь, что /api/auth/ всё ещё содержит limit_req.
 
 Проверка:
-docker compose -f docker-compose.prod.yml build --pull nginx
-docker compose -f docker-compose.prod.yml up -d --force-recreate --no-deps nginx
+docker compose -p app -f docker-compose.prod.yml build --pull nginx
+docker compose -p app -f docker-compose.prod.yml up -d --force-recreate --no-deps nginx
 curl -I http://127.0.0.1:8080/admin/ -H "Host: uchicode.ru"
 curl -fsS http://127.0.0.1:8080/api/health
 
@@ -133,11 +133,11 @@ GitHub Actions может запускаться на push tag v*.
 Проверка:
 npm run lint
 npm run build
-docker compose -f docker-compose.prod.yml config
-docker compose -f docker-compose.prod.yml build --pull
-docker compose -f docker-compose.prod.yml up -d --remove-orphans
+docker compose -p app -f docker-compose.prod.yml config
+docker compose -p app -f docker-compose.prod.yml build --pull
+docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 curl -fsS http://127.0.0.1:8080/api/health
-docker compose -f docker-compose.prod.yml down
+docker compose -p app -f docker-compose.prod.yml down
 
 Ограничения:
 не трогать VPS;

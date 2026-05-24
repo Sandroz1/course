@@ -60,7 +60,7 @@ npm run lint
 
 ```bash
 docker compose -f docker-compose.dev.yml config
-docker compose -f docker-compose.prod.yml config
+docker compose -p app -f docker-compose.prod.yml config
 ```
 
 ## Docker dev запуск
@@ -163,7 +163,7 @@ cd backend
 ```
 
 ```bash
-docker compose -f docker-compose.prod.yml config
+docker compose -p app -f docker-compose.prod.yml config
 ```
 
 Production compose требует заполненный `.env.production`. Nginx HTTPS-конфиг ожидает сертификаты Let's Encrypt в `/etc/letsencrypt/live/uchicode.ru/`.

@@ -33,9 +33,9 @@ curl -i -X POST https://uchicode.ru/api/auth/register/ \
 
 ```bash
 cd /opt/uchicode/app
-docker compose -f docker-compose.prod.yml build --pull nginx
-docker compose -f docker-compose.prod.yml up -d --force-recreate --no-deps nginx
-docker compose -f docker-compose.prod.yml exec nginx sh -c 'grep -R "api/api" -n /usr/share/nginx/html || true'
+docker compose -p app -f docker-compose.prod.yml build --pull nginx
+docker compose -p app -f docker-compose.prod.yml up -d --force-recreate --no-deps nginx
+docker compose -p app -f docker-compose.prod.yml exec nginx sh -c 'grep -R "api/api" -n /usr/share/nginx/html || true'
 ```
 
 ## `/admin/` отдаёт 503
@@ -44,7 +44,7 @@ docker compose -f docker-compose.prod.yml exec nginx sh -c 'grep -R "api/api" -n
 
 ```bash
 cd /opt/uchicode/app
-docker compose -f docker-compose.prod.yml logs --tail=120 nginx
+docker compose -p app -f docker-compose.prod.yml logs --tail=120 nginx
 ```
 
 Если есть:
@@ -180,9 +180,9 @@ docker system prune -af
 ```bash
 sudo systemctl status uchicode-compose.service --no-pager
 cd /opt/uchicode/app
-docker compose -f docker-compose.prod.yml ps
-docker compose -f docker-compose.prod.yml logs --tail=120 backend
-docker compose -f docker-compose.prod.yml logs --tail=120 nginx
+docker compose -p app -f docker-compose.prod.yml ps
+docker compose -p app -f docker-compose.prod.yml logs --tail=120 backend
+docker compose -p app -f docker-compose.prod.yml logs --tail=120 nginx
 ```
 
 Перезапуск:

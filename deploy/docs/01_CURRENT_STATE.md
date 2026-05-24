@@ -83,7 +83,7 @@ User browser
 
 ```bash
 cd /opt/uchicode/app
-docker compose -f docker-compose.prod.yml ps
+docker compose -p app -f docker-compose.prod.yml ps
 ```
 
 Ожидаемо:
@@ -153,7 +153,7 @@ https://uchicode.ru                 200 OK
 Superuser создавался через:
 
 ```bash
-docker compose -f docker-compose.prod.yml exec backend python manage.py createsuperuser
+docker compose -p app -f docker-compose.prod.yml exec backend python manage.py createsuperuser
 ```
 
 Если создавались два admin-пользователя, проверить и оставить только нужного:

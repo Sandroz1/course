@@ -44,7 +44,7 @@ Bundle не должен содержать `/api/api`:
 
 ```bash
 cd /opt/uchicode/app
-docker compose -f docker-compose.prod.yml exec nginx sh -c 'grep -R "api/api" -n /usr/share/nginx/html || true'
+docker compose -p app -f docker-compose.prod.yml exec nginx sh -c 'grep -R "api/api" -n /usr/share/nginx/html || true'
 ```
 
 Ожидаемо: пустой вывод.
@@ -53,9 +53,9 @@ docker compose -f docker-compose.prod.yml exec nginx sh -c 'grep -R "api/api" -n
 
 ```bash
 cd /opt/uchicode/app
-docker compose -f docker-compose.prod.yml ps
-docker compose -f docker-compose.prod.yml logs --tail=100 backend
-docker compose -f docker-compose.prod.yml logs --tail=100 nginx
+docker compose -p app -f docker-compose.prod.yml ps
+docker compose -p app -f docker-compose.prod.yml logs --tail=100 backend
+docker compose -p app -f docker-compose.prod.yml logs --tail=100 nginx
 ```
 
 Ожидаемо:

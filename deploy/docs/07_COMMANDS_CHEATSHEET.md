@@ -13,7 +13,7 @@ cd /opt/uchicode/app
 
 git log --oneline -1
 git status -sb
-docker compose -f docker-compose.prod.yml ps
+docker compose -p app -f docker-compose.prod.yml ps
 ```
 
 ## Health
@@ -29,10 +29,10 @@ curl -I https://uchicode.ru/admin/
 ```bash
 cd /opt/uchicode/app
 
-docker compose -f docker-compose.prod.yml logs --tail=120 backend
-docker compose -f docker-compose.prod.yml logs --tail=120 nginx
-docker compose -f docker-compose.prod.yml logs --tail=120 postgres
-docker compose -f docker-compose.prod.yml logs --tail=120 redis
+docker compose -p app -f docker-compose.prod.yml logs --tail=120 backend
+docker compose -p app -f docker-compose.prod.yml logs --tail=120 nginx
+docker compose -p app -f docker-compose.prod.yml logs --tail=120 postgres
+docker compose -p app -f docker-compose.prod.yml logs --tail=120 redis
 ```
 
 ## Rebuild
@@ -41,22 +41,22 @@ Frontend / Docker nginx:
 
 ```bash
 cd /opt/uchicode/app
-docker compose -f docker-compose.prod.yml build --pull nginx
-docker compose -f docker-compose.prod.yml up -d --force-recreate --no-deps nginx
+docker compose -p app -f docker-compose.prod.yml build --pull nginx
+docker compose -p app -f docker-compose.prod.yml up -d --force-recreate --no-deps nginx
 ```
 
 Backend:
 
 ```bash
-docker compose -f docker-compose.prod.yml build --pull backend
-docker compose -f docker-compose.prod.yml up -d --force-recreate --no-deps backend
+docker compose -p app -f docker-compose.prod.yml build --pull backend
+docker compose -p app -f docker-compose.prod.yml up -d --force-recreate --no-deps backend
 ```
 
 Everything:
 
 ```bash
-docker compose -f docker-compose.prod.yml build --pull
-docker compose -f docker-compose.prod.yml up -d --remove-orphans
+docker compose -p app -f docker-compose.prod.yml build --pull
+docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 ```
 
 ## Проверка API paths
@@ -81,7 +81,7 @@ curl -i -X POST https://uchicode.ru/api/api/auth/register/ \
 ## Проверка bundle
 
 ```bash
-docker compose -f docker-compose.prod.yml exec nginx sh -c 'grep -R "api/api" -n /usr/share/nginx/html || true'
+docker compose -p app -f docker-compose.prod.yml exec nginx sh -c 'grep -R "api/api" -n /usr/share/nginx/html || true'
 ```
 
 Нормально: пустой вывод.
@@ -119,7 +119,7 @@ find /opt/uchicode/app/backups -maxdepth 2 -type f -ls | tail -n 20
 
 ```bash
 cd /opt/uchicode/app
-docker compose -f docker-compose.prod.yml exec backend python manage.py createsuperuser
+docker compose -p app -f docker-compose.prod.yml exec backend python manage.py createsuperuser
 ```
 
 ## Check AI env without printing key

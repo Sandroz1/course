@@ -21,7 +21,7 @@
 4. Валидировать production compose после заполнения env:
 
 ```bash
-docker compose -f docker-compose.prod.yml config --quiet
+docker compose -p app -f docker-compose.prod.yml config --quiet
 ```
 
 5. Проверить backend:

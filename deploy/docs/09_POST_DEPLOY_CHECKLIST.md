@@ -13,7 +13,7 @@ git status -sb
 ## 2. Docker
 
 ```bash
-docker compose -f docker-compose.prod.yml ps
+docker compose -p app -f docker-compose.prod.yml ps
 ```
 
 Ожидаемо:
@@ -96,7 +96,7 @@ curl -i -X POST https://uchicode.ru/api/api/auth/register/ \
 ## 8. Проверка frontend bundle
 
 ```bash
-docker compose -f docker-compose.prod.yml exec nginx sh -c 'grep -R "api/api" -n /usr/share/nginx/html || true'
+docker compose -p app -f docker-compose.prod.yml exec nginx sh -c 'grep -R "api/api" -n /usr/share/nginx/html || true'
 ```
 
 Ожидаемо: пустой вывод.

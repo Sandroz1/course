@@ -147,12 +147,12 @@ cd backend
 Docker production smoke:
 
 ```bash
-docker compose -f docker-compose.prod.yml config
-docker compose -f docker-compose.prod.yml build --pull
-docker compose -f docker-compose.prod.yml up -d --remove-orphans
+docker compose -p app -f docker-compose.prod.yml config
+docker compose -p app -f docker-compose.prod.yml build --pull
+docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 curl -fsS http://127.0.0.1:8080/nginx-health
 curl -fsS http://127.0.0.1:8080/api/health
-docker compose -f docker-compose.prod.yml down
+docker compose -p app -f docker-compose.prod.yml down
 ```
 
 ## Риски

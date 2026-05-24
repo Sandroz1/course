@@ -15,9 +15,9 @@
 cd /opt/uchicode/app
 git fetch origin main
 git checkout origin/main
-docker compose -f docker-compose.prod.yml build --pull
-docker compose -f docker-compose.prod.yml up -d --remove-orphans
-docker compose -f docker-compose.prod.yml ps
+docker compose -p app -f docker-compose.prod.yml build --pull
+docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
+docker compose -p app -f docker-compose.prod.yml ps
 curl -fsS https://uchicode.ru/nginx-health
 curl -fsS https://uchicode.ru/api/health
 ```
@@ -42,8 +42,8 @@ git ls-remote --tags origin v0.1.2
 cd /opt/uchicode/app
 git fetch --all --tags
 git checkout v0.1.2
-docker compose -f docker-compose.prod.yml build --pull
-docker compose -f docker-compose.prod.yml up -d --remove-orphans
+docker compose -p app -f docker-compose.prod.yml build --pull
+docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 curl -fsS https://uchicode.ru/api/health
 ```
 
@@ -53,8 +53,8 @@ curl -fsS https://uchicode.ru/api/health
 cd /opt/uchicode/app
 git fetch --all --tags
 git checkout v0.1.1
-docker compose -f docker-compose.prod.yml build
-docker compose -f docker-compose.prod.yml up -d --remove-orphans
+docker compose -p app -f docker-compose.prod.yml build
+docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 curl -fsS https://uchicode.ru/api/health
 ```
 

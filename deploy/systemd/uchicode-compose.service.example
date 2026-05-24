@@ -8,8 +8,8 @@ Wants=network-online.target
 Type=oneshot
 WorkingDirectory=/opt/uchicode/app
 RemainAfterExit=yes
-ExecStart=/usr/bin/docker compose -f docker-compose.prod.yml up -d --remove-orphans
-ExecStop=/usr/bin/docker compose -f docker-compose.prod.yml down
+ExecStart=/usr/bin/docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
+ExecStop=/usr/bin/docker compose -p app -f docker-compose.prod.yml down
 TimeoutStartSec=0
 
 [Install]

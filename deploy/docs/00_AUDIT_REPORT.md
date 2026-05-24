@@ -84,7 +84,7 @@ Django admin открыт по `/admin/`. Минимально нужны сил
 cd /opt/uchicode/app
 
 git log --oneline -1
-docker compose -f docker-compose.prod.yml ps
+docker compose -p app -f docker-compose.prod.yml ps
 curl -fsS https://uchicode.ru/nginx-health
 curl -fsS https://uchicode.ru/api/health
 curl -I https://uchicode.ru/admin/

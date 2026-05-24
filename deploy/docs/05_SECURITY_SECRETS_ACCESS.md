@@ -88,7 +88,7 @@ sudo fail2ban-client status
 
 ```bash
 cd /opt/uchicode/app
-docker compose -f docker-compose.prod.yml exec backend python manage.py createsuperuser
+docker compose -p app -f docker-compose.prod.yml exec backend python manage.py createsuperuser
 ```
 
 ## Проверка `.env.production` без вывода секретов

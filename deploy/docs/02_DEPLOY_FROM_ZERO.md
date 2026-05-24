@@ -204,10 +204,10 @@ cut -d= -f1 .env.production | sed '/^#/d;/^$/d'
 
 ```bash
 cd /opt/uchicode/app
-docker compose -f docker-compose.prod.yml config
-docker compose -f docker-compose.prod.yml build --pull
-docker compose -f docker-compose.prod.yml up -d --remove-orphans
-docker compose -f docker-compose.prod.yml ps
+docker compose -p app -f docker-compose.prod.yml config
+docker compose -p app -f docker-compose.prod.yml build --pull
+docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
+docker compose -p app -f docker-compose.prod.yml ps
 ```
 
 Smoke:
@@ -325,7 +325,7 @@ sudo reboot
 ```bash
 cd /opt/uchicode/app
 sudo systemctl status uchicode-compose.service --no-pager
-docker compose -f docker-compose.prod.yml ps
+docker compose -p app -f docker-compose.prod.yml ps
 curl -fsS https://uchicode.ru/nginx-health
 curl -fsS https://uchicode.ru/api/health
 ```

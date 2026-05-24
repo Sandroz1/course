@@ -86,4 +86,4 @@ jobs:
         run: cp .env.production.example .env.production
 
       - name: Check prod Compose config
-        run: docker compose -f docker-compose.prod.yml config --quiet
+        run: docker compose -p app -f docker-compose.prod.yml config --quiet

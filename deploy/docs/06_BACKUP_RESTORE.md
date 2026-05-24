@@ -86,14 +86,14 @@ scp -i $env:USERPROFILE\.ssh\uchicode_deploy -r deploy@2.26.99.141:/opt/uchicode
 
 ```bash
 cd /opt/uchicode/app
-cat /path/to/postgres.sql | docker compose -f docker-compose.prod.yml exec -T postgres psql -U uchicode -d uchicode
+cat /path/to/postgres.sql | docker compose -p app -f docker-compose.prod.yml exec -T postgres psql -U uchicode -d uchicode
 ```
 
 После restore:
 
 ```bash
-docker compose -f docker-compose.prod.yml up -d --remove-orphans
-docker compose -f docker-compose.prod.yml ps
+docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
+docker compose -p app -f docker-compose.prod.yml ps
 curl -fsS https://uchicode.ru/api/health
 ```
 
@@ -103,7 +103,7 @@ curl -fsS https://uchicode.ru/api/health
 cd /opt/uchicode/app
 BACKUP_DIR=/opt/uchicode/app/backups/YYYYMMDDTHHMMSSZ
 
-docker compose -f docker-compose.prod.yml run --rm --no-deps \
+docker compose -p app -f docker-compose.prod.yml run --rm --no-deps \
   -v "$BACKUP_DIR:/backup" \
   backend \
   sh -c 'tar -xzf /backup/media.tar.gz -C /app && tar -xzf /backup/staticfiles.tar.gz -C /app'
