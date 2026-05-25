@@ -38,6 +38,8 @@
 - Search-блоки не делать резкими прямоугольниками; они должны совпадать с остальными формами.
 - Для login/register/profile можно менять размер, но border, radius и focus logic должны оставаться той же системы.
 - У `select` нельзя менять shorthand `background` на hover/focus, если стрелка нарисована через `background-image`. Менять только `background-color`, border и focus ring.
+- Dropdown/select для фильтров должны использовать общий компонент или общий стиль: `cursor: pointer`, стабильный hover/focus/selected state, список в стиле продукта, без системного Windows-select.
+- Native `select` допустим только там, где раскрытый список визуально не выбивается из интерфейса.
 
 ## Buttons
 

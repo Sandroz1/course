@@ -21,6 +21,10 @@
   transition: color 140ms ease;
 }
 
+.fieldLabel {
+  min-width: 0;
+}
+
 .field input,
 .field select {
   width: 100%;

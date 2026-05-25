@@ -1,0 +1,125 @@
+.root {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.625rem;
+  width: 100%;
+  min-width: 0;
+  min-height: 2.5rem;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
+  border-radius: 0.625rem;
+  background-color: color-mix(in srgb, var(--surface-2) 82%, var(--surface) 18%);
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  line-height: 1.25;
+  padding: 0.625rem 0.6875rem 0.625rem 0.75rem;
+  text-align: left;
+  transition: border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease, color 140ms ease;
+}
+
+.trigger:hover,
+.trigger[aria-expanded="true"] {
+  border-color: color-mix(in srgb, var(--border-strong) 76%, transparent);
+  background-color: color-mix(in srgb, var(--surface-2) 68%, var(--surface) 32%);
+}
+
+.trigger:focus-visible {
+  outline: none;
+  border-color: color-mix(in srgb, var(--accent) 58%, var(--border-strong) 42%);
+  background-color: color-mix(in srgb, var(--surface-2) 58%, var(--surface) 42%);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
+}
+
+.triggerText {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chevron {
+  flex: 0 0 auto;
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-right: 1.75px solid currentColor;
+  border-bottom: 1.75px solid currentColor;
+  color: var(--muted);
+  transform: translateY(-18%) rotate(45deg);
+  transition: transform 140ms ease, color 140ms ease;
+}
+
+.chevronOpen {
+  transform: translateY(18%) rotate(225deg);
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 0.375rem);
+  left: 0;
+  z-index: 35;
+  display: grid;
+  width: 100%;
+  min-width: min(17rem, calc(100vw - 2rem));
+  max-height: min(20rem, 52vh);
+  overflow-y: auto;
+  border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
+  border-radius: 0.75rem;
+  background: color-mix(in srgb, var(--surface) 94%, var(--bg) 6%);
+  box-shadow: var(--shadow-sm);
+  padding: 0.25rem;
+  scrollbar-color: var(--border-strong) transparent;
+}
+
+.option {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  min-height: 2.125rem;
+  border: 1px solid transparent;
+  border-radius: 0.5625rem;
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.25;
+  padding: 0.5rem 0.625rem;
+  text-align: left;
+  transition: border-color 140ms ease, background-color 140ms ease, color 140ms ease;
+}
+
+.option span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.option:hover,
+.option:focus-visible {
+  outline: none;
+  background: color-mix(in srgb, var(--surface-2) 82%, transparent);
+  color: var(--text);
+}
+
+.optionSelected {
+  border-color: color-mix(in srgb, var(--accent) 34%, transparent);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+  color: var(--accent);
+}
+
+@media (max-width: 35rem) {
+  .menu {
+    min-width: 100%;
+  }
+}

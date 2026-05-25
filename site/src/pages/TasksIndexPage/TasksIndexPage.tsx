@@ -6,6 +6,7 @@ import { tasks, type TaskLevel } from "../../data/tasks";
 import { getTaskProgressById } from "../../features/course-progress/progressSelectors";
 import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
 import clsx from "clsx";
+import { DropdownSelect, type DropdownOption } from "../../components/shared/DropdownSelect/DropdownSelect";
 import type { TaskProgressStatus } from "../../types/api";
 import {
   getTaskDisplayStatus,
@@ -55,6 +56,35 @@ export function TasksIndexPage() {
   );
 
   const sections = useMemo(() => Array.from(new Set(tasks.map((task) => task.section))), []);
+  const courseOptions = useMemo<Array<DropdownOption<CourseFilter>>>(
+    () => [
+      { value: "all", label: "все курсы" },
+      ...courses.map((course) => ({ value: course.id, label: course.shortTitle })),
+    ],
+    [],
+  );
+  const statusOptions = useMemo<Array<DropdownOption<TaskStatusFilter>>>(
+    () =>
+      (Object.entries(statusLabels) as Array<[TaskStatusFilter, string]>).map(
+        ([value, label]) => ({ value, label }),
+      ),
+    [],
+  );
+  const sectionOptions = useMemo<Array<DropdownOption<string>>>(
+    () => [
+      { value: "all", label: "все разделы" },
+      ...sections.map((section) => ({ value: section, label: section })),
+    ],
+    [sections],
+  );
+  const levelOptions = useMemo<Array<DropdownOption<LevelFilter>>>(
+    () =>
+      (Object.entries(levelLabels) as Array<[LevelFilter, string]>).map(([value, label]) => ({
+        value,
+        label,
+      })),
+    [],
+  );
 
   useEffect(() => {
     if (!isAuthenticated || !authKey) {
@@ -147,54 +177,42 @@ export function TasksIndexPage() {
             placeholder="Название, тема, курс или файл"
           />
         </label>
-        <label className={styles.field}>
-          Курс
-          <select value={courseFilter} onChange={(event) => setCourseFilter(event.target.value as CourseFilter)}>
-            <option value="all">все курсы</option>
-            {courses.map((course) => (
-              <option key={course.id} value={course.id}>
-                {course.shortTitle}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.field}>
-          Статус
-          <select
+        <div className={styles.field}>
+          <span className={styles.fieldLabel}>Курс</span>
+          <DropdownSelect
+            label="Курс"
+            value={courseFilter}
+            options={courseOptions}
+            onChange={setCourseFilter}
+          />
+        </div>
+        <div className={styles.field}>
+          <span className={styles.fieldLabel}>Статус</span>
+          <DropdownSelect
+            label="Статус"
             value={statusFilter}
-            onChange={(event) => setStatusFilter(event.target.value as TaskStatusFilter)}
-          >
-            {Object.entries(statusLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.field}>
-          Раздел
-          <select value={sectionFilter} onChange={(event) => setSectionFilter(event.target.value)}>
-            <option value="all">все разделы</option>
-            {sections.map((section) => (
-              <option key={section} value={section}>
-                {section}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className={styles.field}>
-          Сложность
-          <select
+            options={statusOptions}
+            onChange={setStatusFilter}
+          />
+        </div>
+        <div className={styles.field}>
+          <span className={styles.fieldLabel}>Раздел</span>
+          <DropdownSelect
+            label="Раздел"
+            value={sectionFilter}
+            options={sectionOptions}
+            onChange={setSectionFilter}
+          />
+        </div>
+        <div className={styles.field}>
+          <span className={styles.fieldLabel}>Сложность</span>
+          <DropdownSelect
+            label="Сложность"
             value={levelFilter}
-            onChange={(event) => setLevelFilter(event.target.value as LevelFilter)}
-          >
-            {Object.entries(levelLabels).map(([value, label]) => (
-              <option key={value} value={value}>
-                {label}
-              </option>
-            ))}
-          </select>
-        </label>
+            options={levelOptions}
+            onChange={setLevelFilter}
+          />
+        </div>
         <div className={styles.summary} aria-live="polite">
           <strong>{taskCountLabel(filteredTasks.length)}</strong>
           <span>найдено</span>
