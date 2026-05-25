@@ -72,7 +72,9 @@ function TaskItemList({ items, ordered = false }: { items: string[]; ordered?: b
   return (
     <Tag className={styles.taskList}>
       {items.map((item) => (
-        <li key={item}>{renderTaskInline(item)}</li>
+        <li key={item}>
+          <span className={styles.taskListText}>{renderTaskInline(item)}</span>
+        </li>
       ))}
     </Tag>
   );

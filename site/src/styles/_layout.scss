@@ -5,7 +5,7 @@
   width: 100%;
   border: 1px solid var(--line);
   border-radius: 0.625rem;
-  background: color-mix(in srgb, var(--surface-2) 78%, var(--surface) 22%);
+  background-color: color-mix(in srgb, var(--surface-2) 78%, var(--surface) 22%);
   color: var(--text);
   font: inherit;
   line-height: 1.35;
@@ -23,13 +23,13 @@
 .field input:hover,
 .field select:hover {
   border-color: var(--border-strong);
-  background: color-mix(in srgb, var(--surface-2) 64%, var(--surface) 36%);
+  background-color: color-mix(in srgb, var(--surface-2) 64%, var(--surface) 36%);
 }
 
 .field input:focus-visible,
 .field select:focus-visible {
   border-color: color-mix(in srgb, var(--accent) 58%, var(--border-strong) 42%);
-  background: color-mix(in srgb, var(--surface-2) 58%, var(--surface) 42%);
+  background-color: color-mix(in srgb, var(--surface-2) 58%, var(--surface) 42%);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
   outline: none;
 }

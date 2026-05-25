@@ -28,7 +28,7 @@
   min-height: 2.5rem;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
   border-radius: 0.625rem;
-  background: color-mix(in srgb, var(--surface-2) 82%, var(--surface) 18%);
+  background-color: color-mix(in srgb, var(--surface-2) 82%, var(--surface) 18%);
   color: var(--text);
   font: inherit;
   font-size: 0.8125rem;
@@ -59,14 +59,14 @@
 .field input:hover,
 .field select:hover {
   border-color: color-mix(in srgb, var(--border-strong) 76%, transparent);
-  background: color-mix(in srgb, var(--surface-2) 68%, var(--surface) 32%);
+  background-color: color-mix(in srgb, var(--surface-2) 68%, var(--surface) 32%);
 }
 
 .field input:focus-visible,
 .field select:focus-visible {
   outline: none;
   border-color: color-mix(in srgb, var(--accent) 58%, var(--border-strong) 42%);
-  background: color-mix(in srgb, var(--surface-2) 58%, var(--surface) 42%);
+  background-color: color-mix(in srgb, var(--surface-2) 58%, var(--surface) 42%);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 15%, transparent);
 }
 
