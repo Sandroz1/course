@@ -15,8 +15,7 @@
   padding: 0.875rem;
   transition:
     border-color 0.14s ease,
-    background-color 0.14s ease,
-    transform 0.14s ease;
+    background-color 0.14s ease;
 }
 
 .card:hover,
@@ -25,10 +24,6 @@
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--surface-3) 26%, transparent), transparent 42%),
     var(--surface-2);
-}
-
-.card:hover {
-  transform: translateY(-1px);
 }
 
 .card:focus-visible {

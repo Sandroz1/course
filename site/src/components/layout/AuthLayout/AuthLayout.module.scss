@@ -152,7 +152,6 @@
   margin-top: 0;
   padding: 0.625rem 0.875rem;
   transition:
-    transform 120ms ease,
     filter 160ms ease,
     opacity 160ms ease;
 }
@@ -163,7 +162,7 @@
 }
 
 .submit:active:not(:disabled) {
-  transform: translateY(1px);
+  filter: brightness(0.98);
 }
 
 .submit:disabled {

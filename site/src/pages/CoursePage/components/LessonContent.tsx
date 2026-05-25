@@ -297,14 +297,14 @@ function renderMarkdownContent(content: string) {
         const title = cleanHeadingTitle(trimmed.slice(3));
         nodes.push(
           <h2 className={styles.heading} id={headingId(title)} key={`h2-${nodes.length}`}>
-            {title}
+            {renderInline(title)}
           </h2>,
         );
         return;
       }
       if (trimmed.startsWith("### ")) {
         flushAll();
-        nodes.push(<h3 key={`h3-${nodes.length}`}>{trimmed.slice(4)}</h3>);
+        nodes.push(<h3 key={`h3-${nodes.length}`}>{renderInline(cleanHeadingTitle(trimmed.slice(4)))}</h3>);
         return;
       }
       if (trimmed.startsWith("- ")) {
@@ -500,7 +500,7 @@ function collectHeadings(content: string) {
       Boolean(section.title && !isPracticeHeading(section.title)),
     )
     .map((section) => {
-      const title = cleanHeadingTitle(section.title.trim());
+      const title = stripMarkdown(cleanHeadingTitle(section.title.trim()));
       return { title, id: headingId(title) };
     });
 }

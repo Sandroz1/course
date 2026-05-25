@@ -71,9 +71,10 @@
 .stepCard {
   position: relative;
   display: grid;
-  grid-template-rows: minmax(96px, auto) auto;
+  grid-template-columns: 2.25rem minmax(0, 1fr);
+  grid-template-rows: auto auto;
   align-content: start;
-  gap: 12px;
+  gap: 0.75rem;
   border: 1px solid var(--line);
   border-radius: 10px;
   background: var(--surface);
@@ -96,16 +97,15 @@
 }
 
 .stepHeader {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 10px;
-  align-items: start;
+  display: contents;
 }
 
 .stepNumber {
   display: inline-grid;
-  width: 34px;
-  height: 28px;
+  grid-column: 1;
+  grid-row: 1;
+  width: 2.25rem;
+  height: 1.875rem;
   place-items: center;
   border: 1px solid var(--accent-border);
   border-radius: 999px;
@@ -118,6 +118,8 @@
 
 .stepText {
   display: grid;
+  grid-column: 2;
+  grid-row: 1;
   gap: 4px;
   min-width: 0;
 }
@@ -137,17 +139,17 @@
 
 .actionList {
   display: grid;
+  grid-column: 2;
+  grid-row: 2;
   gap: 8px;
   margin: 0;
   padding: 0;
   list-style: none;
-  counter-reset: guide-action;
 }
 
 .actionList li {
-  counter-increment: guide-action;
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
+  grid-template-columns: 0.5rem minmax(0, 1fr);
   gap: 9px;
   align-items: start;
   margin: 0;
@@ -155,19 +157,12 @@
 }
 
 .actionList li::before {
-  content: counter(guide-action);
-  display: inline-grid;
-  min-width: 20px;
-  height: 20px;
-  margin-top: 1px;
-  place-items: center;
-  border: 1px solid var(--accent-border-muted);
-  border-radius: 6px;
-  background: var(--accent-surface);
-  color: var(--accent);
-  font-size: 11px;
-  font-weight: 900;
-  line-height: 1;
+  width: 0.375rem;
+  height: 0.375rem;
+  margin-top: 0.55rem;
+  border-radius: 999px;
+  background: var(--accent);
+  content: "";
 }
 
 .actionList p {
@@ -267,18 +262,14 @@
   }
 
   .stepCard {
+    grid-template-columns: 2rem minmax(0, 1fr);
     grid-template-rows: auto auto;
     min-height: 0;
     padding: 14px;
   }
 
-  .stepHeader {
-    grid-template-columns: auto minmax(0, 1fr);
-    gap: 9px;
-  }
-
   .stepNumber {
-    width: 32px;
+    width: 2rem;
     height: 26px;
   }
 

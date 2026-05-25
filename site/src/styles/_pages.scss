@@ -85,8 +85,7 @@
   transition:
     border-color 150ms ease,
     background 150ms ease,
-    color 150ms ease,
-    transform 120ms ease;
+    color 150ms ease;
 }
 
 .button:hover {
@@ -105,7 +104,7 @@
 }
 
 .button:active {
-  transform: translateY(1px);
+  filter: brightness(0.98);
 }
 
 .button--primary {

@@ -151,8 +151,7 @@
   padding: 0.75rem;
   transition:
     border-color 150ms ease,
-    background 150ms ease,
-    transform 150ms ease;
+    background 150ms ease;
 }
 
 .navLink:hover,
@@ -160,10 +159,6 @@
   border-color: var(--border-strong);
   background: var(--surface-2);
   outline: none;
-}
-
-.navLink:hover {
-  transform: translateY(-1px);
 }
 
 .navLinkNext {
@@ -244,8 +239,7 @@
   padding: 0.75rem 0.875rem;
   transition:
     border-color 0.16s ease,
-    background 0.16s ease,
-    transform 0.16s ease;
+    background 0.16s ease;
 }
 
 .relatedTaskLink:hover,
@@ -253,10 +247,6 @@
   border-color: var(--border-strong);
   background: var(--surface-2);
   outline: none;
-}
-
-.relatedTaskLink:hover {
-  transform: translateY(-1px);
 }
 
 .relatedTaskContent {

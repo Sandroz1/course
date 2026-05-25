@@ -16,8 +16,7 @@
     var(--surface);
   transition:
     border-color 150ms ease,
-    background 150ms ease,
-    transform 150ms ease;
+    background 150ms ease;
 }
 
 .card:hover,
@@ -26,10 +25,6 @@
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--surface-3) 24%, transparent), transparent 44%),
     var(--surface-2);
-}
-
-.card:hover {
-  transform: translateY(-1px);
 }
 
 .cardSoon {

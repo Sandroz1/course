@@ -56,13 +56,23 @@ type TaskListSectionProps = {
   description?: string;
 };
 
+function renderTaskInline(text: string) {
+  return text.split(/(`[^`]+`)/g).map((part, index) => {
+    if (part.startsWith("`") && part.endsWith("`")) {
+      return <code key={index}>{part.slice(1, -1)}</code>;
+    }
+
+    return part;
+  });
+}
+
 function TaskItemList({ items, ordered = false }: { items: string[]; ordered?: boolean }) {
   const Tag = ordered ? "ol" : "ul";
 
   return (
     <Tag className={styles.taskList}>
       {items.map((item) => (
-        <li key={item}>{item}</li>
+        <li key={item}>{renderTaskInline(item)}</li>
       ))}
     </Tag>
   );
@@ -87,7 +97,7 @@ function TaskListSection({
     return (
       <CollapsibleSection
         title={title}
-        description={description}
+        description={description ? renderTaskInline(description) : undefined}
         countLabel={pointCountLabel(items.length)}
       >
         <TaskItemList items={items} ordered={ordered} />
@@ -98,7 +108,7 @@ function TaskListSection({
   return (
     <section className={clsx("panel", styles.plainPanel)}>
       <h2>{title}</h2>
-      {description && <p className={styles.panelDescription}>{description}</p>}
+      {description && <p className={styles.panelDescription}>{renderTaskInline(description)}</p>}
       <TaskItemList items={items} ordered={ordered} />
     </section>
   );
@@ -313,8 +323,8 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
 
       <section className={clsx("panel", styles.goal)}>
         <h2>Условие</h2>
-        <p>{task.goal}</p>
-        <p>{task.description}</p>
+        <p>{renderTaskInline(task.goal)}</p>
+        <p>{renderTaskInline(task.description)}</p>
       </section>
 
       <TaskListSection
@@ -349,7 +359,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </div>
 
         <div id={activeFilePanelId} role="tabpanel" aria-labelledby={activeFileTabId}>
-          <p>{activeFile.description}</p>
+          <p>{renderTaskInline(activeFile.description)}</p>
           <CodeBlock code={activeFile.starterCode} language="cpp" />
         </div>
       </section>

@@ -45,12 +45,12 @@ h3 code,
 summary code,
 .lead code,
 .muted-text code {
-  border: 0;
+  border: 1px solid var(--course-inline-code-border);
   border-radius: 4px;
-  background: var(--surface-muted);
-  color: var(--soft);
+  background: var(--course-inline-code-bg);
+  color: var(--course-inline-code-text);
   max-width: 100%;
-  padding: 0.03em 0.24em;
+  padding: 0.02em 0.28em;
   overflow-wrap: break-word;
   white-space: normal;
   word-break: normal;

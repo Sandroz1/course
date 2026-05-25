@@ -17,13 +17,12 @@
   font-weight: 800;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
-  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+  transition: border-color 140ms ease, background 140ms ease;
 }
 
 .floatingButton:hover {
   border-color: var(--border-strong);
   background: var(--surface-3);
-  transform: translateY(-1px);
 }
 
 .floatingButton:active {
@@ -536,13 +535,12 @@
   font-size: 14px;
   font-weight: 800;
   cursor: pointer;
-  transition: border-color 140ms ease, background 140ms ease, transform 140ms ease;
+  transition: border-color 140ms ease, background 140ms ease;
 }
 
 .form button:hover:not(:disabled) {
   border-color: var(--accent-strong);
   background: var(--accent);
-  transform: translateY(-1px);
 }
 
 .form button:focus-visible {
