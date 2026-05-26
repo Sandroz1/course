@@ -214,7 +214,9 @@ export function TasksIndexPage() {
           />
         </div>
         <div className={styles.summary} aria-live="polite">
-          <strong>{taskCountLabel(filteredTasks.length)}</strong>
+          <strong className="count-badge count-badge--accent">
+            {taskCountLabel(filteredTasks.length)}
+          </strong>
           <span>найдено</span>
           <button
             className={clsx("button", "button--small", "button--ghost", styles.reset)}
@@ -254,7 +256,7 @@ export function TasksIndexPage() {
           <section className={styles.taskSection} key={section}>
             <div className={styles.sectionHeading}>
               <h2>{section}</h2>
-              <span>{taskCountLabel(count)}</span>
+              <span className="count-badge">{taskCountLabel(count)}</span>
             </div>
             <TaskCardGrid
               section={section}

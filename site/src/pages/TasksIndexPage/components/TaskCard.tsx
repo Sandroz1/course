@@ -2,11 +2,7 @@ import { getCourseById } from "../../../data/courses";
 import { tasks } from "../../../data/tasks";
 import clsx from "clsx";
 import type { TaskProgressStatus } from "../../../types/api";
-import {
-  MetaItem,
-  MetaRow,
-  StatusBadge,
-} from "../../../components/shared/LearningUi/LearningUi";
+import { StatusBadge } from "../../../components/shared/LearningUi/LearningUi";
 import {
   fileCountLabel,
   getTaskDisplayLabel,
@@ -20,6 +16,10 @@ import { toPath } from "../../../utils/slug";
 import styles from "./TaskCard.module.scss";
 
 type Task = (typeof tasks)[number];
+
+function capitalizeLabel(value: string) {
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
 
 export function TaskCard({
   task,
@@ -35,6 +35,8 @@ export function TaskCard({
   const displayTone = getTaskDisplayTone(displayStatus);
   const visibleTopics = task.topics.slice(0, visibleTaskTopicLimit);
   const hiddenTopicCount = Math.max(task.topics.length - visibleTaskTopicLimit, 0);
+  const levelLabel = taskLevelLabels[task.level];
+  const fileLabel = fileCountLabel(task.files.length);
 
   return (
     <a
@@ -53,10 +55,14 @@ export function TaskCard({
           {displayLabel}
         </StatusBadge>
       </div>
-      <MetaRow compact className={styles.metaRow}>
-        <MetaItem label="Сложность">{taskLevelLabels[task.level]}</MetaItem>
-        <MetaItem label="Файлы">{fileCountLabel(task.files.length)}</MetaItem>
-      </MetaRow>
+      <div className={styles.metaRow} aria-label="Параметры задачи">
+        <span className={styles.metaChip} aria-label={`Сложность: ${levelLabel}`}>
+          {capitalizeLabel(levelLabel)}
+        </span>
+        <span className={styles.metaChip} aria-label={`Файлы: ${fileLabel}`}>
+          {fileLabel}
+        </span>
+      </div>
       <div className={clsx("topic-list topic-list--compact", styles.topics)}>
         {visibleTopics.map((topic) => (
           <span key={topic}>{topic}</span>
