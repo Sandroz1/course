@@ -130,7 +130,11 @@ export function CollapsibleSection({
           <strong>{title}</strong>
           {description && <small>{description}</small>}
         </span>
-        {countLabel && <span className={styles.collapsibleCount}>{countLabel}</span>}
+        {countLabel && (
+          <span className={clsx("count-badge", "count-badge--compact", styles.collapsibleCount)}>
+            {countLabel}
+          </span>
+        )}
         <span className={styles.collapsibleChevron} aria-hidden="true" />
       </button>
       <div className={styles.collapsibleContent} id={contentId} hidden={!isOpen}>

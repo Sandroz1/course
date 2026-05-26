@@ -4,78 +4,58 @@ import styles from "./GuidePage.module.scss";
 const steps = [
   {
     number: "01",
-    title: "Прочитай условие",
-    description: "Сначала отдели входные данные от результата.",
-    items: [
-      "Запиши, что пользователь вводит.",
-      "Запиши, что программа должна вывести или изменить.",
-      "Отметь файлы, которые нужно открыть или создать.",
+    title: "Разбери условие",
+    summary: "Перед кодом пойми, какой результат нужно получить.",
+    checkpoints: [
+      "Что дано на входе.",
+      "Что программа должна вывести, изменить или сохранить.",
+      "В каких файлах нужно писать решение.",
     ],
   },
   {
     number: "02",
-    title: "Собери каркас",
-    description: "Сначала получи минимальный код, который собирается.",
-    items: [
-      "Оставь только нужные `#include`, `main` и место для решения.",
-      "Если задача про класс, сначала свяжи `.hpp`, `.cpp` и `main.cpp`.",
-      "Запусти сборку до основной логики.",
+    title: "Собери минимальный код",
+    summary: "Сначала нужен проект, который компилируется без основной логики.",
+    checkpoints: [
+      "Оставь нужные `#include` и `main`.",
+      "Если есть класс, свяжи `.hpp`, `.cpp` и `main.cpp`.",
+      "Запусти сборку до написания решения.",
     ],
   },
   {
     number: "03",
-    title: "Пиши маленькими шагами",
-    description: "Каждый шаг должен быть проверяемым.",
-    items: [
-      "Добавь одно поле, метод, условие или вывод.",
-      "Собери проект после изменения.",
-      "Не копи несколько новых ошибок перед запуском.",
+    title: "Добавь одно действие",
+    summary: "Не пиши всё сразу. Один шаг проще проверить.",
+    checkpoints: [
+      "Добавь одно условие, поле, метод, расчёт или вывод.",
+      "Сразу запусти сборку.",
+      "Если появилась ошибка, сначала исправь её.",
     ],
   },
   {
     number: "04",
-    title: "Разбирай ошибки сверху",
-    description: "Первая ошибка компилятора часто вызывает остальные.",
-    items: [
-      "Читай первое сообщение сверху.",
-      "Проверь `;`, скобки, `#include` и имена.",
-      "Исправь одну причину и снова собери.",
-    ],
-  },
-  {
-    number: "05",
-    title: "Используй подсказки вовремя",
-    description: "Открывай подсказку после своей попытки.",
-    items: [
-      "Сначала запиши свой план в двух-трёх строках.",
-      "Если застрял, открой подсказку к задаче.",
-      "После подсказки снова попробуй написать код сам.",
-    ],
-  },
-  {
-    number: "06",
-    title: "Отмечай готовое после проверки",
-    description: "Статус меняй только после проверки условия.",
-    items: [
-      "Прогони простой сценарий вручную.",
-      "Сверь результат с каждым пунктом условия.",
-      "Только после этого отмечай задачу выполненной.",
+    title: "Проверь результат",
+    summary: "Задача готова только после ручной проверки.",
+    checkpoints: [
+      "Прогони простой пример.",
+      "Сверь результат с условием.",
+      "После проверки меняй статус задачи.",
     ],
   },
 ];
 
 const stuckTips = [
   {
-    title: "Не знаешь, с чего начать",
-    text: "Выпиши три строки: вход, действие, результат.",
+    title: "Не понял условие",
+    text: "Раздели задачу на три пункта: входные данные, действие, ожидаемый результат.",
   },
   {
-    title: "Сборка не проходит",
-    text: "Исправляй первое сообщение компилятора сверху. После каждого исправления запускай сборку снова.",
+    title: "Ошибка компиляции",
+    text: "Исправь первое сообщение сверху. Не добавляй новый код, пока ошибка не исчезнет.",
   },
   {
-    title: "Решение стало слишком большим",
-    text: "Оставь только текущий шаг: ввод, расчёт или вывод. Остальное добавляй после проверки.",
+    title: "Код запутался",
+    text: "Вернись к последнему рабочему шагу. Проверь его отдельно, потом продолжай.",
   },
 ];
 
@@ -93,51 +73,53 @@ export function GuidePage() {
   return (
     <article className={clsx("reading-page", styles.root)}>
       <header className={styles.hero}>
-        <div className={styles.heroText}>
-          <p className="eyebrow">Методика</p>
-          <h1>Как учиться</h1>
-          <p className="lead">
-            Короткий порядок работы с задачей: понять условие, собрать минимальный
-            вариант, писать по одному шагу и проверять результат.
-          </p>
-        </div>
-        <div className={styles.flowPanel} aria-label="Короткий порядок работы">
-          <span>Коротко</span>
-          <strong>Условие, каркас, маленький шаг, проверка.</strong>
-        </div>
+        <p className="eyebrow">Методика</p>
+        <h1>Как учиться</h1>
+        <p className="lead">
+          Решай задачу коротким циклом: понял условие, собрал минимальный код,
+          добавил одно действие, проверил результат.
+        </p>
       </header>
 
-      <ol className={styles.steps}>
-        {steps.map((section) => (
-          <li className={styles.stepCard} key={section.title}>
-            <div className={styles.stepHeader}>
-              <span className={styles.stepNumber} aria-hidden="true">
-                {section.number}
-              </span>
-              <div className={styles.stepText}>
-                <h2>{section.title}</h2>
-                <p>{section.description}</p>
-              </div>
-            </div>
-            <ul className={styles.actionList}>
-              {section.items.map((item) => (
-                <li key={item}>
-                  <p>{renderText(item)}</p>
-                </li>
-              ))}
-            </ul>
-          </li>
-        ))}
-      </ol>
+      <section className={styles.processPanel} aria-labelledby="guide-process-title">
+        <div className={styles.sectionHeader}>
+          <span>Порядок работы</span>
+          <h2 id="guide-process-title">Один цикл для каждой задачи</h2>
+        </div>
 
-      <section className={styles.summaryPanel}>
-        <span>Если застрял</span>
-        <h2>Проверь конкретную причину</h2>
+        <ol className={styles.processList}>
+          {steps.map((step) => (
+            <li className={styles.processItem} key={step.number}>
+              <span className={styles.stepNumber} aria-hidden="true">
+                {step.number}
+              </span>
+
+              <div className={styles.stepBody}>
+                <h3>{step.title}</h3>
+                <p>{step.summary}</p>
+
+                <ul className={styles.checkList}>
+                  {step.checkpoints.map((item) => (
+                    <li key={item}>{renderText(item)}</li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className={styles.helpPanel} aria-labelledby="stuck-title">
+        <div className={styles.sectionHeader}>
+          <span>Если застрял</span>
+          <h2 id="stuck-title">Что мешает продолжить</h2>
+        </div>
+
         <div className={styles.tipGrid}>
           {stuckTips.map((tip) => (
             <article key={tip.title}>
               <h3>{tip.title}</h3>
-              <p>{tip.text}</p>
+              <p>{renderText(tip.text)}</p>
             </article>
           ))}
         </div>

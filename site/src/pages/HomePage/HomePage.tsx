@@ -1,30 +1,47 @@
+import clsx from "clsx";
 import { courses } from "../../data/courses";
 import { statusMeta } from "../../data/status";
-import clsx from "clsx";
 import { toPath } from "../../utils/slug";
 import styles from "./HomePage.module.scss";
 
+const featuredCourseIds = new Set(["base-cpp", "oop-cpp"]);
+
 const quickLinks = [
-  { title: "Как учиться", text: "Порядок работы и проверка решения.", href: "/guide" },
-  { title: "Частые ошибки", text: "Типичные проблемы и способы исправления.", href: "/common-errors" },
+  {
+    title: "Задачи",
+    text: "Практика по темам курса.",
+    href: "/tasks",
+  },
+  {
+    title: "Как учиться",
+    text: "Порядок работы над задачей.",
+    href: "/guide",
+  },
+  {
+    title: "Частые ошибки",
+    text: "Причины ошибок и примеры исправлений.",
+    href: "/common-errors",
+  },
 ];
 
 export function HomePage() {
-  const baseCourse = courses.find((course) => course.id === "base-cpp");
-  const oopCourse = courses.find((course) => course.id === "oop-cpp");
+  const featuredCourses = courses.filter((course) => featuredCourseIds.has(course.id));
 
   return (
-    <article className="reading-page compact-page route-page">
+    <article className={clsx("reading-page compact-page route-page", styles.root)}>
       <header className="page-header">
         <p className="eyebrow">Учебная панель</p>
         <h1>Uchicode</h1>
-        <p className="lead">Курсы C++ с уроками, практикой и короткой методикой работы.</p>
+        <p className="lead">
+          Курсы C++ с темами, задачами и короткой методикой работы.
+        </p>
+
         <div className="actions">
           <a className="button button--primary" href={toPath("/courses")}>
             Открыть курсы
           </a>
           <a className="button button--ghost" href={toPath("/tasks")}>
-            Практика ООП
+            Решать задачи
           </a>
         </div>
       </header>
@@ -33,15 +50,22 @@ export function HomePage() {
         <div>
           <p className="eyebrow">Сейчас доступно</p>
           <h2>Курсы</h2>
-          <p>База C++ открыта частично: доступны условия и циклы. Ранние темы ещё дорабатываются.</p>
+          <p>
+            Выберите курс и переходите к темам. Статус показывает, какие
+            материалы уже можно открывать.
+          </p>
         </div>
+
         <div className={styles.courseMiniList}>
-          {[baseCourse, oopCourse].filter(Boolean).map((course) => {
-            const meta = statusMeta[course!.status];
+          {featuredCourses.map((course) => {
+            const meta = statusMeta[course.status];
+
             return (
-              <a className={styles.courseMiniCard} href={toPath(course!.path)} key={course!.id}>
-                <strong>{course!.title}</strong>
-                <span className={`status-badge status-badge--${meta.tone}`}>{meta.label}</span>
+              <a className={styles.courseMiniCard} href={toPath(course.path)} key={course.id}>
+                <strong>{course.title}</strong>
+                <span className={`status-badge status-badge--${meta.tone}`}>
+                  {meta.label}
+                </span>
               </a>
             );
           })}

@@ -243,7 +243,7 @@ export function CourseIndexPage({ courseId = "oop-cpp" }: CourseIndexPageProps) 
         <section className={styles.group}>
           <div className={styles.sectionHeading}>
             <h2>Открытые уроки</h2>
-            <span>{readySections.length}</span>
+            <span className="count-badge">{readySections.length}</span>
           </div>
           <div className={styles.list}>
             {readySections.map((section) => (
@@ -262,7 +262,7 @@ export function CourseIndexPage({ courseId = "oop-cpp" }: CourseIndexPageProps) 
         <section className={styles.group}>
           <div className={styles.sectionHeading}>
             <h2>На доработке</h2>
-            <span>{plannedSections.length}</span>
+            <span className="count-badge">{plannedSections.length}</span>
           </div>
           <div className={styles.list}>
             {plannedSections.map((section) => (

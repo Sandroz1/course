@@ -71,6 +71,12 @@
   color: var(--accent);
 }
 
+.count-badge--compact {
+  min-height: 1.375rem;
+  font-size: 0.75rem;
+  padding: 0.1875rem 0.4375rem;
+}
+
 .badge--easy {
   color: var(--muted);
 }

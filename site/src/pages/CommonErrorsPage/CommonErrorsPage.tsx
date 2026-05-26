@@ -168,7 +168,7 @@ export function CommonErrorsPage() {
           </p>
         </div>
         <div className={styles.searchMeta}>
-          <span className={styles.filterCount} aria-live="polite">
+          <span className="count-badge" aria-live="polite">
             {getFoundLabel(filteredErrors.length)}
           </span>
           {trimmedQuery && (
