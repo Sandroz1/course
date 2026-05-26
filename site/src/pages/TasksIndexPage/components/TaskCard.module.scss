@@ -1,11 +1,11 @@
 .card {
   display: grid;
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: minmax(4.125rem, auto) minmax(1.75rem, auto) 3rem auto;
   align-content: stretch;
   gap: 0.625rem;
   justify-self: stretch;
   width: 100%;
-  min-height: 11.25rem;
+  min-height: 14.25rem;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
   border-radius: 0.625rem;
   background:
@@ -15,7 +15,8 @@
   padding: 0.875rem;
   transition:
     border-color 0.14s ease,
-    background-color 0.14s ease;
+    background 0.14s ease;
+  cursor: pointer;
 }
 
 .card:hover,
@@ -36,8 +37,9 @@
   background: color-mix(in srgb, var(--surface-2) 78%, transparent);
 }
 
-.card strong {
+.title {
   display: -webkit-box;
+  min-height: 2.6em;
   overflow: hidden;
   color: var(--text);
   font-size: 1rem;
@@ -49,13 +51,16 @@
 
 .top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) max-content;
+  grid-template-columns: minmax(0, 1fr) 6.75rem;
   align-items: start;
   gap: 0.625rem;
+  min-width: 0;
 }
 
 .titleBlock {
   display: grid;
+  grid-template-rows: minmax(2.6rem, auto) auto;
+  align-content: start;
   gap: 0.3125rem;
   min-width: 0;
 }
@@ -70,21 +75,29 @@
 }
 
 .metaRow {
-  min-height: 1.625rem;
+  align-content: start;
+  min-height: 1.75rem;
+  overflow: hidden;
 }
 
-.statusBadge {
-  max-width: 9rem;
+.card .statusBadge {
+  box-sizing: border-box;
+  justify-content: center;
+  justify-self: end;
+  width: 6.75rem;
+  max-width: 100%;
+  min-height: 1.75rem;
+  line-height: 1.15;
   text-align: center;
   white-space: normal;
 }
 
 .topics {
   align-content: start;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 0.25rem;
-  min-height: 1.875rem;
-  max-height: 1.875rem;
+  min-height: 3rem;
+  max-height: 3rem;
   overflow: hidden;
 }
 
@@ -106,7 +119,7 @@
   margin-top: auto;
   border-top: 1px solid var(--border-subtle);
   font-size: 0.8125rem;
-  min-height: 2.375rem;
+  min-height: 2.5rem;
   padding-top: 0.6875rem;
 }
 
@@ -115,11 +128,12 @@
   align-items: center;
   justify-content: center;
   min-height: 1.875rem;
-  min-width: 5.125rem;
+  width: 5.25rem;
   border: 1px solid var(--accent-border);
   border-radius: 999px;
   background: var(--accent-surface);
   color: var(--accent-strong);
+  cursor: pointer;
   font-weight: 800;
   padding: 0.3125rem 0.625rem;
 }
@@ -133,12 +147,16 @@
 
 @media (max-width: 35rem) {
   .card {
-    grid-template-rows: auto auto auto auto;
-    min-height: 0;
+    grid-template-rows: minmax(4.125rem, auto) minmax(1.75rem, auto) 3rem auto;
+    min-height: 14rem;
   }
 
-  .topics {
-    flex-wrap: wrap;
-    max-height: none;
+  .top {
+    grid-template-columns: minmax(0, 1fr) 6.75rem;
+    gap: 0.5rem;
+  }
+
+  .card .statusBadge {
+    width: 6.75rem;
   }
 }

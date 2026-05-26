@@ -44,7 +44,7 @@ export function TaskCard({
     >
       <div className={styles.top}>
         <div className={styles.titleBlock}>
-          <strong>{task.title}</strong>
+          <strong className={styles.title}>{task.title}</strong>
           <span className={styles.meta}>
             {course?.shortTitle ?? "Курс"}: {task.section}
           </span>

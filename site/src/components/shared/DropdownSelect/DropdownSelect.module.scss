@@ -53,12 +53,12 @@
   border-right: 1.75px solid currentColor;
   border-bottom: 1.75px solid currentColor;
   color: var(--muted);
-  transform: translateY(-18%) rotate(45deg);
+  transform: rotate(45deg);
   transition: transform 140ms ease, color 140ms ease;
 }
 
 .chevronOpen {
-  transform: translateY(18%) rotate(225deg);
+  transform: rotate(225deg);
 }
 
 .menu {
