@@ -48,6 +48,12 @@
   color: var(--text);
 }
 
+.activeLink {
+  border-color: var(--accent-border);
+  background: var(--surface-2);
+  color: var(--text);
+}
+
 .trigger {
   gap: 0.4375rem;
   cursor: pointer;
@@ -65,12 +71,23 @@
 .trigger:focus-visible,
 .loginLink:focus-visible,
 .registerLink:focus-visible {
-  border-color: var(--accent);
+  border-color: var(--accent-border);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 14%, transparent);
+  outline: none;
 }
 
 .registerLink:hover,
-.registerLink:focus-visible {
+.registerLink:focus-visible,
+.loginLink:hover,
+.loginLink:focus-visible {
   background: var(--surface-3);
+  color: var(--text);
+}
+
+.activeLink:hover,
+.activeLink:focus-visible {
+  background: color-mix(in srgb, var(--surface-3) 70%, var(--surface-2) 30%);
+  color: var(--text);
 }
 
 .username {

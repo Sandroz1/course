@@ -9,19 +9,10 @@ type AuthLayoutProps = {
   title: string;
 };
 
-const benefits = [
-  {
-    title: "Продолжай уроки",
-    text: "Возвращайся к последнему открытому разделу.",
-  },
-  {
-    title: "Подключай AI",
-    text: "Помощник откроется после подтверждения телефона.",
-  },
-  {
-    title: "Управляй профилем",
-    text: "Телефон и сессия находятся в одном месте.",
-  },
+const savedItems = [
+  "прогресс по урокам и задачам",
+  "последние открытые разделы",
+  "настройки профиля",
 ];
 
 export function AuthLayout({ children, description, footer, title }: AuthLayoutProps) {
@@ -39,19 +30,12 @@ export function AuthLayout({ children, description, footer, title }: AuthLayoutP
         <p className={styles.footer}>{footer}</p>
       </section>
 
-      <aside className={styles.context} aria-label="Возможности аккаунта">
-        <p className={styles.contextEyebrow}>Аккаунт Uchicode</p>
-        <h2 className={styles.contextTitle}>Один аккаунт для обучения</h2>
-        <p className={styles.contextText}>
-          Вход открывает личные функции без лишних настроек на каждом устройстве.
-        </p>
+      <aside className={styles.context} aria-label="Что сохраняется в аккаунте">
+        <h2 className={styles.contextTitle}>Что сохраняется</h2>
         <ul className={styles.benefits}>
-          {benefits.map((benefit) => (
-            <li className={styles.benefit} key={benefit.title}>
-              <span>
-                <strong>{benefit.title}</strong>
-                <span>{benefit.text}</span>
-              </span>
+          {savedItems.map((item) => (
+            <li className={styles.benefit} key={item}>
+              {item}
             </li>
           ))}
         </ul>

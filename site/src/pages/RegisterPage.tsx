@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { navigateTo } from "../utils/navigation";
 import { toPath } from "../utils/slug";
 import { AuthLayout } from "../components/layout/AuthLayout/AuthLayout";
+import { Button } from "../components/shared/ActionButton/ActionButton";
 import {
   firstFieldError,
   getApiFieldErrors,
@@ -159,9 +160,9 @@ export function RegisterPage() {
           {errorText || "\u00A0"}
         </p>
 
-        <button className={styles.submit} type="submit" disabled={isSubmitting}>
+        <Button className={styles.submit} type="submit" disabled={isSubmitting} variant="primary">
           {isSubmitting ? "Создание..." : "Создать аккаунт"}
-        </button>
+        </Button>
       </form>
     </AuthLayout>
   );

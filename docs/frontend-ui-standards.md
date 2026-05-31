@@ -53,6 +53,15 @@
 - Dropdown/select для фильтров должны использовать общий компонент или общий стиль: `cursor: pointer`, стабильный hover/focus/selected state, список в стиле продукта, без системного Windows-select.
 - Native `select` допустим только там, где раскрытый список визуально не выбивается из интерфейса.
 
+## Auth pages
+
+- Login/register используют shared form/button styles, без отдельной системы CTA.
+- Labels всегда видимы; placeholder не заменяет label.
+- Auth CTA должен быть понятным, контрастным и стабильным на hover/focus/disabled.
+- Helper panel второстепенный: короткий список, без marketing-copy и тяжёлых заголовков.
+- Autocomplete: login `username` / `current-password`, register `username` / `new-password`.
+- Theme checks для auth выполнять risk-based: формы, inputs, CTA, helper panel и topbar auth links.
+
 ## Buttons
 
 - Hover не меняет размер, padding, позицию или контраст текста.

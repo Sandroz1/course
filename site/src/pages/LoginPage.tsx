@@ -4,6 +4,7 @@ import clsx from "clsx";
 import { navigateTo } from "../utils/navigation";
 import { toPath } from "../utils/slug";
 import { AuthLayout } from "../components/layout/AuthLayout/AuthLayout";
+import { Button } from "../components/shared/ActionButton/ActionButton";
 import {
   firstFieldError,
   getApiFieldErrors,
@@ -71,7 +72,7 @@ export function LoginPage() {
   return (
     <AuthLayout
       title="Вход"
-      description="Войдите, чтобы продолжить обучение и сохранить прогресс."
+      description="Войдите, чтобы сохранять прогресс."
       footer={
         <>
           Нет аккаунта? <a href={toPath("/register")}>Зарегистрироваться</a>
@@ -139,9 +140,9 @@ export function LoginPage() {
           {formMessage || "\u00A0"}
         </p>
 
-        <button className={styles.submit} type="submit" disabled={isSubmitting}>
+        <Button className={styles.submit} type="submit" disabled={isSubmitting} variant="primary">
           {isSubmitting ? "Входим..." : "Войти"}
-        </button>
+        </Button>
       </form>
     </AuthLayout>
   );

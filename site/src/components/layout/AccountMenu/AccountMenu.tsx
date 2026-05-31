@@ -3,7 +3,7 @@ import clsx from "clsx";
 
 import { useAuth } from "../../../context/AuthContext";
 import { navigateTo } from "../../../utils/navigation";
-import { toPath } from "../../../utils/slug";
+import { currentPath, toPath } from "../../../utils/slug";
 import styles from "./AccountMenu.module.scss";
 
 export function AccountMenu() {
@@ -12,6 +12,9 @@ export function AccountMenu() {
   const rootRef = useRef<HTMLDivElement | null>(null);
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const avatarLetter = user?.username.trim().charAt(0).toUpperCase() || "U";
+  const path = currentPath();
+  const isLoginActive = path === "/login";
+  const isRegisterActive = path === "/register";
 
   useEffect(() => {
     if (!isOpen) return;
@@ -47,10 +50,18 @@ export function AccountMenu() {
   if (!isAuthenticated) {
     return (
       <div className={styles.guestActions} aria-label="Аккаунт">
-        <a className={styles.loginLink} href={toPath("/login")}>
+        <a
+          className={clsx(styles.loginLink, isLoginActive && styles.activeLink)}
+          href={toPath("/login")}
+          aria-current={isLoginActive ? "page" : undefined}
+        >
           Войти
         </a>
-        <a className={styles.registerLink} href={toPath("/register")}>
+        <a
+          className={clsx(styles.registerLink, isRegisterActive && styles.activeLink)}
+          href={toPath("/register")}
+          aria-current={isRegisterActive ? "page" : undefined}
+        >
           Регистрация
         </a>
       </div>
