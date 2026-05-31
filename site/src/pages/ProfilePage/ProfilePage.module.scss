@@ -7,8 +7,8 @@
 
 .header {
   display: grid;
-  gap: 6px;
-  max-width: 720px;
+  gap: 0.375rem;
+  max-width: 45rem;
 }
 
 .eyebrow,
@@ -22,21 +22,21 @@
 
 .eyebrow {
   color: var(--accent);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 800;
   text-transform: uppercase;
 }
 
 .title {
   color: var(--text);
-  font-size: clamp(26px, 2.8vw, 34px);
+  font-size: clamp(1.625rem, 2.8vw, 2.125rem);
   line-height: 1.08;
 }
 
 .description,
 .mutedText {
   color: var(--soft);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.45;
 }
 
@@ -50,22 +50,22 @@
 .mainColumn,
 .sideColumn {
   display: grid;
-  gap: 12px;
+  gap: 0.75rem;
   min-width: 0;
 }
 
 .card {
   display: grid;
-  gap: 11px;
+  gap: 0.6875rem;
   border: 1px solid var(--line);
   border-radius: 0.625rem;
   background: var(--surface);
-  padding: 15px;
+  padding: 0.9375rem;
 }
 
 .cardHeader {
   display: grid;
-  gap: 5px;
+  gap: 0.3125rem;
 }
 
 .cardTitleRow {
@@ -73,47 +73,47 @@
   align-items: center;
   flex-wrap: wrap;
   justify-content: space-between;
-  gap: 10px;
+  gap: 0.625rem;
   min-width: 0;
 }
 
 .cardTitle {
   color: var(--text);
-  font-size: 17px;
+  font-size: 1.0625rem;
   line-height: 1.25;
 }
 
 .form {
   display: grid;
-  gap: 7px;
+  gap: 0.4375rem;
 }
 
 .form + .form {
   border-top: 1px solid var(--line);
-  padding-top: 12px;
+  padding-top: 0.75rem;
 }
 
 .field {
   display: grid;
-  gap: 6px;
+  gap: 0.375rem;
 }
 
 .label {
   color: var(--text);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 750;
 }
 
 .input {
   width: 100%;
-  min-height: 40px;
+  min-height: 2.5rem;
   border: 1px solid var(--line);
   border-radius: 0.625rem;
   background: var(--surface-2);
   color: var(--text);
   font: inherit;
   line-height: 1.35;
-  padding: 8px 11px;
+  padding: 0.5rem 0.6875rem;
 }
 
 .input[readonly] {
@@ -136,18 +136,18 @@
 }
 
 .phoneCard {
-  gap: 13px;
+  gap: 0.8125rem;
 }
 
 .phoneForm {
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .phoneControls {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: start;
-  gap: 10px;
+  gap: 0.625rem;
 }
 
 .phoneField {
@@ -158,7 +158,7 @@
   display: grid;
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;
-  min-height: 44px;
+  min-height: 2.75rem;
   overflow: hidden;
   border: 1px solid var(--line);
   border-radius: 0.625rem;
@@ -176,12 +176,12 @@
 }
 
 .phoneInputGroup .input {
-  min-height: 42px;
+  min-height: 2.625rem;
   border: 0;
   border-radius: 0;
   background: transparent;
   font-variant-numeric: tabular-nums;
-  padding-inline: 11px 6px;
+  padding-inline: 0.6875rem 0.375rem;
 }
 
 .phoneInputGroup .input:focus-visible {
@@ -191,29 +191,29 @@
 .phonePrefix {
   display: grid;
   align-self: stretch;
-  min-width: 52px;
+  min-width: 3.25rem;
   place-items: center;
   border-right: 1px solid var(--line);
   background: color-mix(in srgb, var(--surface-3) 64%, transparent);
   color: var(--text);
   font-weight: 750;
-  padding-inline: 12px 10px;
+  padding-inline: 0.75rem 0.625rem;
 }
 
 .phoneCounter {
   border-left: 1px solid var(--line);
   color: var(--muted);
-  font-size: 12px;
+  font-size: 0.75rem;
   line-height: 1;
-  padding-inline: 10px;
+  padding-inline: 0.625rem;
   white-space: nowrap;
 }
 
 .fieldError {
   display: block;
-  min-height: 18px;
+  min-height: 1.125rem;
   color: var(--danger);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.35;
   overflow-wrap: anywhere;
 }
@@ -223,22 +223,22 @@
   align-items: center;
   justify-content: center;
   width: fit-content;
-  min-height: 26px;
-  gap: 6px;
+  min-height: 1.625rem;
+  gap: 0.375rem;
   border: 1px solid currentColor;
   border-radius: 999px;
   background: var(--surface-2);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 750;
   line-height: 1;
-  padding: 5px 9px;
+  padding: 0.3125rem 0.5625rem;
   white-space: nowrap;
 }
 
 .phoneStatus::before {
   content: "";
-  width: 6px;
-  height: 6px;
+  width: 0.375rem;
+  height: 0.375rem;
   border-radius: 999px;
   background: currentColor;
 }
@@ -254,38 +254,38 @@
 }
 
 .phoneSendButton {
-  min-height: 44px;
-  margin-top: 24px;
+  min-height: 2.75rem;
+  margin-top: 1.5rem;
   white-space: nowrap;
 }
 
 .phoneCodeForm {
   grid-template-columns: minmax(10rem, 12rem) auto;
   align-items: start;
-  gap: 10px;
+  gap: 0.625rem;
   border-top: 1px solid var(--line);
-  padding-top: 12px;
+  padding-top: 0.75rem;
 }
 
 .phoneCodeForm .actions {
-  padding-top: 24px;
+  padding-top: 1.5rem;
 }
 
 .phoneVerifyButton {
-  min-height: 40px;
+  min-height: 2.5rem;
   white-space: nowrap;
 }
 
 .formMessage {
   display: flex;
   align-items: center;
-  min-height: 32px;
+  min-height: 2rem;
   border: 1px solid transparent;
-  border-radius: 7px;
+  border-radius: 0.4375rem;
   line-height: 1.45;
   overflow-wrap: anywhere;
-  padding: 7px 10px;
-  font-size: 14px;
+  padding: 0.4375rem 0.625rem;
+  font-size: 0.875rem;
 }
 
 .formMessageEmpty {
@@ -307,14 +307,14 @@
 .actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .sessionCard {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 0.625rem;
 }
 
 .progressCard {
@@ -329,48 +329,48 @@
 .progressStats {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 8px;
+  gap: 0.5rem;
   min-block-size: 0;
 }
 
 .progressStats div {
   display: grid;
-  gap: 2px;
+  gap: 0.125rem;
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 0.4375rem;
   background: var(--surface-2);
-  padding: 9px 10px;
+  padding: 0.5625rem 0.625rem;
 }
 
 .progressStats strong {
   color: var(--text);
-  font-size: 20px;
+  font-size: 1.25rem;
   line-height: 1.1;
 }
 
 .progressStats span {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.35;
 }
 
 .aiStatus {
   display: grid;
-  gap: 4px;
+  gap: 0.25rem;
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 0.4375rem;
   background: var(--surface-2);
-  padding: 10px;
+  padding: 0.625rem;
 }
 
 .aiStatus strong {
   color: var(--text);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .aiStatus span {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.4;
 }
 
@@ -386,17 +386,17 @@
 
 .aiLimit {
   display: grid;
-  gap: 8px;
+  gap: 0.5rem;
 }
 
 .aiLimit > span {
   color: var(--text);
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 750;
 }
 
 .aiLimit > div {
-  height: 7px;
+  height: 0.4375rem;
   overflow: hidden;
   border-radius: 999px;
   background: var(--surface-2);
@@ -417,14 +417,14 @@
   align-items: center;
   justify-content: center;
   width: fit-content;
-  min-height: 36px;
+  min-height: 2.25rem;
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 0.4375rem;
   cursor: pointer;
   font: inherit;
-  font-size: 14px;
+  font-size: 0.875rem;
   font-weight: 750;
-  padding: 8px 11px;
+  padding: 0.5rem 0.6875rem;
 }
 
 .primaryButton {
@@ -463,15 +463,15 @@
   opacity: 0.72;
 }
 
-@media (max-width: 760px) {
+@media (max-width: 47.5rem) {
   .layout {
     grid-template-columns: 1fr;
   }
 }
 
-@media (max-width: 560px) {
+@media (max-width: 35rem) {
   .card {
-    padding: 15px;
+    padding: 0.9375rem;
   }
 
   .phoneControls,

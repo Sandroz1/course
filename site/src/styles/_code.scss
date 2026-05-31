@@ -3,7 +3,7 @@
 .code-block {
   overflow: hidden;
   border: 1px solid var(--code-border);
-  border-radius: 8px;
+  border-radius: 0.5rem;
   background: var(--code);
   box-shadow: none;
 }
@@ -15,13 +15,13 @@
   border-bottom: 1px solid var(--code-line);
   background: var(--code-panel);
   color: var(--muted);
-  padding: 7px 10px 7px 12px;
+  padding: 0.4375rem 0.625rem 0.4375rem 0.75rem;
 }
 
 .code-block__language {
   color: var(--muted);
   font-family: Consolas, Monaco, monospace;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.02em;
 }
@@ -34,15 +34,15 @@
   width: 6.75rem;
   min-height: 2rem;
   border: 1px solid var(--code-border);
-  border-radius: 5px;
+  border-radius: 0.3125rem;
   background: var(--code-panel);
   color: var(--code-text);
   cursor: pointer;
   font: inherit;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 650;
   line-height: 1;
-  padding: 5px 8px;
+  padding: 0.3125rem 0.5rem;
   white-space: nowrap;
 }
 
@@ -64,7 +64,7 @@
   margin: 0;
   overflow: auto;
   background: var(--code) !important;
-  padding: 15px 16px;
+  padding: 0.9375rem 1rem;
   scrollbar-color: var(--code-border) transparent;
 }
 
@@ -74,7 +74,7 @@
   min-width: max-content;
   color: var(--code-text);
   font-family: Consolas, "Cascadia Code", "Fira Code", Monaco, monospace;
-  font-size: 13.5px;
+  font-size: 0.84375rem;
   line-height: 1.56;
   tab-size: 4;
 }
@@ -86,12 +86,12 @@
 pre:not(.code-block__pre) {
   margin: 0;
   overflow: auto;
-  padding: 16px;
+  padding: 1rem;
   scrollbar-color: var(--line) transparent;
 }
 
 pre:not(.code-block__pre) code {
   color: var(--code-text);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.55;
 }
