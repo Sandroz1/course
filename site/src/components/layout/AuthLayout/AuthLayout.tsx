@@ -9,10 +9,19 @@ type AuthLayoutProps = {
   title: string;
 };
 
-const savedItems = [
-  "прогресс по урокам и задачам",
-  "последние открытые разделы",
-  "настройки профиля",
+const accountBenefits = [
+  {
+    title: "Прогресс",
+    text: "уроки и задачи остаются отмеченными.",
+  },
+  {
+    title: "Разделы",
+    text: "последние открытые темы доступны после входа.",
+  },
+  {
+    title: "Профиль",
+    text: "настройки хранятся в аккаунте.",
+  },
 ];
 
 export function AuthLayout({ children, description, footer, title }: AuthLayoutProps) {
@@ -31,14 +40,30 @@ export function AuthLayout({ children, description, footer, title }: AuthLayoutP
       </section>
 
       <aside className={styles.context} aria-label="Что сохраняется в аккаунте">
-        <h2 className={styles.contextTitle}>Что сохраняется</h2>
+        <div className={styles.contextHeader}>
+          <h2 className={styles.contextTitle}>Продолжайте с любого устройства</h2>
+          <p className={styles.contextText}>
+            Аккаунт сохраняет прогресс и возвращает к последним разделам.
+          </p>
+        </div>
+
         <ul className={styles.benefits}>
-          {savedItems.map((item) => (
-            <li className={styles.benefit} key={item}>
-              {item}
+          {accountBenefits.map((item, index) => (
+            <li className={styles.benefit} key={item.title}>
+              <span className={styles.benefitMark} aria-hidden="true">
+                {index + 1}
+              </span>
+              <span className={styles.benefitBody}>
+                <strong>{item.title}</strong>
+                <span>{item.text}</span>
+              </span>
             </li>
           ))}
         </ul>
+
+        <p className={styles.contextNote}>
+          Материалы можно смотреть без аккаунта, но прогресс не сохранится.
+        </p>
       </aside>
     </article>
   );

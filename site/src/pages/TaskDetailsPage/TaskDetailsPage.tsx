@@ -436,9 +436,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
       <section className={clsx("panel", styles.codePanel)}>
         <div className={styles.codePanelHeader}>
           <h2>Рабочий файл</h2>
-          <p>
-            Откройте <code>{activeFile.fileName}</code> и замените TODO своим решением.
-          </p>
+          <p>Откройте рабочий файл и замените TODO своим решением.</p>
         </div>
 
         {hasMultipleFiles && (

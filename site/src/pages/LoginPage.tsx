@@ -72,7 +72,7 @@ export function LoginPage() {
   return (
     <AuthLayout
       title="Вход"
-      description="Войдите, чтобы сохранять прогресс."
+      description="Войдите, чтобы продолжить обучение и сохранить прогресс."
       footer={
         <>
           Нет аккаунта? <a href={toPath("/register")}>Зарегистрироваться</a>
@@ -95,7 +95,7 @@ export function LoginPage() {
             aria-invalid={Boolean(usernameError)}
             aria-describedby={usernameErrorId}
             autoComplete="username"
-            placeholder="Введите логин"
+            placeholder="Логин"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             required
@@ -117,7 +117,7 @@ export function LoginPage() {
             aria-describedby={passwordErrorId}
             autoComplete="current-password"
             type="password"
-            placeholder="Введите пароль"
+            placeholder="Пароль"
             value={password}
             onChange={(event) => setPassword(event.target.value)}
             required

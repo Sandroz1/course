@@ -74,7 +74,7 @@ export function RegisterPage() {
   return (
     <AuthLayout
       title="Регистрация"
-      description="Создайте аккаунт, чтобы сохранять прогресс."
+      description="Создайте аккаунт, чтобы сохранять уроки, задачи и настройки."
       footer={
         <>
           Уже есть аккаунт? <a href={toPath("/login")}>Войти</a>
@@ -97,7 +97,7 @@ export function RegisterPage() {
             aria-invalid={Boolean(usernameError)}
             aria-describedby={usernameErrorId}
             autoComplete="username"
-            placeholder="Введите логин"
+            placeholder="Логин"
             value={username}
             onChange={(event) => setUsername(event.target.value)}
             required
@@ -141,7 +141,7 @@ export function RegisterPage() {
             aria-describedby={passwordRepeatErrorId}
             autoComplete="new-password"
             type="password"
-            placeholder="Повтори пароль"
+            placeholder="Повтор пароля"
             value={password2}
             onChange={(event) => setPassword2(event.target.value)}
             required
