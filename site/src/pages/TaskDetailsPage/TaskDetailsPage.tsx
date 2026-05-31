@@ -284,6 +284,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
   const hasClosedTheory = isTaskTheoryClosed(task);
   const course = getCourseById(task.courseId);
   const activeFile = task.files[activeFileIndex];
+  const hasMultipleFiles = task.files.length > 1;
   const activeFileTabId = `task-file-tab-${task.id}-${activeFileIndex}`;
   const activeFilePanelId = `task-file-panel-${task.id}-${activeFileIndex}`;
   const effectiveTaskStatus = taskStatus ?? "not_started";
@@ -358,32 +359,53 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
       <TaskBriefSection goal={task.goal} description={task.description} items={task.whatToCreate} />
 
       <section className={clsx("panel", styles.codePanel)}>
-        <h2>Файлы и каркас кода</h2>
-        <p className="muted-text">
-          Основной файл: <code>{task.practicePath}</code>
-        </p>
-
-        <div className={styles.fileList} role="tablist" aria-label="Файлы задачи">
-          {task.files.map((file, index) => (
-            <button
-              key={file.fileName}
-              id={`task-file-tab-${task.id}-${index}`}
-              className={clsx(styles.fileTab, index === activeFileIndex && styles.fileTabActive)}
-              type="button"
-              role="tab"
-              aria-selected={index === activeFileIndex}
-              aria-controls={`task-file-panel-${task.id}-${index}`}
-              tabIndex={index === activeFileIndex ? 0 : -1}
-              onClick={() => setActiveFileIndex(index)}
-              onKeyDown={(event) => handleFileTabKeyDown(event, index)}
-            >
-              {file.fileName.split("/").pop()}
-            </button>
-          ))}
+        <div className={styles.codePanelHeader}>
+          <h2>Файлы и стартовый код</h2>
+          <p>Откройте рабочий файл в practice и замените TODO своим решением.</p>
         </div>
 
-        <div id={activeFilePanelId} role="tabpanel" aria-labelledby={activeFileTabId}>
-          <p>{renderTaskInline(activeFile.description)}</p>
+        <div className={styles.primaryFile}>
+          <span>Рабочий файл</span>
+          <code>{task.practicePath}</code>
+        </div>
+
+        {hasMultipleFiles && (
+          <div className={styles.fileList} role="tablist" aria-label="Файлы задачи">
+            {task.files.map((file, index) => (
+              <button
+                key={file.fileName}
+                id={`task-file-tab-${task.id}-${index}`}
+                className={clsx(styles.fileTab, index === activeFileIndex && styles.fileTabActive)}
+                type="button"
+                role="tab"
+                aria-selected={index === activeFileIndex}
+                aria-controls={`task-file-panel-${task.id}-${index}`}
+                tabIndex={index === activeFileIndex ? 0 : -1}
+                onClick={() => setActiveFileIndex(index)}
+                onKeyDown={(event) => handleFileTabKeyDown(event, index)}
+              >
+                {file.fileName.split("/").pop()}
+              </button>
+            ))}
+          </div>
+        )}
+
+        <div
+          className={styles.filePanel}
+          id={activeFilePanelId}
+          role={hasMultipleFiles ? "tabpanel" : undefined}
+          aria-labelledby={hasMultipleFiles ? activeFileTabId : undefined}
+        >
+          <div className={styles.filePanelHeader}>
+            <div>
+              <span>{hasMultipleFiles ? "Выбранный файл" : "Файл с TODO"}</span>
+              <strong>{activeFile.fileName.split("/").pop()}</strong>
+            </div>
+            {task.files.length > 1 && <code>{activeFile.fileName}</code>}
+          </div>
+
+          <p className={styles.fileDescription}>{renderTaskInline(activeFile.description)}</p>
+          <p className={styles.codeCaption}>Стартовый каркас</p>
           <CodeBlock code={activeFile.starterCode} language="cpp" />
         </div>
       </section>

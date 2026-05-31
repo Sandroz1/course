@@ -66,6 +66,56 @@
   line-height: 1.62;
 }
 
+.codePanel {
+  display: grid;
+  gap: 1rem;
+}
+
+.codePanelHeader {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.root .codePanelHeader h2,
+.codePanelHeader p {
+  margin: 0;
+}
+
+.codePanelHeader p {
+  max-width: 62ch;
+  color: var(--muted);
+  font-size: 0.90625rem;
+  line-height: 1.5;
+}
+
+.primaryFile {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 0.5rem 0.625rem;
+  align-items: center;
+  width: fit-content;
+  max-width: 100%;
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line) 78%);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--surface-2) 42%, transparent);
+  padding: 0.5rem 0.625rem;
+}
+
+.primaryFile span {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.primaryFile code {
+  display: block;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: break-word;
+}
+
 .plainPanel + .plainPanel {
   border-top: 1px solid var(--line);
 }
@@ -283,7 +333,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.375rem;
-  margin: 0.875rem 0;
+  margin: 0;
   border-bottom: 1px solid var(--line);
 }
 
@@ -321,6 +371,58 @@
   box-shadow: inset 0 2px 0 var(--accent);
 }
 
+.filePanel {
+  display: grid;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.filePanelHeader {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.625rem 0.875rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  min-width: 0;
+}
+
+.filePanelHeader div {
+  display: grid;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+.filePanelHeader span,
+.codeCaption {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.filePanelHeader strong {
+  color: var(--text);
+  font-size: 0.9375rem;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.filePanelHeader code {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.fileDescription {
+  max-width: 64ch;
+  border-left: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  padding-left: 0.75rem;
+}
+
+.codePanel .fileDescription,
+.codePanel .codeCaption {
+  margin: 0;
+}
+
 @media (max-width: 35rem) {
   .root .header h1 {
     overflow-wrap: break-word;
@@ -344,5 +446,14 @@
 
   .fileTab {
     flex: 1 1 auto;
+  }
+
+  .primaryFile {
+    grid-template-columns: minmax(0, 1fr);
+    width: 100%;
+  }
+
+  .filePanelHeader {
+    display: grid;
   }
 }

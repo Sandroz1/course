@@ -98,7 +98,7 @@ function singleTask(
     files: [
       {
         fileName: practicePath,
-        description: details.files?.[0]?.description ?? "Основной файл упражнения. Пишите код в нём, не добавляя готовое решение на сайт.",
+        description: details.files?.[0]?.description ?? "Стартовый файл задачи. Найдите TODO и допишите решение в локальном проекте.",
         starterCode: details.files?.[0]?.starterCode ?? starter(title),
       },
     ],
