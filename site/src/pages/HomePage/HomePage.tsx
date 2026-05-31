@@ -1,4 +1,5 @@
 import clsx from "clsx";
+import { LinkButton } from "../../components/shared/ActionButton/ActionButton";
 import { courses } from "../../data/courses";
 import { statusMeta } from "../../data/status";
 import { toPath } from "../../utils/slug";
@@ -37,23 +38,20 @@ export function HomePage() {
         </p>
 
         <div className="actions">
-          <a className="button button--primary" href={toPath("/courses")}>
+          <LinkButton href={toPath("/courses")} variant="primary">
             Открыть курсы
-          </a>
-          <a className="button button--ghost" href={toPath("/tasks")}>
+          </LinkButton>
+          <LinkButton href={toPath("/tasks")} variant="ghost">
             Решать задачи
-          </a>
+          </LinkButton>
         </div>
       </header>
 
       <section className={clsx("panel", styles.courseCard)}>
         <div>
-          <p className="eyebrow">Сейчас доступно</p>
           <h2>Курсы</h2>
-          <p>
-            Выберите курс и переходите к темам. Статус показывает, какие
-            материалы уже можно открывать.
-          </p>
+          <p>Выберите курс, чтобы перейти к темам и задачам.</p>
+          <p>Статус показывает, какие материалы уже можно открывать.</p>
         </div>
 
         <div className={styles.courseMiniList}>

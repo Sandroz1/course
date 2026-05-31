@@ -1,6 +1,7 @@
 import { courses } from "../../data/courses";
 import { statusMeta } from "../../data/status";
 import clsx from "clsx";
+import { LinkButton } from "../../components/shared/ActionButton/ActionButton";
 import { toPath } from "../../utils/slug";
 import styles from "./CoursesPage.module.scss";
 
@@ -12,7 +13,7 @@ export function CoursesPage() {
       <header className="page-header">
         <p className="eyebrow">Курсы</p>
         <h1>Курсы</h1>
-        <p className="lead">Выбери доступный курс или посмотри, что готовится.</p>
+        <p className="lead">Выберите курс, чтобы перейти к темам и задачам.</p>
       </header>
 
       <div className={styles.catalog}>
@@ -32,9 +33,12 @@ export function CoursesPage() {
                 <h2>{course.title}</h2>
                 <p>{course.description}</p>
               </div>
-              <a className={clsx("button", isAvailable ? "button--primary" : "button--ghost")} href={toPath(course.path)}>
+              <LinkButton
+                href={toPath(course.path)}
+                variant={isAvailable ? "primary" : "ghost"}
+              >
                 {isAvailable ? "Открыть курс" : "Посмотреть план"}
-              </a>
+              </LinkButton>
             </article>
           );
         })}

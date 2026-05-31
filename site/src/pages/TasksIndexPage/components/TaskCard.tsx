@@ -2,6 +2,7 @@ import { getCourseById } from "../../../data/courses";
 import { tasks } from "../../../data/tasks";
 import clsx from "clsx";
 import type { TaskProgressStatus } from "../../../types/api";
+import { ActionButton } from "../../../components/shared/ActionButton/ActionButton";
 import { StatusBadge } from "../../../components/shared/LearningUi/LearningUi";
 import {
   fileCountLabel,
@@ -70,7 +71,9 @@ export function TaskCard({
         {hiddenTopicCount > 0 && <span>ещё {hiddenTopicCount}</span>}
       </div>
       <span className={styles.footer}>
-        <span className={styles.cta}>Открыть</span>
+        <ActionButton className={styles.cta} size="small">
+          Открыть
+        </ActionButton>
       </span>
     </a>
   );

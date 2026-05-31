@@ -14,6 +14,7 @@ import {
 } from "../../features/course-progress/progressSelectors";
 import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
 import clsx from "clsx";
+import { ActionButton } from "../../components/shared/ActionButton/ActionButton";
 import { toPath } from "../../utils/slug";
 import styles from "./CourseIndexPage.module.scss";
 
@@ -108,9 +109,13 @@ function CourseSectionRow({
           {displayStatus.label}
         </span>
       </span>
-      <span className={clsx(styles.action, !displayStatus.isReady && styles.actionMuted)}>
+      <ActionButton
+        className={styles.action}
+        size="small"
+        variant={displayStatus.isReady ? "secondary" : "ghost"}
+      >
         {displayStatus.actionLabel}
-      </span>
+      </ActionButton>
     </a>
   );
 }

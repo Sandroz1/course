@@ -148,24 +148,8 @@
 }
 
 .action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
   min-width: 4.5rem;
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
-  color: var(--accent-strong);
-  font-size: 0.8125rem;
-  font-weight: 700;
-  padding: 0.3125rem 0.5625rem;
-  white-space: nowrap;
-}
-
-.actionMuted {
-  border-color: var(--border-subtle);
-  background: transparent;
-  color: var(--muted);
+  pointer-events: none;
 }
 
 @media (max-width: 48rem) {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
+import { Button, LinkButton } from "../../components/shared/ActionButton/ActionButton";
 import {
   getCourseSectionBySlug,
   getCourseSectionPath,
@@ -311,13 +312,13 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
           </p>
 
           <div className="actions">
-            <a className="button button--primary" href={toPath(course?.path ?? "/courses")}>
+            <LinkButton href={toPath(course?.path ?? "/courses")} variant="primary">
               Вернуться к курсу
-            </a>
+            </LinkButton>
             {section.relatedTaskIds.length > 0 && (
-              <a className="button" href={toPath("/tasks")}>
+              <LinkButton href={toPath("/tasks")}>
                 Открыть задачи
-              </a>
+              </LinkButton>
             )}
           </div>
         </section>
@@ -387,11 +388,10 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
 
       {isAuthenticated && (
         <section className={styles.progressPanel}>
-          <button
-            className={clsx("button", (!isLessonCompleted || isProgressPending) && "button--primary")}
+          <Button
             disabled={isProgressSaving || isProgressPending || !hasLessonProgressState}
-            type="button"
             onClick={() => void handleToggleCompleted()}
+            variant={!isLessonCompleted || isProgressPending ? "primary" : "secondary"}
           >
             {isProgressSaving
               ? "Сохраняем..."
@@ -402,7 +402,7 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
                     : isLessonCompleted
                       ? "Снять отметку"
                       : "Отметить пройдено"}
-          </button>
+          </Button>
           {progressMessage ? <span>{progressMessage}</span> : null}
         </section>
       )}

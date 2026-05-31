@@ -19,7 +19,8 @@
     flex-direction: column;
   }
 
-  .button {
+  a.button,
+  button.button {
     width: 100%;
   }
 }

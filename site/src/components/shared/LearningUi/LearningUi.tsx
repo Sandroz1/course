@@ -1,5 +1,6 @@
 import { type ReactNode, useId, useState } from "react";
 import clsx from "clsx";
+import { Button } from "../ActionButton/ActionButton";
 import styles from "./LearningUi.module.scss";
 
 type StatusTone = "ready" | "success" | "warning" | "info" | "muted";
@@ -83,14 +84,13 @@ export function TaskActionBar({
         <strong>{title}</strong>
         <span>{description}</span>
       </div>
-      <button
-        className={clsx("button", primary && "button--primary")}
-        type="button"
+      <Button
+        variant={primary ? "primary" : "secondary"}
         disabled={disabled}
         onClick={onAction}
       >
         {actionLabel}
-      </button>
+      </Button>
       <p
         className={clsx(styles.actionMessage, !hasMessage && styles.actionMessageEmpty)}
         aria-live="polite"

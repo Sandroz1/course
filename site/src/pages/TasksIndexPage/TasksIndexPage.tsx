@@ -7,6 +7,7 @@ import { getTaskProgressById } from "../../features/course-progress/progressSele
 import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/progressApi";
 import clsx from "clsx";
 import { DropdownSelect, type DropdownOption } from "../../components/shared/DropdownSelect/DropdownSelect";
+import { Button } from "../../components/shared/ActionButton/ActionButton";
 import type { TaskProgressStatus } from "../../types/api";
 import {
   getTaskDisplayStatus,
@@ -218,16 +219,17 @@ export function TasksIndexPage() {
             {taskCountLabel(filteredTasks.length)}
           </strong>
           <span>найдено</span>
-          <button
-            className={clsx("button", "button--small", "button--ghost", styles.reset)}
-            type="button"
+          <Button
+            className={styles.reset}
             onClick={resetFilters}
             disabled={!hasActiveFilters}
             aria-hidden={!hasActiveFilters}
             tabIndex={hasActiveFilters ? undefined : -1}
+            size="small"
+            variant="ghost"
           >
             Сбросить
-          </button>
+          </Button>
         </div>
       </section>
 
@@ -243,9 +245,9 @@ export function TasksIndexPage() {
           <h2>Задачи не найдены</h2>
           <p>Измени фильтры или поисковый запрос.</p>
           {hasActiveFilters && (
-            <button className="button button--small" type="button" onClick={resetFilters}>
+            <Button onClick={resetFilters} size="small">
               Сбросить фильтры
-            </button>
+            </Button>
           )}
         </section>
       )}

@@ -146,25 +146,15 @@
 }
 
 .cta {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 1.875rem;
   width: 5.25rem;
-  border: 1px solid var(--accent-border);
-  border-radius: 999px;
-  background: var(--accent-surface);
-  color: var(--accent-strong);
-  cursor: pointer;
-  font-weight: 800;
-  padding: 0.3125rem 0.625rem;
+  pointer-events: none;
 }
 
 .card:hover .cta,
 .card:focus-visible .cta {
-  border-color: var(--accent);
-  background: var(--accent-soft);
-  color: var(--accent);
+  border-color: var(--accent-border);
+  background: var(--accent-surface);
+  color: var(--accent-strong);
 }
 
 @media (max-width: 35rem) {
