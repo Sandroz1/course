@@ -95,9 +95,9 @@
   align-items: center;
   width: fit-content;
   max-width: 100%;
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--line) 78%);
+  border: 1px solid var(--border-muted);
   border-radius: 0.5rem;
-  background: color-mix(in srgb, var(--surface-2) 42%, transparent);
+  background: var(--surface-subtle);
   padding: 0.5rem 0.625rem;
 }
 
@@ -260,8 +260,8 @@
   display: grid;
   gap: 0.625rem;
   justify-items: start;
-  border-color: color-mix(in srgb, var(--accent) 22%, var(--line) 78%);
-  background: color-mix(in srgb, var(--surface-2) 56%, transparent);
+  border-color: var(--border-subtle);
+  background: var(--surface-subtle);
 }
 
 .root .guideNote h2,
@@ -414,7 +414,7 @@
 
 .fileDescription {
   max-width: 64ch;
-  border-left: 2px solid color-mix(in srgb, var(--accent) 42%, transparent);
+  border-left: 2px solid var(--border-strong);
   padding-left: 0.75rem;
 }
 
