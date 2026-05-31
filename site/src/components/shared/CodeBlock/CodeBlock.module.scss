@@ -12,12 +12,12 @@
   justify-content: space-between;
   border-bottom: 1px solid var(--code-line);
   background: var(--code-panel);
-  color: var(--muted);
+  color: color-mix(in srgb, var(--code-text) 78%, transparent);
   padding: 0.4375rem 0.625rem 0.4375rem 0.75rem;
 }
 
 .language {
-  color: var(--muted);
+  color: color-mix(in srgb, var(--code-text) 78%, transparent);
   font-family: Consolas, Monaco, monospace;
   font-size: 0.75rem;
   font-weight: 600;
@@ -103,7 +103,7 @@
   min-height: 1.75rem;
   border-color: transparent;
   background: transparent;
-  color: var(--muted);
+  color: color-mix(in srgb, var(--code-text) 82%, transparent);
   font-size: 0.71875rem;
   padding: 0.1875rem 0.4375rem;
 }

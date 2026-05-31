@@ -27,21 +27,16 @@
   line-height: 1.3;
 }
 
-.theoryNote,
-.homeStatus {
-  border-color: var(--border-muted);
-  background: var(--surface-2);
+.headerMeta {
+  gap: 0.3125rem;
 }
 
-.theoryNote {
-  display: grid;
-  gap: 0.375rem;
-}
-
-.theoryNote p {
-  margin: 0;
-  color: var(--muted);
-  line-height: 1.55;
+.headerMeta > span {
+  min-height: 1.5rem;
+  border-color: var(--border-subtle);
+  background: transparent;
+  font-size: 0.75rem;
+  padding: 0.1875rem 0.5rem;
 }
 
 .plainPanel,
@@ -68,7 +63,7 @@
 
 .codePanel {
   display: grid;
-  gap: 1rem;
+  gap: 0.75rem;
 }
 
 .codePanelHeader {
@@ -88,34 +83,6 @@
   line-height: 1.5;
 }
 
-.primaryFile {
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.5rem 0.625rem;
-  align-items: center;
-  width: fit-content;
-  max-width: 100%;
-  border: 1px solid var(--border-muted);
-  border-radius: 0.5rem;
-  background: var(--surface-subtle);
-  padding: 0.5rem 0.625rem;
-}
-
-.primaryFile span {
-  color: var(--muted);
-  font-size: 0.8125rem;
-  font-weight: 650;
-  line-height: 1.3;
-}
-
-.primaryFile code {
-  display: block;
-  min-width: 0;
-  overflow-wrap: anywhere;
-  white-space: normal;
-  word-break: break-word;
-}
-
 .plainPanel + .plainPanel {
   border-top: 1px solid var(--line);
 }
@@ -129,9 +96,11 @@
 
 .taskBrief {
   display: grid;
-  gap: 0.875rem;
+  gap: 0.75rem;
   border-color: var(--border-subtle);
-  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--surface-2) 16%, transparent), transparent),
+    var(--surface);
   padding: 1rem;
 }
 
@@ -142,37 +111,38 @@
   line-height: 1.3;
 }
 
-.briefBody {
+.briefGrid {
   display: grid;
-  gap: 0.5rem;
+  gap: 0.75rem;
+}
+
+.briefBlock {
+  display: grid;
+  gap: 0.375rem;
   max-width: 68ch;
 }
 
-.briefBody p {
+.briefBlock + .briefBlock {
+  border-top: 1px solid color-mix(in srgb, var(--line) 48%, transparent);
+  padding-top: 0.75rem;
+}
+
+.briefBlock > span {
+  color: var(--muted);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.briefBlock p {
   margin: 0;
   color: var(--soft);
   font-size: 0.96875rem;
   line-height: 1.62;
 }
 
-.briefBody .briefGoal {
+.briefBlock .briefGoal {
   color: var(--text);
-}
-
-.briefChecklist {
-  display: grid;
-  gap: 0.5rem;
-  max-width: 68ch;
-  border-top: 1px solid color-mix(in srgb, var(--line) 48%, transparent);
-  padding-top: 0.75rem;
-}
-
-.root .briefChecklist h3 {
-  margin: 0;
-  color: var(--muted);
-  font-size: 0.875rem;
-  font-weight: 650;
-  line-height: 1.3;
 }
 
 .briefList {
@@ -199,6 +169,14 @@
   border-radius: 999px;
   background: var(--accent);
   content: "";
+}
+
+.briefFile {
+  display: block;
+  width: fit-content;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  white-space: normal;
 }
 
 .taskList {
@@ -260,18 +238,22 @@
   display: grid;
   gap: 0.625rem;
   justify-items: start;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.5rem;
   border-color: var(--border-subtle);
   background: var(--surface-subtle);
+  padding: 0.6875rem 0.75rem;
 }
 
-.root .guideNote h2,
+.root .guideNote h3,
 .root .guideNote p {
   margin: 0;
 }
 
-.root .guideNote h2 {
-  font-size: 1rem;
-  font-weight: 650;
+.root .guideNote h3 {
+  color: var(--text);
+  font-size: 0.9375rem;
+  font-weight: 600;
   line-height: 1.3;
 }
 
@@ -290,15 +272,67 @@
   width: fit-content;
 }
 
-.theoryRepeat {
+.helpPanel {
+  display: grid;
+  gap: 0.625rem;
+  border-color: var(--border-subtle);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  padding: 0.875rem;
+}
+
+.helpHeader {
+  display: grid;
+  gap: 0.25rem;
+}
+
+.root .helpHeader h2,
+.helpHeader p {
+  margin: 0;
+}
+
+.root .helpHeader h2 {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.helpHeader p {
+  color: var(--muted);
+  font-size: 0.875rem;
+  line-height: 1.45;
+}
+
+.helpSections {
   display: grid;
   gap: 0.5rem;
+}
+
+.helpDisclosure {
+  border-color: var(--border-subtle);
+  background: transparent;
+}
+
+.helpDisclosure > button {
+  min-height: 3.125rem;
+  padding: 0.625rem 0.75rem;
+}
+
+.helpDisclosure > div {
+  padding: 0.75rem;
+}
+
+.helpDisclosure .taskList {
+  margin-top: 0;
+}
+
+.theoryRepeat {
+  display: grid;
+  gap: 0.625rem;
   justify-items: start;
   min-width: 0;
-  border: 1px solid color-mix(in srgb, var(--line) 38%, transparent);
-  border-radius: 0.625rem;
-  background: color-mix(in srgb, var(--surface-2) 24%, transparent);
-  padding: 0.75rem 0.875rem;
+  border-color: var(--border-subtle);
+  background: var(--surface-subtle);
+  padding: 0.875rem;
 }
 
 .theoryRepeat div {
@@ -314,8 +348,8 @@
 
 .root .theoryRepeat h2 {
   color: var(--text);
-  font-size: 0.9375rem;
-  font-weight: 650;
+  font-size: 1rem;
+  font-weight: 600;
   line-height: 1.3;
 }
 
@@ -323,6 +357,23 @@
   color: var(--muted);
   font-size: 0.875rem;
   line-height: 1.45;
+}
+
+.theoryTitle {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 1.5rem;
+  align-items: center;
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--soft);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.2;
+  padding: 0.1875rem 0.5rem;
+  overflow-wrap: anywhere;
 }
 
 .theoryRepeat :global(.button) {
@@ -446,11 +497,6 @@
 
   .fileTab {
     flex: 1 1 auto;
-  }
-
-  .primaryFile {
-    grid-template-columns: minmax(0, 1fr);
-    width: 100%;
   }
 
   .filePanelHeader {

@@ -36,6 +36,14 @@ import {
 } from "../../utils/taskDisplay";
 import styles from "./TaskDetailsPage.module.scss";
 
+type Task = (typeof tasks)[number];
+
+const DEFAULT_TASK_DESCRIPTION =
+  "Откройте файл из practice, прочитайте комментарии в начале файла и напишите решение вместо TODO. Сначала добейтесь компиляции, затем проверьте поведение на простых данных.";
+
+const DEFAULT_FILE_DESCRIPTION =
+  "Стартовый файл задачи. Найдите TODO и допишите решение в локальном проекте.";
+
 function getNextFileIndex(currentIndex: number, key: string, fileCount: number) {
   if (key === "Home") return 0;
   if (key === "End") return fileCount - 1;
@@ -55,6 +63,7 @@ type TaskListSectionProps = {
   ordered?: boolean;
   collapsible?: boolean;
   description?: string;
+  className?: string;
 };
 
 function renderTaskInline(text: string) {
@@ -93,6 +102,7 @@ function TaskListSection({
   ordered = false,
   collapsible = false,
   description,
+  className,
 }: TaskListSectionProps) {
   if (items.length === 0) return null;
 
@@ -102,6 +112,7 @@ function TaskListSection({
         title={title}
         description={description ? renderTaskInline(description) : undefined}
         countLabel={pointCountLabel(items.length)}
+        className={className}
       >
         <TaskItemList items={items} ordered={ordered} />
       </CollapsibleSection>
@@ -109,7 +120,7 @@ function TaskListSection({
   }
 
   return (
-    <section className={clsx("panel", styles.plainPanel)}>
+    <section className={clsx("panel", styles.plainPanel, className)}>
       <h2>{title}</h2>
       {description && <p className={styles.panelDescription}>{renderTaskInline(description)}</p>}
       <TaskItemList items={items} ordered={ordered} />
@@ -119,49 +130,124 @@ function TaskListSection({
 
 function TaskGuideNote({ hasSpecificPlan }: { hasSpecificPlan: boolean }) {
   return (
-    <section className={clsx("panel", styles.guideNote)}>
+    <div className={styles.guideNote}>
       <div>
-        <h2>{hasSpecificPlan ? "Общий порядок работы" : "Как начать задачу"}</h2>
+        <h3>Нужен порядок решения?</h3>
         <p>
           {hasSpecificPlan
-            ? "Общие шаги вынесены в методику. Ниже оставлены только шаги, важные именно для этой задачи."
-            : "Типовой план решения вынесен в методику, чтобы не повторять его в каждой задаче."}
+            ? "Откройте методику, если нужно сверить общий подход. Шаги для этой задачи есть в подсказках."
+            : "Откройте методику, если нужно вспомнить общий порядок работы с задачей."}
         </p>
       </div>
       <LinkButton href={toPath("/guide")} size="small">
         Как решать задачи
       </LinkButton>
-    </section>
+    </div>
   );
+}
+
+function shouldShowTaskDescription(description: string) {
+  return description.trim() !== DEFAULT_TASK_DESCRIPTION;
+}
+
+function shouldShowFileDescription(description: string) {
+  return description.trim() !== DEFAULT_FILE_DESCRIPTION;
+}
+
+function getResultItems(items: string[], practicePath: string) {
+  if (items.length === 1 && items[0] === `Один файл: ${practicePath}`) {
+    return ["Один файл с решением вместо TODO."];
+  }
+
+  return items;
 }
 
 function TaskBriefSection({
   description,
   goal,
   items,
+  practicePath,
 }: {
   description: string;
   goal: string;
   items: string[];
+  practicePath: string;
 }) {
+  const resultItems = getResultItems(items, practicePath);
+
   return (
     <section className={clsx("panel", styles.taskBrief)}>
       <h2>Что нужно сделать</h2>
-      <div className={styles.briefBody}>
-        <p className={styles.briefGoal}>{renderTaskInline(goal)}</p>
-        <p>{renderTaskInline(description)}</p>
-      </div>
+      <div className={styles.briefGrid}>
+        <div className={styles.briefBlock}>
+          <span>Задача</span>
+          <p className={styles.briefGoal}>{renderTaskInline(goal)}</p>
+          {shouldShowTaskDescription(description) && <p>{renderTaskInline(description)}</p>}
+        </div>
 
-      {items.length > 0 && (
-        <div className={styles.briefChecklist}>
-          <h3>Результат</h3>
+        <div className={styles.briefBlock}>
+          <span>Результат</span>
           <ul className={styles.briefList}>
-            {items.map((item) => (
+            {resultItems.map((item) => (
               <li key={item}>{renderTaskInline(item)}</li>
             ))}
           </ul>
         </div>
-      )}
+
+        <div className={styles.briefBlock}>
+          <span>Файл</span>
+          <code className={styles.briefFile}>{practicePath}</code>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function TaskHelpSection({
+  hasSpecificPlan,
+  task,
+}: {
+  hasSpecificPlan: boolean;
+  task: Task;
+}) {
+  const hintItems = [
+    ...(task.todoGuide ?? []),
+    ...(hasSpecificPlan ? task.steps : []),
+    ...task.hints,
+  ];
+
+  return (
+    <section className={clsx("panel", styles.helpPanel)}>
+      <div className={styles.helpHeader}>
+        <h2>Помощь</h2>
+        <p>Открывайте эти разделы только когда нужен следующий шаг или проверка.</p>
+      </div>
+
+      <TaskGuideNote hasSpecificPlan={hasSpecificPlan} />
+
+      <div className={styles.helpSections}>
+        <TaskListSection
+          title="Подсказки"
+          items={hintItems}
+          collapsible
+          description="Следующий шаг без готового решения."
+          className={styles.helpDisclosure}
+        />
+        <TaskListSection
+          title="Частые ошибки"
+          items={task.commonMistakes}
+          collapsible
+          description="Проверьте перед тем, как считать задачу готовой."
+          className={styles.helpDisclosure}
+        />
+        <TaskListSection
+          title="Самопроверка"
+          items={task.selfCheck}
+          collapsible
+          description="Короткий чек-лист перед отметкой задачи."
+          className={styles.helpDisclosure}
+        />
+      </div>
     </section>
   );
 }
@@ -318,7 +404,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         <BackLink href={toPath("/tasks")}>К задачам</BackLink>
         <p className={styles.sectionLabel}>{task.section}</p>
         <h1>{task.title}</h1>
-        <MetaRow>
+        <MetaRow compact className={styles.headerMeta}>
           <MetaItem label="Курс">
             {course?.shortTitle ?? "Курс"}
           </MetaItem>
@@ -345,28 +431,17 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         )}
       </header>
 
-      {hasClosedTheory && (
-        <section className={clsx("panel", styles.theoryNote)}>
-          <strong>Теория к задаче ещё на доработке</strong>
-          <p>
-            {theory
-              ? `Раздел «${theory.title}» пока не готов. Задачу можно открыть заранее, но лучше вернуться к ней после теории.`
-              : "Теория для этой задачи пока не подключена к курсу."}
-          </p>
-        </section>
-      )}
-
-      <TaskBriefSection goal={task.goal} description={task.description} items={task.whatToCreate} />
+      <TaskBriefSection
+        goal={task.goal}
+        description={task.description}
+        items={task.whatToCreate}
+        practicePath={task.practicePath}
+      />
 
       <section className={clsx("panel", styles.codePanel)}>
         <div className={styles.codePanelHeader}>
-          <h2>Файлы и стартовый код</h2>
-          <p>Откройте рабочий файл в practice и замените TODO своим решением.</p>
-        </div>
-
-        <div className={styles.primaryFile}>
-          <span>Рабочий файл</span>
-          <code>{task.practicePath}</code>
+          <h2>Стартовый код</h2>
+          <p>Откройте файл из блока выше и замените TODO своим решением.</p>
         </div>
 
         {hasMultipleFiles && (
@@ -396,70 +471,39 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
           role={hasMultipleFiles ? "tabpanel" : undefined}
           aria-labelledby={hasMultipleFiles ? activeFileTabId : undefined}
         >
-          <div className={styles.filePanelHeader}>
-            <div>
-              <span>{hasMultipleFiles ? "Выбранный файл" : "Файл с TODO"}</span>
-              <strong>{activeFile.fileName.split("/").pop()}</strong>
+          {hasMultipleFiles && (
+            <div className={styles.filePanelHeader}>
+              <div>
+                <span>Выбранный файл</span>
+                <strong>{activeFile.fileName.split("/").pop()}</strong>
+              </div>
+              <code>{activeFile.fileName}</code>
             </div>
-            {task.files.length > 1 && <code>{activeFile.fileName}</code>}
-          </div>
+          )}
 
-          <p className={styles.fileDescription}>{renderTaskInline(activeFile.description)}</p>
-          <p className={styles.codeCaption}>Стартовый каркас</p>
-          <CodeBlock code={activeFile.starterCode} language="cpp" />
+          {shouldShowFileDescription(activeFile.description) && (
+            <p className={styles.fileDescription}>{renderTaskInline(activeFile.description)}</p>
+          )}
+          <p className={styles.codeCaption}>Каркас файла</p>
+          <CodeBlock code={activeFile.starterCode} language="cpp" compact />
         </div>
       </section>
 
-      <TaskListSection
-        title="Что писать вместо TODO"
-        items={task.todoGuide ?? []}
-        ordered
-      />
-
-      <TaskGuideNote hasSpecificPlan={hasSpecificPlan} />
-
-      {hasSpecificPlan && (
-        <TaskListSection
-          title="Шаги для этой задачи"
-          items={task.steps}
-          ordered
-          description="Здесь только действия, которые отличаются от общего порядка."
-        />
-      )}
-
-      <TaskListSection
-        title="Подсказки"
-        items={task.hints}
-        collapsible
-        description="Открой, если застрял на первом шаге."
-      />
-
-      <TaskListSection
-        title="Частые ошибки"
-        items={task.commonMistakes}
-        collapsible
-        description="Проверь перед тем, как считать задачу готовой."
-      />
-
-      <TaskListSection
-        title="Самопроверка"
-        items={task.selfCheck}
-        collapsible
-        description="Короткий чек-лист перед отметкой задачи."
-      />
+      <TaskHelpSection task={task} hasSpecificPlan={hasSpecificPlan} />
 
       {theory && (
-        <section className={styles.theoryRepeat}>
+        <section className={clsx("panel", styles.theoryRepeat)}>
           <div>
-            <h2>Вернуться к теме</h2>
+            <h2>Тема для повторения</h2>
             <p>
               {hasClosedTheory
-                ? `Раздел «${theory.title}» пока откроется как заглушка.`
-                : `Если нужно, открой раздел «${theory.title}» и продолжи задачу.`}
+                ? "Раздел пока откроется как заглушка, но связь с темой сохранена."
+                : "Откройте раздел, если нужно повторить основу перед решением."}
             </p>
+            <span className={styles.theoryTitle}>{theory.title}</span>
           </div>
           <LinkButton href={toPath(getCourseSectionPath(theory))} size="small" variant="ghost">
-            Открыть тему
+            Открыть раздел
           </LinkButton>
         </section>
       )}
