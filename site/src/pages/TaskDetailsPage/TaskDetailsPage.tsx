@@ -135,6 +135,37 @@ function TaskGuideNote({ hasSpecificPlan }: { hasSpecificPlan: boolean }) {
   );
 }
 
+function TaskBriefSection({
+  description,
+  goal,
+  items,
+}: {
+  description: string;
+  goal: string;
+  items: string[];
+}) {
+  return (
+    <section className={clsx("panel", styles.taskBrief)}>
+      <h2>Что нужно сделать</h2>
+      <div className={styles.briefBody}>
+        <p className={styles.briefGoal}>{renderTaskInline(goal)}</p>
+        <p>{renderTaskInline(description)}</p>
+      </div>
+
+      {items.length > 0 && (
+        <div className={styles.briefChecklist}>
+          <h3>Результат</h3>
+          <ul className={styles.briefList}>
+            {items.map((item) => (
+              <li key={item}>{renderTaskInline(item)}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </section>
+  );
+}
+
 export function TaskDetailsPage({ taskId }: { taskId: string }) {
   const task = tasks.find((item) => item.id === taskId);
   const { accessToken, isAuthenticated } = useAuth();
@@ -324,17 +355,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </section>
       )}
 
-      <section className={clsx("panel", styles.goal)}>
-        <h2>Условие</h2>
-        <p>{renderTaskInline(task.goal)}</p>
-        <p>{renderTaskInline(task.description)}</p>
-      </section>
-
-      <TaskListSection
-        title="Что создать"
-        items={task.whatToCreate}
-        description="Короткий список результата, который должен получиться в файлах задачи."
-      />
+      <TaskBriefSection goal={task.goal} description={task.description} items={task.whatToCreate} />
 
       <section className={clsx("panel", styles.codePanel)}>
         <h2>Файлы и каркас кода</h2>
@@ -406,15 +427,17 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
       />
 
       {theory && (
-        <section className={clsx("panel", styles.plainPanel)}>
-          <h2>Повторить теорию</h2>
-          <p>
-            {hasClosedTheory
-              ? "Раздел пока откроется как заглушка, без недоработанной теории."
-              : "Если стало непонятно, вернись к разделу перед продолжением задачи."}
-          </p>
-          <LinkButton href={toPath(getCourseSectionPath(theory))} size="small">
-            Открыть: {theory.title}
+        <section className={styles.theoryRepeat}>
+          <div>
+            <h2>Вернуться к теме</h2>
+            <p>
+              {hasClosedTheory
+                ? `Раздел «${theory.title}» пока откроется как заглушка.`
+                : `Если нужно, открой раздел «${theory.title}» и продолжи задачу.`}
+            </p>
+          </div>
+          <LinkButton href={toPath(getCourseSectionPath(theory))} size="small" variant="ghost">
+            Открыть тему
           </LinkButton>
         </section>
       )}
