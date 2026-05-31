@@ -407,16 +407,6 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
         </section>
       )}
 
-      {/*
-      <section className={styles.readingNote}>
-        <strong>Как читать этот урок</strong>
-        <span>
-          Иди блоками: сначала пойми проблему, потом пример кода, потом разбор. Не нужно заучивать
-          весь раздел за один проход.
-        </span>
-      </section>
-      */}
-
       {tocItems.length > 3 && (
         <nav className={styles.toc} aria-label="Содержание раздела">
           <strong>В этом разделе</strong>

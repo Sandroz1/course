@@ -12,25 +12,6 @@
   font-size: 0.8125rem;
 }
 
-.readingNote {
-  display: grid;
-  gap: 0.375rem;
-  border: 1px solid var(--line);
-  border-left: 2px solid var(--border-strong);
-  border-radius: 0.625rem;
-  background: color-mix(in srgb, var(--surface-2) 72%, transparent);
-  padding: 0.8125rem 0.9375rem;
-}
-
-.readingNote strong {
-  color: var(--text);
-}
-
-.readingNote span {
-  color: var(--soft);
-  line-height: 1.55;
-}
-
 .progressPanel {
   display: flex;
   align-items: center;

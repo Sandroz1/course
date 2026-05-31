@@ -29,7 +29,9 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  width: 6.75rem;
+  flex: 0 1 auto;
+  min-width: 6.75rem;
+  max-width: 100%;
   min-height: 2rem;
   border: 1px solid var(--code-border);
   border-radius: 0.3125rem;
@@ -39,9 +41,10 @@
   font: inherit;
   font-size: 0.75rem;
   font-weight: 650;
-  line-height: 1;
+  line-height: 1.2;
   padding: 0.3125rem 0.5rem;
-  white-space: nowrap;
+  text-align: center;
+  white-space: normal;
 }
 
 .copyButton:hover {
@@ -96,7 +99,7 @@
 }
 
 .compact .copyButton {
-  width: 6.25rem;
+  min-width: 6.25rem;
   min-height: 1.75rem;
   border-color: transparent;
   background: transparent;
