@@ -63,3 +63,7 @@ rg "/api/api" site/src site/dist
 Ожидаемо: пустой вывод.
 
 10. Перед публикацией tag проверить `.github/workflows/deploy-production.yml`. В текущем проекте push tag `v*` может запускать production deploy.
+
+11. Runtime security headers:
+   - basic runtime security headers are set in nginx;
+   - strict CSP is deferred until inline style/script requirements are reviewed.

@@ -132,6 +132,12 @@
   padding: 0.5rem 0.75rem;
 }
 
+.formSuccess {
+  border-color: var(--success-border);
+  background: var(--success-surface);
+  color: var(--success);
+}
+
 .formErrorEmpty {
   visibility: hidden;
 }

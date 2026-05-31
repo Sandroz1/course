@@ -246,6 +246,7 @@ export function ProfilePage() {
     setPasswordMessage("");
     setPasswordErrorText("");
     setPasswordFieldErrors({});
+    let shouldRedirectToLogin = false;
 
     if (newPassword !== newPassword2) {
       setPasswordFieldErrors({ newPassword2: ["Пароли не совпадают."] });
@@ -255,11 +256,14 @@ export function ProfilePage() {
     setIsChangingPassword(true);
 
     try {
-      const response = await changePassword({ currentPassword, newPassword, newPassword2 });
-      setPasswordMessage(response.message || "Пароль изменён.");
+      await changePassword({ currentPassword, newPassword, newPassword2 });
       setCurrentPassword("");
       setNewPassword("");
       setNewPassword2("");
+      setPasswordErrorText("");
+      setPasswordFieldErrors({});
+      await logout();
+      shouldRedirectToLogin = true;
     } catch (error) {
       const nextFieldErrors = getApiFieldErrors(error, passwordFields, passwordFieldFallbacks);
 
@@ -271,6 +275,10 @@ export function ProfilePage() {
       );
     } finally {
       setIsChangingPassword(false);
+    }
+
+    if (shouldRedirectToLogin) {
+      navigateTo("/login?passwordChanged=1", true);
     }
   }
 

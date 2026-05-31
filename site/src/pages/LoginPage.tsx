@@ -20,11 +20,19 @@ const loginFieldFallbacks: Record<LoginField, string> = {
   username: "Проверьте логин.",
   password: "Проверьте пароль.",
 };
+const PASSWORD_CHANGED_STATUS_MESSAGE = "Пароль изменён. Войдите снова.";
+
+function getInitialStatusText() {
+  return new URLSearchParams(window.location.search).get("passwordChanged") === "1"
+    ? PASSWORD_CHANGED_STATUS_MESSAGE
+    : "";
+}
 
 export function LoginPage() {
   const { login } = useAuth();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [statusText, setStatusText] = useState(getInitialStatusText);
   const [errorText, setErrorText] = useState("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrorMap<LoginField>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -38,6 +46,7 @@ export function LoginPage() {
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault();
+    setStatusText("");
     setErrorText("");
     setFieldErrors({});
     setIsSubmitting(true);
@@ -56,6 +65,8 @@ export function LoginPage() {
       setIsSubmitting(false);
     }
   }
+
+  const formMessage = errorText || statusText;
 
   return (
     <AuthLayout
@@ -118,10 +129,14 @@ export function LoginPage() {
 
         <p
           id={formErrorId}
-          className={clsx(styles.formError, !errorText && styles.formErrorEmpty)}
+          className={clsx(
+            styles.formError,
+            statusText && !errorText && styles.formSuccess,
+            !formMessage && styles.formErrorEmpty,
+          )}
           aria-live="polite"
         >
-          {errorText || "\u00A0"}
+          {formMessage || "\u00A0"}
         </p>
 
         <button className={styles.submit} type="submit" disabled={isSubmitting}>
