@@ -47,7 +47,7 @@
 
 .sectionPlaceholder h1 {
   margin: 0;
-  font-size: clamp(1.875rem, 4vw, 2.625rem);
+  font-size: clamp(1.5rem, 2.8vw, 1.875rem);
 }
 
 .sectionPlaceholder p:not(:global(.eyebrow)) {
@@ -81,7 +81,7 @@
   gap: 0.5rem;
   color: var(--muted);
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: 600;
 }
 
 .toc strong::before {
@@ -150,7 +150,7 @@
 .navLabel {
   color: var(--muted);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
@@ -185,14 +185,15 @@
 .relatedTasksHeader span {
   color: var(--muted);
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 650;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
 
 .relatedTasksHeader h2 {
   margin: 0;
-  font-size: 1.25rem;
+  font-size: 1.125rem;
+  font-weight: 650;
 }
 
 .relatedTasksHeader p {
@@ -252,7 +253,7 @@
   border-radius: 999px;
   color: var(--text);
   font-size: 0.8125rem;
-  font-weight: 800;
+  font-weight: 650;
   padding: 0.3125rem 0.625rem;
   white-space: nowrap;
 }

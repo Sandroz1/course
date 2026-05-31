@@ -15,6 +15,7 @@ import {
 import clsx from "clsx";
 import type { TaskProgressStatus } from "../../types/api";
 import { toPath } from "../../utils/slug";
+import { LinkButton } from "../../components/shared/ActionButton/ActionButton";
 import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
 import {
   BackLink,
@@ -127,9 +128,9 @@ function TaskGuideNote({ hasSpecificPlan }: { hasSpecificPlan: boolean }) {
             : "Типовой план решения вынесен в методику, чтобы не повторять его в каждой задаче."}
         </p>
       </div>
-      <a className="button button--small" href={toPath("/guide")}>
+      <LinkButton href={toPath("/guide")} size="small">
         Как решать задачи
-      </a>
+      </LinkButton>
     </section>
   );
 }
@@ -301,8 +302,8 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         </MetaRow>
         {isAuthenticated && (
           <TaskActionBar
-            title="Прогресс"
-            description={progressStatusLabel}
+            title="Работа над задачей"
+            description={`Текущий статус: ${progressStatusLabel.toLowerCase()}`}
             actionLabel={progressActionLabel}
             disabled={isProgressLoading || isProgressSaving}
             primary={effectiveTaskStatus !== "solved"}
@@ -412,9 +413,9 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
               ? "Раздел пока откроется как заглушка, без недоработанной теории."
               : "Если стало непонятно, вернись к разделу перед продолжением задачи."}
           </p>
-          <a className="button button--small" href={toPath(getCourseSectionPath(theory))}>
+          <LinkButton href={toPath(getCourseSectionPath(theory))} size="small">
             Открыть: {theory.title}
-          </a>
+          </LinkButton>
         </section>
       )}
     </article>

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { Button } from "../../components/shared/ActionButton/ActionButton";
 import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
 import { CollapsibleSection } from "../../components/shared/LearningUi/LearningUi";
 import clsx from "clsx";
@@ -217,9 +218,9 @@ export function CommonErrorsPage() {
           <h2>Ничего не найдено</h2>
           <p>Попробуй другое слово из сообщения компилятора или сбрось поиск.</p>
           {trimmedQuery && (
-            <button className="button button--small button--ghost" type="button" onClick={() => setQuery("")}>
+            <Button onClick={() => setQuery("")} size="small" variant="ghost">
               Сбросить поиск
-            </button>
+            </Button>
           )}
         </section>
       )}

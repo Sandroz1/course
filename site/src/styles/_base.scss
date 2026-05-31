@@ -54,7 +54,7 @@ summary code,
   line-height: inherit;
   max-width: 100%;
   padding: 0.02em 0.28em;
-  overflow-wrap: normal;
-  white-space: nowrap;
-  word-break: keep-all;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: normal;
 }
