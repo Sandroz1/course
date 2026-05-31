@@ -54,6 +54,7 @@ Do not repeat full audits unless explicitly requested.
 - Do not invent facts about C++.
 - When internet access is available, use cppreference, C++ Core Guidelines and high-quality tutorials as references.
 - Use forums and Stack Overflow only to identify common beginner mistakes, not as authoritative sources for code.
+- Follow `docs/theory-content-standards.md` for theory structure, examples, common mistakes and source rules.
 - Keep explanations practical, short and beginner-friendly.
 - Every theory section should cover: what it is, why it is needed, minimal example, common mistake and small practice direction.
 - Do not add advanced details that distract from the current section level.
