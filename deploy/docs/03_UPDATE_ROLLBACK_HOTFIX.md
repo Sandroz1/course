@@ -3,7 +3,7 @@
 ## Базовый поток
 
 ```text
-локально -> проверки -> commit -> push main -> fetch на VPS -> build -> up -> проверки
+локально -> проверки -> commit -> push main -> fetch на VPS -> backup -> build -> up -> проверки
 ```
 
 ## Локальные проверки перед push
@@ -38,6 +38,8 @@ cd /opt/uchicode/app
 git fetch origin main
 git log --oneline origin/main -1
 git checkout COMMIT_SHA_ORIGIN_MAIN
+
+/opt/uchicode/backup.sh
 
 docker compose -p app -f docker-compose.prod.yml build --pull
 docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
@@ -82,6 +84,8 @@ curl -fsS https://uchicode.ru/api/health
 cd /opt/uchicode/app
 
 git checkout PREVIOUS_COMMIT_OR_TAG
+
+/opt/uchicode/backup.sh
 
 docker compose -p app -f docker-compose.prod.yml build
 docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans

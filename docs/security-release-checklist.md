@@ -67,3 +67,5 @@ rg "/api/api" site/src site/dist
 11. Runtime security headers:
    - basic runtime security headers are set in nginx;
    - strict CSP is deferred until inline style/script requirements are reviewed.
+
+12. Перед production update или rollback выполнить `/opt/uchicode/backup.sh`.

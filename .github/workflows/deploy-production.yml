@@ -69,6 +69,11 @@ jobs:
             git checkout --force "$DEPLOY_REF"
             git reset --hard "origin/$DEPLOY_REF"
           fi
+          if [ ! -x /opt/uchicode/backup.sh ]; then
+            echo "Backup script /opt/uchicode/backup.sh is missing or not executable."
+            exit 1
+          fi
+          /opt/uchicode/backup.sh
           docker compose -p app -f docker-compose.prod.yml build --pull
           docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
           curl -fsS http://127.0.0.1:8080/nginx-health

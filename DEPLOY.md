@@ -6,6 +6,7 @@
 
 - `.env.production` создаётся и хранится только на VPS.
 - Не пушить tag `v*`, если не нужен запуск GitHub Actions deploy.
+- Перед production update или rollback выполнить `/opt/uchicode/backup.sh`.
 - После frontend-изменений пересобирать `nginx` image, потому что frontend собирается внутри `docker/nginx/Dockerfile`.
 - Не использовать `git add .` перед release, если в рабочем дереве есть env, `site/dist`, `node_modules`, `.venv`, `.vs`, `db.sqlite3` или backup-файлы.
 
@@ -15,6 +16,7 @@
 cd /opt/uchicode/app
 git fetch origin main
 git checkout origin/main
+/opt/uchicode/backup.sh
 docker compose -p app -f docker-compose.prod.yml build --pull
 docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 docker compose -p app -f docker-compose.prod.yml ps
@@ -42,6 +44,7 @@ git ls-remote --tags origin v0.1.2
 cd /opt/uchicode/app
 git fetch --all --tags
 git checkout v0.1.2
+/opt/uchicode/backup.sh
 docker compose -p app -f docker-compose.prod.yml build --pull
 docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 curl -fsS https://uchicode.ru/api/health
@@ -53,6 +56,7 @@ curl -fsS https://uchicode.ru/api/health
 cd /opt/uchicode/app
 git fetch --all --tags
 git checkout v0.1.1
+/opt/uchicode/backup.sh
 docker compose -p app -f docker-compose.prod.yml build
 docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 curl -fsS https://uchicode.ru/api/health

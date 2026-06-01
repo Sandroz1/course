@@ -92,6 +92,7 @@ curl -fsS https://uchicode.ru/api/health
 cd /opt/uchicode/app
 git fetch origin main
 git checkout origin/main
+/opt/uchicode/backup.sh
 docker compose -p app -f docker-compose.prod.yml build --pull
 docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 curl -fsS https://uchicode.ru/api/health
@@ -111,6 +112,7 @@ cat .github/workflows/deploy-production.yml
 cd /opt/uchicode/app
 git fetch --all --tags
 git checkout v0.1.1
+/opt/uchicode/backup.sh
 docker compose -p app -f docker-compose.prod.yml build
 docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
 curl -fsS https://uchicode.ru/api/health
