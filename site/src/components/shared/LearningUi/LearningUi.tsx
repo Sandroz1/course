@@ -101,6 +101,28 @@ export function TaskActionBar({
   );
 }
 
+export function EmptyState({
+  title,
+  description,
+  action,
+  className,
+}: {
+  title: string;
+  description: ReactNode;
+  action?: ReactNode;
+  className?: string;
+}) {
+  return (
+    <section className={clsx("panel", styles.emptyState, className)}>
+      <div className={styles.emptyStateText}>
+        <h2>{title}</h2>
+        <p>{description}</p>
+      </div>
+      {action && <div className={styles.emptyStateAction}>{action}</div>}
+    </section>
+  );
+}
+
 export function CollapsibleSection({
   title,
   description,

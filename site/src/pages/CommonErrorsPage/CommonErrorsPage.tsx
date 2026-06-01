@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Button } from "../../components/shared/ActionButton/ActionButton";
 import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
-import { CollapsibleSection } from "../../components/shared/LearningUi/LearningUi";
+import { CollapsibleSection, EmptyState } from "../../components/shared/LearningUi/LearningUi";
 import clsx from "clsx";
 import styles from "./CommonErrorsPage.module.scss";
 
@@ -130,6 +130,31 @@ function InlineText({ text }: { text: string }) {
   );
 }
 
+function ExampleSection({
+  code,
+  title,
+  tone,
+}: {
+  code: string;
+  title: string;
+  tone: "bad" | "good";
+}) {
+  return (
+    <section
+      className={clsx(
+        styles.exampleBox,
+        tone === "bad" ? styles.exampleBoxBad : styles.exampleBoxGood,
+      )}
+    >
+      <h3>
+        <span aria-hidden="true" />
+        {title}
+      </h3>
+      <CodeBlock code={code} language="cpp" compact />
+    </section>
+  );
+}
+
 export function CommonErrorsPage() {
   const [query, setQuery] = useState("");
   const trimmedQuery = query.trim();
@@ -196,14 +221,8 @@ export function CommonErrorsPage() {
                 </p>
               </section>
               <div className={styles.examplePair}>
-                <section className={clsx(styles.exampleBox, styles.exampleBoxBad)}>
-                  <h3>Ошибка</h3>
-                  <CodeBlock code={error.bad} language="cpp" compact />
-                </section>
-                <section className={clsx(styles.exampleBox, styles.exampleBoxGood)}>
-                  <h3>Правильно</h3>
-                  <CodeBlock code={error.fixed} language="cpp" compact />
-                </section>
+                <ExampleSection code={error.bad} title="Ошибка" tone="bad" />
+                <ExampleSection code={error.fixed} title="Правильно" tone="good" />
               </div>
               <p className={styles.rememberNote}>
                 <strong>Запомнить:</strong> <InlineText text={error.remember} />
@@ -214,15 +233,17 @@ export function CommonErrorsPage() {
       </div>
 
       {filteredErrors.length === 0 && (
-        <section className={clsx("panel", styles.emptyState)}>
-          <h2>Ничего не найдено</h2>
-          <p>Попробуй другое слово из сообщения компилятора или сбрось поиск.</p>
-          {trimmedQuery && (
-            <Button onClick={() => setQuery("")} size="small" variant="ghost">
-              Сбросить поиск
-            </Button>
-          )}
-        </section>
+        <EmptyState
+          title="Ничего не найдено"
+          description="Попробуй другое слово из ошибки компилятора или очисти поиск."
+          action={
+            trimmedQuery ? (
+              <Button onClick={() => setQuery("")} size="small" variant="ghost">
+                Очистить поиск
+              </Button>
+            ) : undefined
+          }
+        />
       )}
     </article>
   );

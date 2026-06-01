@@ -8,6 +8,7 @@ import { getCachedCourseProgress, readCachedCourseProgress } from "../../lib/pro
 import clsx from "clsx";
 import { DropdownSelect, type DropdownOption } from "../../components/shared/DropdownSelect/DropdownSelect";
 import { Button } from "../../components/shared/ActionButton/ActionButton";
+import { EmptyState } from "../../components/shared/LearningUi/LearningUi";
 import type { TaskProgressStatus } from "../../types/api";
 import {
   getTaskDisplayStatus,
@@ -241,15 +242,17 @@ export function TasksIndexPage() {
       )}
 
       {visibleSections.length === 0 && (
-        <section className={clsx("panel", styles.emptyState)}>
-          <h2>Задачи не найдены</h2>
-          <p>Измени фильтры или поисковый запрос.</p>
-          {hasActiveFilters && (
-            <Button onClick={resetFilters} size="small">
-              Сбросить фильтры
-            </Button>
-          )}
-        </section>
+        <EmptyState
+          title="Нет задач по этим фильтрам"
+          description="Измени запрос, курс или статус либо верни полный список."
+          action={
+            hasActiveFilters ? (
+              <Button onClick={resetFilters} size="small">
+                Показать все задачи
+              </Button>
+            ) : undefined
+          }
+        />
       )}
 
       {visibleSections.map((section) => {

@@ -116,22 +116,6 @@
   color: var(--text);
 }
 
-.emptyState {
-  display: grid;
-  align-content: start;
-  gap: 0.625rem;
-  min-height: 9rem;
-}
-
-.emptyState h2,
-.emptyState p {
-  margin: 0;
-}
-
-.emptyState p {
-  color: var(--muted);
-}
-
 .taskSection {
   display: grid;
   gap: 0.75rem;
@@ -160,6 +144,17 @@
 
 .sectionHeading :global(.count-badge) {
   flex: 0 0 auto;
+}
+
+@media (max-width: 72rem) {
+  .filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .field:first-child,
+  .summary {
+    grid-column: 1 / -1;
+  }
 }
 
 @media (max-width: 56.25rem) {
