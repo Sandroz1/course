@@ -53,6 +53,7 @@ const readyTheorySlugs = new Set([
   "multifile-project",
   "preprocessor",
   "unary-operator-overloading",
+  "inheritance",
 ]);
 
 function taskStatusForTheory(theorySlug: string): ContentStatus {
@@ -324,6 +325,58 @@ int main() {
 
     // TODO: заполните элементы через arr[index]
     // TODO: покажите ++arr, --arr, -arr и int(arr)
+
+    return 0;
+}
+`,
+    }],
+  }),
+
+  singleTask("10-06-body-area-body", "Body и AreaBody: наследование", "10. Наследование", "medium", "inheritance", ["inheritance", "base class", "derived class", "public", "protected", "private"], "practice/10_inheritance/ex01_body_area_body.cpp", "Создать базовый класс `Body` и наследника `AreaBody` с координатами.", {
+    description: "Нужно написать два класса: `Body` хранит размеры и массу физического тела, а `AreaBody` публично наследуется от `Body` и добавляет координаты. Задача закрепляет базовое наследование без виртуальных методов.",
+    whatToCreate: ["класс `Body`", "private-поля `width`, `height`, `depth`, `mass`", "конструктор `Body`", "public-метод `printBodyInfo()`", "protected-метод `getVolume()` при необходимости", "класс `AreaBody : public Body`", "private-поля координат `x` и `y`", "конструктор `AreaBody`, который вызывает конструктор `Body`", "метод `printAreaInfo()`", "проверку объектов в `main()`"],
+    todoGuide: ["Опишите класс `Body`.", "Добавьте private-поля размеров и массы.", "Напишите конструктор `Body` через список инициализации.", "Добавьте public-метод `printBodyInfo()`.", "Добавьте protected-метод `getVolume()`, если хотите вывести объём из наследника.", "Опишите `class AreaBody : public Body`.", "Добавьте private-поля координат.", "В конструкторе `AreaBody` вызовите `Body(width, height, depth, mass)`.", "В `printAreaInfo()` вызовите `printBodyInfo()` и выведите координаты.", "В `main()` создайте `Body` и `AreaBody` и проверьте вывод."],
+    steps: ["Создайте каркас классов `Body` и `AreaBody`.", "Заполните поля и конструктор `Body`.", "Сделайте метод вывода данных `Body`.", "Добавьте наследование `AreaBody : public Body`.", "Вызовите конструктор родителя из конструктора наследника.", "Добавьте вывод координат.", "Проверьте, что public-метод `Body` вызывается у объекта `AreaBody`."],
+    hints: ["Для учебной задачи явно пишите `public` после двоеточия: `class AreaBody : public Body`.", "Private-поля `Body` нельзя читать напрямую из `AreaBody`.", "Конструктор родителя вызывается в списке инициализации: `: Body(width, height, depth, mass), x(x), y(y)`.", "Если наследнику нужен объём, сделайте в `Body` protected-метод, а не открывайте поля.", "Не добавляйте в эту задачу `virtual` и указатели: они будут в следующих частях раздела."],
+    commonMistakes: ["Забывают `public` при наследовании.", "Пытаются обратиться к private-полю родителя напрямую.", "Дублируют поля родителя в дочернем классе.", "Не вызывают конструктор родителя.", "Путают объект и класс.", "Думают, что private-доступ наследуется как открытый."],
+    selfCheck: ["`AreaBody` объявлен как `class AreaBody : public Body`.", "`Body` хранит размеры и массу.", "`AreaBody` хранит только координаты, а не дублирует поля `Body`.", "Конструктор `AreaBody` вызывает конструктор `Body`.", "`areaBody.printBodyInfo()` компилируется и выводит данные базовой части.", "`printAreaInfo()` выводит координаты.", "В коде нет `virtual`, smart pointers, abstract classes и interfaces."],
+    files: [{
+      fileName: "practice/10_inheritance/ex01_body_area_body.cpp",
+      description: "Один файл с классами Body и AreaBody для тренировки наследования.",
+      starterCode: `#include <iostream>
+
+using namespace std;
+
+class Body {
+private:
+    double width;
+    double height;
+    double depth;
+    double mass;
+
+protected:
+    double getVolume() const;
+
+public:
+    Body(double width, double height, double depth, double mass);
+    void printBodyInfo() const;
+};
+
+class AreaBody : public Body {
+private:
+    double x;
+    double y;
+
+public:
+    AreaBody(double width, double height, double depth, double mass, double x, double y);
+    void printAreaInfo() const;
+};
+
+int main() {
+    // TODO: создайте объект Body и вызовите printBodyInfo()
+    // TODO: создайте объект AreaBody
+    // TODO: вызовите printBodyInfo() у AreaBody
+    // TODO: вызовите printAreaInfo() у AreaBody
 
     return 0;
 }

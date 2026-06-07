@@ -33,6 +33,7 @@ import { preprocessorContent } from "../content/course/preprocessor";
 import { initializerListContent } from "../content/course/initializerList";
 import { vectorContent } from "../content/course/vector";
 import { unaryOperatorOverloadingContent } from "../content/course/unaryOperatorOverloading";
+import { inheritanceContent } from "../content/course/inheritance";
 import { delegatingConstructorsContent } from "../content/course/delegatingConstructors";
 import { encapsulationContent } from "../content/course/encapsulation";
 import { exceptionsContent } from "../content/course/exceptions";
@@ -270,6 +271,16 @@ const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
     status: "available",
     content: unaryOperatorOverloadingContent,
     relatedTaskIds: ["09-05-myarray-unary-operators"],
+  },
+  {
+    slug: "inheritance",
+    number: "10.1",
+    title: "Наследование",
+    description: "Разберёшь, как связаны базовый и дочерний классы, зачем писать `public` при наследовании и почему private-поля родителя недоступны напрямую.",
+    topics: ["inheritance", "base class", "derived class", "public", "protected", "private"],
+    status: "available",
+    content: inheritanceContent,
+    relatedTaskIds: ["10-06-body-area-body"],
   },
   {
     slug: "delegating-constructors",
