@@ -44,7 +44,7 @@ AI:
 ## Что улучшено в v3
 
 1. Разделены deploy, update, hotfix, troubleshooting и security.
-2. Зафиксирован release-ориентир `1cfbdb5`; фактический commit на VPS нужно сверять командой `git log --oneline -1`.
+2. Зафиксирован release-ориентир `c05f7b9`; фактический commit на VPS нужно сверять командой `git log --oneline -1`.
 3. Добавлен отдельный hotfix-playbook для nginx `auth_limit` на `/admin/`.
 4. Добавлен отдельный сценарий для AI 503 при пустом `QWEN_API_KEY`.
 5. Добавлено правило: если менялся frontend, нужно пересобирать `nginx` image.

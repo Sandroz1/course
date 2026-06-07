@@ -165,7 +165,7 @@ git checkout origin/main
 Если нужно закрепиться на проверенном commit hotfix-релиза:
 
 ```bash
-git checkout 1cfbdb5
+git checkout c05f7b9
 ```
 
 Если tag `v0.1.2` опубликован в GitHub, можно использовать:

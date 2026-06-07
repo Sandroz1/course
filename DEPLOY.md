@@ -27,7 +27,7 @@ curl -fsS https://uchicode.ru/api/health
 Если нужно закрепиться на конкретном commit:
 
 ```bash
-git checkout 1cfbdb5
+git checkout c05f7b9
 ```
 
 ## Ручной deploy по tag

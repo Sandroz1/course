@@ -53,7 +53,7 @@ Internet
 Текущий release-ориентир:
 
 ```text
-1cfbdb5 Fix frontend API paths
+c05f7b9 Polish guide heading spacing
 ```
 
 Перед deploy всегда сверить фактический server `HEAD`:

@@ -1,12 +1,12 @@
 # PROJECT_STATUS
 
-Актуально на 2026-05-24.
+Актуально на 2026-06-07.
 
 ## Git и release
 
 - Основная ветка: `main`.
-- `origin/main` содержит commit `1cfbdb5 Fix frontend API paths`.
-- Локальный tag `v0.1.2` указывает на `1cfbdb5`, но tag нужно публиковать отдельно и осторожно: workflow `.github/workflows/deploy-production.yml` запускается на push tag `v*`.
+- `origin/main` содержит commit `c05f7b9 Polish guide heading spacing`.
+- Локальный tag `v0.1.2` указывает на старый commit `1cfbdb5` и не опубликован в `origin`; tag нужно публиковать отдельно и осторожно: workflow `.github/workflows/deploy-production.yml` запускается на push tag `v*`.
 - Ветка `dist` используется отдельно для статического frontend-артефакта и не влияет на production Docker deploy.
 
 ## Frontend

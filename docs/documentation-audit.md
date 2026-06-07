@@ -1,6 +1,6 @@
 # Documentation audit
 
-Актуально на 2026-05-24.
+Актуально на 2026-06-07.
 
 ## Что проверено
 
@@ -34,7 +34,7 @@ deploy/docs/README.md             production runbooks
 
 ## Production notes
 
-- `origin/main` содержит `1cfbdb5 Fix frontend API paths`.
+- `origin/main` содержит `c05f7b9 Polish guide heading spacing`.
 - Push tag `v*` может запускать GitHub Actions deploy.
 - Если tag `v0.1.2` не опубликован в GitHub, VPS не сможет сделать `git checkout v0.1.2` после `git fetch --all --tags`.
 - Для ручного deploy можно использовать `origin/main` или конкретный commit SHA.
@@ -69,6 +69,6 @@ rg "/api/api" site/src site/dist
 
 ## Что стоит сделать позже
 
-- После фактического деплоя `v0.1.2` или другого release обновить `deploy/docs/01_CURRENT_STATE.md`.
+- После следующего production deploy обновить `deploy/docs/01_CURRENT_STATE.md`, если фактический server `HEAD` отличается от release-ориентира.
 - Если GitHub Actions deploy останется включённым на tag `v*`, явно выбрать одну release-политику: ручной deploy по commit или автоматический deploy по tag.
 - После подключения Qwen обновить AI-разделы и убрать пометку о допустимом `503` при пустом `QWEN_API_KEY`.
