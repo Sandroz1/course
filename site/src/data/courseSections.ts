@@ -34,6 +34,7 @@ import { initializerListContent } from "../content/course/initializerList";
 import { vectorContent } from "../content/course/vector";
 import { unaryOperatorOverloadingContent } from "../content/course/unaryOperatorOverloading";
 import { inheritanceContent } from "../content/course/inheritance";
+import { virtualMethodsContent } from "../content/course/virtualMethods";
 import { delegatingConstructorsContent } from "../content/course/delegatingConstructors";
 import { encapsulationContent } from "../content/course/encapsulation";
 import { exceptionsContent } from "../content/course/exceptions";
@@ -281,6 +282,16 @@ const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
     status: "available",
     content: inheritanceContent,
     relatedTaskIds: ["10-06-body-area-body"],
+  },
+  {
+    slug: "virtual-methods",
+    number: "10.2",
+    title: "Виртуальные методы",
+    description: "Разберёшь, зачем нужен `virtual`, как работает `override` и почему при вызове через указатель на базовый класс выбирается метод настоящего объекта.",
+    topics: ["virtual", "override", "base pointer", "polymorphism", "virtual destructor"],
+    status: "available",
+    content: virtualMethodsContent,
+    relatedTaskIds: ["10-07-old-nouveau-virtual", "10-08-garage-virtual-raw-pointers"],
   },
   {
     slug: "delegating-constructors",

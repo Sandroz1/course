@@ -54,6 +54,7 @@ const readyTheorySlugs = new Set([
   "preprocessor",
   "unary-operator-overloading",
   "inheritance",
+  "virtual-methods",
 ]);
 
 function taskStatusForTheory(theorySlug: string): ContentStatus {
@@ -377,6 +378,107 @@ int main() {
     // TODO: создайте объект AreaBody
     // TODO: вызовите printBodyInfo() у AreaBody
     // TODO: вызовите printAreaInfo() у AreaBody
+
+    return 0;
+}
+`,
+    }],
+  }),
+
+  singleTask("10-07-old-nouveau-virtual", "Old/Nouveau: virtual", "10. Виртуальные методы", "medium", "virtual-methods", ["virtual", "override", "base pointer", "virtual destructor"], "practice/10_virtual_methods/ex01_old_nouveau_virtual.cpp", "Проверить, как меняется вызов метода через `Old*` после добавления `virtual`.", {
+    description: "Нужно провести маленький эксперимент с классами `Old` и `Nouveau`: сначала увидеть вызов метода без `virtual`, затем добавить `virtual` и `override` и сравнить результат.",
+    whatToCreate: ["класс `Old`", "метод `print()` в `Old`", "виртуальный деструктор `Old`", "класс `Nouveau : public Old`", "метод `print()` в `Nouveau`", "проверку `Old object`", "проверку `Nouveau object`", "проверку `Old* ptr = new Nouveau`", "сравнение вывода до и после `virtual`"],
+    todoGuide: ["Опишите класс `Old`.", "Добавьте метод `print() const`, который выводит `Old`.", "Добавьте класс `Nouveau : public Old`.", "Добавьте в `Nouveau` метод `print() const`, который выводит `Nouveau`.", "В `main()` создайте `Old object` и `Nouveau nouveau`.", "Создайте `Old* ptr = new Nouveau`.", "Вызовите `print()` у всех трёх вариантов.", "Запустите программу без `virtual` у `print()`.", "Добавьте `virtual` в `Old::print()` и `override` в `Nouveau::print()`.", "Запустите программу снова и сравните вывод."],
+    steps: ["Соберите классы без `virtual`.", "Проверьте обычный объект `Old`.", "Проверьте обычный объект `Nouveau`.", "Проверьте вызов через `Old*`.", "Добавьте `virtual` и `override`.", "Снова проверьте вызов через `Old*`.", "Удалите объект через `delete ptr`."],
+    hints: ["Ключевой вызов — `ptr->print()`.", "Без `virtual` тип `Old*` ведёт к `Old::print()`.", "С `virtual` настоящий объект `Nouveau` ведёт к `Nouveau::print()`.", "`override` ставится в дочернем классе.", "Если метод в базовом классе `const`, в дочернем тоже нужен `const`.", "У базового класса с виртуальными методами оставьте `virtual ~Old() = default;`."],
+    commonMistakes: ["Нет `virtual` в базовом классе.", "Метод в дочернем классе имеет другую сигнатуру.", "Забыли `override`.", "Удаляют объект через базовый указатель без virtual destructor.", "Путают перегрузку и переопределение."],
+    selfCheck: ["Без `virtual` вызов `ptr->print()` показывает поведение базового типа.", "С `virtual` вызов `ptr->print()` показывает поведение дочернего объекта.", "В `Nouveau` используется `override`.", "Сигнатуры `print()` в `Old` и `Nouveau` совпадают.", "`Old` содержит виртуальный деструктор.", "В задаче не используются smart pointers, abstract classes и interfaces."],
+    files: [{
+      fileName: "practice/10_virtual_methods/ex01_old_nouveau_virtual.cpp",
+      description: "Один файл для эксперимента с виртуальным вызовом через Old*.",
+      starterCode: `#include <iostream>
+
+using namespace std;
+
+class Old {
+public:
+    // TODO: сначала напишите print() без virtual, затем добавьте virtual.
+    void print() const;
+
+    virtual ~Old() = default;
+};
+
+class Nouveau : public Old {
+public:
+    // TODO: сначала напишите print() без override, затем добавьте override.
+    void print() const;
+};
+
+int main() {
+    Old object;
+    Nouveau nouveau;
+    Old* ptr = new Nouveau;
+
+    // TODO: вызовите print() у object
+    // TODO: вызовите print() у nouveau
+    // TODO: вызовите print() через ptr
+
+    delete ptr;
+    return 0;
+}
+`,
+    }],
+  }),
+
+  singleTask("10-08-garage-virtual-raw-pointers", "Гараж 1: virtual", "10. Виртуальные методы", "medium", "virtual-methods", ["virtual", "override", "Vehicle", "Car", "Bus", "base pointer"], "practice/10_virtual_methods/ex02_garage_virtual_raw_pointers.cpp", "Сделать гараж, который вызывает разные версии `printInfo()` через `Vehicle*`.", {
+    description: "Нужно создать `Vehicle`, `Car` и `Bus`, а затем хранить адреса машин и автобусов в `vector<Vehicle*>`. Задача показывает виртуальный вызов до темы smart pointers.",
+    whatToCreate: ["класс `Vehicle`", "virtual-метод `printInfo() const`", "virtual destructor в `Vehicle`", "класс `Car : public Vehicle`", "класс `Bus : public Vehicle`", "переопределение `printInfo()` через `override`", "`vector<Vehicle*> garage`", "цикл вывода информации по всем объектам гаража"],
+    todoGuide: ["Опишите базовый класс `Vehicle`.", "Добавьте `virtual void printInfo() const`.", "Добавьте `virtual ~Vehicle() = default`.", "Создайте `Car : public Vehicle` с моделью, годом и мощностью.", "Создайте `Bus : public Vehicle` с моделью и количеством мест.", "В обоих дочерних классах переопределите `printInfo()` через `override`.", "В `main()` создайте объекты `Car` и `Bus` как обычные переменные.", "Создайте `vector<Vehicle*> garage`.", "Добавьте в гараж адреса объектов через `&car` и `&bus`.", "Пройдите по гаражу циклом и вызовите `vehicle->printInfo()`."],
+    steps: ["Создайте базовый класс `Vehicle`.", "Добавьте дочерние классы `Car` и `Bus`.", "Сделайте `printInfo()` виртуальным.", "Добавьте `override` в дочерних классах.", "Создайте несколько объектов в `main()`.", "Добавьте их адреса в `vector<Vehicle*>`.", "Проверьте, что для машины и автобуса вывод разный."],
+    hints: ["`vector<Vehicle*>` хранит адреса, а не сами объекты.", "Для объекта `Car car(...)` адрес пишется как `&car`.", "Не вызывайте `delete` для указателей на объекты, созданные обычными переменными.", "`printInfo()` должен быть virtual в `Vehicle`.", "В `Car` и `Bus` используйте `override`.", "В следующей теме этот гараж будет безопаснее через `unique_ptr`."],
+    commonMistakes: ["Нет `virtual` в базовом классе.", "Метод в дочернем классе имеет другую сигнатуру.", "Забыли `override`.", "Удаление через базовый указатель без virtual destructor.", "Путают перегрузку и переопределение.", "Вызывают `delete` для адреса объекта, созданного в `main()` как обычная переменная."],
+    selfCheck: ["`Vehicle` содержит virtual `printInfo()`.", "`Vehicle` содержит virtual destructor.", "`Car` и `Bus` наследуются от `Vehicle`.", "`Car` и `Bus` используют `override`.", "`vector<Vehicle*>` содержит адреса разных объектов.", "`vehicle->printInfo()` выводит разные данные для `Car` и `Bus`.", "В задаче нет smart pointers, abstract classes и interfaces."],
+    files: [{
+      fileName: "practice/10_virtual_methods/ex02_garage_virtual_raw_pointers.cpp",
+      description: "Один файл с Vehicle, Car, Bus и гаражом на базовых указателях.",
+      starterCode: `#include <iostream>
+#include <string>
+#include <vector>
+
+using namespace std;
+
+class Vehicle {
+public:
+    virtual void printInfo() const;
+    virtual ~Vehicle() = default;
+};
+
+class Car : public Vehicle {
+private:
+    string model;
+    int year;
+    int power;
+
+public:
+    Car(string model, int year, int power);
+    void printInfo() const override;
+};
+
+class Bus : public Vehicle {
+private:
+    string model;
+    int seats;
+
+public:
+    Bus(string model, int seats);
+    void printInfo() const override;
+};
+
+int main() {
+    // TODO: создайте объекты Car и Bus
+    // TODO: создайте vector<Vehicle*> garage
+    // TODO: добавьте адреса объектов в garage
+    // TODO: вызовите printInfo() для каждого Vehicle* в garage
 
     return 0;
 }
