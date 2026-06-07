@@ -32,6 +32,7 @@ import { multifileProjectContent } from "../content/course/multifileProject";
 import { preprocessorContent } from "../content/course/preprocessor";
 import { initializerListContent } from "../content/course/initializerList";
 import { vectorContent } from "../content/course/vector";
+import { unaryOperatorOverloadingContent } from "../content/course/unaryOperatorOverloading";
 import { delegatingConstructorsContent } from "../content/course/delegatingConstructors";
 import { encapsulationContent } from "../content/course/encapsulation";
 import { exceptionsContent } from "../content/course/exceptions";
@@ -259,6 +260,16 @@ const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
     status: "needs-theory",
     content: vectorContent,
     relatedTaskIds: ["08-01-vector-int-push-back", "08-02-vector-print-by-index", "08-03-vector-delete-by-number", "08-04-vector-empty-check", "08-05-vector-objects", "08-06-vector-sort", "08-07-vector-menu", "task5-2-worker"],
+  },
+  {
+    slug: "unary-operator-overloading",
+    number: "9.2",
+    title: "Перегрузка унарных операторов",
+    description: "Разберёшь, как перегрузить `++`, `--`, унарный `-`, `operator int()` и `operator[]` для учебного динамического массива `MyArray`.",
+    topics: ["operator", "unary operator", "operator[]", "operator int", "MyArray"],
+    status: "available",
+    content: unaryOperatorOverloadingContent,
+    relatedTaskIds: ["09-05-myarray-unary-operators"],
   },
   {
     slug: "delegating-constructors",

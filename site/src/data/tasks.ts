@@ -52,6 +52,7 @@ const readyTheorySlugs = new Set([
   "this",
   "multifile-project",
   "preprocessor",
+  "unary-operator-overloading",
 ]);
 
 function taskStatusForTheory(theorySlug: string): ContentStatus {
@@ -282,6 +283,53 @@ export const tasks: Task[] = [
   singleTask("09-02-worker-constructors", "Worker: несколько конструкторов", "09. Делегирование", "medium", "delegating-constructors", ["Worker"], "practice/09_delegating_constructors/ex02_worker_constructors.cpp", "Сделать несколько способов создания рабочего."),
   singleTask("09-03-worker-edit-without-id", "Worker: редактирование без id", "09. Делегирование", "medium", "delegating-constructors", ["id"], "practice/09_delegating_constructors/ex03_worker_edit_without_id.cpp", "Редактировать поля рабочего, но не менять id."),
   singleTask("09-04-worker-vector-menu", "Worker: vector и меню", "09. Делегирование", "medium", "delegating-constructors", ["vector", "menu"], "practice/09_delegating_constructors/ex04_worker_vector_menu.cpp", "Сделать меню для списка рабочих."),
+  singleTask("09-05-myarray-unary-operators", "MyArray: унарные операторы", "09. Перегрузка операторов", "medium", "unary-operator-overloading", ["operator++", "operator--", "operator-", "operator int", "operator[]", "dynamic array"], "practice/09_operator_overloading/ex01_myarray_unary_operators.cpp", "Реализовать учебный динамический массив `MyArray` с унарными операторами.", {
+    description: "Нужно написать класс `MyArray`, который хранит динамический массив `int` и размер. Задача учебная: raw pointer используется, чтобы увидеть выделение, копирование и освобождение памяти.",
+    whatToCreate: ["класс `MyArray`", "поля `int* data` и `int size`", "конструктор по умолчанию", "конструктор от размера", "деструктор", "deep copy через copy constructor и copy assignment", "`operator[]` для доступа к элементу", "`operator++` для добавления элемента", "`operator--` для удаления последнего элемента", "`operator-` для копии с противоположными числами", "`operator int()` для получения размера"],
+    todoGuide: ["Опишите класс `MyArray`.", "Добавьте private-поля `int* data` и `int size`.", "В конструкторе по умолчанию задайте `data = nullptr`, `size = 0`.", "В конструкторе от размера выделите `new int[size]{}`.", "В деструкторе освободите память через `delete[] data`.", "Добавьте copy constructor и copy assignment, чтобы копирование было глубоким.", "Сделайте `operator[]`, который возвращает `int&`.", "В `operator++` выделите массив на один элемент больше и обновите размер.", "В `operator--` не уменьшайте пустой массив.", "В `operator-` создайте новый массив с числами противоположного знака.", "В `operator int()` верните размер.", "В `main` покажите работу всех операторов."],
+    steps: ["Создайте поля и конструкторы.", "Добавьте деструктор.", "Добавьте deep copy.", "Реализуйте доступ по индексу.", "Реализуйте `++arr` и `--arr`.", "Реализуйте `-arr` без изменения оригинала.", "Реализуйте `int(arr)`.", "Проверьте массив из нескольких чисел."],
+    hints: ["Если класс владеет `new[]`, ему нужен `delete[]`.", "Для `operator[]` возвращайте ссылку: `int&`.", "`operator++` должен вернуть `*this`.", "`operator--` сначала проверяет, что размер больше нуля.", "`operator-` создаёт `MyArray result(size)` и заполняет его значениями `-data[i]`.", "`operator int()` должен быть `const`, потому что он только читает размер.", "После копирования измените один массив и проверьте, что другой не изменился."],
+    commonMistakes: ["`operator[]` возвращает копию, а не ссылку.", "`operator++` выделяет новый массив, но не меняет `size`.", "`operator--` уменьшает массив ниже нуля.", "`operator-` меняет оригинал, хотя должен вернуть копию.", "Забывают деструктор и оставляют выделенную память.", "Не делают deep copy, поэтому два объекта владеют одной памятью.", "`operator int` возвращает ссылку или странное значение вместо размера."],
+    selfCheck: ["`MyArray arr(2)` создаёт массив размера 2.", "`arr[0] = 5` меняет первый элемент.", "`++arr` увеличивает размер на 1.", "`--arr` уменьшает размер на 1 и не ломает пустой массив.", "`MyArray negative = -arr` не меняет `arr`.", "`int(arr)` возвращает текущий размер.", "Копия массива не делит память с оригиналом.", "В программе нет утечки из-за забытого `delete[]`."],
+    files: [{
+      fileName: "practice/09_operator_overloading/ex01_myarray_unary_operators.cpp",
+      description: "Один файл с классом MyArray и проверкой унарных операторов.",
+      starterCode: `#include <iostream>
+
+using namespace std;
+
+class MyArray {
+private:
+    int* data;
+    int size;
+
+public:
+    MyArray();
+    explicit MyArray(int size);
+    MyArray(const MyArray& other);
+    MyArray& operator=(const MyArray& other);
+    ~MyArray();
+
+    int& operator[](int index);
+    const int& operator[](int index) const;
+
+    MyArray& operator++();
+    MyArray& operator--();
+    MyArray operator-() const;
+    explicit operator int() const;
+};
+
+int main() {
+    MyArray arr(2);
+
+    // TODO: заполните элементы через arr[index]
+    // TODO: покажите ++arr, --arr, -arr и int(arr)
+
+    return 0;
+}
+`,
+    }],
+  }),
 
   singleTask("10-01-private-field-getter", "Закрытое поле и геттер", "10. Инкапсуляция", "medium", "encapsulation", ["getter"], "practice/10_encapsulation/ex01_private_field_getter.cpp", "Прочитать private поле через public геттер."),
   singleTask("10-02-setter-validation", "Сеттер с проверкой", "10. Инкапсуляция", "medium", "encapsulation", ["setter"], "practice/10_encapsulation/ex02_setter_validation.cpp", "Не пропустить неправильное значение в объект."),
