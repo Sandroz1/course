@@ -249,9 +249,9 @@ const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
     title: "Список инициализации",
     description: "Поймёшь, как задавать значения полям сразу при создании объекта и чем список инициализации отличается от присваивания в теле конструктора.",
     topics: ["initializer list", "constructor", "Plate"],
-    status: "needs-theory",
+    status: "available",
     content: initializerListContent,
-    relatedTaskIds: ["07-01-cup-initializer-list", "07-02-plate-default-constructor", "07-03-plate-full-constructor", "07-04-plate-vector-menu", "task5-1-plate"],
+    relatedTaskIds: ["08-01-plate-constructors", "08-02-plate-store", "task5-1-plate"],
   },
   {
     slug: "vector",
