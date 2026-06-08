@@ -53,6 +53,7 @@ const readyTheorySlugs = new Set([
   "multifile-project",
   "preprocessor",
   "initializer-list",
+  "vector",
 ]);
 
 function taskStatusForTheory(theorySlug: string): ContentStatus {
@@ -340,13 +341,165 @@ int main() {
     }],
   }),
 
-  singleTask("08-01-vector-int-push-back", "vector<int> и push_back", "08. vector", "medium", "vector", ["push_back"], "practice/08_vector/ex01_vector_int_push_back.cpp", "Добавить числа в `vector<int>`."),
-  singleTask("08-02-vector-print-by-index", "Вывод vector по индексам", "08. vector", "medium", "vector", ["index"], "practice/08_vector/ex02_vector_print_by_index.cpp", "Пройти по vector циклом и вывести элементы."),
-  singleTask("08-03-vector-delete-by-number", "Удаление из vector по номеру", "08. vector", "medium", "vector", ["erase"], "practice/08_vector/ex03_vector_delete_by_number.cpp", "Безопасно удалить элемент по номеру пользователя."),
-  singleTask("08-04-vector-empty-check", "Проверка vector на пустоту", "08. vector", "medium", "vector", ["empty"], "practice/08_vector/ex04_vector_empty_check.cpp", "Проверить список через `empty()` перед работой."),
-  singleTask("08-05-vector-objects", "vector с объектами", "08. vector", "medium", "vector", ["vector<Car>"], "practice/08_vector/ex05_vector_objects.cpp", "Хранить объекты класса в vector."),
-  singleTask("08-06-vector-sort", "Сортировка vector", "08. vector", "medium", "vector", ["sort"], "practice/08_vector/ex06_vector_sort.cpp", "Отсортировать элементы vector по выбранному полю."),
-  singleTask("08-07-vector-menu", "Меню на основе vector", "08. vector", "medium", "vector", ["menu"], "practice/08_vector/ex07_vector_menu.cpp", "Сделать меню добавления, вывода и удаления элементов."),
+  singleTask("09-vector-01-numbers", "vector<int>: числа", "09. std::vector", "medium", "vector", ["vector", "push_back", "pop_back", "clear", "size"], "practice/09_vector/ex01_vector_numbers.cpp", "Потренироваться с базовыми операциями `std::vector<int>`.", {
+    description: "Нужно создать список чисел, добавить несколько значений, вывести элементы и размер, удалить последний элемент с проверкой и очистить список. В результате должна получиться короткая программа, которая показывает базовые операции `std::vector<int>`.",
+    whatToCreate: ["`std::vector<int> numbers`", "добавление чисел через `push_back`", "вывод всех чисел через `for`", "вывод размера через `size()`", "удаление последнего элемента после проверки `empty()`", "очистку списка через `clear()`"],
+    todoGuide: ["Подключите `<iostream>` и `<vector>`.", "Создайте `std::vector<int> numbers`.", "Добавьте 4-5 чисел через `push_back`.", "Выведите элементы циклом `for`.", "Выведите размер списка через `numbers.size()`.", "Если список не пустой, удалите последний элемент через `pop_back()`.", "Выведите список после удаления.", "Очистите список через `clear()` и снова выведите размер."],
+    steps: ["Создайте пустой `vector<int>`.", "Добавьте несколько чисел.", "Выведите список и размер.", "Удалите последний элемент безопасно.", "Очистите список.", "Проверьте размер после очистки."],
+    hints: ["Для `std::vector` нужен `#include <vector>`.", "`push_back` добавляет элемент в конец.", "`size()` возвращает количество элементов.", "Перед `pop_back()` проверьте `!numbers.empty()`.", "`clear()` удаляет все элементы, но сам `vector` остаётся рабочим."],
+    commonMistakes: ["Забывают `#include <vector>`.", "Думают, что `size()` возвращает последний индекс.", "Вызывают `pop_back()` для пустого списка.", "После `clear()` пытаются вывести `numbers[0]`.", "Пытаются вручную выделять память вместо использования `vector`."],
+    selfCheck: ["Числа добавляются через `push_back`.", "Программа выводит все числа.", "Размер до и после операций выводится корректно.", "Удаление последнего элемента не вызывается для пустого списка.", "После `clear()` размер равен 0."],
+    files: [{
+      fileName: "practice/09_vector/ex01_vector_numbers.cpp",
+      description: "Один файл с базовыми операциями над vector<int>.",
+      starterCode: `// Раздел 9. std::vector.
+//
+// Задача: потренироваться с vector<int>.
+//
+// Что нужно сделать:
+// 1. Создать std::vector<int> numbers.
+// 2. Добавить 4-5 чисел через push_back.
+// 3. Вывести все числа и размер списка.
+// 4. Удалить последний элемент, если список не пустой.
+// 5. Вывести список после удаления.
+// 6. Очистить список через clear и вывести новый размер.
+
+#include <iostream>
+#include <vector>
+
+int main() {
+    std::vector<int> numbers;
+
+    // TODO: добавьте несколько чисел через push_back.
+    // TODO: выведите числа и numbers.size().
+    // TODO: если список не пустой, удалите последний элемент.
+    // TODO: очистите список и выведите размер после clear().
+
+    return 0;
+}
+`,
+    }],
+  }),
+  singleTask("09-vector-02-students", "vector<Student>: список", "09. std::vector", "medium", "vector", ["vector", "Student", "emplace_back", "erase"], "practice/09_vector/ex02_vector_students.cpp", "Сохранить несколько объектов `Student` в `std::vector` и безопасно удалить одного по номеру.", {
+    description: "Нужно описать простой класс `Student`, хранить студентов в `std::vector<Student>`, добавлять новых студентов, выводить всех и удалять студента по номеру пользователя. В результате получится базовая коллекция объектов класса.",
+    whatToCreate: ["класс `Student`", "private-поля `name` и `age`", "конструктор `Student(const std::string& name, int age)`", "метод `print() const`", "`std::vector<Student> students`", "добавление через `emplace_back`", "вывод всех студентов", "удаление по номеру с проверкой диапазона"],
+    todoGuide: ["Подключите `<iostream>`, `<string>` и `<vector>`.", "Опишите класс `Student` с полями `name` и `age`.", "Добавьте конструктор и `print() const`.", "Создайте `std::vector<Student> students`.", "Добавьте 2-3 студента через `emplace_back`.", "Выведите список с номерами от 1.", "Считайте номер для удаления.", "Проверьте, что номер от 1 до `students.size()`.", "Удалите элемент через `students.erase(students.begin() + number - 1)`.", "Выведите список после удаления."],
+    steps: ["Создайте класс `Student`.", "Создайте `vector<Student>`.", "Добавьте несколько студентов.", "Сделайте функцию вывода списка.", "Удалите студента по корректному номеру.", "Проверьте неверный номер."],
+    hints: ["`emplace_back(\"Anna\", 18)` вызывает конструктор `Student` прямо внутри списка.", "Пользователь вводит номер с 1, а индекс начинается с 0.", "Перед `erase` обязательно проверьте границы.", "Для вывода без копирования используйте `const Student&`.", "Если используете `std::string`, нужен `#include <string>`."],
+    commonMistakes: ["Забывают `#include <vector>` или `#include <string>`.", "Путают номер пользователя и индекс.", "Удаляют элемент без проверки диапазона.", "Пытаются читать private-поля напрямую из `main`.", "Передают параметры конструктора в `push_back` вместо `emplace_back`.", "После удаления продолжают использовать старый индекс."],
+    selfCheck: ["`Student` хранит данные в private-полях.", "`vector<Student>` содержит несколько объектов.", "Новый студент добавляется через `emplace_back`.", "Список выводится с номерами от 1.", "Удаление работает только для корректного номера.", "Неверный номер не ломает программу."],
+    files: [{
+      fileName: "practice/09_vector/ex02_vector_students.cpp",
+      description: "Один файл со списком Student в vector и удалением по номеру.",
+      starterCode: `// Раздел 9. std::vector.
+//
+// Задача: хранить объекты Student в vector.
+//
+// Что нужно сделать:
+// 1. Создать class Student с name и age.
+// 2. Добавить конструктор и print() const.
+// 3. Создать std::vector<Student>.
+// 4. Добавить несколько студентов через emplace_back.
+// 5. Вывести список с номерами.
+// 6. Удалить студента по номеру с проверкой.
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Student {
+private:
+    std::string name;
+    int age;
+
+public:
+    Student(const std::string& name, int age);
+    void print() const;
+};
+
+// TODO: реализуйте конструктор и print().
+
+void printStudents(const std::vector<Student>& students) {
+    // TODO: выведите студентов с номерами от 1.
+}
+
+int main() {
+    std::vector<Student> students;
+
+    // TODO: добавьте 2-3 студентов через emplace_back.
+    // TODO: выведите список.
+    // TODO: считайте номер и удалите студента с проверкой.
+    // TODO: выведите список после удаления.
+
+    return 0;
+}
+`,
+    }],
+  }),
+  singleTask("09-vector-03-menu", "vector menu: студенты", "09. std::vector", "medium", "vector", ["vector", "Student", "menu", "erase"], "practice/09_vector/ex03_vector_menu.cpp", "Сделать маленькое меню для списка студентов на `std::vector`.", {
+    description: "Нужно собрать меню, которое хранит студентов в одном `std::vector<Student>`, добавляет нового студента, выводит список, удаляет по номеру и умеет очищать список. В результате получится учебная заготовка для будущих задач с коллекциями объектов.",
+    whatToCreate: ["класс `Student`", "`std::vector<Student> students` до цикла меню", "пункт добавления студента", "пункт вывода всех студентов", "пункт удаления по номеру", "пункт очистки списка", "повтор меню до выхода"],
+    todoGuide: ["Опишите `Student` с конструктором и `print() const`.", "Создайте `std::vector<Student> students` перед циклом меню.", "Сделайте цикл `while`, который работает до выбора выхода.", "В пункте добавления считайте имя и возраст, затем вызовите `emplace_back`.", "В пункте вывода пройдите по списку и покажите номера.", "В пункте удаления проверьте номер и вызовите `erase`.", "В пункте очистки вызовите `clear()`.", "Проверьте меню на пустом списке и на нескольких студентах."],
+    steps: ["Подготовьте класс `Student`.", "Создайте `vector<Student>` перед меню.", "Добавьте пункт вывода.", "Добавьте пункт добавления.", "Добавьте безопасное удаление.", "Добавьте очистку списка.", "Проверьте повторение меню."],
+    hints: ["Не создавайте `vector` внутри пункта меню: тогда список будет сбрасываться.", "Для добавления используйте `students.emplace_back(name, age)`.", "Перед удалением проверьте `number >= 1 && number <= students.size()`.", "Если список пуст, выводите короткое сообщение.", "`clear()` удаляет всех студентов, но не завершает программу."],
+    commonMistakes: ["Создают `vector` внутри цикла или внутри пункта добавления.", "Удаляют `students[number]` вместо `students[number - 1]`.", "Не проверяют пустой список перед удалением.", "После удаления используют старый номер без новой проверки.", "Путают `push_back` и `emplace_back`.", "Забывают обработать пункт выхода."],
+    selfCheck: ["Список студентов хранится в одном `vector`.", "Меню повторяется до выхода.", "Добавление увеличивает размер списка.", "Вывод показывает всех студентов с номерами.", "Удаление проверяет номер перед `erase`.", "Очистка делает размер списка равным 0.", "Пустой список не ломает программу."],
+    files: [{
+      fileName: "practice/09_vector/ex03_vector_menu.cpp",
+      description: "Один файл с маленьким меню для vector<Student>.",
+      starterCode: `// Раздел 9. std::vector.
+//
+// Задача: сделать меню для списка студентов.
+//
+// Что нужно сделать:
+// 1. Создать class Student.
+// 2. Создать std::vector<Student> students до цикла меню.
+// 3. Сделать пункты: показать, добавить, удалить, очистить, выйти.
+// 4. При удалении проверять номер.
+// 5. При выводе пустого списка показывать понятное сообщение.
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Student {
+private:
+    std::string name;
+    int age;
+
+public:
+    Student(const std::string& name, int age);
+    void print() const;
+};
+
+// TODO: реализуйте Student.
+
+void printStudents(const std::vector<Student>& students) {
+    // TODO: если список пуст, выведите сообщение.
+    // TODO: иначе выведите всех студентов с номерами.
+}
+
+int main() {
+    std::vector<Student> students;
+    int choice = 0;
+
+    while (choice != 5) {
+        std::cout << "\\n1. Show students\\n";
+        std::cout << "2. Add student\\n";
+        std::cout << "3. Delete student\\n";
+        std::cout << "4. Clear list\\n";
+        std::cout << "5. Exit\\n";
+        std::cout << "Choice: ";
+        std::cin >> choice;
+
+        // TODO: обработайте пункты меню.
+    }
+
+    return 0;
+}
+`,
+    }],
+  }),
 
   singleTask("09-01-simple-delegation", "Простое делегирование конструктора", "09. Делегирование", "medium", "delegating-constructors", ["delegation"], "practice/09_delegating_constructors/ex01_simple_delegation.cpp", "Вызвать один конструктор из другого."),
   singleTask("09-02-worker-constructors", "Worker: несколько конструкторов", "09. Делегирование", "medium", "delegating-constructors", ["Worker"], "practice/09_delegating_constructors/ex02_worker_constructors.cpp", "Сделать несколько способов создания рабочего."),

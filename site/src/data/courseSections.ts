@@ -258,10 +258,10 @@ const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
     number: "9",
     title: "std::vector",
     description: "Научишься хранить список элементов, добавлять и удалять данные, проверять размер списка и использовать индексы в меню.",
-    topics: ["vector", "push_back", "erase", "size", "empty"],
-    status: "needs-theory",
+    topics: ["vector", "push_back", "emplace_back", "erase", "clear", "size", "empty", "pop_back"],
+    status: "available",
     content: vectorContent,
-    relatedTaskIds: ["08-01-vector-int-push-back", "08-02-vector-print-by-index", "08-03-vector-delete-by-number", "08-04-vector-empty-check", "08-05-vector-objects", "08-06-vector-sort", "08-07-vector-menu", "task5-2-worker"],
+    relatedTaskIds: ["09-vector-01-numbers", "09-vector-02-students", "09-vector-03-menu"],
   },
   {
     slug: "unary-operator-overloading",
