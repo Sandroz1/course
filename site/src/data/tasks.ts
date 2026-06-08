@@ -52,9 +52,6 @@ const readyTheorySlugs = new Set([
   "this",
   "multifile-project",
   "preprocessor",
-  "unary-operator-overloading",
-  "inheritance",
-  "virtual-methods",
 ]);
 
 function taskStatusForTheory(theorySlug: string): ContentStatus {
