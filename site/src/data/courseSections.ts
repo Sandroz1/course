@@ -264,6 +264,16 @@ const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
     relatedTaskIds: ["09-vector-01-numbers", "09-vector-02-students", "09-vector-03-menu"],
   },
   {
+    slug: "delegating-constructors",
+    number: "10",
+    title: "Делегирование конструкторов",
+    description: "Один конструктор вызывает другой конструктор того же класса, чтобы не повторять общую инициализацию.",
+    topics: ["delegating constructor", "constructor", "initializer list", "Worker"],
+    status: "available",
+    content: delegatingConstructorsContent,
+    relatedTaskIds: ["10-delegation-01-worker-constructors", "10-delegation-02-worker-menu"],
+  },
+  {
     slug: "unary-operator-overloading",
     number: "9.2",
     title: "Перегрузка унарных операторов",
@@ -292,16 +302,6 @@ const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
     status: "needs-theory",
     content: virtualMethodsContent,
     relatedTaskIds: ["10-07-old-nouveau-virtual", "10-08-garage-virtual-raw-pointers"],
-  },
-  {
-    slug: "delegating-constructors",
-    number: "10",
-    title: "Делегирование конструкторов",
-    description: "Один конструктор вызывает другой, чтобы не повторять инициализацию.",
-    topics: ["delegation", "constructor", "Worker"],
-    status: "needs-theory",
-    content: delegatingConstructorsContent,
-    relatedTaskIds: ["09-01-simple-delegation", "09-02-worker-constructors", "09-03-worker-edit-without-id", "09-04-worker-vector-menu", "task5-2-worker"],
   },
   {
     slug: "encapsulation",

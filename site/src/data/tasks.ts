@@ -54,6 +54,7 @@ const readyTheorySlugs = new Set([
   "preprocessor",
   "initializer-list",
   "vector",
+  "delegating-constructors",
 ]);
 
 function taskStatusForTheory(theorySlug: string): ContentStatus {
@@ -501,10 +502,140 @@ int main() {
     }],
   }),
 
-  singleTask("09-01-simple-delegation", "Простое делегирование конструктора", "09. Делегирование", "medium", "delegating-constructors", ["delegation"], "practice/09_delegating_constructors/ex01_simple_delegation.cpp", "Вызвать один конструктор из другого."),
-  singleTask("09-02-worker-constructors", "Worker: несколько конструкторов", "09. Делегирование", "medium", "delegating-constructors", ["Worker"], "practice/09_delegating_constructors/ex02_worker_constructors.cpp", "Сделать несколько способов создания рабочего."),
-  singleTask("09-03-worker-edit-without-id", "Worker: редактирование без id", "09. Делегирование", "medium", "delegating-constructors", ["id"], "practice/09_delegating_constructors/ex03_worker_edit_without_id.cpp", "Редактировать поля рабочего, но не менять id."),
-  singleTask("09-04-worker-vector-menu", "Worker: vector и меню", "09. Делегирование", "medium", "delegating-constructors", ["vector", "menu"], "practice/09_delegating_constructors/ex04_worker_vector_menu.cpp", "Сделать меню для списка рабочих."),
+  singleTask("10-delegation-01-worker-constructors", "Worker: конструкторы", "10. Делегирование конструкторов", "medium", "delegating-constructors", ["delegation", "constructor", "Worker"], "practice/10_delegating_constructors/ex01_worker_constructors.cpp", "Сделать несколько конструкторов `Worker`, где каждый следующий конструктор делегирует предыдущему.", {
+    description: "Нужно создать класс `Worker` с полями `id`, ФИО, пол, возраст, должность и отдел. `id` задаётся при создании и не редактируется через setter. Конструкторы должны образовать понятную цепочку делегирования: от ФИО к полному набору данных.",
+    whatToCreate: ["класс `Worker`", "private-поля `id`, `fullName`, `gender`, `age`, `position`, `department`", "конструктор с `id` и ФИО", "конструктор с `id`, ФИО и полом", "конструктор с `id`, ФИО, полом и возрастом", "конструктор с `id`, ФИО, полом, возрастом и должностью", "конструктор со всеми полями", "метод `getId() const`", "метод `print() const`", "проверку нескольких объектов в `main()`"],
+    todoGuide: ["Опишите поля класса `Worker`.", "Сделайте первый конструктор, который задаёт `id`, ФИО и значения по умолчанию.", "Во втором конструкторе вызовите первый через `: Worker(id, fullName)` и допишите `gender` в теле.", "В третьем конструкторе вызовите второй и допишите `age`.", "В четвёртом конструкторе вызовите третий и допишите `position`.", "В пятом конструкторе вызовите четвёртый и допишите `department`.", "Добавьте `getId() const`, но не добавляйте setter для `id`.", "Добавьте `print() const` и проверьте несколько рабочих."],
+    steps: ["Создайте каркас класса.", "Добавьте поля.", "Реализуйте первый конструктор.", "Добавьте остальные конструкторы через делегирование.", "Добавьте методы чтения и вывода.", "Создайте 4-5 объектов с разным числом аргументов.", "Проверьте вывод."],
+    hints: ["Делегирование пишется после двоеточия: `: Worker(id, fullName)`.", "Если конструктор делегирует другому, в его списке инициализации должен быть только вызов `Worker(...)`.", "Тело текущего конструктора выполняется после целевого конструктора.", "`this->gender = gender;` помогает отличить поле от параметра.", "Для `id` достаточно `getId() const`; обычный setter не нужен."],
+    commonMistakes: ["Конструктор вызывает сам себя напрямую или через цепочку.", "Пишут `Worker(...);` в теле конструктора и думают, что это делегирование.", "Пытаются написать `: Worker(...), age(age)` в одном списке.", "Дублируют одинаковую инициализацию во всех конструкторах.", "Путают список инициализации полей и делегирование.", "Забывают, что тело текущего конструктора выполнится после делегирования.", "Путают поле и параметр с одинаковым именем.", "Добавляют setter для `id`, хотя `id` должен задаваться только при создании."],
+    selfCheck: ["Каждый следующий конструктор вызывает предыдущий.", "В делегирующем списке нет отдельной инициализации полей рядом с `Worker(...)`.", "`id` задаётся в конструкторе.", "Для `id` нет обычного setter.", "`print() const` выводит все поля.", "Объекты с разным числом аргументов создаются и выводятся.", "Код не использует наследование, smart pointers и будущие темы."],
+    files: [{
+      fileName: "practice/10_delegating_constructors/ex01_worker_constructors.cpp",
+      description: "Один файл с классом Worker и несколькими делегирующими конструкторами.",
+      starterCode: `// Раздел 10. Делегирование конструкторов.
+//
+// Задача: создать Worker с несколькими конструкторами.
+//
+// Что нужно сделать:
+// 1. Хранить id, ФИО, пол, возраст, должность и отдел.
+// 2. Сделать цепочку конструкторов через делегирование.
+// 3. Не добавлять setter для id.
+// 4. Вывести несколько рабочих с разным набором данных.
+
+#include <iostream>
+#include <string>
+
+class Worker {
+private:
+    int id;
+    std::string fullName;
+    std::string gender;
+    int age;
+    std::string position;
+    std::string department;
+
+public:
+    Worker(int id, const std::string& fullName);
+    Worker(int id, const std::string& fullName, const std::string& gender);
+    Worker(int id, const std::string& fullName, const std::string& gender, int age);
+    Worker(int id, const std::string& fullName, const std::string& gender, int age, const std::string& position);
+    Worker(int id, const std::string& fullName, const std::string& gender, int age, const std::string& position, const std::string& department);
+
+    int getId() const;
+    void print() const;
+};
+
+// TODO: реализуйте конструкторы через делегирование.
+// TODO: реализуйте getId() и print().
+
+int main() {
+    // TODO: создайте несколько Worker с разным числом аргументов.
+    // TODO: вызовите print() для каждого объекта.
+
+    return 0;
+}
+`,
+    }],
+  }),
+  singleTask("10-delegation-02-worker-menu", "Worker vector menu", "10. Делегирование конструкторов", "hard", "delegating-constructors", ["delegation", "Worker", "vector", "menu"], "practice/10_delegating_constructors/ex02_worker_vector_menu.cpp", "Сделать меню для списка рабочих в `std::vector<Worker>` с добавлением, редактированием, удалением и выводом.", {
+    description: "Нужно создать `std::vector<Worker>`, добавить несколько рабочих заранее и сделать небольшое меню: вывести всех, добавить рабочего, отредактировать данные без изменения `id`, удалить рабочего и выйти. Конструкторы `Worker` должны использовать делегирование.",
+    whatToCreate: ["класс `Worker` с делегирующими конструкторами", "`std::vector<Worker> workers`", "несколько заранее созданных рабочих", "функцию или блок вывода списка", "пункт добавления рабочего", "пункт редактирования рабочего без изменения `id`", "пункт удаления рабочего", "проверку номера пользователя перед редактированием и удалением", "повтор меню до выхода"],
+    todoGuide: ["Сначала перенесите рабочий класс `Worker` из первой задачи.", "Добавьте метод `editWithoutId(...)`, который меняет ФИО, пол, возраст, должность и отдел, но не `id`.", "Создайте `std::vector<Worker> workers` до цикла меню.", "Добавьте 2-3 рабочих заранее через `emplace_back`.", "Сделайте пункт вывода всех рабочих с номерами от 1.", "Сделайте пункт добавления нового рабочего.", "Сделайте пункт редактирования: считайте номер, проверьте диапазон и вызовите `editWithoutId`.", "Сделайте пункт удаления: проверьте номер и вызовите `erase`.", "Проверьте меню на пустом и непустом списке."],
+    steps: ["Подготовьте класс `Worker`.", "Создайте `vector<Worker>`.", "Добавьте стартовых рабочих.", "Сделайте вывод списка.", "Добавьте пункт добавления.", "Добавьте редактирование без изменения `id`.", "Добавьте безопасное удаление.", "Проверьте повтор меню и выход."],
+    hints: ["`vector` должен жить вне цикла меню, иначе список будет сбрасываться.", "Для заранее созданных рабочих удобно использовать `workers.emplace_back(...)`.", "Номер пользователя начинается с 1, индекс `vector` начинается с 0.", "Перед доступом проверяйте `number >= 1 && number <= workers.size()`.", "Для удаления используйте `workers.erase(workers.begin() + number - 1)`.", "Не меняйте `id` в `editWithoutId`."],
+    commonMistakes: ["Создают `vector` внутри пункта меню.", "Удаляют или редактируют элемент без проверки номера.", "Путают номер пользователя и индекс.", "Разрешают менять `id` при редактировании.", "Дублируют инициализацию вместо делегирования конструкторов.", "Пишут делегирование в теле конструктора.", "Делают слишком длинное меню без маленьких функций или понятных блоков."],
+    selfCheck: ["Список хранится в одном `std::vector<Worker>`.", "В начале есть несколько рабочих.", "Меню показывает всех рабочих.", "Добавление увеличивает размер списка.", "Редактирование меняет поля, но не меняет `id`.", "Удаление проверяет номер перед `erase`.", "Выход завершает меню.", "Пустой список не ломает вывод, удаление и редактирование."],
+    files: [{
+      fileName: "practice/10_delegating_constructors/ex02_worker_vector_menu.cpp",
+      description: "Один файл с Worker, vector<Worker> и маленьким меню.",
+      starterCode: `// Раздел 10. Делегирование конструкторов.
+//
+// Задача: сделать меню для списка рабочих.
+//
+// Что нужно сделать:
+// 1. Использовать class Worker с делегирующими конструкторами.
+// 2. Хранить рабочих в std::vector<Worker>.
+// 3. Добавить несколько рабочих заранее.
+// 4. Сделать меню: показать, добавить, редактировать, удалить, выйти.
+// 5. При редактировании не менять id.
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+class Worker {
+private:
+    int id;
+    std::string fullName;
+    std::string gender;
+    int age;
+    std::string position;
+    std::string department;
+
+public:
+    Worker(int id, const std::string& fullName);
+    Worker(int id, const std::string& fullName, const std::string& gender);
+    Worker(int id, const std::string& fullName, const std::string& gender, int age);
+    Worker(int id, const std::string& fullName, const std::string& gender, int age, const std::string& position);
+    Worker(int id, const std::string& fullName, const std::string& gender, int age, const std::string& position, const std::string& department);
+
+    int getId() const;
+    void editWithoutId(const std::string& newFullName, const std::string& newGender, int newAge, const std::string& newPosition, const std::string& newDepartment);
+    void print() const;
+};
+
+// TODO: реализуйте Worker.
+
+void printWorkers(const std::vector<Worker>& workers) {
+    // TODO: если список пуст, выведите сообщение.
+    // TODO: иначе выведите рабочих с номерами от 1.
+}
+
+int main() {
+    std::vector<Worker> workers;
+
+    // TODO: добавьте 2-3 рабочих заранее через emplace_back.
+
+    int choice = 0;
+
+    while (choice != 5) {
+        std::cout << "\\n1. Show workers\\n";
+        std::cout << "2. Add worker\\n";
+        std::cout << "3. Edit worker\\n";
+        std::cout << "4. Delete worker\\n";
+        std::cout << "5. Exit\\n";
+        std::cout << "Choice: ";
+        std::cin >> choice;
+
+        // TODO: обработайте пункты меню.
+    }
+
+    return 0;
+}
+`,
+    }],
+  }),
   singleTask("09-05-myarray-unary-operators", "MyArray: унарные операторы", "09. Перегрузка операторов", "medium", "unary-operator-overloading", ["operator++", "operator--", "operator-", "operator int", "operator[]", "dynamic array"], "practice/09_operator_overloading/ex01_myarray_unary_operators.cpp", "Реализовать учебный динамический массив `MyArray` с унарными операторами.", {
     description: "Нужно написать класс `MyArray`, который хранит динамический массив `int` и размер. Задача учебная: raw pointer используется, чтобы увидеть выделение, копирование и освобождение памяти.",
     whatToCreate: ["класс `MyArray`", "поля `int* data` и `int size`", "конструктор по умолчанию", "конструктор от размера", "деструктор", "deep copy через copy constructor и copy assignment", "`operator[]` для доступа к элементу", "`operator++` для добавления элемента", "`operator--` для удаления последнего элемента", "`operator-` для копии с противоположными числами", "`operator int()` для получения размера"],

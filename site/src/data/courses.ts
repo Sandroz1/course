@@ -40,10 +40,10 @@ export const oopCppSectionSlugs = [
   "preprocessor",
   "initializer-list",
   "vector",
+  "delegating-constructors",
   "unary-operator-overloading",
   "inheritance",
   "virtual-methods",
-  "delegating-constructors",
   "encapsulation",
   "exceptions",
 ];
