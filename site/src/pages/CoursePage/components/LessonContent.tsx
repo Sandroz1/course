@@ -9,11 +9,6 @@ type TocItem = {
   id: string;
 };
 
-export type PracticeItem = {
-  title: string;
-  description: string;
-};
-
 type MarkdownSection = {
   title?: string;
   lines: string[];
@@ -67,7 +62,9 @@ function isMistakesHeading(title: string) {
 }
 
 function isCheckHeading(title: string) {
-  return normalizeSectionTitle(title) === "мини-проверка";
+  const normalized = normalizeSectionTitle(title);
+
+  return normalized === "мини-проверка" || normalized === "самопроверка";
 }
 
 function splitContentSections(content: string): MarkdownSection[] {
@@ -153,55 +150,6 @@ function extractListItems(lines: string[]) {
   });
 
   return items;
-}
-
-function firstMeaningfulLine(lines: string[]) {
-  return lines.find((line) => {
-    const trimmed = line.trim();
-    return trimmed && !trimmed.startsWith("```") && !trimmed.startsWith("### ");
-  });
-}
-
-function practiceItemFromText(text: string): PracticeItem {
-  const [rawTitle, ...descriptionParts] = text.split(/\s+[—-]\s+/);
-  const title = stripMarkdown(rawTitle).replace(/\.$/, "");
-  const description = stripMarkdown(descriptionParts.join(" — ")) || "Задача для закрепления темы.";
-
-  return {
-    title: title || "Практическая задача",
-    description,
-  };
-}
-
-export function extractPracticeItems(content: string): PracticeItem[] {
-  const practiceSection = splitContentSections(content).find(
-    (section) => section.title && isPracticeHeading(section.title),
-  );
-
-  if (!practiceSection) return [];
-
-  const subsections = splitSubsections(practiceSection.lines);
-  const subsectionItems = subsections.map((section) => {
-    const title = stripMarkdown(section.title.replace(/^задача\s*\d+\.?\s*/i, ""));
-    const description = stripMarkdown(firstMeaningfulLine(section.lines) ?? "");
-
-    return {
-      title: title || "Практическая задача",
-      description: description || "Задача для закрепления темы.",
-    };
-  });
-
-  const listItems = extractListItems(practiceSection.lines).map(practiceItemFromText);
-  const items = subsectionItems.length > 0 ? subsectionItems : listItems;
-  const unique = new Map<string, PracticeItem>();
-
-  items.forEach((item) => {
-    if (!unique.has(item.title)) {
-      unique.set(item.title, item);
-    }
-  });
-
-  return Array.from(unique.values()).slice(0, 4);
 }
 
 function flushList(nodes: ReactNode[], list: string[], ordered: boolean) {
@@ -378,7 +326,7 @@ function MistakesBlock({ title, lines }: { title: string; lines: string[] }) {
     <section className={styles.specialSection} id={headingId(title)}>
       <div className={styles.specialHeader}>
         <span>Разбор ошибок</span>
-        <h2>{title}</h2>
+        <h2>Частые ошибки</h2>
       </div>
 
       <div className={styles.mistakeList}>
@@ -438,7 +386,7 @@ function MiniCheckBlock({ title, lines }: { title: string; lines: string[] }) {
     <section className={styles.specialSection} id={headingId(title)}>
       <div className={styles.specialHeader}>
         <span>Самопроверка</span>
-        <h2>{title}</h2>
+        <h2>Самопроверка</h2>
         <p>Ответь коротко своими словами и отметь вопросы, в которых уверен.</p>
       </div>
 

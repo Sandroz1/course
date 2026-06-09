@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import { Button, LinkButton } from "../../components/shared/ActionButton/ActionButton";
+import { BackLink, EmptyState } from "../../components/shared/LearningUi/LearningUi";
 import {
   getCourseSectionBySlug,
   getCourseSectionPath,
   getCourseSections,
+  type CourseSection,
   isCourseSectionReady,
 } from "../../data/courseSections";
 import { getCourseById, type CourseId } from "../../data/courses";
@@ -23,9 +25,7 @@ import type { ProgressOverview } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import {
   collectTocItems,
-  extractPracticeItems,
   LessonContent,
-  type PracticeItem,
   renderInline,
 } from "./components/LessonContent";
 import styles from "./CoursePage.module.scss";
@@ -37,17 +37,6 @@ type LessonProgressState = {
 };
 
 type RelatedTask = (typeof tasks)[number];
-
-const defaultPracticeItems: PracticeItem[] = [
-  {
-    title: "Практика скоро появится",
-    description: "Задачи для этой темы готовятся и будут подключены к общему списку.",
-  },
-  {
-    title: "Пока закрепи теорию",
-    description: "Вернись к мини-проверке и проверь, что основные идеи темы понятны.",
-  },
-];
 
 function findLessonProgress(progress: ProgressOverview, courseSlug: string, lessonSlug: string) {
   return progress.lessons.find(
@@ -109,15 +98,8 @@ function syncOpenedLessonState(
   return request;
 }
 
-function RelatedTasksBlock({
-  practiceItems,
-  relatedTasks,
-}: {
-  practiceItems: PracticeItem[];
-  relatedTasks: RelatedTask[];
-}) {
+function RelatedTasksBlock({ relatedTasks }: { relatedTasks: RelatedTask[] }) {
   const hasRealTasks = relatedTasks.length > 0;
-  const fallbackItems = practiceItems.length > 0 ? practiceItems : defaultPracticeItems;
 
   return (
     <section className={styles.relatedTasks} id="tasks-after-topic">
@@ -129,40 +111,61 @@ function RelatedTasksBlock({
         <p>
           {hasRealTasks
             ? "Открой задачи и закрепи тему в отдельном практическом сценарии."
-            : "Практика для этой темы ещё не подключена как отдельные задачи."}
+            : "Для этой темы задачи ещё не подключены."}
         </p>
       </div>
 
-      <div className={styles.relatedTaskList}>
-        {hasRealTasks
-          ? relatedTasks.map((task) => (
-              <a
-                className={styles.relatedTaskLink}
-                key={task.id}
-                href={toPath(`/tasks/${task.id}`)}
-              >
-                <span className={styles.relatedTaskContent}>
-                  <strong>{task.title}</strong>
-                  <small>Практическая задача по теме</small>
-                </span>
-                <span className={styles.relatedTaskAction}>Открыть</span>
-              </a>
-            ))
-          : fallbackItems.map((item) => (
-              <div
-                className={clsx(styles.relatedTaskLink, styles.relatedTaskPlaceholder)}
-                key={item.title}
-                aria-disabled="true"
-              >
-                <span className={styles.relatedTaskContent}>
-                  <strong>{item.title}</strong>
-                  <small>{item.description}</small>
-                </span>
-                <span className={styles.relatedTaskAction}>Скоро</span>
-              </div>
-            ))}
-      </div>
+      {hasRealTasks ? (
+        <div className={styles.relatedTaskList}>
+          {relatedTasks.map((task) => (
+            <a
+              className={styles.relatedTaskLink}
+              key={task.id}
+              href={toPath(`/tasks/${task.id}`)}
+            >
+              <span className={styles.relatedTaskContent}>
+                <strong>{task.title}</strong>
+                <small>Практическая задача по теме</small>
+              </span>
+              <span className={styles.relatedTaskAction}>Открыть</span>
+            </a>
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          className={styles.relatedTasksEmpty}
+          title="Задачи не подключены"
+          description="Для этой темы задачи ещё не подключены."
+        />
+      )}
     </section>
+  );
+}
+
+function CourseSectionNavLink({
+  section,
+  direction,
+}: {
+  section: CourseSection;
+  direction: "previous" | "next";
+}) {
+  return (
+    <a
+      className={clsx(styles.navLink, direction === "next" && styles.navLinkNext)}
+      href={toPath(getCourseSectionPath(section))}
+    >
+      <span className={styles.navLabel}>
+        {direction === "next" ? "Следующий" : "Предыдущий"}
+      </span>
+      <strong>
+        {section.number}. {section.title}
+      </strong>
+      {!isCourseSectionReady(section) && (
+        <span className={`status-badge status-badge--${statusMeta[section.status].tone}`}>
+          {statusMeta[section.status].label}
+        </span>
+      )}
+    </a>
   );
 }
 
@@ -329,7 +332,6 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
   const relatedTasks = tasks.filter((task) =>
     section.relatedTaskIds.includes(task.id),
   );
-  const practiceItems = extractPracticeItems(section.content);
   const tocItems = collectTocItems(section.content);
 
   async function handleToggleCompleted() {
@@ -363,9 +365,9 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
   return (
     <article className="reading-page lesson-page">
       <header className={styles.lessonHeader}>
-        <a className="back-link" href={toPath(course?.path ?? "/courses")}>
+        <BackLink href={toPath(course?.path ?? "/courses")}>
           К курсу
-        </a>
+        </BackLink>
         <p className="eyebrow">Раздел {section.number}</p>
         <h1>{section.title}</h1>
         <div className={styles.headerMeta}>
@@ -425,34 +427,19 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
       {(previousSection || nextSection) && (
         <nav className={styles.nav} aria-label="Навигация между уроками">
           {previousSection ? (
-            <a className={styles.navLink} href={toPath(getCourseSectionPath(previousSection))}>
-              <span className={styles.navLabel}>Предыдущий</span>
-              <strong>
-                {previousSection.number}. {previousSection.title}
-              </strong>
-            </a>
+            <CourseSectionNavLink section={previousSection} direction="previous" />
           ) : (
             <span />
           )}
           {nextSection ? (
-            <a className={clsx(styles.navLink, styles.navLinkNext)} href={toPath(getCourseSectionPath(nextSection))}>
-              <span className={styles.navLabel}>Следующий</span>
-              <strong>
-                {nextSection.number}. {nextSection.title}
-              </strong>
-              {!isCourseSectionReady(nextSection) && (
-                <span className={`status-badge status-badge--${statusMeta[nextSection.status].tone}`}>
-                  {statusMeta[nextSection.status].label}
-                </span>
-              )}
-            </a>
+            <CourseSectionNavLink section={nextSection} direction="next" />
           ) : (
             <span />
           )}
         </nav>
       )}
 
-      <RelatedTasksBlock practiceItems={practiceItems} relatedTasks={relatedTasks} />
+      <RelatedTasksBlock relatedTasks={relatedTasks} />
     </article>
   );
 }

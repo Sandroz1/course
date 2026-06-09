@@ -159,6 +159,10 @@
   line-height: 1.35;
 }
 
+.navLink :global(.status-badge) {
+  width: fit-content;
+}
+
 .relatedTasks {
   display: grid;
   gap: 0.875rem;
@@ -258,17 +262,10 @@
   white-space: nowrap;
 }
 
-.relatedTaskPlaceholder {
-  cursor: default;
-}
-
-.relatedTaskPlaceholder:hover {
-  border-color: var(--line);
-  background: var(--surface);
-}
-
-.relatedTaskPlaceholder .relatedTaskAction {
-  color: var(--muted);
+.relatedTasksEmpty {
+  border-left-color: var(--border-subtle);
+  box-shadow: none;
+  padding: 0.75rem 0.875rem;
 }
 
 @media (max-width: 56.25rem) {
