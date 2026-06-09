@@ -177,7 +177,7 @@ function TaskBriefSection({
         <div>
           <dt>Файл</dt>
           <dd>
-            <code>{practicePath}</code>
+            <code className={styles.practicePath}>{practicePath}</code>
           </dd>
         </div>
 
@@ -185,11 +185,13 @@ function TaskBriefSection({
           <dt>Готово, когда</dt>
           <dd>
             {resultItems.length === 1 ? (
-              <span>{renderTaskInline(resultItems[0])}</span>
+              <span className={styles.taskFactText}>{renderTaskInline(resultItems[0])}</span>
             ) : (
               <ul>
                 {resultItems.map((item) => (
-                  <li key={item}>{renderTaskInline(item)}</li>
+                  <li key={item}>
+                    <span className={styles.taskFactText}>{renderTaskInline(item)}</span>
+                  </li>
                 ))}
               </ul>
             )}
@@ -373,6 +375,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
     task,
     new Map([[task.id, effectiveTaskStatus]]),
   );
+  const hasStarterCode = activeFile.starterCode.trim().length > 0;
   const taskStatusBadge = {
     label: getTaskDisplayLabel(displayStatus),
     tone: getTaskDisplayTone(displayStatus),
@@ -480,7 +483,13 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
             <p className={styles.fileDescription}>{renderTaskInline(activeFile.description)}</p>
           )}
 
-          <CodeBlock code={activeFile.starterCode} language="cpp" compact />
+          {hasStarterCode ? (
+            <CodeBlock code={activeFile.starterCode} language="cpp" compact />
+          ) : (
+            <div className={styles.emptyCodeState}>
+              Стартовый код не задан. Откройте файл из practice и начните с каркаса из условия.
+            </div>
+          )}
         </div>
       </section>
 

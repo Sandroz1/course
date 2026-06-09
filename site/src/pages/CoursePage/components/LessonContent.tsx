@@ -56,6 +56,7 @@ function isPracticeHeading(title: string) {
 
   return (
     normalized === "задачи после темы" ||
+    normalized === "практика" ||
     normalized === "практические задачи" ||
     normalized === "практическая задача"
   );
