@@ -19,13 +19,9 @@ import type { AiChatMessage, AiUsage } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import { MessageContent } from "./components/MessageContent";
 import { useAiPanelSize } from "./hooks/useAiPanelSize";
+import { useLessonSelection } from "./hooks/useLessonSelection";
 import { isNearBottom } from "./panelSize";
 import { getAiAccessMessage, getAiErrorMessage } from "./utils/errors";
-import {
-    isPointerInsideAiAssistant,
-    readLessonSelection,
-    type SelectionPopover,
-} from "./utils/selection";
 import styles from "./AiAssistant.module.scss";
 
 type ChatMessage = AiChatMessage & { id: string };
@@ -54,14 +50,24 @@ function AiAssistantPanel() {
 
     const [isOpen, setIsOpen] = useState(false);
     const [question, setQuestion] = useState("");
-    const [selectedText, setSelectedText] = useState("");
-    const [selectionPopover, setSelectionPopover] =
-        useState<SelectionPopover | null>(null);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [errorText, setErrorText] = useState("");
     const [showJumpToBottom, setShowJumpToBottom] = useState(false);
     const { panelSize, startResize } = useAiPanelSize();
+    const {
+        selectedText,
+        setSelectedText,
+        selectionPopover,
+        setSelectionPopover,
+    } = useLessonSelection({
+        isOpen,
+        classNames: {
+            selectionPopover: styles.selectionPopover,
+            panel: styles.panel,
+            floatingButton: styles.floatingButton,
+        },
+    });
     const [aiUsage, setAiUsage] = useState<AiUsage>(() => getLocalAiUsage(user?.id));
     const isPhoneVerified = Boolean(user?.is_phone_verified);
     const aiAccessMessage = getAiAccessMessage({
@@ -98,7 +104,7 @@ function AiAssistantPanel() {
         window.addEventListener("uchicode-open-ai", handleOpenAiAssistant);
 
         return () => window.removeEventListener("uchicode-open-ai", handleOpenAiAssistant);
-    }, []);
+    }, [setSelectionPopover]);
 
     useEffect(() => {
         setAiUsage(getLocalAiUsage(user?.id));
@@ -111,109 +117,6 @@ function AiAssistantPanel() {
 
         return () => window.removeEventListener(AI_USAGE_UPDATED_EVENT, syncUsage);
     }, [user?.id]);
-
-    useEffect(() => {
-        let selectionTimer: number | null = null;
-        let isPointerSelecting = false;
-
-        function clearSelectionTimer() {
-            if (selectionTimer !== null) {
-                window.clearTimeout(selectionTimer);
-                selectionTimer = null;
-            }
-        }
-
-        function syncSelection() {
-            if (isPointerSelecting) {
-                return;
-            }
-
-            const lessonSelection = readLessonSelection();
-
-            if (!lessonSelection) {
-                setSelectionPopover(null);
-
-                if (!isOpen) {
-                    setSelectedText("");
-                }
-
-                return;
-            }
-
-            setSelectedText(lessonSelection.text);
-            setSelectionPopover(lessonSelection.position);
-        }
-
-        function syncSelectionAfterDelay(delay = 130) {
-            clearSelectionTimer();
-
-            selectionTimer = window.setTimeout(() => {
-                syncSelection();
-            }, delay);
-        }
-
-        function handlePointerDown(event: PointerEvent) {
-            if (
-                !(event.target instanceof Element) ||
-                isPointerInsideAiAssistant(event.target, {
-                    selectionPopover: styles.selectionPopover,
-                    panel: styles.panel,
-                    floatingButton: styles.floatingButton,
-                })
-            ) {
-                return;
-            }
-
-            isPointerSelecting = true;
-            clearSelectionTimer();
-            setSelectionPopover(null);
-        }
-
-        function handlePointerUp() {
-            isPointerSelecting = false;
-            syncSelectionAfterDelay(130);
-        }
-
-        function handleSelectionChange() {
-            if (isPointerSelecting) {
-                setSelectionPopover(null);
-
-                return;
-            }
-
-            syncSelectionAfterDelay(130);
-        }
-
-        function handleKeyboardSelection() {
-            syncSelectionAfterDelay(80);
-        }
-
-        function handlePageMove() {
-            if (selectionPopover) {
-                syncSelectionAfterDelay(40);
-            }
-        }
-
-        document.addEventListener("pointerdown", handlePointerDown);
-        document.addEventListener("pointerup", handlePointerUp);
-        document.addEventListener("keyup", handleKeyboardSelection);
-        document.addEventListener("selectionchange", handleSelectionChange);
-
-        window.addEventListener("scroll", handlePageMove, true);
-        window.addEventListener("resize", handlePageMove);
-
-        return () => {
-            clearSelectionTimer();
-
-            document.removeEventListener("pointerdown", handlePointerDown);
-            document.removeEventListener("pointerup", handlePointerUp);
-            document.removeEventListener("keyup", handleKeyboardSelection);
-            document.removeEventListener("selectionchange", handleSelectionChange);
-
-            window.removeEventListener("scroll", handlePageMove, true);
-            window.removeEventListener("resize", handlePageMove);
-        };
-    }, [isOpen, selectionPopover]);
 
     useEffect(() => {
         if (!isOpen) {

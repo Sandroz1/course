@@ -18,20 +18,20 @@
 - Раздел 8 "Список инициализации" готов.
 - Раздел 9 "std::vector" готов.
 - Раздел 10 "Делегирование конструкторов" готов.
-- Последняя задача/commit: `Unify course and task content rendering`.
+- Последняя задача/commit: `Improve frontend architecture foundations`.
 - Не готовы: 11 "Инкапсуляция", 12 "Исключения".
 - Будущие части 9.2, 10.1, 10.2 уже существуют, но продолжать их нельзя, пока не закрыты 11-12.
 
 ## Последняя закрытая проблема
 
-- Зафиксирован content rendering contract для CoursePage и TaskDetailsPage.
-- Эталон theory page: раздел 5 Базы C++ `/courses/base-cpp/conditions`.
-- Эталон task detail page: `/tasks/00-01-minimal-program`.
-- Theory common mistakes идут через общий renderer: eyebrow `Разбор ошибок`, title `Частые ошибки`.
-- Theory self-check идёт через общий component: eyebrow `Самопроверка`, title `Мини-проверка`.
-- `## Мини-проверка` и `## Самопроверка` в content дают одинаковый UI.
-- `Задачи после темы`, empty state и previous/next navigation остаются системными блоками CoursePage.
-- TaskDetailsPage для задач 8-10 использует тот же shared flow, что и старые задачи: header/meta/action, задание, file/code panel, help collapsibles, related theory.
+- Добавлен `docs/ARCHITECTURE.md` с картой frontend, route/data/content зонами и правилами добавления section/task.
+- Добавлен `docs/frontend-test-strategy.md`; test runner в проекте пока отсутствует, новые зависимости не добавлялись.
+- Кастомный router оставлен без миграции на React Router; route constants/prefixes вынесены в `site/src/app/routes.ts`.
+- Markdown parsing из `LessonContent` вынесен в pure util `site/src/utils/lessonMarkdown.ts`.
+- Selection state/listeners AI assistant вынесены в `site/src/features/ai-assistant/hooks/useLessonSelection.ts`.
+- Body scroll lock вынесен в общий hook `site/src/hooks/useBodyScrollLock.ts`.
+- Page-level `React.lazy` + `Suspense` отложены до отдельной задачи с единым loading fallback.
+- Auth reset без `window.dispatchEvent` отложен до отдельной задачи: текущий API fetch flow требует отдельного контракта с `AuthProvider`.
 
 ## Последние проверки
 
@@ -50,10 +50,11 @@
 3. `Unify course theory page structure` - done.
 4. `Secure env handling and document secret rotation` - done.
 5. `Unify course and task content rendering` - done.
-6. Manual secret rotation and history cleanup coordination, if `.env.production` ever left the local machine.
-7. `Complete OOP section 11`.
-8. `Complete OOP section 12`.
-9. `Audit OOP sections 0-12 readiness`.
+6. `Improve frontend architecture foundations` - done.
+7. Manual secret rotation and history cleanup coordination, if `.env.production` ever left the local machine.
+8. `Complete OOP section 11`.
+9. `Complete OOP section 12`.
+10. `Audit OOP sections 0-12 readiness`.
 
 ## Формат обновления после каждой задачи
 
@@ -70,3 +71,4 @@
 - База C++ разделы 0-4 остаются `needs-theory`; для них CoursePage показывает placeholder страницы.
 - Если реальные production secrets уже были pushed/shared до этого pass, нужно вручную выполнить rotation + history cleanup по `docs/security-incident-runbook.md`.
 - Vite chunk-size warning известен и не является build failure.
+- Page-level lazy loading, auth reset event cleanup и unit test runner остаются future tasks, не смешивать с продолжением учебного контента.

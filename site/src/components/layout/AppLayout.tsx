@@ -3,6 +3,7 @@ import { type ReactNode, useEffect, useState } from "react";
 import { AccountMenu } from "./AccountMenu/AccountMenu";
 import { AiAssistant } from "../../features/ai-assistant";
 import { useAuth } from "../../context/AuthContext";
+import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
 import clsx from "clsx";
 import { currentPath } from "../../utils/slug";
 import { SearchBox } from "./SearchBox/SearchBox";
@@ -42,6 +43,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
     saveSidebarCollapsed(isSidebarCollapsed);
   }, [isSidebarCollapsed]);
 
+  useBodyScrollLock(isMobileNavOpen);
+
   useEffect(() => {
     if (!isMobileNavOpen) return;
 
@@ -51,12 +54,9 @@ export function AppLayout({ children }: { children: ReactNode }) {
       }
     }
 
-    const previousOverflow = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
     document.addEventListener("keydown", handleKeyDown);
 
     return () => {
-      document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
     };
   }, [isMobileNavOpen]);

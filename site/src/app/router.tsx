@@ -14,13 +14,14 @@ import { RegisterPage } from "../pages/RegisterPage";
 import { TaskDetailsPage } from "../pages/TaskDetailsPage";
 import { TasksIndexPage } from "../pages/TasksIndexPage";
 import { navigateTo } from "../utils/navigation";
+import { appRoutes, routePrefixes, stripRoutePrefix } from "./routes";
 
 function ProtectedProfilePage() {
   const { accessToken, isLoading } = useAuth();
 
   useEffect(() => {
     if (!isLoading && !accessToken) {
-      navigateTo("/login", true);
+      navigateTo(appRoutes.login, true);
     }
   }, [accessToken, isLoading]);
 
@@ -32,28 +33,28 @@ function ProtectedProfilePage() {
 }
 
 export function renderRoute(path: string) {
-  if (path === "/") return <HomePage />;
-  if (path === "/login") return <LoginPage />;
-  if (path === "/register") return <RegisterPage />;
-  if (path === "/profile") return <ProtectedProfilePage />;
-  if (path === "/courses") return <CoursesPage />;
-  if (path === "/courses/base-cpp") return <BaseCppCoursePage />;
-  if (path.startsWith("/courses/base-cpp/")) {
-    return <CoursePage courseId="base-cpp" slug={path.replace("/courses/base-cpp/", "")} />;
+  if (path === appRoutes.home) return <HomePage />;
+  if (path === appRoutes.login) return <LoginPage />;
+  if (path === appRoutes.register) return <RegisterPage />;
+  if (path === appRoutes.profile) return <ProtectedProfilePage />;
+  if (path === appRoutes.courses) return <CoursesPage />;
+  if (path === appRoutes.baseCppCourse) return <BaseCppCoursePage />;
+  if (path.startsWith(routePrefixes.baseCppSection)) {
+    return <CoursePage courseId="base-cpp" slug={stripRoutePrefix(path, routePrefixes.baseCppSection)} />;
   }
-  if (path === "/courses/oop-cpp") return <CourseIndexPage courseId="oop-cpp" />;
-  if (path.startsWith("/courses/oop-cpp/")) {
-    return <CoursePage courseId="oop-cpp" slug={path.replace("/courses/oop-cpp/", "")} />;
+  if (path === appRoutes.oopCppCourse) return <CourseIndexPage courseId="oop-cpp" />;
+  if (path.startsWith(routePrefixes.oopCppSection)) {
+    return <CoursePage courseId="oop-cpp" slug={stripRoutePrefix(path, routePrefixes.oopCppSection)} />;
   }
-  if (path === "/course") return <CourseIndexPage courseId="oop-cpp" />;
-  if (path.startsWith("/course/")) {
-    return <CoursePage courseId="oop-cpp" slug={path.replace("/course/", "")} />;
+  if (path === appRoutes.oopCppCourseAlias) return <CourseIndexPage courseId="oop-cpp" />;
+  if (path.startsWith(routePrefixes.oopCppSectionAlias)) {
+    return <CoursePage courseId="oop-cpp" slug={stripRoutePrefix(path, routePrefixes.oopCppSectionAlias)} />;
   }
-  if (path === "/tasks") return <TasksIndexPage />;
-  if (path.startsWith("/tasks/")) {
-    return <TaskDetailsPage taskId={path.replace("/tasks/", "")} />;
+  if (path === appRoutes.tasks) return <TasksIndexPage />;
+  if (path.startsWith(routePrefixes.taskDetails)) {
+    return <TaskDetailsPage taskId={stripRoutePrefix(path, routePrefixes.taskDetails)} />;
   }
-  if (path === "/guide") return <GuidePage />;
-  if (path === "/common-errors") return <CommonErrorsPage />;
+  if (path === appRoutes.guide) return <GuidePage />;
+  if (path === appRoutes.commonErrors) return <CommonErrorsPage />;
   return <HomePage />;
 }
