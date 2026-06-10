@@ -59,6 +59,10 @@ Do not repeat full audits unless explicitly requested.
 - Every theory section should cover: what it is, why it is needed, minimal example, common mistake and small practice direction.
 - Do not add advanced details that distract from the current section level.
 - Do not copy long text from external sources.
+- Course content files are data, not layout. Do not add local UI structures to a theory file when `CoursePage`, `LessonContent` or `TaskDetailsPage` already has a shared renderer.
+- Theory common mistakes use one shared renderer: eyebrow `Разбор ошибок`, title `Частые ошибки`.
+- Theory self-check uses one shared renderer: eyebrow `Самопроверка`, title `Мини-проверка`.
+- Practice files are linked from task details. Do not duplicate practice-file lists inside theory content when the page already shows the system block `Задачи после темы`.
 
 ## Checks
 

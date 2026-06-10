@@ -18,22 +18,27 @@
 - Раздел 8 "Список инициализации" готов.
 - Раздел 9 "std::vector" готов.
 - Раздел 10 "Делегирование конструкторов" готов.
-- Последняя задача/commit: `Secure env handling and document secret rotation`.
+- Последняя задача/commit: `Unify course and task content rendering`.
 - Не готовы: 11 "Инкапсуляция", 12 "Исключения".
 - Будущие части 9.2, 10.1, 10.2 уже существуют, но продолжать их нельзя, пока не закрыты 11-12.
 
 ## Последняя закрытая проблема
 
-- Выполнен security-fix pass по env/secrets без push/deploy.
-- В текущем git index реальные `.env*` файлы не отслеживаются; tracked только example-шаблоны.
-- Локальный `.env.production` существует в workspace, но игнорируется `.gitignore` и не добавлен в index.
-- `.gitignore` переведён на deny-by-default для `.env*` с allowlist для `.env.example` и `.env.*.example`.
-- Добавлен корневой `.env.example` с placeholders.
-- Добавлены runbook для secret incident и pre-commit security checks.
-- Production security settings проверены только чтением: Django secure flags управляются env, HSTS default `0`, `CSRF_COOKIE_HTTPONLY` не включался; nginx уже содержит basic headers.
+- Зафиксирован content rendering contract для CoursePage и TaskDetailsPage.
+- Эталон theory page: раздел 5 Базы C++ `/courses/base-cpp/conditions`.
+- Эталон task detail page: `/tasks/00-01-minimal-program`.
+- Theory common mistakes идут через общий renderer: eyebrow `Разбор ошибок`, title `Частые ошибки`.
+- Theory self-check идёт через общий component: eyebrow `Самопроверка`, title `Мини-проверка`.
+- `## Мини-проверка` и `## Самопроверка` в content дают одинаковый UI.
+- `Задачи после темы`, empty state и previous/next navigation остаются системными блоками CoursePage.
+- TaskDetailsPage для задач 8-10 использует тот же shared flow, что и старые задачи: header/meta/action, задание, file/code panel, help collapsibles, related theory.
 
 ## Последние проверки
 
+- `cd site && npm run typecheck` - passed.
+- `cd site && npm run lint` - passed.
+- `cd site && npm run build` - passed, Vite chunk-size warning известен.
+- Manual browser check - passed: `/courses/base-cpp/conditions`, `/course/initializer-list`, `/course/vector`, `/course/delegating-constructors`, `/tasks/00-01-minimal-program`, `/tasks/08-01-plate-constructors`, `/tasks/09-vector-01-numbers`, `/tasks/10-delegation-01-worker-constructors`; desktop/mobile; console errors 0; horizontal overflow не найден.
 - `git diff --check` - passed.
 - `git status -sb` - passed.
 - `git diff --stat` - passed.
@@ -44,10 +49,11 @@
 2. `Complete OOP section 10` - done, commit `d9003f2`.
 3. `Unify course theory page structure` - done.
 4. `Secure env handling and document secret rotation` - done.
-5. Manual secret rotation and history cleanup coordination, if `.env.production` ever left the local machine.
-6. `Complete OOP section 11`.
-7. `Complete OOP section 12`.
-8. `Audit OOP sections 0-12 readiness`.
+5. `Unify course and task content rendering` - done.
+6. Manual secret rotation and history cleanup coordination, if `.env.production` ever left the local machine.
+7. `Complete OOP section 11`.
+8. `Complete OOP section 12`.
+9. `Audit OOP sections 0-12 readiness`.
 
 ## Формат обновления после каждой задачи
 

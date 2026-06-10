@@ -386,7 +386,7 @@ function MiniCheckBlock({ title, lines }: { title: string; lines: string[] }) {
     <section className={styles.specialSection} id={headingId(title)}>
       <div className={styles.specialHeader}>
         <span>Самопроверка</span>
-        <h2>Самопроверка</h2>
+        <h2>Мини-проверка</h2>
         <p>Ответь коротко своими словами и отметь вопросы, в которых уверен.</p>
       </div>
 
@@ -484,7 +484,7 @@ const tocRules: Array<{ title: string; patterns: RegExp[] }> = [
     patterns: [/ошиб/i],
   },
   {
-    title: "Самопроверка",
+    title: "Мини-проверка",
     patterns: [/провер/i],
   },
   {
