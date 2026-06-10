@@ -1,74 +1,42 @@
-# Documentation audit
+# Documentation Audit
 
-Актуально на 2026-06-07.
+Актуально на 2026-06-10. Это краткая заметка по docs cleanup, не отдельный runbook.
 
-## Что проверено
+## Checked
 
-- Корневые документы: `README.md`, `PROJECT_STATUS.md`, `DEPLOY.md`, `DEPLOY_SSL.md`, `LOCAL_RUNBOOK.md`, `SMOKE_TESTS.md`.
-- Production docs: `deploy/README.md`, `deploy/docs/*.md`.
-- Course docs: `docs/base-cpp-course-plan.md`, `docs/course-content-plan.md`.
-- Security docs: `docs/security-release-checklist.md`.
-- Локальные вспомогательные README: `practice/README.md`, `site/src/styles/README.md`.
+- Root docs: `README.md`, `AGENTS.md`, `PROJECT_STATUS.md`, `LOCAL_RUNBOOK.md`, `DEPLOY.md`, `DEPLOY_SSL.md`, `SMOKE_TESTS.md`.
+- Main docs: all markdown files in `docs`.
+- Production docs: `deploy/README.md` and `deploy/docs/*.md`.
+- Supporting README files: `practice/README.md`, `site/src/styles/README.md`.
 
-## Найдено и исправлено
+## Findings
 
-- Устаревшие формулировки о том, что VPS deploy ещё не выполнен.
-- Расхождение между `main`, локальным tag `v0.1.2` и production deploy flow.
-- Дублирующиеся длинные deploy-инструкции в корневых документах.
-- Опасный пример `git add .` в update runbook.
-- Недостаточно явная проверка двойного `/api/api` после frontend hotfix.
-- `QWEN_API_KEY` был описан как обязательный всегда, хотя без него сайт работает, а AI endpoint ожидаемо отдаёт `503`.
+- Root `README.md` duplicated local run, deploy, env and security details that already exist in runbooks.
+- `docs/README.md` did not include current frontend architecture, AI state, security docs, test strategy and deploy runbooks.
+- `AGENTS.md` repeated detailed frontend/course/deploy rules instead of linking to dedicated docs.
+- `PROJECT_STATUS.md` contained stale project and course status.
+- `docs/ai-project-state.md` mixed current state with permanent update-format rules.
+- `DEPLOY.md` contained an old concrete commit in a generic checkout example.
 
-## Текущая структура
+## Current Structure
 
-```text
-README.md                         обзор проекта
-PROJECT_STATUS.md                 текущее состояние и риски
-LOCAL_RUNBOOK.md                  локальная разработка
-SMOKE_TESTS.md                    smoke-проверки
-DEPLOY.md                         короткий deploy entrypoint
-DEPLOY_SSL.md                     короткая HTTPS-памятка
-docs/README.md                    индекс документации
-deploy/docs/README.md             production runbooks
-```
+- Root `README.md` is the short project entrypoint.
+- `docs/README.md` is the full documentation map.
+- `AGENTS.md` contains stable Codex rules and links to profile docs.
+- `docs/ai-project-state.md` contains current development state only.
+- `LOCAL_RUNBOOK.md` remains the local development runbook.
+- `DEPLOY.md`, `deploy/README.md` and `deploy/docs/*.md` remain the deploy/Docker/migration/backup/rollback source of truth.
+- Security procedures remain in `docs/pre-commit-security.md`, `docs/security-incident-runbook.md`, `docs/security-release-checklist.md` and `deploy/docs/05_SECURITY_SECRETS_ACCESS.md`.
 
-## Production notes
+## Preserved Instructions
 
-- `origin/main` содержит `c05f7b9 Polish guide heading spacing`.
-- Push tag `v*` может запускать GitHub Actions deploy.
-- Если tag `v0.1.2` не опубликован в GitHub, VPS не сможет сделать `git checkout v0.1.2` после `git fetch --all --tags`.
-- Для ручного deploy можно использовать `origin/main` или конкретный commit SHA.
+- Local run and backend/frontend checks.
+- Production deploy, update, rollback and hotfix instructions.
+- Docker Compose, migrations and backup/restore instructions.
+- Security incident, secret rotation and pre-commit checks.
+- Course and frontend content standards.
 
-## API path invariant
+## Needs Verification
 
-Frontend должен собирать запросы так:
-
-```text
-baseURL=/api
-endpoint=/auth/register/
-result=/api/auth/register/
-```
-
-Запрещённый результат:
-
-```text
-/api/api/auth/register/
-```
-
-Проверка:
-
-```bash
-rg "/api/api" site/src site/dist
-```
-
-## Что оставлено без изменений
-
-- Учебный контент курсов не переписывался.
-- Backend, API, auth logic и production compose не менялись.
-- `practice/README.md` и `site/src/styles/README.md` оставлены почти без изменений, потому что они актуальны и короткие.
-
-## Что стоит сделать позже
-
-- После следующего production deploy обновить `deploy/docs/01_CURRENT_STATE.md`, если фактический server `HEAD` отличается от release-ориентира.
-- Если GitHub Actions deploy останется включённым на tag `v*`, явно выбрать одну release-политику: ручной deploy по commit или автоматический deploy по tag.
-- После подключения Qwen обновить AI-разделы и убрать пометку о допустимом `503` при пустом `QWEN_API_KEY`.
+- Production state in `deploy/docs/01_CURRENT_STATE.md` was not rechecked against VPS in this docs-only pass.
+- Long course plans may still contain historical wording. They were left intact to avoid changing course meaning during documentation cleanup.

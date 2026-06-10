@@ -1,10 +1,11 @@
 # AI Project State
 
-Проект: Uchicode.
+Документ фиксирует только текущее состояние проекта и ближайшие задачи. Постоянные правила лежат в [../AGENTS.md](../AGENTS.md) и [../README.md](../README.md).
 
-## Карта проекта
+## Project Map
 
-- Стек: React + TypeScript + Vite.
+- Проект: Uchicode.
+- Стек: React + TypeScript + Vite, Django backend.
 - Основная зона frontend: `site/src`.
 - Контент курса: `site/src/content/course`.
 - Разделы курса: `site/src/data/courseSections.ts`.
@@ -12,63 +13,58 @@
 - Задачи: `site/src/data/tasks.ts`.
 - Практические файлы: `practice`.
 
-## Текущий статус
+## Current Status
 
 - ООП C++ разделы 0-10 закрыты без пробела.
 - Раздел 8 "Список инициализации" готов.
 - Раздел 9 "std::vector" готов.
 - Раздел 10 "Делегирование конструкторов" готов.
-- Последняя задача/commit: `Improve frontend architecture foundations`.
 - Не готовы: 11 "Инкапсуляция", 12 "Исключения".
 - Будущие части 9.2, 10.1, 10.2 уже существуют, но продолжать их нельзя, пока не закрыты 11-12.
+- Следующая задача после docs cleanup: `Complete OOP section 11 "Инкапсуляция"`.
 
-## Последняя закрытая проблема
+## Recent Important Commits
 
-- Добавлен `docs/ARCHITECTURE.md` с картой frontend, route/data/content зонами и правилами добавления section/task.
-- Добавлен `docs/frontend-test-strategy.md`; test runner в проекте пока отсутствует, новые зависимости не добавлялись.
-- Кастомный router оставлен без миграции на React Router; route constants/prefixes вынесены в `site/src/app/routes.ts`.
-- Markdown parsing из `LessonContent` вынесен в pure util `site/src/utils/lessonMarkdown.ts`.
-- Selection state/listeners AI assistant вынесены в `site/src/features/ai-assistant/hooks/useLessonSelection.ts`.
-- Body scroll lock вынесен в общий hook `site/src/hooks/useBodyScrollLock.ts`.
-- Page-level `React.lazy` + `Suspense` отложены до отдельной задачи с единым loading fallback.
-- Auth reset без `window.dispatchEvent` отложен до отдельной задачи: текущий API fetch flow требует отдельного контракта с `AuthProvider`.
+- `99ed86f` - `Polish task detail layout consistency`.
+- `41768f7` - `Improve frontend architecture foundations`.
+- `18b4b77` - `Unify course and task content rendering`.
+- `d9003f2` - `Complete OOP section 10`.
+- `aa61ebb` - `Complete OOP section 9`.
 
-## Последние проверки
+## Done
 
-- `cd site && npm run typecheck` - passed.
-- `cd site && npm run lint` - passed.
-- `cd site && npm run build` - passed, Vite chunk-size warning известен.
-- Manual browser check - passed: `/courses/base-cpp/conditions`, `/course/initializer-list`, `/course/vector`, `/course/delegating-constructors`, `/tasks/00-01-minimal-program`, `/tasks/08-01-plate-constructors`, `/tasks/09-vector-01-numbers`, `/tasks/10-delegation-01-worker-constructors`; desktop/mobile; console errors 0; horizontal overflow не найден.
-- `git diff --check` - passed.
-- `git status -sb` - passed.
-- `git diff --stat` - passed.
+- Course/task rendering unified: theory pages and task detail pages use common rendering patterns.
+- Task detail visual consistency checked against `tasks/00-01-minimal-program`.
+- Frontend architecture foundations documented in `docs/ARCHITECTURE.md`.
+- Route constants exist in `site/src/app/routes.ts`.
+- Markdown parsing moved to `site/src/utils/lessonMarkdown.ts`.
+- AI lesson selection moved to `site/src/features/ai-assistant/hooks/useLessonSelection.ts`.
+- Body scroll lock moved to `site/src/hooks/useBodyScrollLock.ts`.
+- Security env handling documented; real env files should stay out of git.
 
-## Ближайший порядок
+## Checks Snapshot
 
-1. `Fix course task layout consistency` - done, commit `6232d3e`.
-2. `Complete OOP section 10` - done, commit `d9003f2`.
-3. `Unify course theory page structure` - done.
-4. `Secure env handling and document secret rotation` - done.
-5. `Unify course and task content rendering` - done.
-6. `Improve frontend architecture foundations` - done.
-7. Manual secret rotation and history cleanup coordination, if `.env.production` ever left the local machine.
-8. `Complete OOP section 11`.
-9. `Complete OOP section 12`.
-10. `Audit OOP sections 0-12 readiness`.
+- Last frontend passes completed before this docs cleanup: `npm run typecheck`, `npm run lint`, `npm run build`.
+- Vite chunk-size warning is known and is not a build failure.
+- Docs-only changes should run only repository checks unless code changes accidentally appear.
 
-## Формат обновления после каждой задачи
+## Next Tasks
 
-- last commit;
-- done;
-- changed files summary;
-- checks;
-- next task;
-- known issues.
+1. Complete OOP section 11 "Инкапсуляция".
+2. Complete OOP section 12 "Исключения".
+3. Audit OOP sections 0-12 readiness.
+4. Coordinate manual secret rotation and git history cleanup if `.env.production` ever left the local machine.
 
 ## Known Issues
 
-- `docs/course-content-plan.md` может содержать старые формулировки статуса для ранних разделов 6-7; менять только в отдельной задаче.
-- База C++ разделы 0-4 остаются `needs-theory`; для них CoursePage показывает placeholder страницы.
-- Если реальные production secrets уже были pushed/shared до этого pass, нужно вручную выполнить rotation + history cleanup по `docs/security-incident-runbook.md`.
-- Vite chunk-size warning известен и не является build failure.
-- Page-level lazy loading, auth reset event cleanup и unit test runner остаются future tasks, не смешивать с продолжением учебного контента.
+- `docs/course-content-plan.md` may contain old wording for early sections 6-7; update only in a dedicated course-plan pass.
+- База C++ sections 0-4 remain `needs-theory`; CoursePage shows placeholder pages for them.
+- If real production secrets were pushed or shared before the security pass, manual rotation and history cleanup are still required.
+- Page-level lazy loading, auth reset event cleanup and a unit test runner remain future frontend tasks.
+
+## Do Not Do Now
+
+- Do not deploy or push unless explicitly requested.
+- Do not continue 9.2, 10.1, 10.2 before 11-12 are closed.
+- Do not add section 12 before section 11.
+- Do not mix content work with Docker/nginx/security changes.

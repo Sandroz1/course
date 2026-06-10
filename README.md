@@ -1,209 +1,83 @@
 # Uchicode
 
-Uchicode — учебная платформа по C++ с отдельными маршрутами для базового C++ и ООП C++.
+Uchicode - учебная платформа по C++ с курсами "База C++" и "ООП C++".
 
-## Текущее состояние
+## Где начинать
 
-- Frontend: React, Vite, TypeScript.
-- Backend: Django REST Framework.
-- Production: VPS `play2go.cloud`, Docker Compose, host Nginx, HTTPS для `uchicode.ru`.
-- API работает same-origin через `/api`; frontend endpoints должны быть относительными к base URL `/api`.
-- GitHub Actions deploy запускается от tag `v*`; production tag публиковать только осознанно.
+- [docs/README.md](docs/README.md) - главная карта документации.
+- [docs/ai-project-state.md](docs/ai-project-state.md) - текущее состояние проекта и ближайшая задача.
+- [AGENTS.md](AGENTS.md) - правила для Codex/AI-агентов.
+- [LOCAL_RUNBOOK.md](LOCAL_RUNBOOK.md) - локальный запуск и проверки.
+- [DEPLOY.md](DEPLOY.md) - короткий вход в production deploy.
 
-## Курсы
+## Стек
 
-- `base-cpp` — отдельный курс "База C++". Сейчас готовы условия, циклы и накопление значений в циклах; ранние темы до условий помечены как теория на доработке.
-- `oop-cpp` — отдельный курс по ООП C++. Он не должен смешиваться с `base-cpp`.
+- Frontend: React + TypeScript + Vite, основная зона `site/src`.
+- Backend: Django, зона `backend`.
+- Production: Docker Compose, host Nginx, PostgreSQL, Redis.
+- Учебный контент: `site/src/content/course`, `site/src/data`, `practice`.
 
-## Структура проекта
+## Структура
 
-```text
-site/                    Frontend React/Vite/TypeScript
-backend/                 Django REST Framework API
-docker/                  Docker nginx для production
-deploy/                  VPS, nginx, systemd, backup и deploy docs
-docs/                    Планы курсов и общая документация
-practice/                Практические материалы
-docker-compose.dev.yml   Локальная Docker-среда
-docker-compose.prod.yml  Production Docker Compose
-.env.production.example  Шаблон production env
-```
+- `site/` - frontend.
+- `backend/` - Django backend.
+- `docs/` - архитектура, правила курса, security и текущее состояние.
+- `deploy/` - production compose/nginx/scripts и deploy runbooks.
+- `practice/` - стартовые файлы практических задач.
+- `docker-compose*.yml` - локальная и production compose-конфигурация.
 
-## Карта документации
+## Локальный запуск
 
-- [docs/README.md](docs/README.md) — общий индекс документации.
-- [PROJECT_STATUS.md](PROJECT_STATUS.md) — текущее состояние проекта.
-- [LOCAL_RUNBOOK.md](LOCAL_RUNBOOK.md) — локальный запуск и проверки.
-- [SMOKE_TESTS.md](SMOKE_TESTS.md) — smoke-проверки после деплоя.
-- [DEPLOY.md](DEPLOY.md) — короткий deploy entrypoint.
-- [deploy/docs/README.md](deploy/docs/README.md) — полный комплект production-инструкций.
-- [docs/base-cpp-course-plan.md](docs/base-cpp-course-plan.md) — план курса "База C++".
-- [docs/course-content-plan.md](docs/course-content-plan.md) — план курса "ООП C++".
+Подробная инструкция находится в [LOCAL_RUNBOOK.md](LOCAL_RUNBOOK.md).
 
-## Архитектура
+Коротко для frontend:
 
-```text
-Browser
-  -> https://uchicode.ru
-  -> host Nginx 80/443 + Let's Encrypt
-  -> Docker nginx 127.0.0.1:8080
-  -> backend:8000 inside Docker network
-  -> PostgreSQL / Redis inside Docker network
-```
-
-Наружу не должны публиковаться:
-
-```text
-backend:8000
-postgres:5432
-redis:6379
-Docker nginx на 0.0.0.0:8080
-```
-
-## Локальный запуск frontend
-
-```bash
+```powershell
 cd site
 npm install
 npm run dev
 ```
 
-Vite проксирует `/api`, `/admin`, `/static` и `/media` на локальный backend `http://127.0.0.1:8000`.
+Коротко для backend см. [LOCAL_RUNBOOK.md](LOCAL_RUNBOOK.md), потому что команды зависят от `.venv`, `.env` и локальной базы.
 
-## Локальный запуск backend
-
-Windows PowerShell:
-
-```powershell
-cd backend
-python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py runserver
-```
-
-Health:
-
-```bash
-curl http://127.0.0.1:8000/api/health/
-```
-
-## Локальный запуск через Docker
-
-```bash
-docker compose -f docker-compose.dev.yml up --build
-```
-
-Dev compose использует имя проекта `uchicode-dev`, production compose — `app`, чтобы совпадать с текущим VPS stack `app-*`.
-
-Backend в dev compose читает `backend/.env`, а затем применяет явные Docker-настройки для локальной БД, Redis, hosts и cookies. Не задавайте секреты в `environment` пустыми строками: `environment` перекрывает `env_file`.
-
-Создать superuser в локальном Docker-окружении:
-
-```bash
-docker compose -f docker-compose.dev.yml exec backend python manage.py createsuperuser
-```
-
-После этого admin доступен на `http://localhost:5173/admin/`, а вход на сайт использует обычную форму `http://localhost:5173/login`.
-
-## Проверки перед push
+## Проверки
 
 Frontend:
 
-```bash
+```powershell
 cd site
 npm run typecheck
-npm run build
 npm run lint
+npm run build
 ```
 
 Backend:
 
 ```powershell
 cd backend
-.venv\Scripts\python.exe manage.py check
-.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
-.venv\Scripts\python.exe manage.py test
+python manage.py check
+python manage.py makemigrations --check --dry-run
+python manage.py test
 ```
 
-Production compose:
+Docs-only изменения обычно проверяются так:
 
-```bash
-docker compose -p app -f docker-compose.prod.yml config
-docker compose -p app -f docker-compose.prod.yml build --pull
-docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
-curl -fsS http://127.0.0.1:8080/nginx-health
-curl -fsS http://127.0.0.1:8080/api/health
-docker compose -p app -f docker-compose.prod.yml down
+```powershell
+git diff --check
+git status -sb
+git diff --stat
 ```
 
-## Env
+## Документация по зонам
 
-Реальные env-файлы не коммитить:
-
-```text
-.env
-.env.production
-site/.env.local
-backend/.env
-```
-
-Production backend читает основные переменные:
-
-```text
-DJANGO_DEBUG
-DJANGO_SECRET_KEY
-DJANGO_ALLOWED_HOSTS
-DJANGO_CSRF_TRUSTED_ORIGINS
-DJANGO_CORS_ALLOWED_ORIGINS
-DATABASE_URL
-POSTGRES_DB
-POSTGRES_USER
-POSTGRES_PASSWORD
-REDIS_URL
-QWEN_API_KEY
-QWEN_BASE_URL
-QWEN_MODEL
-AI_DAILY_REQUEST_LIMIT
-AI_GLOBAL_DAILY_REQUEST_LIMIT
-SMS_PROVIDER
-SMS_API_KEY
-SMS_LOGIN
-SMS_PASSWORD
-```
-
-Для Qwen используется имя `QWEN_BASE_URL`; `QWEN_API_URL` проект не читает. Если `QWEN_API_KEY` пустой, сайт работает, а AI endpoint возвращает контролируемый `503`.
-
-Production frontend по умолчанию использует:
-
-```env
-VITE_API_BASE_URL=/api
-```
-
-Endpoint в frontend должен быть без второго `/api`, например `/auth/register/`, чтобы итоговый URL был `/api/auth/register/`.
-
-Не добавляйте `QWEN_API_KEY`, SMS keys, Django secrets или database credentials в `site/.env*`: все `VITE_*` значения попадают в browser bundle.
-
-## Production
-
-Основные инструкции:
-
-```text
-deploy/docs/02_DEPLOY_FROM_ZERO.md
-deploy/docs/03_UPDATE_ROLLBACK_HOTFIX.md
-deploy/docs/09_POST_DEPLOY_CHECKLIST.md
-```
-
-Быстрый health-check:
-
-```bash
-curl -fsS https://uchicode.ru/nginx-health
-curl -fsS https://uchicode.ru/api/health
-```
+- Frontend architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
+- Frontend UI rules: [docs/frontend-ui-standards.md](docs/frontend-ui-standards.md).
+- Course content rules: [docs/theory-content-standards.md](docs/theory-content-standards.md).
+- OOP C++ plan: [docs/course-content-plan.md](docs/course-content-plan.md).
+- Security checks: [docs/pre-commit-security.md](docs/pre-commit-security.md).
+- Secret leak runbook: [docs/security-incident-runbook.md](docs/security-incident-runbook.md).
+- Full production docs: [deploy/docs/README.md](deploy/docs/README.md).
 
 ## Безопасность
 
-- Не отправлять в чат и не коммитить приватные ключи, `.env.production`, `DJANGO_SECRET_KEY`, `POSTGRES_PASSWORD`, `DATABASE_URL`, `QWEN_API_KEY`.
-- Не использовать `git add .` перед release, если в дереве есть env, build artifacts или локальная БД.
-- Push tag `v*` может запустить GitHub Actions deploy workflow.
+Не коммить реальные `.env*`, ключи, базы, backups и приватные данные. Для примеров использовать только placeholder-файлы. При подозрении на утечку секретов следовать [docs/security-incident-runbook.md](docs/security-incident-runbook.md).

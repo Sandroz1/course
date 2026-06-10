@@ -53,7 +53,7 @@ Internet
 Текущий release-ориентир:
 
 ```text
-c05f7b9 Polish guide heading spacing
+needs verification - сверить фактический server HEAD на VPS
 ```
 
 Перед deploy всегда сверить фактический server `HEAD`:

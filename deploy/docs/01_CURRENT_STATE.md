@@ -43,7 +43,7 @@ Cron backup:
 ## Release target
 
 ```text
-c05f7b9 Polish guide heading spacing
+needs verification - сверить фактический server HEAD на VPS
 ```
 
 Проверка фактического состояния VPS:
@@ -54,7 +54,7 @@ git log --oneline -1
 git status -sb
 ```
 
-`HEAD (no branch)` на сервере — нормально для production, если сервер закреплён на конкретном commit. Если `git log --oneline -1` показывает не `c05f7b9`, значит сервер работает на другом release и его нужно обновлять отдельной операцией.
+`HEAD (no branch)` на сервере - нормально для production, если сервер закреплён на конкретном commit. Если `git log --oneline -1` не совпадает с выбранным release, сервер работает на другом commit и его нужно обновлять отдельной операцией.
 
 ## Tag policy
 
@@ -64,7 +64,7 @@ git status -sb
 
 ```bash
 git fetch origin main
-git checkout c05f7b9
+git checkout <commit-sha>
 ```
 
 ## Runtime схема
