@@ -42,6 +42,7 @@ const DEFAULT_TASK_DESCRIPTION =
 
 const DEFAULT_FILE_DESCRIPTION =
   "Стартовый файл задачи. Найдите TODO и допишите решение в локальном проекте.";
+const MAX_VISIBLE_RESULT_ITEMS = 4;
 
 function getNextFileIndex(currentIndex: number, key: string, fileCount: number) {
   if (key === "Home") return 0;
@@ -163,6 +164,8 @@ function TaskBriefSection({
   practicePath: string;
 }) {
   const resultItems = getResultItems(items, practicePath);
+  const visibleResultItems = resultItems.slice(0, MAX_VISIBLE_RESULT_ITEMS);
+  const hiddenResultItems = resultItems.slice(MAX_VISIBLE_RESULT_ITEMS);
   const shouldShowDescription = shouldShowTaskDescription(description);
 
   return (
@@ -187,13 +190,27 @@ function TaskBriefSection({
             {resultItems.length === 1 ? (
               <span className={styles.taskFactText}>{renderTaskInline(resultItems[0])}</span>
             ) : (
-              <ul>
-                {resultItems.map((item) => (
-                  <li key={item}>
-                    <span className={styles.taskFactText}>{renderTaskInline(item)}</span>
-                  </li>
-                ))}
-              </ul>
+              <>
+                <ul>
+                  {visibleResultItems.map((item) => (
+                    <li key={item}>
+                      <span className={styles.taskFactText}>{renderTaskInline(item)}</span>
+                    </li>
+                  ))}
+                </ul>
+                {hiddenResultItems.length > 0 && (
+                  <details className={styles.taskFactDetails}>
+                    <summary>Показать ещё {pointCountLabel(hiddenResultItems.length).toLowerCase()}</summary>
+                    <ul>
+                      {hiddenResultItems.map((item) => (
+                        <li key={item}>
+                          <span className={styles.taskFactText}>{renderTaskInline(item)}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </details>
+                )}
+              </>
             )}
           </dd>
         </div>
@@ -209,9 +226,9 @@ function TaskHelpSection({
   hasSpecificPlan: boolean;
   task: Task;
 }) {
+  const planItems = task.todoGuide ?? (hasSpecificPlan ? task.steps : []);
   const hintItems = [
-    ...(task.todoGuide ?? []),
-    ...(hasSpecificPlan ? task.steps : []),
+    ...planItems,
     ...task.hints,
   ];
 
@@ -479,7 +496,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
             </div>
           )}
 
-          {shouldShowFileDescription(activeFile.description) && (
+          {hasMultipleFiles && shouldShowFileDescription(activeFile.description) && (
             <p className={styles.fileDescription}>{renderTaskInline(activeFile.description)}</p>
           )}
 
