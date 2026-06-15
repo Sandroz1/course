@@ -15,64 +15,66 @@ import styles from "./HomePage.module.scss";
 const routeSteps = [
   {
     title: "Старт",
-    text: "Выбираешь первый короткий урок.",
+    text: "первый урок",
   },
   {
-    title: "Первая тема",
-    text: "Понимаешь одну новую идею.",
+    title: "Тема",
+    text: "одна идея",
   },
   {
-    title: "Простой пример",
-    text: "Повторяешь маленькую программу.",
+    title: "Пример",
+    text: "короткий код",
   },
   {
-    title: "Частая ошибка",
-    text: "Смотришь, где обычно ломается код.",
+    title: "Ошибка",
+    text: "рядом с темой",
   },
   {
-    title: "Первая задача",
-    text: "Проверяешь себя на практике.",
+    title: "Задача",
+    text: "проверка",
   },
 ];
 
 const firstLessonItems = [
   {
-    title: "Понять одну идею",
-    text: "Один урок не пытается объяснить весь C++ сразу.",
+    title: "Один небольшой шаг",
+    text: "Урок берёт одну тему и не перегружает новыми словами.",
   },
   {
-    title: "Повторить пример",
-    text: "Короткий пример показывает, что должно получиться.",
+    title: "Пример рядом",
+    text: "Сразу видно, что написать и какой результат ожидать.",
   },
   {
-    title: "Проверить себя",
-    text: "После темы есть задача с понятным результатом.",
+    title: "Задача после объяснения",
+    text: "Проверяешь именно этот шаг, а не весь язык сразу.",
   },
 ];
 
 const nextRoutes = [
   {
     title: "База C++",
-    text: "Начало для тех, кто ещё путается в переменных, выводе и условиях.",
+    text: "Если переменные, вывод и условия ещё путаются.",
+    action: "Начать базу",
     href: appRoutes.baseCppCourse,
   },
   {
     title: "ООП C++",
-    text: "ООП — темы про классы и объекты, когда основы уже знакомы.",
+    text: "ООП — темы про классы и объекты после основ.",
+    action: "Открыть ООП",
     href: appRoutes.oopCppCourse,
   },
   {
     title: "Задачи",
-    text: "Практика по темам: условие, файл, подсказки и проверка результата.",
+    text: "Если хочешь сразу открыть практику по темам.",
+    action: "Перейти к задачам",
     href: appRoutes.tasks,
   },
 ];
 
 const supportItems = [
-  "Короткие объяснения перед примером",
-  "Частые ошибки рядом с темой",
-  "Подсказки, если задача не получается",
-  "Прогресс по открытым материалам",
+  "Типовая ошибка объясняется рядом с темой",
+  "Подсказки помогают сделать следующий шаг",
+  "Прогресс показывает открытые материалы",
 ];
 
 export function HomePage() {
@@ -130,22 +132,23 @@ export function HomePage() {
           <section className={styles.mapCard} aria-labelledby="route-map-title">
             <div className={styles.mapHeader}>
               <p className={styles.eyebrow}>Первый маршрут</p>
-              <h2 id="route-map-title">До первой задачи видно все шаги</h2>
+              <h2 id="route-map-title">Сначала понятно, что делать</h2>
+              <p>Путь короткий: открыть урок, разобрать пример и закрепить его задачей.</p>
             </div>
 
-            <div className={styles.routeMap}>
+            <div className={styles.routePath}>
               <svg
                 className={styles.routeLine}
-                viewBox="0 0 760 220"
+                viewBox="0 0 760 120"
                 aria-hidden="true"
                 focusable="false"
               >
-                <path d="M70 142 C180 56 285 60 372 124 S570 196 690 76" />
+                <path d="M42 62 C160 18 252 18 360 62 S592 106 718 54" />
               </svg>
-              <ol className={styles.routeSteps}>
+              <ol className={styles.routeStations}>
                 {routeSteps.map((step, index) => (
                   <li
-                    className={clsx(index === 0 && styles.routeStepActive)}
+                    className={clsx(index === 0 && styles.routeStationActive)}
                     key={step.title}
                   >
                     <span>{index + 1}</span>
@@ -156,16 +159,18 @@ export function HomePage() {
               </ol>
             </div>
 
-            <p className={styles.routeHint}>
-              Первый результат: программа выводит число на экран.
-            </p>
+            <article className={styles.activeStep}>
+              <span>Активный шаг</span>
+              <h3>Открой короткий урок</h3>
+              <p>Разбери одну идею и повтори простой пример руками.</p>
+            </article>
           </section>
         </section>
 
         <section className={styles.section} aria-labelledby="first-lesson-title">
           <div className={styles.sectionIntro}>
             <p className={styles.eyebrow}>Первый урок</p>
-            <h2 id="first-lesson-title">Что будет внутри</h2>
+            <h2 id="first-lesson-title">Один урок — один шаг</h2>
           </div>
           <div className={styles.lessonList}>
             {firstLessonItems.map((item) => (
@@ -184,9 +189,20 @@ export function HomePage() {
           </div>
           <div className={styles.nextGrid}>
             {nextRoutes.map((route) => (
-              <a className={styles.nextCard} href={toPath(route.href)} key={route.title}>
-                <h3>{route.title}</h3>
-                <p>{route.text}</p>
+              <a
+                className={styles.nextCard}
+                href={toPath(route.href)}
+                key={route.title}
+                aria-label={`${route.action}: ${route.text}`}
+              >
+                <span className={styles.nextCardContent}>
+                  <h3>{route.title}</h3>
+                  <p>{route.text}</p>
+                </span>
+                <span className={styles.nextAction}>
+                  {route.action}
+                  <span aria-hidden="true">→</span>
+                </span>
               </a>
             ))}
           </div>
@@ -194,8 +210,8 @@ export function HomePage() {
 
         <section className={styles.supportSection} aria-labelledby="support-title">
           <div className={styles.sectionIntro}>
-            <p className={styles.eyebrow}>Если застрял</p>
-            <h2 id="support-title">Что помогает продолжать</h2>
+            <p className={styles.eyebrow}>Когда не получилось</p>
+            <h2 id="support-title">Помощь рядом с темой</h2>
           </div>
           <ul className={styles.supportList}>
             {supportItems.map((item) => (
