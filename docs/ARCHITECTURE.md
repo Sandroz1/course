@@ -6,7 +6,7 @@
 
 - Стек: React + TypeScript + Vite.
 - Основная зона: `site/src`.
-- Глобальная оболочка приложения: `site/src/app` и `site/src/components/layout`.
+- Рабочая оболочка приложения: `site/src/app` и `site/src/components/layout`.
 - Кастомный роутер: `site/src/app/router.tsx`.
 - Route constants и route prefixes: `site/src/app/routes.ts`.
 
@@ -33,6 +33,7 @@
 - `TasksIndexPage` показывает каталог задач и фильтры.
 - `TaskDetailsPage` показывает одну задачу через общий task detail flow.
 - Auth/profile/guide pages используют свои страницы, но общие layout/components.
+- `HomePage` для `/` — публичная главная без рабочего app-shell. Она не должна показывать sidebar, search, рабочий topbar или AI assistant.
 
 Правило: новая тема курса должна подключаться через data/content. Новый layout в `pages` нужен только если появляется новый тип страницы.
 
@@ -108,6 +109,8 @@ API-слой не должен знать про конкретные стран
 
 Layout:
 
+- public HomePage layout for `/`
+- app shell for рабочие маршруты
 - `CoursePage`
 - `LessonContent`
 - `TaskDetailsPage`
