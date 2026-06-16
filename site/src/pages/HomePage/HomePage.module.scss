@@ -20,15 +20,9 @@
 }
 
 .brand {
-  display: inline-flex;
-  gap: 0.55rem;
-  align-items: center;
-  min-width: 0;
-  color: var(--text);
-  font-size: 1.05rem;
-  font-weight: 650;
-  line-height: 1;
-  text-decoration: none;
+  --brand-logo-font-size: 1.1rem;
+  --brand-logo-gap: 0.55rem;
+  --brand-logo-icon-size: 2rem;
 }
 
 .brand:hover,
@@ -50,16 +44,6 @@
 .secondaryLink:focus-visible,
 .nextCard:focus-visible {
   box-shadow: 0 0 0 0.18rem color-mix(in srgb, var(--accent) 28%, transparent);
-}
-
-.brand img {
-  width: 2rem;
-  height: 2rem;
-  border-radius: 0.55rem;
-}
-
-.brand span span {
-  color: var(--accent);
 }
 
 .nav {
@@ -615,13 +599,9 @@
     padding-block: 0.7rem;
   }
 
-  .brand span {
-    font-size: 0.95rem;
-  }
-
-  .brand img {
-    width: 1.8rem;
-    height: 1.8rem;
+  .brand {
+    --brand-logo-font-size: 0.98rem;
+    --brand-logo-icon-size: 1.8rem;
   }
 
   .headerActions {

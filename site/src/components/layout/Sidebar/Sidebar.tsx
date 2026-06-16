@@ -1,6 +1,7 @@
 import { useAuth } from "../../../context/AuthContext";
 import { getCourseSections, isCourseSectionReady } from "../../../data/courseSections";
 import { courses, type Course } from "../../../data/courses";
+import { BrandLogo } from "../../shared/BrandLogo";
 import clsx from "clsx";
 import { currentPath, toPath } from "../../../utils/slug";
 import styles from "./Sidebar.module.scss";
@@ -266,19 +267,13 @@ export function Sidebar({
       aria-label="Навигация Uchicode"
     >
       <div className={styles.header}>
-        <a
+        <BrandLogo
           className={styles.brand}
           href={toPath("/")}
-          aria-label="Uchicode — на главную"
+          ariaLabel="Uchicode — на главную"
+          markClassName={styles.brandMark}
           onClick={handleNavigate}
-        >
-          <img className={styles.brandMark} src="/brand/uchicode-icon.png" alt="" aria-hidden="true" />
-          <span className={styles.brandText} aria-hidden="true">
-            <span className={styles.brandTextLead}>uchi</span>
-            <span className={styles.brandTextAccent}>code</span>
-            <span className={styles.brandTextDomain}>.ru</span>
-          </span>
-        </a>
+        />
 
         <button
           className={styles.collapsedBrandButton}
@@ -287,7 +282,12 @@ export function Sidebar({
           title="Развернуть меню"
           onClick={onToggleCollapse}
         >
-          <img className={styles.brandIcon} src="/brand/uchicode-icon.png" alt="" aria-hidden="true" />
+          <BrandLogo
+            ariaHidden
+            className={styles.collapsedBrandLogo}
+            markClassName={styles.brandIcon}
+            showText={false}
+          />
           <span className={styles.collapsedBrandToggle}>
             <SidebarToggleIcon />
           </span>

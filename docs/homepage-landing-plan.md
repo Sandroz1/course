@@ -17,7 +17,7 @@ HomePage для `/` — публичная главная без app-shell.
 - Lead: `Uchicode ведёт от первого шага к задачам: короткое объяснение, простой пример и практика в одном месте.`
 - Primary CTA: `Начать с нуля`.
 - Secondary link: `Посмотреть задачи`.
-- Header: logo, `Курсы`, `Задачи`, login/profile, optional theme switcher.
+- Header: shared `BrandLogo`, `Курсы`, `Задачи`, login/profile, optional theme switcher.
 
 ## Route Map
 

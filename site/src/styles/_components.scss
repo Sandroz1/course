@@ -10,7 +10,7 @@
   background: var(--surface-subtle);
   color: var(--muted);
   font-size: 0.71875rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-control);
   line-height: 1.1;
   padding: 0.125rem 0.4375rem;
   white-space: nowrap;
@@ -60,7 +60,7 @@
   background: var(--surface-subtle);
   color: var(--muted);
   font-size: 0.8125rem;
-  font-weight: 650;
+  font-weight: var(--font-weight-control);
   line-height: 1;
   padding: 0.25rem 0.5rem;
   white-space: nowrap;

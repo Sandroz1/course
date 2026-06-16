@@ -15,7 +15,7 @@
 - `app` - вход приложения, providers, кастомный router и route config.
 - `pages` - route-level страницы. Здесь собирается страница, но не должен жить уникальный layout под каждый новый урок.
 - `components/layout` - основная оболочка, sidebar, topbar, account menu, theme switcher, search.
-- `components/shared` - переиспользуемые UI-компоненты: buttons, code block, learning UI, dropdown.
+- `components/shared` - переиспользуемые UI-компоненты: buttons, code block, learning UI, dropdown, `BrandLogo`.
 - `content` - учебный текст разделов. Это content data, а не layout.
 - `data` - реестры курсов, секций, статусов и задач.
 - `features` - крупные продуктовые фичи со своей внутренней структурой, например AI assistant.

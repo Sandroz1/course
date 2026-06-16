@@ -16,7 +16,7 @@
   min-width: 0;
   color: var(--muted);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-control);
   line-height: 1.25;
   transition: color 140ms ease;
 }
@@ -35,7 +35,7 @@
   color: var(--text);
   font: inherit;
   font-size: 0.8125rem;
-  font-weight: 650;
+  font-weight: var(--font-weight-control);
   line-height: 1.25;
   padding: 0.625rem 0.75rem;
   transition:

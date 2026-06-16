@@ -2,6 +2,7 @@ import clsx from "clsx";
 
 import { appRoutes } from "../../app/routes";
 import { LinkButton } from "../../components/shared/ActionButton/ActionButton";
+import { BrandLogo } from "../../components/shared/BrandLogo";
 import { ThemeSwitcher } from "../../components/layout/ThemeSwitcher/ThemeSwitcher";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -87,12 +88,11 @@ export function HomePage() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <a className={styles.brand} href={toPath(appRoutes.home)} aria-label="Uchicode — главная">
-          <img src="/brand/uchicode-icon.png" alt="" aria-hidden="true" />
-          <span>
-            <span>uchi</span>code.ru
-          </span>
-        </a>
+        <BrandLogo
+          className={styles.brand}
+          href={toPath(appRoutes.home)}
+          ariaLabel="Uchicode — главная"
+        />
 
         <nav className={styles.nav} aria-label="Публичная навигация">
           <a href={toPath(appRoutes.courses)}>Курсы</a>

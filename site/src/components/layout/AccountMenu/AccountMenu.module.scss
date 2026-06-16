@@ -111,7 +111,7 @@
   background: var(--accent-soft);
   color: var(--accent);
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-heading);
 }
 
 .chevron {
@@ -148,7 +148,7 @@
   background: var(--accent-soft);
   color: var(--accent);
   font-size: 0.875rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-heading);
 }
 
 .userSummary strong {
@@ -162,7 +162,7 @@
 .userSummary strong {
   color: var(--text);
   font-size: 0.875rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-control);
 }
 
 .divider {

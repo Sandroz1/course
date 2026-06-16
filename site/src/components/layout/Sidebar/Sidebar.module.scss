@@ -27,9 +27,9 @@
 }
 
 .brand {
-  display: flex;
-  align-items: center;
-  gap: 0.4375rem;
+  --brand-logo-font-size: 1.1rem;
+  --brand-logo-gap: 0.55rem;
+  --brand-logo-icon-size: 2rem;
   justify-self: start;
   width: fit-content;
   max-width: 100%;
@@ -77,29 +77,8 @@
   height: 2rem;
 }
 
-.brandText {
-  display: inline-flex;
-  align-items: baseline;
-  min-width: 0;
-  overflow: hidden;
-  color: var(--text);
-  font-size: 1.1875rem;
-  font-weight: 850;
-  letter-spacing: 0;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.brandTextLead {
-  color: color-mix(in srgb, var(--accent) 42%, var(--text) 58%);
-}
-
-.brandTextAccent {
-  color: var(--accent);
-}
-
-.brandTextDomain {
-  color: var(--muted);
+.collapsedBrandLogo {
+  grid-area: 1 / 1;
 }
 
 .brandIcon {
@@ -218,7 +197,7 @@
   padding: 0;
   color: var(--muted);
   font-size: 0.6875rem;
-  font-weight: 800;
+  font-weight: var(--font-weight-control);
   letter-spacing: 0;
   line-height: 1;
   text-transform: uppercase;
@@ -289,7 +268,7 @@
   background: transparent;
   color: var(--soft);
   font-size: 0.75rem;
-  font-weight: 850;
+  font-weight: var(--font-weight-heading);
   line-height: 1;
 }
 
@@ -337,7 +316,7 @@
 
 .linkLabel {
   font-size: 0.875rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-control);
 }
 
 .active,
@@ -382,7 +361,7 @@
   border-radius: 0.625rem;
   background: var(--surface-2);
   color: var(--text);
-  font-weight: 850;
+  font-weight: var(--font-weight-heading);
   line-height: 1;
 }
 
@@ -407,7 +386,7 @@
 .profileText strong {
   color: var(--text);
   font-size: 0.875rem;
-  font-weight: 750;
+  font-weight: var(--font-weight-control);
 }
 
 .courseInfo small,
