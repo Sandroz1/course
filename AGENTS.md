@@ -22,6 +22,14 @@ Project: Uchicode.
 - Do not expose secrets, tokens, passwords or private data.
 - Doing nothing is acceptable when the requested issue is already fixed.
 
+## Quality Bar
+
+- Uchicode is a coherent learning product, not a set of generated pages.
+- A task is done only when the result is stable, logical, usable, visually clean and does not look like random AI output.
+- For requests like "доработай", "обработай" or "доведи до ума", do a self-review before commit: remove repetition, weak copy, empty promises, chaotic CSS/TSX and UX regressions.
+- Incomplete course chapters are acceptable content state. They do not justify lowering the quality of architecture, navigation, typography, layout, clickable states or stable pages.
+- Do not make a new area worse than already stable parts of the project.
+
 ## Repository Areas
 
 - Frontend: `site/src`.
