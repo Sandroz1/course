@@ -16,7 +16,8 @@
 ## Current Status
 
 - Текущая рабочая ветка: `codex/homepage-clarity-cta-pass`.
-- Последний локальный commit: `8486698 Polish homepage clarity and CTA hierarchy`.
+- Последний локальный commit: `26038d0 Update project stabilization docs`.
+- Последний HomePage implementation commit: `8486698 Polish homepage clarity and CTA hierarchy`.
 - Последний production deploy/main baseline: `fd9ef74 Merge public homepage stabilization`.
 - `/` — публичная HomePage без `AppLayout`.
 - На `/` не должно быть sidebar, app topbar, global search и AI assistant.
@@ -38,6 +39,7 @@
 ## Recent Important Commits
 
 - `8486698` - `Polish homepage clarity and CTA hierarchy`.
+- `26038d0` - `Update project stabilization docs`.
 - `fd9ef74` - `Merge public homepage stabilization`.
 - `255bbcb` - `Polish homepage clarity and CTA hierarchy`.
 - `e96fdee` - `Document project quality bar`.
