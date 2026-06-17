@@ -193,7 +193,6 @@
 
 .mapCard,
 .section,
-.supportSection,
 .statusLine {
   min-width: 0;
   border: 1px solid var(--border-subtle);
@@ -355,8 +354,7 @@
   line-height: 1.5;
 }
 
-.section,
-.supportSection {
+.section {
   display: grid;
   gap: 1rem;
   border-radius: 1.15rem;
@@ -478,39 +476,18 @@
   transform: translateX(0.14rem);
 }
 
-.supportSection {
-  grid-template-columns: minmax(0, 0.72fr) minmax(18rem, 1fr);
-  align-items: center;
-}
-
-.supportList {
-  display: grid;
-  gap: 0.55rem;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.supportList li {
-  min-width: 0;
-  border: 1px solid var(--border-subtle);
-  border-radius: 0.85rem;
-  background: color-mix(in srgb, var(--surface-2) 34%, var(--surface) 66%);
-  color: var(--muted);
-  font-size: 0.9rem;
-  line-height: 1.45;
-  padding: 0.72rem 0.78rem;
-}
-
 .statusLine {
-  justify-self: center;
+  justify-self: stretch;
   max-width: 100%;
   margin: 0;
-  border-radius: 999px;
+  border-radius: 0.85rem;
+  background:
+    linear-gradient(90deg, color-mix(in srgb, var(--accent-surface) 58%, transparent), transparent),
+    color-mix(in srgb, var(--surface-2) 26%, var(--surface) 74%);
   color: var(--muted);
   font-size: 0.92rem;
-  line-height: 1.4;
-  padding: 0.7rem 0.95rem;
+  line-height: 1.5;
+  padding: 0.75rem 0.85rem;
 }
 
 .statusLine strong {
@@ -559,8 +536,7 @@
   }
 
   .lessonList,
-  .nextGrid,
-  .supportSection {
+  .nextGrid {
     grid-template-columns: 1fr;
   }
 
@@ -619,8 +595,7 @@
 
   .hero,
   .mapCard,
-  .section,
-  .supportSection {
+  .section {
     border-radius: 1rem;
   }
 
@@ -657,8 +632,6 @@
   }
 
   .statusLine {
-    justify-self: stretch;
-    border-radius: 0.9rem;
-    text-align: center;
+    text-align: left;
   }
 }

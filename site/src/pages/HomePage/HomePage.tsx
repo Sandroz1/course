@@ -38,44 +38,38 @@ const routeSteps = [
 
 const firstLessonItems = [
   {
-    title: "Один небольшой шаг",
-    text: "Урок берёт одну тему и не перегружает новыми словами.",
+    title: "Сначала смысл",
+    text: "Коротко разбирается одна идея без длинной лекции.",
   },
   {
-    title: "Пример рядом",
-    text: "Сразу видно, что написать и какой результат ожидать.",
+    title: "Потом код",
+    text: "Рядом есть пример, который можно повторить руками.",
   },
   {
-    title: "Задача после объяснения",
-    text: "Проверяешь именно этот шаг, а не весь язык сразу.",
+    title: "Затем проверка",
+    text: "После объяснения открывается задача с понятным результатом.",
   },
 ];
 
 const nextRoutes = [
   {
     title: "База C++",
-    text: "Если переменные, вывод и условия ещё путаются.",
-    action: "Начать базу",
+    text: "Начни здесь, если переменные, вывод и условия ещё путаются.",
+    action: "Открыть базу",
     href: appRoutes.baseCppCourse,
   },
   {
     title: "ООП C++",
-    text: "ООП — темы про классы и объекты после основ.",
+    text: "Продолжай здесь, если уже писал простые программы и переходишь к классам.",
     action: "Открыть ООП",
     href: appRoutes.oopCppCourse,
   },
   {
     title: "Задачи",
-    text: "Если хочешь сразу открыть практику по темам.",
+    text: "Открой практику, если тема уже понятна и нужен файл для решения.",
     action: "Перейти к задачам",
     href: appRoutes.tasks,
   },
-];
-
-const supportItems = [
-  "Типовая ошибка объясняется рядом с темой",
-  "Подсказки помогают сделать следующий шаг",
-  "Прогресс показывает открытые материалы",
 ];
 
 export function HomePage() {
@@ -116,12 +110,12 @@ export function HomePage() {
             <p className={styles.eyebrow}>Для первого шага в C++</p>
             <h1 id="home-title">C++ становится понятнее, когда есть маршрут</h1>
             <p className={styles.lead}>
-              Uchicode ведёт от первого шага к задачам: короткое объяснение,
-              простой пример и практика в одном месте.
+              Сначала открой короткий урок: там есть объяснение, пример и задача.
+              Не нужно самому искать порядок в списке тем.
             </p>
             <div className={styles.heroActions}>
               <LinkButton href={toPath(appRoutes.baseCppCourse)} variant="primary">
-                Начать с нуля
+                Начать первый урок
               </LinkButton>
               <a className={styles.secondaryLink} href={toPath(appRoutes.tasks)}>
                 Посмотреть задачи
@@ -169,8 +163,8 @@ export function HomePage() {
 
         <section className={styles.section} aria-labelledby="first-lesson-title">
           <div className={styles.sectionIntro}>
-            <p className={styles.eyebrow}>Первый урок</p>
-            <h2 id="first-lesson-title">Один урок — один шаг</h2>
+            <p className={styles.eyebrow}>Что внутри урока</p>
+            <h2 id="first-lesson-title">Смысл, код и проверка рядом</h2>
           </div>
           <div className={styles.lessonList}>
             {firstLessonItems.map((item) => (
@@ -184,8 +178,8 @@ export function HomePage() {
 
         <section className={styles.section} aria-labelledby="next-title">
           <div className={styles.sectionIntro}>
-            <p className={styles.eyebrow}>Куда идти дальше</p>
-            <h2 id="next-title">Выбери подходящий вход</h2>
+            <p className={styles.eyebrow}>Выбери вход</p>
+            <h2 id="next-title">Откуда начать сейчас</h2>
           </div>
           <div className={styles.nextGrid}>
             {nextRoutes.map((route) => (
@@ -206,24 +200,11 @@ export function HomePage() {
               </a>
             ))}
           </div>
+          <p className={styles.statusLine}>
+            Сейчас открыто: <strong>{readySections} тем</strong> и{" "}
+            <strong>{availableTasks} задач</strong>. Остальные материалы добавляются по разделам.
+          </p>
         </section>
-
-        <section className={styles.supportSection} aria-labelledby="support-title">
-          <div className={styles.sectionIntro}>
-            <p className={styles.eyebrow}>Когда не получилось</p>
-            <h2 id="support-title">Помощь рядом с темой</h2>
-          </div>
-          <ul className={styles.supportList}>
-            {supportItems.map((item) => (
-              <li key={item}>{item}</li>
-            ))}
-          </ul>
-        </section>
-
-        <p className={styles.statusLine}>
-          Сейчас открыто: <strong>{readySections} тем</strong> и{" "}
-          <strong>{availableTasks} задач</strong>.
-        </p>
       </main>
     </div>
   );
