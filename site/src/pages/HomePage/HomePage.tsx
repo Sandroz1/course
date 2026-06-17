@@ -15,59 +15,59 @@ import styles from "./HomePage.module.scss";
 
 const routeSteps = [
   {
-    title: "Старт",
-    text: "первый урок",
+    title: "Открыть",
+    text: "базу C++",
   },
   {
-    title: "Тема",
-    text: "одна идея",
+    title: "Понять",
+    text: "одну тему",
   },
   {
-    title: "Пример",
-    text: "короткий код",
+    title: "Повторить",
+    text: "пример",
   },
   {
-    title: "Ошибка",
-    text: "рядом с темой",
+    title: "Проверить",
+    text: "ошибку",
   },
   {
-    title: "Задача",
-    text: "проверка",
+    title: "Решить",
+    text: "задачу",
   },
 ];
 
 const firstLessonItems = [
   {
-    title: "Сначала смысл",
-    text: "Коротко разбирается одна идея без длинной лекции.",
+    title: "Короткое объяснение",
+    text: "Сначала показано, зачем нужна тема и где она встречается в коде.",
   },
   {
-    title: "Потом код",
-    text: "Рядом есть пример, который можно повторить руками.",
+    title: "Маленький пример",
+    text: "Код можно набрать руками и сразу увидеть, что должна сделать программа.",
   },
   {
-    title: "Затем проверка",
-    text: "После объяснения открывается задача с понятным результатом.",
+    title: "Понятный результат",
+    text: "В задаче заранее написано, какой вывод или поведение нужно получить.",
   },
 ];
 
 const nextRoutes = [
   {
     title: "База C++",
-    text: "Начни здесь, если переменные, вывод и условия ещё путаются.",
-    action: "Открыть базу",
+    text: "Если переменные, вывод и условия ещё не стали привычными.",
+    action: "Начать базу",
     href: appRoutes.baseCppCourse,
   },
   {
     title: "ООП C++",
-    text: "Продолжай здесь, если уже писал простые программы и переходишь к классам.",
-    action: "Открыть ООП",
+    text: "Темы про классы и объекты после базового синтаксиса.",
+    action: "Открыть ООП C++",
     href: appRoutes.oopCppCourse,
   },
   {
     title: "Задачи",
-    text: "Открой практику, если тема уже понятна и нужен файл для решения.",
-    action: "Перейти к задачам",
+    text: "Если тема уже понятна и нужен конкретный файл для практики.",
+    action: "Открыть задачи",
     href: appRoutes.tasks,
   },
 ];
@@ -107,27 +107,27 @@ export function HomePage() {
       <main className={styles.main}>
         <section className={styles.hero} aria-labelledby="home-title">
           <div className={styles.heroText}>
-            <p className={styles.eyebrow}>Для первого шага в C++</p>
-            <h1 id="home-title">C++ становится понятнее, когда есть маршрут</h1>
+            <p className={styles.eyebrow}>Учебник с практикой</p>
+            <h1 id="home-title">Начни C++ с понятного первого шага</h1>
             <p className={styles.lead}>
-              Сначала открой короткий урок: там есть объяснение, пример и задача.
-              Не нужно самому искать порядок в списке тем.
+              Uchicode даёт короткие темы и задачи с понятным результатом.
+              Если ты только начинаешь, открой базу C++ и двигайся по порядку.
             </p>
             <div className={styles.heroActions}>
               <LinkButton href={toPath(appRoutes.baseCppCourse)} variant="primary">
-                Начать первый урок
+                Начать с базы C++
               </LinkButton>
               <a className={styles.secondaryLink} href={toPath(appRoutes.tasks)}>
-                Посмотреть задачи
+                Открыть каталог задач
               </a>
             </div>
           </div>
 
           <section className={styles.mapCard} aria-labelledby="route-map-title">
             <div className={styles.mapHeader}>
-              <p className={styles.eyebrow}>Первый маршрут</p>
-              <h2 id="route-map-title">Сначала понятно, что делать</h2>
-              <p>Путь короткий: открыть урок, разобрать пример и закрепить его задачей.</p>
+              <p className={styles.eyebrow}>Карта первого маршрута</p>
+              <h2 id="route-map-title">Пять шагов до первой задачи</h2>
+              <p>Карта показывает порядок, чтобы не выбирать тему вслепую.</p>
             </div>
 
             <div className={styles.routePath}>
@@ -154,17 +154,17 @@ export function HomePage() {
             </div>
 
             <article className={styles.activeStep}>
-              <span>Активный шаг</span>
-              <h3>Открой короткий урок</h3>
-              <p>Разбери одну идею и повтори простой пример руками.</p>
+              <span>Шаг 1</span>
+              <h3>Открой базу C++</h3>
+              <p>Начни с темы про минимальную программу: там видно, какой файл открыть и что запустить.</p>
             </article>
           </section>
         </section>
 
         <section className={styles.section} aria-labelledby="first-lesson-title">
           <div className={styles.sectionIntro}>
-            <p className={styles.eyebrow}>Что внутри урока</p>
-            <h2 id="first-lesson-title">Смысл, код и проверка рядом</h2>
+            <p className={styles.eyebrow}>Формат урока</p>
+            <h2 id="first-lesson-title">Внутри темы нет лишних блоков</h2>
           </div>
           <div className={styles.lessonList}>
             {firstLessonItems.map((item) => (
@@ -179,7 +179,7 @@ export function HomePage() {
         <section className={styles.section} aria-labelledby="next-title">
           <div className={styles.sectionIntro}>
             <p className={styles.eyebrow}>Выбери вход</p>
-            <h2 id="next-title">Откуда начать сейчас</h2>
+            <h2 id="next-title">Куда перейти после главной</h2>
           </div>
           <div className={styles.nextGrid}>
             {nextRoutes.map((route) => (
@@ -201,8 +201,8 @@ export function HomePage() {
             ))}
           </div>
           <p className={styles.statusLine}>
-            Сейчас открыто: <strong>{readySections} тем</strong> и{" "}
-            <strong>{availableTasks} задач</strong>. Остальные материалы добавляются по разделам.
+            Доступно сейчас: <strong>{readySections} тем</strong> и{" "}
+            <strong>{availableTasks} задач</strong>. Новые темы добавляются по порядку.
           </p>
         </section>
       </main>

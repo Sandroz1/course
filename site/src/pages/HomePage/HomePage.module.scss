@@ -186,9 +186,11 @@
 }
 
 .secondaryLink {
-  border: 1px solid var(--border-subtle);
-  background: color-mix(in srgb, var(--surface) 78%, transparent);
-  padding: 0.7rem 0.95rem;
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  color: var(--muted);
+  padding: 0.42rem 0.2rem;
 }
 
 .mapCard,
@@ -625,6 +627,11 @@
 
   .heroActions a {
     width: 100%;
+  }
+
+  .heroActions .secondaryLink {
+    justify-content: center;
+    width: fit-content;
   }
 
   .activeStep {
