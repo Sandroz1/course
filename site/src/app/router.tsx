@@ -9,6 +9,7 @@ import { CoursesPage } from "../pages/CoursesPage";
 import { GuidePage } from "../pages/GuidePage";
 import { HomePage } from "../pages/HomePage";
 import { LoginPage } from "../pages/LoginPage";
+import { NotFoundPage } from "../pages/NotFoundPage";
 import { ProfilePage } from "../pages/ProfilePage";
 import { RegisterPage } from "../pages/RegisterPage";
 import { TaskDetailsPage } from "../pages/TaskDetailsPage";
@@ -56,5 +57,5 @@ export function renderRoute(path: string) {
   }
   if (path === appRoutes.guide) return <GuidePage />;
   if (path === appRoutes.commonErrors) return <CommonErrorsPage />;
-  return <HomePage />;
+  return <NotFoundPage />;
 }

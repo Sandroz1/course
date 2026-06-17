@@ -29,6 +29,8 @@ Project: Uchicode.
 - For requests like "доработай", "обработай" or "доведи до ума", do a self-review before commit: remove repetition, weak copy, empty promises, chaotic CSS/TSX and UX regressions.
 - Incomplete course chapters are acceptable content state. They do not justify lowering the quality of architecture, navigation, typography, layout, clickable states or stable pages.
 - Do not make a new area worse than already stable parts of the project.
+- For safe-pass work, keep the scope explicit: fix the named surface, verify it, and do not fold in unrelated UI cleanup.
+- Old rejected HomePage redesign branches are reference-only. Do not merge or cherry-pick large HomePage commits blindly.
 
 ## Repository Areas
 
