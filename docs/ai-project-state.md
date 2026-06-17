@@ -23,6 +23,7 @@
 - `/` — публичная HomePage без `AppLayout`.
 - На `/` не должно быть sidebar, app topbar, global search и AI assistant.
 - Остальные routes остаются внутри app-shell: `/courses`, `/courses/base-cpp`, `/courses/oop-cpp`, `/tasks`, `/guide`, `/common-errors`, auth/profile/course/task pages.
+- Unknown routes показывают app-shell fallback `NotFoundPage`, а не public HomePage.
 - ООП C++ разделы 0-10 закрыты без пробела.
 - Не готовы: 11 "Инкапсуляция", 12 "Исключения".
 - Будущие части 9.2, 10.1, 10.2 уже существуют, но продолжать их нельзя, пока не закрыты 11-12.

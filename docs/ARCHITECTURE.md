@@ -41,6 +41,7 @@
 
 - `/` остаётся public HomePage без `AppLayout`.
 - App-shell начинается на рабочих routes: `/courses`, `/tasks`, `/guide`, `/common-errors`, auth/profile/course/task pages.
+- Unknown routes показывают компактный fallback `NotFoundPage` внутри app-shell, а не public HomePage.
 - `BrandLogo` общий для public и app-shell, но ссылка логотипа может отличаться по контексту.
 - Не возвращать `/` в app-shell ради sidebar, search или AI assistant.
 
