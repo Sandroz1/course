@@ -16,7 +16,8 @@
 ## Current Status
 
 - Текущая рабочая ветка: `codex/homepage-clarity-cta-pass`.
-- Последний локальный commit: `26038d0 Update project stabilization docs`.
+- Release line содержит актуальные stabilization docs commits: `26038d0 Update project stabilization docs` и `4259a22 Clarify release documentation freshness`.
+- Перед merge/deploy фактический HEAD проверять через `git log`; не считать эту строку единственным источником истины.
 - Последний HomePage implementation commit: `8486698 Polish homepage clarity and CTA hierarchy`.
 - Последний production deploy/main baseline: `fd9ef74 Merge public homepage stabilization`.
 - `/` — публичная HomePage без `AppLayout`.
@@ -39,6 +40,7 @@
 ## Recent Important Commits
 
 - `8486698` - `Polish homepage clarity and CTA hierarchy`.
+- `4259a22` - `Clarify release documentation freshness`.
 - `26038d0` - `Update project stabilization docs`.
 - `fd9ef74` - `Merge public homepage stabilization`.
 - `255bbcb` - `Polish homepage clarity and CTA hierarchy`.
