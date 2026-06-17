@@ -634,6 +634,63 @@
     width: fit-content;
   }
 
+  .routePath {
+    padding: 0.3rem 0 0;
+  }
+
+  .routePath::before {
+    content: "";
+    position: absolute;
+    inset: 0.55rem auto 0.7rem 1rem;
+    width: 0.16rem;
+    border-radius: 999px;
+    background: linear-gradient(
+      180deg,
+      var(--accent),
+      color-mix(in srgb, var(--accent) 18%, transparent)
+    );
+    opacity: 0.34;
+    pointer-events: none;
+  }
+
+  .routeLine {
+    display: none;
+  }
+
+  .routeLine path {
+    display: none;
+  }
+
+  .routeStations {
+    grid-template-columns: 1fr;
+    gap: 0.45rem;
+  }
+
+  .routeStations li {
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.1rem 0.7rem;
+    justify-items: start;
+    text-align: left;
+  }
+
+  .routeStations span {
+    grid-row: span 2;
+    width: 2rem;
+    height: 2rem;
+    box-shadow: 0 0 0 0.22rem color-mix(in srgb, var(--surface) 72%, transparent);
+  }
+
+  .routeStations strong {
+    align-self: end;
+    font-size: 0.9rem;
+  }
+
+  .routeStations small {
+    display: block;
+    font-size: 0.78rem;
+    line-height: 1.25;
+  }
+
   .activeStep {
     grid-template-columns: 1fr;
   }
