@@ -158,6 +158,11 @@
 }
 
 :root {
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-control: 600;
+  --font-weight-heading: 650;
+  --font-weight-display: 700;
   --surface-muted: color-mix(in srgb, var(--surface-2) 70%, transparent);
   --surface-subtle: color-mix(in srgb, var(--surface-2) 35%, transparent);
   --border-muted: color-mix(in srgb, var(--line) 64%, transparent);

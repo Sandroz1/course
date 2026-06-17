@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { AppLayout } from "../components/layout/AppLayout";
 import { currentPath } from "../utils/slug";
+import { appRoutes } from "./routes";
 import { renderRoute } from "./router";
 
 export default function App() {
@@ -43,6 +44,10 @@ export default function App() {
     window.addEventListener("hashchange", onHashChange);
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
+
+  if (path === appRoutes.home) {
+    return renderRoute(path);
+  }
 
   return <AppLayout>{renderRoute(path)}</AppLayout>;
 }

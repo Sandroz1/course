@@ -1,0 +1,42 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--brand-logo-gap, 0.55rem);
+  min-width: 0;
+  color: var(--text);
+  font-size: var(--brand-logo-font-size, 1.1rem);
+  font-weight: var(--font-weight-heading, 650);
+  line-height: 1;
+  text-decoration: none;
+}
+
+.mark {
+  display: block;
+  flex: 0 0 auto;
+  width: var(--brand-logo-icon-size, 2rem);
+  height: var(--brand-logo-icon-size, 2rem);
+  border-radius: var(--brand-logo-icon-radius, 0.55rem);
+  object-fit: contain;
+  object-position: center;
+}
+
+.text {
+  display: inline-flex;
+  align-items: baseline;
+  min-width: 0;
+  overflow: hidden;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.textLead {
+  color: color-mix(in srgb, var(--accent) 42%, var(--text) 58%);
+}
+
+.textAccent {
+  color: var(--accent);
+}
+
+.textDomain {
+  color: var(--muted);
+}
