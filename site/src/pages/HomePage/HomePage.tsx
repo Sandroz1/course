@@ -73,7 +73,7 @@ const nextRoutes = [
 ];
 
 export function HomePage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
   const readySections =
     getCourseSections("base-cpp").filter(isCourseSectionReady).length +
     getCourseSections("oop-cpp").filter(isCourseSectionReady).length;
@@ -95,12 +95,18 @@ export function HomePage() {
 
         <div className={styles.headerActions}>
           <ThemeSwitcher />
-          <a
-            className={styles.loginLink}
-            href={toPath(isAuthenticated ? appRoutes.profile : appRoutes.login)}
-          >
-            {isAuthenticated ? "Профиль" : "Войти"}
-          </a>
+          <span className={styles.authSlot}>
+            {isLoading ? (
+              <span className={styles.authPlaceholder} aria-hidden="true" />
+            ) : (
+              <a
+                className={styles.loginLink}
+                href={toPath(isAuthenticated ? appRoutes.profile : appRoutes.login)}
+              >
+                {isAuthenticated ? "Профиль" : "Войти"}
+              </a>
+            )}
+          </span>
         </div>
       </header>
 
