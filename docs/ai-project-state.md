@@ -17,7 +17,7 @@
 
 - Production deployed app hash: `698eb0e Merge code block readability hotfix`.
 - Latest deployed main hash before this docs-only state update: `698eb0e Merge code block readability hotfix`.
-- Latest docs/state commit: `9ded2da Update project state after code block hotfix` (docs-only; no production redeploy required).
+- Latest docs/state commit: latest docs-only post-deploy state update on `main` (no production redeploy required).
 - Production deploy после P2 frontend fixes прошёл успешно.
 - CodeBlock readability hotfix задеплоен.
 - Главная `/` стабилизирована и задеплоена.
@@ -91,7 +91,7 @@ Next planned work: project structure/code cleanliness audit before section 11.
 ## Checks Snapshot
 
 - Last production deployed app hash: `698eb0e`.
-- Latest docs-only state on `main`: `9ded2da Update project state after code block hotfix`.
+- Latest docs-only state on `main`: latest docs-only post-deploy state update after CodeBlock hotfix.
 - Last frontend checks for CodeBlock hotfix passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Production smoke passed for `nginx-health`, `api/health`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
 - Browser QA covered CodeBlock pages locally and on production in desktop/mobile, dark/deep-dark; no horizontal overflow found.
