@@ -3,6 +3,7 @@ import { getCourseSections, isCourseSectionReady } from "../../../data/courseSec
 import { courses, type Course } from "../../../data/courses";
 import { BrandLogo } from "../../shared/BrandLogo";
 import clsx from "clsx";
+import { appRoutes, routePrefixes } from "../../../app/routes";
 import { currentPath, toPath } from "../../../utils/slug";
 import styles from "./Sidebar.module.scss";
 
@@ -42,6 +43,23 @@ function isCourseActive(path: string, course: Course) {
   if (path === course.path || path.startsWith(`${course.path}/`)) return true;
 
   return course.id === "oop-cpp" && (path === "/course" || path.startsWith("/course/"));
+}
+
+function getAppLogoHref(path: string) {
+  if (path === appRoutes.baseCppCourse || path.startsWith(routePrefixes.baseCppSection)) {
+    return appRoutes.baseCppCourse;
+  }
+
+  if (
+    path === appRoutes.oopCppCourse ||
+    path.startsWith(routePrefixes.oopCppSection) ||
+    path === appRoutes.oopCppCourseAlias ||
+    path.startsWith(routePrefixes.oopCppSectionAlias)
+  ) {
+    return appRoutes.oopCppCourse;
+  }
+
+  return appRoutes.courses;
 }
 
 function getSidebarCourses() {
@@ -245,6 +263,7 @@ export function Sidebar({
   onToggleCollapse,
 }: SidebarProps) {
   const path = currentPath();
+  const appLogoHref = getAppLogoHref(path);
   const sidebarCourses = getSidebarCourses();
 
   function handleNavigate() {
@@ -269,8 +288,8 @@ export function Sidebar({
       <div className={styles.header}>
         <BrandLogo
           className={styles.brand}
-          href={toPath("/")}
-          ariaLabel="Uchicode — на главную"
+          href={toPath(appLogoHref)}
+          ariaLabel="Uchicode — к учебной зоне"
           markClassName={styles.brandMark}
           onClick={handleNavigate}
         />
