@@ -89,6 +89,11 @@
 - Disabled выглядит недоступным, но текст остаётся читаемым.
 - Active state может быть спокойным затемнением, без сдвига layout.
 
+## Header and navigation
+
+- После любых UI-изменений в header/navigation проверять refresh layout shift, стабильность `ThemeSwitcher` и auth action, размеры `Войти`/`Профиль`, hover/focus/active, click destinations, desktop/mobile и light/dark/deep-dark.
+- Правая группа header должна сохранять ровный layout: кнопки и селект темы занимают согласованные слоты, а hover/focus не меняют размер, padding или позицию.
+
 ## Home page
 
 - HomePage для `/` — публичная главная без рабочего app-shell: без sidebar, search, topbar и AI assistant.
