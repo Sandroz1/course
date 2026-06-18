@@ -15,12 +15,10 @@
 
 ## Current Production State
 
-- Production deployed app hash: `1cd2cc5 Merge header and homepage typography hotfix`.
-- Latest project-state docs commit: `Update project state after header hotfix deploy` on `main`.
-- The docs-only commit does not require a production redeploy.
-- Current P2 frontend fixes are complete on branch `fix/frontend-audit-p2` at `aa5ca59 Fix frontend audit P2 issues`, pending merge and production deploy.
-- After the P2 deploy, update `production deployed app hash` separately from `latest docs/state commit`.
-- Production deploy после HomePage/header hotfix прошёл успешно.
+- Production deployed app hash: `ec347d8 Merge frontend audit P2 fixes`.
+- Current main hash: `ec347d8`.
+- Latest docs/state commit: `Update project state after P2 deploy` on `main` (docs-only; no production redeploy required).
+- Production deploy после P2 frontend fixes прошёл успешно.
 - Главная `/` стабилизирована и задеплоена.
 - `/` остаётся public HomePage без `AppLayout`, sidebar, search, app topbar и AI assistant.
 - App routes остаются внутри `AppLayout`: `/courses`, `/courses/base-cpp`, `/courses/oop-cpp`, `/tasks`, `/guide`, `/common-errors`, auth/profile/course/task pages.
@@ -42,6 +40,7 @@
 - Header/auth shift исправлен: `ThemeSwitcher` и auth action не прыгают при refresh.
 - HomePage typography, hover/focus и CTA стали мягче и стабильнее.
 - App-shell logo destination исправлен: public logo ведёт на `/`; app-shell logo остаётся в учебной зоне; course pages ведут к course root или `/courses`.
+- P2 frontend fixes deployed: course cards click as full cards, `task5-2-worker` is linked from `delegating-constructors`, AI assistant typography and Profile typography are lighter.
 
 ## Header Quality Bar
 
@@ -56,6 +55,9 @@
 ## Recent Important Commits
 
 - `1cd2cc5` - `Merge header and homepage typography hotfix`.
+- `ec347d8` - `Merge frontend audit P2 fixes`.
+- `e383342` - `Document Codex state update workflow`.
+- `aa5ca59` - `Fix frontend audit P2 issues`.
 - `e882030` - `Fix header auth shift and homepage typography`.
 - `d103c83` - `Merge main page visual hotfix`.
 - `698211b` - `Fix main page visual regressions`.
@@ -68,31 +70,27 @@
 
 ## Next Stage
 
-Current next stage: merge and deploy `fix/frontend-audit-p2` after checks.
-
-After the P2 deploy, the next planned work is either section 11 "Инкапсуляция" or a dedicated decision pass for `codex/app-logo-course-start`, if that branch must be resolved first.
+Next planned work: section 11 "Инкапсуляция", unless `codex/app-logo-course-start` must be resolved first as a dedicated branch-decision task.
 
 ## Backlog After Audit
 
-1. Deploy P2 frontend fixes from `fix/frontend-audit-p2`.
-2. Решить судьбу `codex/app-logo-course-start`: merge, cherry-pick точечной идеи или discard.
-3. Complete OOP section 11 "Инкапсуляция".
-4. Complete OOP section 12 "Исключения".
-5. Audit OOP sections 0-12 readiness.
+1. Complete OOP section 11 "Инкапсуляция".
+2. Complete OOP section 12 "Исключения".
+3. Решить судьбу `codex/app-logo-course-start`: merge, cherry-pick точечной идеи или discard.
+4. Audit OOP sections 0-12 readiness.
 
 ## Checks Snapshot
 
-- Last production deployed app hash: `1cd2cc5`.
-- Latest docs-only state on `main`: `Update project state after header hotfix deploy`.
-- Last frontend checks for the header/HomePage hotfix passed: `npm run typecheck`, `npm run lint`, `npm run build`.
-- Production smoke passed for `/`, app routes, health checks and unknown route fallback.
-- Browser QA covered public `/`, mobile around 390px, header refresh stability, app-shell logo destinations, horizontal overflow and console errors.
+- Last production deployed app hash: `ec347d8`.
+- Latest docs-only state on `main`: `Update project state after P2 deploy`.
+- Last frontend checks for P2 deploy passed: `npm run typecheck`, `npm run lint`, `npm run build`.
+- Production smoke passed for `/`, `/courses`, `/tasks`, `/login`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker` and health checks.
+- Browser QA covered `/courses`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker`, AI assistant and profile/login redirect; no console errors or horizontal overflow.
 - Vite chunk-size warning is known and is not a build failure.
 - Docs-only changes should run only repository checks unless code changes accidentally appear.
 
 ## Known Issues
 
-- P2 frontend fixes are not on production until `fix/frontend-audit-p2` is merged and deployed.
 - `docs/course-content-plan.md` may contain old wording for early sections 6-7; update only in a dedicated course-plan pass.
 - База C++ sections 0-4 remain `needs-theory`; CoursePage shows placeholder pages for them.
 - If real production secrets were pushed or shared before the security pass, manual rotation and history cleanup are still required.
