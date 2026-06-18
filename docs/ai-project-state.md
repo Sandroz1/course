@@ -16,7 +16,7 @@
 ## Current Production State
 
 - Production deployed app hash: `ec347d8 Merge frontend audit P2 fixes`.
-- Current main hash: `ec347d8`.
+- Current main state: contains production app commit `ec347d8` plus docs-only state commits. Use `git rev-parse --short HEAD` for the exact current `main` hash.
 - Latest docs/state commit: `Update project state after P2 deploy` on `main` (docs-only; no production redeploy required).
 - Production deploy после P2 frontend fixes прошёл успешно.
 - Главная `/` стабилизирована и задеплоена.
