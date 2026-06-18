@@ -271,7 +271,7 @@ const oopCourseSections: Array<Omit<CourseSection, "courseId">> = [
     topics: ["delegating constructor", "constructor", "initializer list", "Worker"],
     status: "available",
     content: delegatingConstructorsContent,
-    relatedTaskIds: ["10-delegation-01-worker-constructors", "10-delegation-02-worker-menu"],
+    relatedTaskIds: ["10-delegation-01-worker-constructors", "10-delegation-02-worker-menu", "task5-2-worker"],
   },
   {
     slug: "unary-operator-overloading",

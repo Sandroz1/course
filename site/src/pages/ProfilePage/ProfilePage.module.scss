@@ -23,7 +23,7 @@
 .eyebrow {
   color: var(--accent);
   font-size: 0.75rem;
-  font-weight: 800;
+  font-weight: 650;
   text-transform: uppercase;
 }
 
@@ -101,7 +101,7 @@
 .label {
   color: var(--text);
   font-size: 0.875rem;
-  font-weight: 750;
+  font-weight: 600;
 }
 
 .input {
@@ -196,7 +196,7 @@
   border-right: 1px solid var(--line);
   background: color-mix(in srgb, var(--surface-3) 64%, transparent);
   color: var(--text);
-  font-weight: 750;
+  font-weight: 600;
   padding-inline: 0.75rem 0.625rem;
 }
 
@@ -229,7 +229,7 @@
   border-radius: 999px;
   background: var(--surface-2);
   font-size: 0.75rem;
-  font-weight: 750;
+  font-weight: 600;
   line-height: 1;
   padding: 0.3125rem 0.5625rem;
   white-space: nowrap;
@@ -392,7 +392,7 @@
 .aiLimit > span {
   color: var(--text);
   font-size: 0.875rem;
-  font-weight: 750;
+  font-weight: 600;
 }
 
 .aiLimit > div {
@@ -423,7 +423,7 @@
   cursor: pointer;
   font: inherit;
   font-size: 0.875rem;
-  font-weight: 750;
+  font-weight: 600;
   padding: 0.5rem 0.6875rem;
 }
 

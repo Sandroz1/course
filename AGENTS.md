@@ -15,12 +15,19 @@ Project: Uchicode.
 
 - Work narrowly. Prefer small safe changes over broad refactors.
 - Read the relevant files before editing.
+- Before a task, read `AGENTS.md`, `docs/ai-project-state.md` and the task-specific docs, then verify them against `git status`, `git log`, the current branch and the actual code state.
 - Preserve existing behavior unless the task explicitly asks to change it.
 - Do not invent files, endpoints, commands or project behavior.
 - Do not add dependencies unless the task truly requires it.
 - Do not push, create tags, connect to VPS or deploy unless explicitly requested.
 - Do not expose secrets, tokens, passwords or private data.
 - Doing nothing is acceptable when the requested issue is already fixed.
+
+## Documentation Freshness
+
+- Treat docs as required context, not as the only source of truth. If docs conflict with the current git branch, commits, production state or code, record the mismatch and update docs or clearly report that they are stale.
+- When a task changes production state, routing, deploy status, backlog, UI quality bar, architecture or an important workflow, update the matching `.md` file in the same pass unless the user explicitly asks for code-only work.
+- Keep deployment state labels precise: use `production deployed app hash`, `latest docs/state commit` and `current main hash`. Do not write `production/main hash` when those values differ.
 
 ## Quality Bar
 
