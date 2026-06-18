@@ -32,12 +32,25 @@ Project: Uchicode.
 ## Quality Bar
 
 - Uchicode is a coherent learning product, not a set of generated pages.
+- Uchicode is a production/business project. Do not treat it as a pet project and do not accept "it works" as the quality bar.
+- Simplicity is acceptable only when it makes the code more reliable, clearer and cheaper to maintain.
+- Do not do chaotic refactors or rename files/folders for taste. Structural changes need a practical reason: less duplication, clearer ownership, easier extension, lower risk for routes/data/content or better fit with the current architecture.
 - A task is done only when the result is stable, logical, usable, visually clean and does not look like random AI output.
 - For requests like "доработай", "обработай" or "доведи до ума", do a self-review before commit: remove repetition, weak copy, empty promises, chaotic CSS/TSX and UX regressions.
 - Incomplete course chapters are acceptable content state. They do not justify lowering the quality of architecture, navigation, typography, layout, clickable states or stable pages.
 - Do not make a new area worse than already stable parts of the project.
 - For safe-pass work, keep the scope explicit: fix the named surface, verify it, and do not fold in unrelated UI cleanup.
 - Old rejected HomePage redesign branches are reference-only. Do not merge or cherry-pick large HomePage commits blindly.
+
+## Engineering Rules
+
+- React/TypeScript components must have clear responsibility.
+- Keep state minimal and do not duplicate values that can be derived safely.
+- Keep props and types explicit where they protect behavior or make ownership clearer.
+- Do not scatter routes, ids and slugs as magic strings when a current route/data helper already exists.
+- Use shared components only when they reduce real duplication or protect an established UI contract.
+- Comments are useful when they explain a non-obvious business rule, an architecture decision, a fragile route/data link or why a solution is intentionally shaped a certain way.
+- Do not add comments that restate obvious code. If a comment is needed only because the code is chaotic, first consider making the code clearer.
 
 ## Repository Areas
 

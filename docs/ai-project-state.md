@@ -16,8 +16,8 @@
 ## Current Production State
 
 - Production deployed app hash: `ec347d8 Merge frontend audit P2 fixes`.
-- Current main state: contains production app commit `ec347d8` plus docs-only state commits. Use `git rev-parse --short HEAD` for the exact current `main` hash.
-- Latest docs/state commit: `Update project state after P2 deploy` on `main` (docs-only; no production redeploy required).
+- Latest pushed main/origin main before this docs-only rules update: `a23b30e Clarify post-deploy state labels`.
+- This docs-only rules update does not require a production redeploy.
 - Production deploy после P2 frontend fixes прошёл успешно.
 - Главная `/` стабилизирована и задеплоена.
 - `/` остаётся public HomePage без `AppLayout`, sidebar, search, app topbar и AI assistant.
@@ -41,6 +41,8 @@
 - HomePage typography, hover/focus и CTA стали мягче и стабильнее.
 - App-shell logo destination исправлен: public logo ведёт на `/`; app-shell logo остаётся в учебной зоне; course pages ведут к course root или `/courses`.
 - P2 frontend fixes deployed: course cards click as full cards, `task5-2-worker` is linked from `delegating-constructors`, AI assistant typography and Profile typography are lighter.
+- Codex docs workflow added: before state-changing work, verify docs against git status/log/current branch/code state and update docs when production/backlog/architecture/workflow state changes.
+- `codex/app-logo-course-start` закрыта как obsolete: local branch удалена, remote branch отсутствует, `main` сохраняет актуальную `getAppLogoHref`-логику.
 
 ## Header Quality Bar
 
@@ -56,6 +58,8 @@
 
 - `1cd2cc5` - `Merge header and homepage typography hotfix`.
 - `ec347d8` - `Merge frontend audit P2 fixes`.
+- `a23b30e` - `Clarify post-deploy state labels`.
+- `442cc74` - `Update project state after P2 deploy`.
 - `e383342` - `Document Codex state update workflow`.
 - `aa5ca59` - `Fix frontend audit P2 issues`.
 - `e882030` - `Fix header auth shift and homepage typography`.
@@ -70,19 +74,20 @@
 
 ## Next Stage
 
-Next planned work: section 11 "Инкапсуляция", unless `codex/app-logo-course-start` must be resolved first as a dedicated branch-decision task.
+Next planned work: CodeBlock readability hotfix before section 11. After that, run a project structure/code cleanliness audit and decide whether section 11 can start.
 
 ## Backlog After Audit
 
-1. Complete OOP section 11 "Инкапсуляция".
-2. Complete OOP section 12 "Исключения".
-3. Решить судьбу `codex/app-logo-course-start`: merge, cherry-pick точечной идеи или discard.
-4. Audit OOP sections 0-12 readiness.
+1. CodeBlock readability hotfix.
+2. Project structure/code cleanliness audit.
+3. Complete OOP section 11 "Инкапсуляция".
+4. Complete OOP section 12 "Исключения".
+5. Audit OOP sections 0-12 readiness.
 
 ## Checks Snapshot
 
 - Last production deployed app hash: `ec347d8`.
-- Latest docs-only state on `main`: `Update project state after P2 deploy`.
+- Latest pushed docs-only state before this rules update: `a23b30e Clarify post-deploy state labels`.
 - Last frontend checks for P2 deploy passed: `npm run typecheck`, `npm run lint`, `npm run build`.
 - Production smoke passed for `/`, `/courses`, `/tasks`, `/login`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker` and health checks.
 - Browser QA covered `/courses`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker`, AI assistant and profile/login redirect; no console errors or horizontal overflow.
@@ -99,7 +104,7 @@ Next planned work: section 11 "Инкапсуляция", unless `codex/app-logo
 ## Do Not Do Now
 
 - Do not push or deploy unless explicitly requested.
-- Do not continue section 11 before the frontend/code audit.
+- Do not continue section 11 before the CodeBlock readability hotfix and project structure/code cleanliness audit decision.
 - Do not continue 9.2, 10.1, 10.2 before 11-12 are closed.
 - Do not add section 12 before section 11.
 - Do not mix content work with Docker/nginx/security changes.
