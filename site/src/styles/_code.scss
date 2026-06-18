@@ -83,14 +83,14 @@
   white-space: pre;
 }
 
-pre:not(.code-block__pre) {
+pre:not(.code-block__pre):not(.shiki) {
   margin: 0;
   overflow: auto;
   padding: 1rem;
   scrollbar-color: var(--line) transparent;
 }
 
-pre:not(.code-block__pre) code {
+pre:not(.code-block__pre):not(.shiki) code {
   color: var(--code-text);
   font-size: 0.875rem;
   line-height: 1.55;
