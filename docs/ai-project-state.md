@@ -18,6 +18,8 @@
 - Production deployed app hash: `1cd2cc5 Merge header and homepage typography hotfix`.
 - Latest project-state docs commit: `Update project state after header hotfix deploy` on `main`.
 - The docs-only commit does not require a production redeploy.
+- Current P2 frontend fixes are complete on branch `fix/frontend-audit-p2` at `aa5ca59 Fix frontend audit P2 issues`, pending merge and production deploy.
+- After the P2 deploy, update `production deployed app hash` separately from `latest docs/state commit`.
 - Production deploy после HomePage/header hotfix прошёл успешно.
 - Главная `/` стабилизирована и задеплоена.
 - `/` остаётся public HomePage без `AppLayout`, sidebar, search, app topbar и AI assistant.
@@ -66,19 +68,17 @@
 
 ## Next Stage
 
-Следующий этап: полный frontend/code audit без изменений.
+Current next stage: merge and deploy `fix/frontend-audit-p2` after checks.
 
-Цель аудита: проверить стабильность frontend после HomePage/header stabilization, найти оставшиеся UX/code risks и не смешивать диагностику с feature-правками.
+After the P2 deploy, the next planned work is either section 11 "Инкапсуляция" or a dedicated decision pass for `codex/app-logo-course-start`, if that branch must be resolved first.
 
 ## Backlog After Audit
 
-1. Course card clickability consistency.
-2. AI assistant typography pass.
-3. Auth/Profile typography pass.
-4. Решить судьбу `codex/app-logo-course-start`: merge, cherry-pick точечной идеи или discard.
-5. Complete OOP section 11 "Инкапсуляция".
-6. Complete OOP section 12 "Исключения".
-7. Audit OOP sections 0-12 readiness.
+1. Deploy P2 frontend fixes from `fix/frontend-audit-p2`.
+2. Решить судьбу `codex/app-logo-course-start`: merge, cherry-pick точечной идеи или discard.
+3. Complete OOP section 11 "Инкапсуляция".
+4. Complete OOP section 12 "Исключения".
+5. Audit OOP sections 0-12 readiness.
 
 ## Checks Snapshot
 
@@ -92,9 +92,7 @@
 
 ## Known Issues
 
-- Course card clickability consistency still needs a dedicated pass.
-- AI assistant typography still needs a dedicated pass.
-- Auth/Profile typography still needs a dedicated pass.
+- P2 frontend fixes are not on production until `fix/frontend-audit-p2` is merged and deployed.
 - `docs/course-content-plan.md` may contain old wording for early sections 6-7; update only in a dedicated course-plan pass.
 - База C++ sections 0-4 remain `needs-theory`; CoursePage shows placeholder pages for them.
 - If real production secrets were pushed or shared before the security pass, manual rotation and history cleanup are still required.
