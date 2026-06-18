@@ -15,10 +15,11 @@
 
 ## Current Production State
 
-- Production deployed app hash: `ec347d8 Merge frontend audit P2 fixes`.
-- Latest pushed main/origin main before this docs-only rules update: `a23b30e Clarify post-deploy state labels`.
-- This docs-only rules update does not require a production redeploy.
+- Production deployed app hash: `698eb0e Merge code block readability hotfix`.
+- Latest deployed main hash before this docs-only state update: `698eb0e Merge code block readability hotfix`.
+- Latest docs/state commit: `9ded2da Update project state after code block hotfix` (docs-only; no production redeploy required).
 - Production deploy после P2 frontend fixes прошёл успешно.
+- CodeBlock readability hotfix задеплоен.
 - Главная `/` стабилизирована и задеплоена.
 - `/` остаётся public HomePage без `AppLayout`, sidebar, search, app topbar и AI assistant.
 - App routes остаются внутри `AppLayout`: `/courses`, `/courses/base-cpp`, `/courses/oop-cpp`, `/tasks`, `/guide`, `/common-errors`, auth/profile/course/task pages.
@@ -43,6 +44,7 @@
 - P2 frontend fixes deployed: course cards click as full cards, `task5-2-worker` is linked from `delegating-constructors`, AI assistant typography and Profile typography are lighter.
 - Codex docs workflow added: before state-changing work, verify docs against git status/log/current branch/code state and update docs when production/backlog/architecture/workflow state changes.
 - `codex/app-logo-course-start` закрыта как obsolete: local branch удалена, remote branch отсутствует, `main` сохраняет актуальную `getAppLogoHref`-логику.
+- CodeBlock readability/top actions hotfix deployed: code text contrast is stronger, CodeBlock owns its font sizing on theory/task pages, copy action is compact and selection AI popover no longer looks like a large unrelated pill.
 
 ## Header Quality Bar
 
@@ -56,6 +58,9 @@
 
 ## Recent Important Commits
 
+- `698eb0e` - `Merge code block readability hotfix`.
+- `0df4f61` - `Fix code block readability`.
+- `5d6d7f5` - `Update project quality rules`.
 - `1cd2cc5` - `Merge header and homepage typography hotfix`.
 - `ec347d8` - `Merge frontend audit P2 fixes`.
 - `a23b30e` - `Clarify post-deploy state labels`.
@@ -74,20 +79,22 @@
 
 ## Next Stage
 
-Next planned work: CodeBlock readability hotfix before section 11. After that, run a project structure/code cleanliness audit and decide whether section 11 can start.
+Next planned work: project structure/code cleanliness audit before section 11.
 
 ## Backlog After Audit
 
-1. CodeBlock readability hotfix.
-2. Project structure/code cleanliness audit.
-3. Complete OOP section 11 "Инкапсуляция".
-4. Complete OOP section 12 "Исключения".
-5. Audit OOP sections 0-12 readiness.
+1. Project structure/code cleanliness audit.
+2. Complete OOP section 11 "Инкапсуляция".
+3. Complete OOP section 12 "Исключения".
+4. Audit OOP sections 0-12 readiness.
 
 ## Checks Snapshot
 
-- Last production deployed app hash: `ec347d8`.
-- Latest pushed docs-only state before this rules update: `a23b30e Clarify post-deploy state labels`.
+- Last production deployed app hash: `698eb0e`.
+- Latest docs-only state on `main`: `9ded2da Update project state after code block hotfix`.
+- Last frontend checks for CodeBlock hotfix passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
+- Production smoke passed for `nginx-health`, `api/health`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
+- Browser QA covered CodeBlock pages locally and on production in desktop/mobile, dark/deep-dark; no horizontal overflow found.
 - Last frontend checks for P2 deploy passed: `npm run typecheck`, `npm run lint`, `npm run build`.
 - Production smoke passed for `/`, `/courses`, `/tasks`, `/login`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker` and health checks.
 - Browser QA covered `/courses`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker`, AI assistant and profile/login redirect; no console errors or horizontal overflow.
@@ -100,11 +107,12 @@ Next planned work: CodeBlock readability hotfix before section 11. After that, r
 - База C++ sections 0-4 remain `needs-theory`; CoursePage shows placeholder pages for them.
 - If real production secrets were pushed or shared before the security pass, manual rotation and history cleanup are still required.
 - Page-level lazy loading, auth reset event cleanup and a unit test runner remain future frontend tasks.
+- Fresh unauthenticated browser contexts still log a 401 for `/api/auth/token/refresh/`; track this in auth cleanup, not in CodeBlock work.
 
 ## Do Not Do Now
 
 - Do not push or deploy unless explicitly requested.
-- Do not continue section 11 before the CodeBlock readability hotfix and project structure/code cleanliness audit decision.
+- Do not continue section 11 before the project structure/code cleanliness audit decision.
 - Do not continue 9.2, 10.1, 10.2 before 11-12 are closed.
 - Do not add section 12 before section 11.
 - Do not mix content work with Docker/nginx/security changes.
