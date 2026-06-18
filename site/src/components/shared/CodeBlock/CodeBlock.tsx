@@ -283,21 +283,23 @@ export function CodeBlock({ code, language = "cpp", compact = false }: CodeBlock
     copyState === "copied"
       ? "Скопировано"
       : copyState === "failed"
-        ? "Не удалось скопировать"
+        ? "Ошибка"
         : "Скопировать";
 
   return (
     <div className={clsx(styles.root, compact && styles.compact)}>
       <div className={styles.bar}>
         <span className={styles.language}>{languageLabel}</span>
-        <button
-          className={styles.copyButton}
-          type="button"
-          onClick={copyCode}
-          aria-live="polite"
-        >
-          {copyButtonText}
-        </button>
+        <div className={styles.actions}>
+          <button
+            className={styles.copyButton}
+            type="button"
+            onClick={copyCode}
+            aria-live="polite"
+          >
+            {copyButtonText}
+          </button>
+        </div>
       </div>
       {highlightedHtml ? (
         <div className={styles.highlight} dangerouslySetInnerHTML={{ __html: highlightedHtml }} />

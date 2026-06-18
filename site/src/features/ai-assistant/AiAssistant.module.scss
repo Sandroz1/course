@@ -38,14 +38,14 @@
   box-sizing: border-box;
   width: 132px;
   min-height: 34px;
-  border: 1px solid var(--border-strong);
-  border-radius: 999px;
-  background: color-mix(in srgb, var(--surface) 92%, var(--bg) 8%);
+  border: 1px solid color-mix(in srgb, var(--border-strong) 82%, var(--accent) 18%);
+  border-radius: 0.5rem;
+  background: color-mix(in srgb, var(--surface-2) 88%, var(--bg) 12%);
   color: var(--text);
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
-  padding: 0 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.26);
+  padding: 0 10px;
   font: inherit;
-  font-size: 0.8125rem;
+  font-size: 0.75rem;
   font-weight: 600;
   line-height: 1;
   cursor: pointer;
@@ -55,8 +55,8 @@
 }
 
 .selectionPopover:hover {
-  border-color: var(--border-strong);
-  background: var(--surface-2);
+  border-color: color-mix(in srgb, var(--accent) 44%, var(--border-strong) 56%);
+  background: color-mix(in srgb, var(--surface-2) 82%, var(--accent) 18%);
 }
 
 .selectionPopover:active {
