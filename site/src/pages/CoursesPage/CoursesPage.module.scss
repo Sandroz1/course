@@ -19,12 +19,23 @@
     background 150ms ease;
 }
 
-.card:hover,
-.card:focus-within {
+.cardLink {
+  color: inherit;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.cardLink:hover,
+.cardLink:focus-visible {
   border-color: var(--border-strong);
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--surface-3) 24%, transparent), transparent 44%),
     var(--surface-2);
+}
+
+.cardLink:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 72%, transparent);
+  outline-offset: 0.1875rem;
 }
 
 .cardSoon {
@@ -66,8 +77,10 @@
   line-height: 1.58;
 }
 
-.card :global(.button) {
+.action {
   justify-self: start;
+  cursor: inherit;
+  pointer-events: none;
 }
 
 @media (max-width: 56.25rem) {

@@ -13,8 +13,8 @@
   border-radius: 999px;
   background: var(--surface-2);
   color: var(--text);
-  font-size: 13px;
-  font-weight: 800;
+  font-size: 0.8125rem;
+  font-weight: 650;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
   transition: border-color 140ms ease, background 140ms ease;
@@ -45,8 +45,8 @@
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
   padding: 0 12px;
   font: inherit;
-  font-size: 13px;
-  font-weight: 750;
+  font-size: 0.8125rem;
+  font-weight: 600;
   line-height: 1;
   cursor: pointer;
   user-select: none;
@@ -159,8 +159,8 @@
 .panelHeader p {
   margin: 0 0 5px;
   color: var(--accent);
-  font-size: 11px;
-  font-weight: 850;
+  font-size: 0.6875rem;
+  font-weight: 650;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -168,7 +168,7 @@
 .panelHeader h2 {
   margin: 0;
   color: var(--text);
-  font-size: 16px;
+  font-size: 1rem;
   line-height: 1.25;
 }
 
@@ -180,7 +180,7 @@
   border-radius: 999px;
   background: var(--accent-surface);
   color: var(--soft);
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 650;
   line-height: 1;
   padding: 5px 8px;
@@ -195,7 +195,7 @@
   border-radius: 999px;
   background: transparent;
   color: var(--text-muted);
-  font-size: 22px;
+  font-size: 1.375rem;
   line-height: 1;
   cursor: pointer;
 }
@@ -227,8 +227,8 @@
 
 .selectedTextTop span {
   color: var(--soft);
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .selectedTextTop button {
@@ -237,8 +237,8 @@
   background: var(--surface-subtle);
   color: var(--muted);
   font: inherit;
-  font-size: 12px;
-  font-weight: 750;
+  font-size: 0.75rem;
+  font-weight: 600;
   cursor: pointer;
   padding: 3px 7px;
 }
@@ -253,7 +253,7 @@
   max-height: 92px;
   overflow: auto;
   color: var(--soft);
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.48;
   scrollbar-color: var(--border-strong) transparent;
 }
@@ -272,15 +272,15 @@
 .accessNotice p {
   margin: 0;
   color: var(--text-soft);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.45;
 }
 
 .accessNotice a {
   width: fit-content;
   color: var(--accent);
-  font-size: 13px;
-  font-weight: 750;
+  font-size: 0.8125rem;
+  font-weight: 600;
 }
 
 .accessNotice a:hover {
@@ -299,14 +299,14 @@
   background: var(--danger-surface);
   color: var(--soft);
   padding: 8px 11px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.35;
 }
 
 .usageNotice strong {
   color: var(--danger);
-  font-size: 12px;
-  font-weight: 750;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .messagesWrap {
@@ -336,7 +336,7 @@
   color: var(--text-muted);
   cursor: pointer;
   font: inherit;
-  font-size: 12px;
+  font-size: 0.75rem;
   font-weight: 650;
   padding: 5px 10px;
 }
@@ -355,7 +355,7 @@
   background: var(--surface-subtle);
   color: var(--soft);
   padding: 12px;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.55;
 }
 
@@ -372,14 +372,14 @@
   border: 1px solid var(--border);
   border-radius: 9px;
   padding: 10px 12px;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.55;
 }
 
 .messageRole {
   color: var(--muted);
-  font-size: 11px;
-  font-weight: 850;
+  font-size: 0.6875rem;
+  font-weight: 650;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -398,7 +398,7 @@
 .messageContent h3 {
   margin: 2px 0 0;
   color: var(--text);
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.35;
 }
 
@@ -435,7 +435,7 @@
   background: var(--code-bg);
   color: var(--code-text);
   padding: 10px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.5;
 }
 
@@ -474,7 +474,7 @@
   background: var(--danger-surface);
   color: var(--danger);
   padding: 9px 11px;
-  font-size: 13px;
+  font-size: 0.8125rem;
   line-height: 1.45;
 }
 
@@ -499,7 +499,7 @@
   color: var(--text);
   padding: 11px 12px 12px;
   font: inherit;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.5;
   scrollbar-color: var(--border-strong) transparent;
 }
@@ -532,8 +532,8 @@
   color: var(--accent-contrast);
   padding: 9px 14px;
   font: inherit;
-  font-size: 14px;
-  font-weight: 800;
+  font-size: 0.875rem;
+  font-weight: 650;
   cursor: pointer;
   transition: border-color 140ms ease, background 140ms ease;
 }
