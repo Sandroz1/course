@@ -15,9 +15,9 @@
 
 ## Current Production State
 
-- Production deployed app hash: `698eb0e Merge code block readability hotfix`.
-- Latest deployed main hash before this docs-only state update: `698eb0e Merge code block readability hotfix`.
-- Latest docs/state commit: latest docs-only post-deploy state update on `main` (no production redeploy required).
+- Production deployed app hash: `6206dd3 Merge pre-section UI quality pass`.
+- Latest deployed main hash before this docs-only state update: `6206dd3 Merge pre-section UI quality pass`.
+- Latest docs/state commit: this docs-only post-deploy state update on `main` (no production redeploy required).
 - Production deploy после P2 frontend fixes прошёл успешно.
 - CodeBlock readability hotfix задеплоен.
 - Главная `/` стабилизирована и задеплоена.
@@ -45,6 +45,7 @@
 - Codex docs workflow added: before state-changing work, verify docs against git status/log/current branch/code state and update docs when production/backlog/architecture/workflow state changes.
 - `codex/app-logo-course-start` закрыта как obsolete: local branch удалена, remote branch отсутствует, `main` сохраняет актуальную `getAppLogoHref`-логику.
 - CodeBlock readability/top actions hotfix deployed: code text contrast is stronger, CodeBlock owns its font sizing on theory/task pages, copy action is compact and selection AI popover no longer looks like a large unrelated pill.
+- Pre-section UI quality pass deployed: `/profile` page heading now follows the shared page-title scale, and `CodeBlock` text selection is readable in light, dark and deep-dark themes.
 
 ## Header Quality Bar
 
@@ -58,6 +59,8 @@
 
 ## Recent Important Commits
 
+- `6206dd3` - `Merge pre-section UI quality pass`.
+- `8d0014c` - `Polish UI and frontend structure before encapsulation`.
 - `698eb0e` - `Merge code block readability hotfix`.
 - `0df4f61` - `Fix code block readability`.
 - `5d6d7f5` - `Update project quality rules`.
@@ -79,19 +82,25 @@
 
 ## Next Stage
 
-Next planned work: project structure/code cleanliness audit before section 11.
+Next planned work: complete OOP section 11 "Инкапсуляция".
 
-## Backlog After Audit
+## Backlog
 
-1. Project structure/code cleanliness audit.
-2. Complete OOP section 11 "Инкапсуляция".
-3. Complete OOP section 12 "Исключения".
-4. Audit OOP sections 0-12 readiness.
+1. AI assistant typography pass.
+2. AuthLayout typography pass.
+3. Legacy `_code.scss` cleanup decision.
+4. Auth refresh noise cleanup.
+5. Vite chunk-size warning / performance split.
+6. Complete OOP section 12 "Исключения".
+7. Audit OOP sections 0-12 readiness.
 
 ## Checks Snapshot
 
-- Last production deployed app hash: `698eb0e`.
-- Latest docs-only state on `main`: latest docs-only post-deploy state update after CodeBlock hotfix.
+- Last production deployed app hash: `6206dd3`.
+- Latest docs-only state on `main`: this docs-only post-deploy state update after pre-section UI quality pass.
+- Last frontend checks for pre-section UI quality pass passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
+- Production smoke passed for `nginx-health`, `api/health`, `/profile`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
+- Browser QA covered `/profile`, CodeBlock pages locally and on production in desktop/mobile, light/dark/deep-dark, copy action and AI selection popover; no horizontal overflow found.
 - Last frontend checks for CodeBlock hotfix passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Production smoke passed for `nginx-health`, `api/health`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
 - Browser QA covered CodeBlock pages locally and on production in desktop/mobile, dark/deep-dark; no horizontal overflow found.
