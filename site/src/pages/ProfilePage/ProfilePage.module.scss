@@ -29,8 +29,10 @@
 
 .title {
   color: var(--text);
-  font-size: clamp(1.625rem, 2.8vw, 2.125rem);
-  line-height: 1.08;
+  font-size: clamp(1.5rem, 2.3vw, 1.875rem);
+  font-weight: var(--font-weight-heading);
+  line-height: 1.14;
+  text-wrap: balance;
 }
 
 .description,

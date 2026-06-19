@@ -1,4 +1,7 @@
 .root {
+  --code-selection-bg: color-mix(in srgb, var(--accent) 46%, var(--code-text) 54%);
+  --code-selection-text: var(--code);
+
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--code-border) 86%, var(--code-text) 14%);
   border-radius: 0.625rem;
@@ -104,6 +107,15 @@
   font-weight: 500;
   line-height: 1.58;
   tab-size: 4;
+}
+
+.root.root :global(.shiki)::selection,
+.root.root :global(.shiki *)::selection,
+.root.root .pre::selection,
+.root.root .pre *::selection,
+.root.root .code::selection {
+  background: var(--code-selection-bg);
+  color: var(--code-selection-text);
 }
 
 .preFallback .code {
