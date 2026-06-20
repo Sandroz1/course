@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 
+import { appRoutes } from "../../../app/routes";
 import { useAuth } from "../../../context/AuthContext";
 import { navigateTo } from "../../../utils/navigation";
 import { currentPath, toPath } from "../../../utils/slug";
@@ -13,8 +14,8 @@ export function AccountMenu() {
   const triggerRef = useRef<HTMLButtonElement | null>(null);
   const avatarLetter = user?.username.trim().charAt(0).toUpperCase() || "U";
   const path = currentPath();
-  const isLoginActive = path === "/login";
-  const isRegisterActive = path === "/register";
+  const isLoginActive = path === appRoutes.login;
+  const isRegisterActive = path === appRoutes.register;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -44,7 +45,7 @@ export function AccountMenu() {
   async function handleLogout() {
     setIsOpen(false);
     await logout();
-    navigateTo("/", true);
+    navigateTo(appRoutes.home, true);
   }
 
   if (!isAuthenticated) {
@@ -52,14 +53,14 @@ export function AccountMenu() {
       <div className={styles.guestActions} aria-label="Аккаунт">
         <a
           className={clsx(styles.loginLink, isLoginActive && styles.activeLink)}
-          href={toPath("/login")}
+          href={toPath(appRoutes.login)}
           aria-current={isLoginActive ? "page" : undefined}
         >
           Войти
         </a>
         <a
           className={clsx(styles.registerLink, isRegisterActive && styles.activeLink)}
-          href={toPath("/register")}
+          href={toPath(appRoutes.register)}
           aria-current={isRegisterActive ? "page" : undefined}
         >
           Регистрация
@@ -109,7 +110,7 @@ export function AccountMenu() {
             </span>
           </div>
           <div className={styles.divider} />
-          <a className={styles.menuItem} href={toPath("/profile")} role="menuitem" onClick={() => setIsOpen(false)}>
+          <a className={styles.menuItem} href={toPath(appRoutes.profile)} role="menuitem" onClick={() => setIsOpen(false)}>
             Профиль
           </a>
           <button

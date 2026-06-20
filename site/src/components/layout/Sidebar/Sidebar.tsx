@@ -23,18 +23,18 @@ type NavigationLink = {
 };
 
 const primaryLinks: NavigationLink[] = [
-  { href: "/", label: "Главная", icon: "home" },
-  { href: "/courses", label: "Курсы", icon: "courses" },
-  { href: "/tasks", label: "Задачи", icon: "tasks" },
+  { href: appRoutes.home, label: "Главная", icon: "home" },
+  { href: appRoutes.courses, label: "Курсы", icon: "courses" },
+  { href: appRoutes.tasks, label: "Задачи", icon: "tasks" },
 ];
 
 const learningLinks: NavigationLink[] = [
-  { href: "/guide", label: "Как учиться", icon: "guide" },
-  { href: "/common-errors", label: "Частые ошибки", icon: "errors" },
+  { href: appRoutes.guide, label: "Как учиться", icon: "guide" },
+  { href: appRoutes.commonErrors, label: "Частые ошибки", icon: "errors" },
 ];
 
 function isLinkActive(path: string, href: string) {
-  if (href === "/") return path === "/";
+  if (href === appRoutes.home) return path === appRoutes.home;
 
   return path.startsWith(href);
 }
@@ -220,7 +220,7 @@ function ProfileBlock({
       <div className={styles.profileActions}>
         <a
           className={styles.profileLink}
-          href={toPath("/login")}
+          href={toPath(appRoutes.login)}
           aria-label={isCollapsed ? "Войти" : undefined}
           title={isCollapsed ? "Войти" : undefined}
           onClick={onNavigate}
@@ -240,7 +240,7 @@ function ProfileBlock({
   return (
     <a
       className={styles.profileLink}
-      href={toPath("/profile")}
+      href={toPath(appRoutes.profile)}
       aria-label={isCollapsed ? user?.username ?? "Профиль" : undefined}
       title={isCollapsed ? user?.username ?? "Профиль" : undefined}
       onClick={onNavigate}

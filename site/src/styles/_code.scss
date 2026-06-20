@@ -1,96 +1,13 @@
-/* Code block and preformatted code styles */
+/* Raw pre fallback. Shared CodeBlock owns its component styles via CSS Modules. */
 
-.code-block {
-  overflow: hidden;
-  border: 1px solid var(--code-border);
-  border-radius: 0.5rem;
-  background: var(--code);
-  box-shadow: none;
-}
-
-.code-block__bar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--code-line);
-  background: var(--code-panel);
-  color: var(--muted);
-  padding: 0.4375rem 0.625rem 0.4375rem 0.75rem;
-}
-
-.code-block__language {
-  color: var(--muted);
-  font-family: Consolas, Monaco, monospace;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-}
-
-.code-block button {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  box-sizing: border-box;
-  width: 6.75rem;
-  min-height: 2rem;
-  border: 1px solid var(--code-border);
-  border-radius: 0.3125rem;
-  background: var(--code-panel);
-  color: var(--code-text);
-  cursor: pointer;
-  font: inherit;
-  font-size: 0.75rem;
-  font-weight: 600;
-  line-height: 1;
-  padding: 0.3125rem 0.5rem;
-  white-space: nowrap;
-}
-
-.code-block button:hover {
-  border-color: var(--border-strong);
-  background: var(--code-panel);
-}
-
-.code-block button:active {
-  transform: none;
-}
-
-.code-block__highlight {
-  background: var(--code);
-}
-
-.code-block .shiki,
-.code-block__pre {
-  margin: 0;
-  overflow: auto;
-  background: var(--code) !important;
-  padding: 0.9375rem 1rem;
-  scrollbar-color: var(--code-border) transparent;
-}
-
-.code-block .shiki code,
-.code-block__code {
-  display: block;
-  min-width: max-content;
-  color: var(--code-text);
-  font-family: Consolas, "Cascadia Code", "Fira Code", Monaco, monospace;
-  font-size: 0.84375rem;
-  line-height: 1.56;
-  tab-size: 4;
-}
-
-.code-block__pre--fallback .code-block__code {
-  white-space: pre;
-}
-
-pre:not(.code-block__pre):not(.shiki) {
+pre:not(.shiki) {
   margin: 0;
   overflow: auto;
   padding: 1rem;
   scrollbar-color: var(--line) transparent;
 }
 
-pre:not(.code-block__pre):not(.shiki) code {
+pre:not(.shiki) code {
   color: var(--code-text);
   font-size: 0.875rem;
   line-height: 1.55;

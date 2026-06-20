@@ -7,6 +7,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { appRoutes } from "../../app/routes";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError } from "../../lib/api";
 import {
@@ -278,13 +279,13 @@ export function ProfilePage() {
     }
 
     if (shouldRedirectToLogin) {
-      navigateTo("/login?passwordChanged=1", true);
+      navigateTo(`${appRoutes.login}?passwordChanged=1`, true);
     }
   }
 
   async function handleLogout() {
     await logout();
-    navigateTo("/login", true);
+    navigateTo(appRoutes.login, true);
   }
 
   function handlePhoneChange(event: ChangeEvent<HTMLInputElement>) {
