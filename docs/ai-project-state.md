@@ -83,9 +83,16 @@
 - `26038d0` - `Update project stabilization docs`.
 - `e96fdee` - `Document project quality bar`.
 
+## Pending Branch State
+
+- Current hardening work continues on `fix/frontend-quality-hardening` after `cdcb4c5 Harden frontend quality`.
+- Scope: Vite config type coverage, safe npm audit patches, small layout-stability fixes, and docs rules that prevent the same frontend quality regressions.
+- This branch is not merged or deployed yet. Production remains on deployed app hash `a2c4b29` until an explicit merge/deploy step.
+- The remaining `esbuild` npm audit item is low severity and tied to the current Vite toolchain range; do not add overrides or major tooling changes without a separate build/performance pass.
+
 ## Next Stage
 
-Next planned work: backend/auth/build/docs stability pass before future course sections and features.
+Next planned work: review and release `fix/frontend-quality-hardening` if checks stay clean, then backend/auth/build/docs stability pass before future course sections and features.
 
 ## Backlog
 
