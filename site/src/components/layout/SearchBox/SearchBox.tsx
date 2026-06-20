@@ -1,9 +1,16 @@
 import { useMemo, useState } from "react";
 
 import { routePrefixes } from "../../../app/routes";
+import { getCourseById } from "../../../data/courses";
 import { tasks } from "../../../data/tasks";
+import { getTaskSearchText } from "../../../utils/taskSearch";
 import { toPath } from "../../../utils/slug";
 import styles from "./SearchBox.module.scss";
+
+const searchEntries = tasks.map((task) => ({
+  task,
+  text: getTaskSearchText(task, getCourseById(task.courseId)?.title),
+}));
 
 export function SearchBox() {
   const [query, setQuery] = useState("");
@@ -11,13 +18,9 @@ export function SearchBox() {
     const value = query.trim().toLowerCase();
     if (!value) return [];
 
-    return tasks
-      .filter((task) =>
-        [task.title, task.section, task.files.map((file) => file.fileName).join(" "), task.topics.join(" ")]
-          .join(" ")
-          .toLowerCase()
-          .includes(value),
-      )
+    return searchEntries
+      .filter((entry) => entry.text.includes(value))
+      .map((entry) => entry.task)
       .slice(0, 8);
   }, [query]);
 

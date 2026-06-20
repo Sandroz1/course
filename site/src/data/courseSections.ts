@@ -336,16 +336,32 @@ export const courseSections: CourseSection[] = [
   })),
 ];
 
+const courseSectionsByCourse = courseSections.reduce((sectionsByCourse, section) => {
+  const sections = sectionsByCourse.get(section.courseId);
+
+  if (sections) {
+    sections.push(section);
+  } else {
+    sectionsByCourse.set(section.courseId, [section]);
+  }
+
+  return sectionsByCourse;
+}, new Map<CourseId, CourseSection[]>());
+
+const courseSectionsByKey = new Map(
+  courseSections.map((section) => [`${section.courseId}:${section.slug}`, section]),
+);
+
 export function isCourseSectionReady(section: CourseSection) {
   return section.status === "available" || section.status === "ready";
 }
 
 export function getCourseSections(courseId: CourseId) {
-  return courseSections.filter((section) => section.courseId === courseId);
+  return courseSectionsByCourse.get(courseId) ?? [];
 }
 
 export function getCourseSectionBySlug(courseId: CourseId, slug: string) {
-  return courseSections.find((section) => section.courseId === courseId && section.slug === slug);
+  return courseSectionsByKey.get(`${courseId}:${slug}`);
 }
 
 export function getCourseSectionPath(section: CourseSection) {

@@ -12,7 +12,7 @@ import {
 } from "../../data/courseSections";
 import { getCourseById, type CourseId } from "../../data/courses";
 import { statusMeta } from "../../data/status";
-import { tasks } from "../../data/tasks";
+import { getTasksByIdsInCatalogOrder, type Task } from "../../data/tasks";
 import {
   getCachedCourseProgress,
   readCachedCourseProgress,
@@ -37,7 +37,7 @@ type LessonProgressState = {
   isCompleted: boolean;
 };
 
-type RelatedTask = (typeof tasks)[number];
+type RelatedTask = Task;
 
 function findLessonProgress(progress: ProgressOverview, courseSlug: string, lessonSlug: string) {
   return progress.lessons.find(
@@ -330,9 +330,7 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
     );
   }
 
-  const relatedTasks = tasks.filter((task) =>
-    section.relatedTaskIds.includes(task.id),
-  );
+  const relatedTasks = getTasksByIdsInCatalogOrder(section.relatedTaskIds);
   const tocItems = collectTocItems(section.content);
 
   async function handleToggleCompleted() {

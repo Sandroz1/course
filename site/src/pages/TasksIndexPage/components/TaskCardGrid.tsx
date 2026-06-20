@@ -1,25 +1,18 @@
-import { tasks } from "../../../data/tasks";
+import type { Task } from "../../../data/tasks";
 import type { TaskProgressStatus } from "../../../types/api";
 import { TaskCard } from "./TaskCard";
 import styles from "./TaskCardGrid.module.scss";
 
 export function TaskCardGrid({
-  section,
   sourceTasks,
   taskProgressById,
 }: {
-  section?: string;
-  sourceTasks?: typeof tasks;
+  sourceTasks: Task[];
   taskProgressById?: Map<string, TaskProgressStatus>;
 }) {
-  const baseTasks = sourceTasks ?? tasks;
-  const visibleTasks = section
-    ? baseTasks.filter((task) => task.section === section)
-    : baseTasks;
-
   return (
     <div className={styles.grid}>
-      {visibleTasks.map((task) => (
+      {sourceTasks.map((task) => (
         <TaskCard key={task.id} task={task} taskProgressById={taskProgressById} />
       ))}
     </div>

@@ -16,9 +16,11 @@ import {
   taskCountLabel,
   taskLevelLabels,
 } from "../../utils/taskDisplay";
+import { getTaskSearchText } from "../../utils/taskSearch";
 import { TaskCardGrid } from "./components/TaskCardGrid";
 import styles from "./TasksIndexPage.module.scss";
 
+type Task = (typeof tasks)[number];
 type LevelFilter = "all" | TaskLevel;
 type CourseFilter = "all" | CourseId;
 type TaskStatusFilter = "all" | "available" | "in_progress" | "solved" | "needs-theory";
@@ -38,11 +40,30 @@ const statusLabels: Record<TaskStatusFilter, string> = {
   "needs-theory": getStatusLabel("needs-theory"),
 };
 
+const courseTitleById = new Map(courses.map((course) => [course.id, course.title]));
+const taskSearchTextById = new Map(
+  tasks.map((task) => [task.id, getTaskSearchText(task, courseTitleById.get(task.courseId))]),
+);
+
 function getTaskFilterStatus(
-  task: (typeof tasks)[number],
+  task: Task,
   taskProgressById: Map<string, TaskProgressStatus>,
 ): TaskStatusFilter {
   return getTaskDisplayStatus(task, taskProgressById);
+}
+
+function groupTasksBySection(sourceTasks: Task[]) {
+  return sourceTasks.reduce((tasksBySection, task) => {
+    const sectionTasks = tasksBySection.get(task.section);
+
+    if (sectionTasks) {
+      sectionTasks.push(task);
+    } else {
+      tasksBySection.set(task.section, [task]);
+    }
+
+    return tasksBySection;
+  }, new Map<string, Task[]>());
 }
 
 export function TasksIndexPage() {
@@ -128,23 +149,15 @@ export function TasksIndexPage() {
         statusFilter === "all" || getTaskFilterStatus(task, taskProgressById) === statusFilter;
       const levelOk = levelFilter === "all" || task.level === levelFilter;
       const sectionOk = sectionFilter === "all" || task.section === sectionFilter;
-      const courseTitle = courses.find((course) => course.id === task.courseId)?.title ?? "";
-      const text = [
-        task.title,
-        task.section,
-        courseTitle,
-        task.topics.join(" "),
-        task.files.map((file) => file.fileName).join(" "),
-      ]
-        .join(" ")
-        .toLowerCase();
+      const text = taskSearchTextById.get(task.id) ?? "";
       const searchOk = !search || text.includes(search);
 
       return courseOk && statusOk && levelOk && sectionOk && searchOk;
     });
   }, [courseFilter, levelFilter, query, sectionFilter, statusFilter, taskProgressById]);
 
-  const visibleSections = Array.from(new Set(filteredTasks.map((task) => task.section)));
+  const tasksBySection = useMemo(() => groupTasksBySection(filteredTasks), [filteredTasks]);
+  const visibleSections = Array.from(tasksBySection.keys());
   const hasActiveFilters = Boolean(
     query.trim() ||
       courseFilter !== "all" ||
@@ -256,16 +269,15 @@ export function TasksIndexPage() {
       )}
 
       {visibleSections.map((section) => {
-        const count = filteredTasks.filter((task) => task.section === section).length;
+        const sectionTasks = tasksBySection.get(section) ?? [];
         return (
           <section className={styles.taskSection} key={section}>
             <div className={styles.sectionHeading}>
               <h2>{section}</h2>
-              <span className="count-badge">{taskCountLabel(count)}</span>
+              <span className="count-badge">{taskCountLabel(sectionTasks.length)}</span>
             </div>
             <TaskCardGrid
-              section={section}
-              sourceTasks={filteredTasks}
+              sourceTasks={sectionTasks}
               taskProgressById={taskProgressById}
             />
           </section>
