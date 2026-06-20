@@ -15,8 +15,8 @@
 
 ## Current Production State
 
-- Production deployed app hash: `6206dd3 Merge pre-section UI quality pass`.
-- Latest deployed main hash before this docs-only state update: `6206dd3 Merge pre-section UI quality pass`.
+- Production deployed app hash: `a2c4b29 Merge frontend foundation hardening`.
+- Latest deployed main hash before this docs-only state update: `a2c4b29 Merge frontend foundation hardening`.
 - Latest docs/state commit: this docs-only post-deploy state update on `main` (no production redeploy required).
 - Production deploy после P2 frontend fixes прошёл успешно.
 - CodeBlock readability hotfix задеплоен.
@@ -46,7 +46,7 @@
 - `codex/app-logo-course-start` закрыта как obsolete: local branch удалена, remote branch отсутствует, `main` сохраняет актуальную `getAppLogoHref`-логику.
 - CodeBlock readability/top actions hotfix deployed: code text contrast is stronger, CodeBlock owns its font sizing on theory/task pages, copy action is compact and selection AI popover no longer looks like a large unrelated pill.
 - Pre-section UI quality pass deployed: `/profile` page heading now follows the shared page-title scale, and `CodeBlock` text selection is readable in light, dark and deep-dark themes.
-- Frontend foundation hardening prepared: stale global `.code-block*` selectors were removed, `AuthLayout` typography was softened, and touched app-shell/static task routes now use `appRoutes`/`routePrefixes`.
+- Frontend foundation hardening deployed: stale global `.code-block*` selectors were removed, `AuthLayout` typography was softened, and touched app-shell/static task routes now use `appRoutes`/`routePrefixes`.
 
 ## Header Quality Bar
 
@@ -60,6 +60,8 @@
 
 ## Recent Important Commits
 
+- `a2c4b29` - `Merge frontend foundation hardening`.
+- `afeaf03` - `Harden frontend foundation`.
 - `6206dd3` - `Merge pre-section UI quality pass`.
 - `8d0014c` - `Polish UI and frontend structure before encapsulation`.
 - `698eb0e` - `Merge code block readability hotfix`.
@@ -83,20 +85,24 @@
 
 ## Next Stage
 
-Next planned work: complete OOP section 11 "Инкапсуляция".
+Next planned work: backend/auth/build/docs stability pass before future course sections and features.
 
 ## Backlog
 
-1. AI assistant geometry/token cleanup, if needed.
-2. Auth refresh noise cleanup.
-3. Vite chunk-size warning / performance split.
-4. Complete OOP section 12 "Исключения".
-5. Audit OOP sections 0-12 readiness.
+1. Backend/auth refresh noise cleanup.
+2. Backend stability pass.
+3. Build/performance split for the Vite chunk-size warning.
+4. Docs cleanup if needed.
+5. Future course sections and features, including section 11 and section 12.
+6. Audit OOP sections 0-12 readiness after content backlog is closed.
 
 ## Checks Snapshot
 
-- Last production deployed app hash: `6206dd3`.
-- Latest docs-only state on `main`: this docs-only post-deploy state update after pre-section UI quality pass.
+- Last production deployed app hash: `a2c4b29`.
+- Latest docs-only state on `main`: this docs-only post-deploy state update after frontend foundation hardening deploy.
+- Last frontend checks for frontend foundation hardening passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
+- Production smoke passed for `nginx-health`, `api/health`, `/login`, `/register`, `/tasks`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
+- Browser QA covered production `/login`, `/register`, `/tasks`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors` with cache-busting hash `a2c4b29`.
 - Last frontend checks for pre-section UI quality pass passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Production smoke passed for `nginx-health`, `api/health`, `/profile`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
 - Browser QA covered `/profile`, CodeBlock pages locally and on production in desktop/mobile, light/dark/deep-dark, copy action and AI selection popover; no horizontal overflow found.
@@ -120,7 +126,7 @@ Next planned work: complete OOP section 11 "Инкапсуляция".
 ## Do Not Do Now
 
 - Do not push or deploy unless explicitly requested.
-- Do not continue section 11 before the project structure/code cleanliness audit decision.
+- Do not continue section 11 before the backend/auth/build/docs stability pass decision.
 - Do not continue 9.2, 10.1, 10.2 before 11-12 are closed.
 - Do not add section 12 before section 11.
 - Do not mix content work with Docker/nginx/security changes.
