@@ -172,6 +172,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     let cancelled = false;
 
     async function loadProfile() {
+      if (!accessToken && !readUserSnapshot()) {
+        setIsLoading(false);
+        return;
+      }
+
       setIsLoading(true);
 
       try {
