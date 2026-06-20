@@ -4,6 +4,7 @@ import {
     useRef,
     useState,
 } from "react";
+import { appRoutes } from "../../app/routes";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError, isApiConfigured } from "../../lib/api";
 import {
@@ -410,10 +411,10 @@ function AiAssistantPanel() {
                         <div className={styles.accessNotice}>
                             <p>{aiAccessMessage}</p>
                             {!isAuthenticated && !isAuthLoading ? (
-                                <a href={toPath("/login")}>Войти</a>
+                                <a href={toPath(appRoutes.login)}>Войти</a>
                             ) : null}
                             {isAuthenticated && !isPhoneVerified ? (
-                                <a href={toPath("/profile")}>Открыть профиль</a>
+                                <a href={toPath(appRoutes.profile)}>Открыть профиль</a>
                             ) : null}
                         </div>
                     ) : null}

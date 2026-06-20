@@ -1,4 +1,5 @@
 import { type KeyboardEvent, useEffect, useState } from "react";
+import { appRoutes } from "../../app/routes";
 import {
   getCourseSectionBySlug,
   getCourseSectionPath,
@@ -130,7 +131,7 @@ function TaskListSection({
 
 function TaskGuideNote() {
   return (
-    <LinkButton href={toPath("/guide")} size="small" variant="ghost">
+    <LinkButton href={toPath(appRoutes.guide)} size="small" variant="ghost">
       Методика решения
     </LinkButton>
   );
@@ -416,7 +417,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
   return (
     <article className={clsx("reading-page", styles.root)}>
       <header className={clsx("panel", styles.header)}>
-        <BackLink href={toPath("/tasks")}>К задачам</BackLink>
+        <BackLink href={toPath(appRoutes.tasks)}>К задачам</BackLink>
         <p className={styles.sectionLabel}>{task.section}</p>
         <h1>{task.title}</h1>
         <MetaRow compact className={styles.headerMeta}>

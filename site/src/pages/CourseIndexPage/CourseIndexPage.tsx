@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { appRoutes } from "../../app/routes";
 import { useAuth } from "../../context/AuthContext";
 import {
   type CourseSection,
@@ -202,7 +203,7 @@ export function CourseIndexPage({ courseId = "oop-cpp" }: CourseIndexPageProps) 
   return (
     <article className={clsx("reading-page", "compact-page", "route-page", styles.root)}>
       <header className="page-header">
-        <a className="back-link" href={toPath("/courses")}>
+        <a className="back-link" href={toPath(appRoutes.courses)}>
           Все курсы
         </a>
         <p className="eyebrow">{isCourseAvailable ? "Доступный курс" : "Курс в разработке"}</p>

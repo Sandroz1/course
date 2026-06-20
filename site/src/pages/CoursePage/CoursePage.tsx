@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { appRoutes, routePrefixes } from "../../app/routes";
 import { useAuth } from "../../context/AuthContext";
 import { Button, LinkButton } from "../../components/shared/ActionButton/ActionButton";
 import { BackLink, EmptyState } from "../../components/shared/LearningUi/LearningUi";
@@ -121,7 +122,7 @@ function RelatedTasksBlock({ relatedTasks }: { relatedTasks: RelatedTask[] }) {
             <a
               className={styles.relatedTaskLink}
               key={task.id}
-              href={toPath(`/tasks/${task.id}`)}
+              href={toPath(`${routePrefixes.taskDetails}${task.id}`)}
             >
               <span className={styles.relatedTaskContent}>
                 <strong>{task.title}</strong>
@@ -315,11 +316,11 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
           </p>
 
           <div className="actions">
-            <LinkButton href={toPath(course?.path ?? "/courses")} variant="primary">
+            <LinkButton href={toPath(course?.path ?? appRoutes.courses)} variant="primary">
               Вернуться к курсу
             </LinkButton>
             {section.relatedTaskIds.length > 0 && (
-              <LinkButton href={toPath("/tasks")}>
+              <LinkButton href={toPath(appRoutes.tasks)}>
                 Открыть задачи
               </LinkButton>
             )}
@@ -365,7 +366,7 @@ export function CoursePage({ courseId = "oop-cpp", slug }: { courseId?: CourseId
   return (
     <article className="reading-page lesson-page">
       <header className={styles.lessonHeader}>
-        <BackLink href={toPath(course?.path ?? "/courses")}>
+        <BackLink href={toPath(course?.path ?? appRoutes.courses)}>
           К курсу
         </BackLink>
         <p className="eyebrow">Раздел {section.number}</p>

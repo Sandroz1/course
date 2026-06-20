@@ -1,4 +1,5 @@
 import { type FormEvent, useId, useState } from "react";
+import { appRoutes } from "../app/routes";
 import { useAuth } from "../context/AuthContext";
 import clsx from "clsx";
 import { navigateTo } from "../utils/navigation";
@@ -54,7 +55,7 @@ export function LoginPage() {
 
     try {
       await login({ username, password });
-      navigateTo("/profile", true);
+      navigateTo(appRoutes.profile, true);
     } catch (error) {
       const nextFieldErrors = getApiFieldErrors(error, loginFields, loginFieldFallbacks);
 
@@ -75,7 +76,7 @@ export function LoginPage() {
       description="Войдите, чтобы продолжить обучение и сохранить прогресс."
       footer={
         <>
-          Нет аккаунта? <a href={toPath("/register")}>Зарегистрироваться</a>
+          Нет аккаунта? <a href={toPath(appRoutes.register)}>Зарегистрироваться</a>
         </>
       }
     >

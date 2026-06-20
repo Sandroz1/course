@@ -1,3 +1,4 @@
+import { routePrefixes } from "../../../app/routes";
 import { getCourseById } from "../../../data/courses";
 import { tasks } from "../../../data/tasks";
 import clsx from "clsx";
@@ -42,7 +43,7 @@ export function TaskCard({
   return (
     <a
       className={clsx(styles.card, hasClosedTheory && styles.closedTheory)}
-      href={toPath(`/tasks/${task.id}`)}
+      href={toPath(`${routePrefixes.taskDetails}${task.id}`)}
       aria-label={`${task.title}. ${displayLabel}. ${course?.shortTitle ?? "Курс"}: ${task.section}`}
     >
       <div className={styles.top}>

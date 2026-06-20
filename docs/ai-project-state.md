@@ -46,6 +46,7 @@
 - `codex/app-logo-course-start` закрыта как obsolete: local branch удалена, remote branch отсутствует, `main` сохраняет актуальную `getAppLogoHref`-логику.
 - CodeBlock readability/top actions hotfix deployed: code text contrast is stronger, CodeBlock owns its font sizing on theory/task pages, copy action is compact and selection AI popover no longer looks like a large unrelated pill.
 - Pre-section UI quality pass deployed: `/profile` page heading now follows the shared page-title scale, and `CodeBlock` text selection is readable in light, dark and deep-dark themes.
+- Frontend foundation hardening prepared: stale global `.code-block*` selectors were removed, `AuthLayout` typography was softened, and touched app-shell/static task routes now use `appRoutes`/`routePrefixes`.
 
 ## Header Quality Bar
 
@@ -86,13 +87,11 @@ Next planned work: complete OOP section 11 "Инкапсуляция".
 
 ## Backlog
 
-1. AI assistant typography pass.
-2. AuthLayout typography pass.
-3. Legacy `_code.scss` cleanup decision.
-4. Auth refresh noise cleanup.
-5. Vite chunk-size warning / performance split.
-6. Complete OOP section 12 "Исключения".
-7. Audit OOP sections 0-12 readiness.
+1. AI assistant geometry/token cleanup, if needed.
+2. Auth refresh noise cleanup.
+3. Vite chunk-size warning / performance split.
+4. Complete OOP section 12 "Исключения".
+5. Audit OOP sections 0-12 readiness.
 
 ## Checks Snapshot
 

@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 
+import { routePrefixes } from "../../../app/routes";
 import { tasks } from "../../../data/tasks";
 import { toPath } from "../../../utils/slug";
 import styles from "./SearchBox.module.scss";
@@ -41,7 +42,7 @@ export function SearchBox() {
             <a
               className={styles.resultLink}
               key={task.id}
-              href={toPath(`/tasks/${task.id}`)}
+              href={toPath(`${routePrefixes.taskDetails}${task.id}`)}
               onClick={() => setQuery("")}
             >
               <strong>{task.title}</strong>

@@ -4,6 +4,7 @@ import { AccountMenu } from "./AccountMenu/AccountMenu";
 import { AiAssistant } from "../../features/ai-assistant";
 import { useAuth } from "../../context/AuthContext";
 import { useBodyScrollLock } from "../../hooks/useBodyScrollLock";
+import { appRoutes, routePrefixes } from "../../app/routes";
 import clsx from "clsx";
 import { currentPath } from "../../utils/slug";
 import { SearchBox } from "./SearchBox/SearchBox";
@@ -30,7 +31,7 @@ function saveSidebarCollapsed(value: boolean) {
 }
 
 function isWideRoute(path: string) {
-  return path === "/tasks" || path.startsWith("/tasks/");
+  return path === appRoutes.tasks || path.startsWith(routePrefixes.taskDetails);
 }
 
 export function AppLayout({ children }: { children: ReactNode }) {
