@@ -45,7 +45,7 @@ export function CoursesPage() {
   return (
     <article className="reading-page compact-page route-page">
       <header className="page-header">
-        <p className="eyebrow">Курсы</p>
+        <p className="eyebrow">Каталог</p>
         <h1>Курсы</h1>
         <p className="lead">Выберите курс, чтобы перейти к темам и задачам.</p>
       </header>
