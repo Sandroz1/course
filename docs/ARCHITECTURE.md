@@ -19,6 +19,7 @@
 - `content` - учебный текст разделов. Это content data, а не layout.
 - `data` - реестры курсов, секций, статусов и задач.
 - `features` - крупные продуктовые фичи со своей внутренней структурой, например AI assistant.
+- `features/ai-assistant` - интеграция панели остаётся в `AiAssistant.tsx`, презентационные части панели живут в `components`, поведение в `hooks`, parsing/access helpers в `utils`, а API contract остаётся в `lib/aiApi.ts`.
 - `hooks` - общие React hooks без привязки к одной странице.
 - `lib` - API-клиенты и интеграционная логика.
 - `utils` - pure helpers и небольшие browser helpers.
