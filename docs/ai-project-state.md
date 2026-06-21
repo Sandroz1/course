@@ -15,10 +15,11 @@
 
 ## Current Production State
 
-- Production deployed app hash: `0475b21 Merge frontend quality hardening`.
-- Latest deployed runtime hash before this docs-only state update: `0475b21 Merge frontend quality hardening`.
+- Production deployed app hash: `cdf62d8 Merge AI assistant refactor`.
+- Latest deployed runtime hash before this docs-only state update: `cdf62d8 Merge AI assistant refactor`.
 - Latest docs/state commit: this post-deploy docs-only state update on `main` (no production redeploy required).
 - Frontend quality hardening is deployed.
+- AI assistant refactor is deployed; backend API and AI endpoint contract were not changed.
 - Guest auth refresh guard is deployed: clean guest contexts no longer call `/auth/token/refresh/` on page load.
 - Production deploy после P2 frontend fixes прошёл успешно.
 - CodeBlock readability hotfix задеплоен.
@@ -50,6 +51,7 @@
 - Pre-section UI quality pass deployed: `/profile` page heading now follows the shared page-title scale, and `CodeBlock` text selection is readable in light, dark and deep-dark themes.
 - Frontend foundation hardening deployed: stale global `.code-block*` selectors were removed, `AuthLayout` typography was softened, and touched app-shell/static task routes now use `appRoutes`/`routePrefixes`.
 - Frontend quality hardening deployed: route/data lookup helpers are centralized, task search uses a shared search text helper, Vite config type coverage is checked, and guest auth refresh noise is removed for clean guest contexts.
+- AI assistant refactor deployed: panel presentation parts were split from feature state/API wiring, while message format and `/api/ai/chat/` contract stayed unchanged.
 
 ## Header Quality Bar
 
@@ -63,6 +65,8 @@
 
 ## Recent Important Commits
 
+- `cdf62d8` - `Merge AI assistant refactor`.
+- `29875a0` - `Refactor AI assistant`.
 - `0475b21` - `Merge frontend quality hardening`.
 - `6d190e3` - `Fix known frontend follow-ups`.
 - `a63d1ed` - `Complete project foundation hardening`.
@@ -92,29 +96,32 @@
 
 ## Latest Release State
 
-- `fix/frontend-quality-hardening` was merged into `main` and deployed as `0475b21`.
-- Scope shipped: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, route/data lookup helpers, and docs rules that prevent the same frontend quality regressions.
+- `fix/ai-assistant-refactor` was merged into `main` and deployed as `cdf62d8`.
+- Scope shipped: AI assistant presentation split, cleaner panel subcomponents, stable assistant typography/layout, and no backend/API contract changes.
+- Previous frontend quality hardening is deployed as `0475b21`: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, route/data lookup helpers, and docs rules that prevent the same frontend quality regressions.
 - Guest contexts without an access token or saved user snapshot no longer call `/auth/token/refresh/` on page load. Saved user snapshots still allow the app to attempt cookie-based session restore.
 - The remaining `esbuild` npm audit item is low severity and tied to the current Vite toolchain range; do not add overrides or major tooling changes without a separate build/performance pass.
 
 ## Next Stage
 
-Next planned work: backend/session, build-performance and docs stability passes before future course sections and features.
+Next planned work: backend/auth/session, build-performance and docs stability passes before future course sections and features.
 
 ## Backlog
 
-1. Vite chunk split/performance pass.
-2. `esbuild`/Vite audit follow-up.
-3. AI assistant split/refactor.
-4. Backend/session stability pass.
-5. Docs cleanup if needed.
-6. Future course sections and features, including section 11 and section 12.
-7. Audit OOP sections 0-12 readiness after content backlog is closed.
+1. Backend/auth refresh noise cleanup and backend/session stability pass.
+2. Vite chunk split/performance pass.
+3. `esbuild`/Vite audit follow-up.
+4. Docs cleanup if needed.
+5. Future course sections and features, including section 11 and section 12.
+6. Audit OOP sections 0-12 readiness after content backlog is closed.
 
 ## Checks Snapshot
 
-- Last production deployed app hash: `0475b21`.
-- Latest docs-only state on `main`: this docs-only post-deploy state update after frontend quality hardening deploy.
+- Last production deployed app hash: `cdf62d8`.
+- Latest docs-only state on `main`: this docs-only post-deploy state update after AI assistant refactor deploy.
+- Last frontend checks for AI assistant refactor passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
+- Production smoke passed for `nginx-health`, `api/health`, `/`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
+- Browser QA covered production AI assistant on `/courses/oop-cpp/delegating-constructors` in desktop light/dark/deep-dark and `/tasks/00-01-minimal-program` on mobile deep-dark with cache-busting hash `cdf62d8`; submit, loading, error, scroll-to-latest, resize/open/close and horizontal overflow checks passed.
 - Last frontend checks for frontend quality hardening passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Production smoke passed for `nginx-health`, `api/health`, `/`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login` and `/register`.
 - Browser QA covered production `/`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login`, `/register` and `/profile` guest redirect with cache-busting hash `0475b21`; no guest refresh requests, unexpected console errors or horizontal overflow found.
