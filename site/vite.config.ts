@@ -27,6 +27,9 @@ export default defineConfig(({ command }) => {
     },
     build: {
       emptyOutDir: true,
+      // The C++ grammar is an intentional lazy Shiki chunk. Keep the warning
+      // useful for app/page bundles while accepting that grammar payload.
+      chunkSizeWarningLimit: 700,
       rollupOptions: {
         output: {
           manualChunks(id) {
