@@ -21,6 +21,7 @@
 - Frontend final stabilization is deployed.
 - Frontend quality hardening is deployed.
 - AI assistant refactor is deployed; backend API and AI endpoint contract were not changed.
+- Backend/session/build stability pass is complete on the current release line; no runtime backend changes were needed.
 - Guest auth refresh guard is deployed: clean guest contexts no longer call `/auth/token/refresh/` on page load.
 - Production deploy после P2 frontend fixes прошёл успешно.
 - CodeBlock readability hotfix задеплоен.
@@ -54,6 +55,7 @@
 - Frontend quality hardening deployed: route/data lookup helpers are centralized, task search uses a shared search text helper, Vite config type coverage is checked, and guest auth refresh noise is removed for clean guest contexts.
 - AI assistant refactor deployed: panel presentation parts were split from feature state/API wiring, while message format and `/api/ai/chat/` contract stayed unchanged.
 - Frontend final stabilization deployed: final audit found no P1 frontend blockers, and `/courses` no longer repeats the same `Курсы` label in the eyebrow and H1.
+- Backend/session/build stability audit completed: auth/session tests, migrations dry-run, backend dependency check, compose config and frontend build/tooling gate were checked without finding a runtime blocker.
 
 ## Header Quality Bar
 
@@ -102,6 +104,7 @@
 
 - `fix/frontend-final-stabilization` was merged into `main` and deployed as `fa8ad5e`.
 - Scope shipped: final frontend readiness audit, `/courses` eyebrow/H1 duplicate wording fix, production browser QA for route shell, course/task flows, NotFound and AI assistant.
+- `fix/backend-session-build-stability` completed as a docs-only stability pass. Backend auth/session/build checks passed; no runtime code/config change was required, so production remains on `fa8ad5e`.
 - `fix/ai-assistant-refactor` was merged into `main` and deployed as `cdf62d8`.
 - AI assistant scope shipped: presentation split, cleaner panel subcomponents, stable assistant typography/layout, and no backend/API contract changes.
 - Previous frontend quality hardening is deployed as `0475b21`: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, route/data lookup helpers, and docs rules that prevent the same frontend quality regressions.
@@ -110,16 +113,16 @@
 
 ## Next Stage
 
-Next planned work: backend/auth/session, build-performance and docs stability passes before future course sections and features.
+Next planned work: continue course/content work, starting with OOP C++ section 11, while keeping tooling/performance follow-ups separate.
 
 ## Backlog
 
-1. Backend/auth refresh noise cleanup and backend/session stability pass.
-2. Vite chunk split/performance pass.
-3. `esbuild`/Vite audit follow-up.
-4. Docs cleanup if needed.
-5. Future course sections and features, including section 11 and section 12.
-6. Audit OOP sections 0-12 readiness after content backlog is closed.
+1. OOP C++ section 11 "Инкапсуляция".
+2. OOP C++ section 12 "Исключения".
+3. Audit OOP sections 0-12 readiness after content backlog is closed.
+4. Vite 8 / build tooling audit follow-up for the low-severity `esbuild` dev-server advisory.
+5. Vite chunk split/performance pass.
+6. Docs cleanup if needed.
 
 ## Checks Snapshot
 
@@ -129,6 +132,8 @@ Next planned work: backend/auth/session, build-performance and docs stability pa
 - Frontend audit found no P1 blockers before deploy. The only Fix now change was `/courses` eyebrow text from `Курсы` to `Каталог` to remove a duplicate label/H1 pattern.
 - Production smoke passed for `nginx-health`, `api/health`, `/`, `/courses`, `/courses/oop-cpp`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login` and `/register`.
 - Browser QA covered production `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login`, `/register`, unknown route fallback and AI assistant success/error states with cache-busting hash `fa8ad5e`.
+- Backend/session/build stability checks passed: `manage.py check`, `makemigrations --check --dry-run`, `manage.py test` with 77 tests, backend `pip check`, `docker compose` config validation for dev/prod, and `npm run build`.
+- `npm audit --audit-level=low` still reports one low-severity transitive `esbuild` advisory through `vite@7.3.5`. Current Vite 7 range cannot safely resolve `esbuild@0.28.1`; Vite 8 changes the build toolchain and remains a separate tooling pass.
 - Last frontend checks for AI assistant refactor passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Production smoke passed for `nginx-health`, `api/health`, `/`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
 - Browser QA covered production AI assistant on `/courses/oop-cpp/delegating-constructors` in desktop light/dark/deep-dark and `/tasks/00-01-minimal-program` on mobile deep-dark with cache-busting hash `cdf62d8`; submit, loading, error, scroll-to-latest, resize/open/close and horizontal overflow checks passed.
@@ -156,12 +161,12 @@ Next planned work: backend/auth/session, build-performance and docs stability pa
 - База C++ sections 0-4 remain `needs-theory`; CoursePage shows placeholder pages for them.
 - If real production secrets were pushed or shared before the security pass, manual rotation and history cleanup are still required.
 - Page-level lazy loading, auth reset event cleanup and a unit test runner remain future frontend tasks.
-- Auth/session behavior still needs a separate backend/session stability pass before it is treated as a finished product area.
+- Auth/session behavior passed the current stability audit. Further auth work should be driven by confirmed product/backend requirements, not by the old generic backlog item.
 
 ## Do Not Do Now
 
 - Do not push or deploy unless explicitly requested.
-- Do not continue section 11 before the backend/auth/build/docs stability pass decision.
+- Section 11 can start next; keep it scoped to course/content unless a confirmed blocker appears.
 - Do not continue 9.2, 10.1, 10.2 before 11-12 are closed.
 - Do not add section 12 before section 11.
 - Do not mix content work with Docker/nginx/security changes.
