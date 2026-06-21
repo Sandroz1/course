@@ -71,8 +71,10 @@ export const courses: Course[] = [
   },
 ];
 
+const coursesById = new Map(courses.map((course) => [course.id, course]));
+
 export function getCourseById(courseId: CourseId) {
-  return courses.find((course) => course.id === courseId);
+  return coursesById.get(courseId);
 }
 
 export function getAvailableCourses() {

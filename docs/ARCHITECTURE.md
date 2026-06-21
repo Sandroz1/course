@@ -37,6 +37,8 @@
 
 Правило: новая тема курса должна подключаться через data/content. Новый layout в `pages` нужен только если появляется новый тип страницы.
 
+Правило для lookup/search: страницы не должны вручную сканировать статические registry, если для этого уже есть helper в `data` или `utils`. Общие поиски по courses, tasks, sections и slugs держать рядом с данными или в pure helper, чтобы route-level pages только собирали экран.
+
 ## Public/App Shell Split
 
 - `/` остаётся public HomePage без `AppLayout`.

@@ -62,15 +62,13 @@ function getAppLogoHref(path: string) {
   return appRoutes.courses;
 }
 
-function getSidebarCourses() {
-  return [...courses]
-    .sort((first, second) => first.order - second.order)
-    .filter((course) => {
-      const hasReadySections = getCourseSections(course.id).some(isCourseSectionReady);
-
-      return course.status === "available" || hasReadySections;
-    });
-}
+const sidebarCourseLinks = [...courses]
+  .sort((first, second) => first.order - second.order)
+  .map((course) => ({
+    course,
+    readySectionsCount: getCourseSections(course.id).filter(isCourseSectionReady).length,
+  }))
+  .filter(({ course, readySectionsCount }) => course.status === "available" || readySectionsCount > 0);
 
 function SidebarIcon({ icon }: { icon: NavigationIcon }) {
   if (icon === "home") {
@@ -181,11 +179,12 @@ function SidebarLink({
   isCollapsed,
   label,
   onNavigate,
+  path,
 }: NavigationLink & {
   isCollapsed: boolean;
   onNavigate: () => void;
+  path: string;
 }) {
-  const path = currentPath();
   const isActive = isLinkActive(path, href);
 
   return (
@@ -264,7 +263,6 @@ export function Sidebar({
 }: SidebarProps) {
   const path = currentPath();
   const appLogoHref = getAppLogoHref(path);
-  const sidebarCourses = getSidebarCourses();
 
   function handleNavigate() {
     onCloseMobile();
@@ -342,6 +340,7 @@ export function Sidebar({
               {...link}
               isCollapsed={isCollapsed}
               onNavigate={handleNavigate}
+              path={path}
             />
           ))}
         </nav>
@@ -354,14 +353,14 @@ export function Sidebar({
               {...link}
               isCollapsed={isCollapsed}
               onNavigate={handleNavigate}
+              path={path}
             />
           ))}
         </nav>
 
         <section className={styles.courseBlock} aria-label="Курсы">
           <span className={styles.groupTitle}>Курсы</span>
-          {sidebarCourses.map((course) => {
-            const readySectionsCount = getCourseSections(course.id).filter(isCourseSectionReady).length;
+          {sidebarCourseLinks.map(({ course, readySectionsCount }) => {
             const isActive = isCourseActive(path, course);
 
             return (

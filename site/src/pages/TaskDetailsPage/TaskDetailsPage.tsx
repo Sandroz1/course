@@ -5,7 +5,7 @@ import {
   getCourseSectionPath,
 } from "../../data/courseSections";
 import { getCourseById } from "../../data/courses";
-import { tasks } from "../../data/tasks";
+import { getTaskById, type Task } from "../../data/tasks";
 import { useAuth } from "../../context/AuthContext";
 import {
   getCachedCourseProgress,
@@ -35,8 +35,6 @@ import {
   taskLevelLabels,
 } from "../../utils/taskDisplay";
 import styles from "./TaskDetailsPage.module.scss";
-
-type Task = (typeof tasks)[number];
 
 const DEFAULT_TASK_DESCRIPTION =
   "Откройте файл из practice, прочитайте комментарии в начале файла и напишите решение вместо TODO. Сначала добейтесь компиляции, затем проверьте поведение на простых данных.";
@@ -269,7 +267,7 @@ function TaskHelpSection({
 }
 
 export function TaskDetailsPage({ taskId }: { taskId: string }) {
-  const task = tasks.find((item) => item.id === taskId);
+  const task = getTaskById(taskId);
   const { accessToken, isAuthenticated } = useAuth();
   const authKey = accessToken ?? "";
   const [activeFileIndex, setActiveFileIndex] = useState(0);

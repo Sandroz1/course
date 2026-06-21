@@ -1154,3 +1154,16 @@ int main() {
 ` }],
   }),
 ];
+
+const tasksById = new Map(tasks.map((task) => [task.id, task]));
+
+export function getTaskById(taskId: string) {
+  return tasksById.get(taskId);
+}
+
+export function getTasksByIdsInCatalogOrder(taskIds: string[]) {
+  if (taskIds.length === 0) return [];
+
+  const taskIdSet = new Set(taskIds);
+  return tasks.filter((task) => taskIdSet.has(task.id));
+}

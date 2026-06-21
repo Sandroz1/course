@@ -83,13 +83,21 @@
 - `26038d0` - `Update project stabilization docs`.
 - `e96fdee` - `Document project quality bar`.
 
+## Pending Branch State
+
+- Current hardening work continues on `fix/frontend-quality-hardening` after `a63d1ed Complete project foundation hardening`.
+- Scope: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, and docs rules that prevent the same frontend quality regressions.
+- This branch is not merged or deployed yet. Production remains on deployed app hash `a2c4b29` until an explicit merge/deploy step.
+- Guest contexts without an access token or saved user snapshot no longer call `/auth/token/refresh/` on page load. Saved user snapshots still allow the app to attempt cookie-based session restore.
+- The remaining `esbuild` npm audit item is low severity and tied to the current Vite toolchain range; do not add overrides or major tooling changes without a separate build/performance pass.
+
 ## Next Stage
 
-Next planned work: backend/auth/build/docs stability pass before future course sections and features.
+Next planned work: review and release `fix/frontend-quality-hardening` if checks stay clean, then backend/session, build-performance and docs stability passes before future course sections and features.
 
 ## Backlog
 
-1. Backend/auth refresh noise cleanup.
+1. Backend/session stability pass.
 2. Backend stability pass.
 3. Build/performance split for the Vite chunk-size warning.
 4. Docs cleanup if needed.
@@ -113,6 +121,7 @@ Next planned work: backend/auth/build/docs stability pass before future course s
 - Production smoke passed for `/`, `/courses`, `/tasks`, `/login`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker` and health checks.
 - Browser QA covered `/courses`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker`, AI assistant and profile/login redirect; no console errors or horizontal overflow.
 - Vite chunk-size warning is known and is not a build failure.
+- Latest local checks on `fix/frontend-quality-hardening` passed: `npm run typecheck`, `npm run lint`, `npm run build`; guest browser QA found no `/api/auth/token/refresh/` requests without a saved session snapshot.
 - Docs-only changes should run only repository checks unless code changes accidentally appear.
 
 ## Known Issues
@@ -121,7 +130,7 @@ Next planned work: backend/auth/build/docs stability pass before future course s
 - База C++ sections 0-4 remain `needs-theory`; CoursePage shows placeholder pages for them.
 - If real production secrets were pushed or shared before the security pass, manual rotation and history cleanup are still required.
 - Page-level lazy loading, auth reset event cleanup and a unit test runner remain future frontend tasks.
-- Fresh unauthenticated browser contexts still log a 401 for `/api/auth/token/refresh/`; track this in auth cleanup, not in CodeBlock work.
+- Auth/session behavior still needs a separate backend/session stability pass before it is treated as a finished product area.
 
 ## Do Not Do Now
 
