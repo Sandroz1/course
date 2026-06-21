@@ -1,21 +1,32 @@
-import { useEffect } from "react";
+import { lazy, useEffect } from "react";
 
 import { useAuth } from "../context/AuthContext";
-import { BaseCppCoursePage } from "../pages/BaseCppCoursePage";
-import { CommonErrorsPage } from "../pages/CommonErrorsPage";
-import { CoursePage } from "../pages/CoursePage";
-import { CourseIndexPage } from "../pages/CourseIndexPage";
-import { CoursesPage } from "../pages/CoursesPage";
-import { GuidePage } from "../pages/GuidePage";
-import { HomePage } from "../pages/HomePage";
-import { LoginPage } from "../pages/LoginPage";
-import { NotFoundPage } from "../pages/NotFoundPage";
-import { ProfilePage } from "../pages/ProfilePage";
-import { RegisterPage } from "../pages/RegisterPage";
-import { TaskDetailsPage } from "../pages/TaskDetailsPage";
-import { TasksIndexPage } from "../pages/TasksIndexPage";
 import { navigateTo } from "../utils/navigation";
 import { appRoutes, routePrefixes, stripRoutePrefix } from "./routes";
+
+const BaseCppCoursePage = lazy(() =>
+  import("../pages/BaseCppCoursePage").then(({ BaseCppCoursePage }) => ({ default: BaseCppCoursePage })),
+);
+const CommonErrorsPage = lazy(() =>
+  import("../pages/CommonErrorsPage").then(({ CommonErrorsPage }) => ({ default: CommonErrorsPage })),
+);
+const CoursePage = lazy(() => import("../pages/CoursePage").then(({ CoursePage }) => ({ default: CoursePage })));
+const CourseIndexPage = lazy(() =>
+  import("../pages/CourseIndexPage").then(({ CourseIndexPage }) => ({ default: CourseIndexPage })),
+);
+const CoursesPage = lazy(() => import("../pages/CoursesPage").then(({ CoursesPage }) => ({ default: CoursesPage })));
+const GuidePage = lazy(() => import("../pages/GuidePage").then(({ GuidePage }) => ({ default: GuidePage })));
+const HomePage = lazy(() => import("../pages/HomePage").then(({ HomePage }) => ({ default: HomePage })));
+const LoginPage = lazy(() => import("../pages/LoginPage").then(({ LoginPage }) => ({ default: LoginPage })));
+const NotFoundPage = lazy(() => import("../pages/NotFoundPage").then(({ NotFoundPage }) => ({ default: NotFoundPage })));
+const ProfilePage = lazy(() => import("../pages/ProfilePage").then(({ ProfilePage }) => ({ default: ProfilePage })));
+const RegisterPage = lazy(() => import("../pages/RegisterPage").then(({ RegisterPage }) => ({ default: RegisterPage })));
+const TaskDetailsPage = lazy(() =>
+  import("../pages/TaskDetailsPage").then(({ TaskDetailsPage }) => ({ default: TaskDetailsPage })),
+);
+const TasksIndexPage = lazy(() =>
+  import("../pages/TasksIndexPage").then(({ TasksIndexPage }) => ({ default: TasksIndexPage })),
+);
 
 function ProtectedProfilePage() {
   const { accessToken, isLoading } = useAuth();

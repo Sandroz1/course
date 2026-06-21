@@ -56,6 +56,7 @@
 - AI assistant refactor deployed: panel presentation parts were split from feature state/API wiring, while message format and `/api/ai/chat/` contract stayed unchanged.
 - Frontend final stabilization deployed: final audit found no P1 frontend blockers, and `/courses` no longer repeats the same `Курсы` label in the eyebrow and H1.
 - Backend/session/build stability audit completed: auth/session tests, migrations dry-run, backend dependency check, compose config and frontend build/tooling gate were checked without finding a runtime blocker.
+- Vite chunk-size warning is fixed on `fix/vite-build-tooling-pass` by lazy-loading `AppLayout` and route-level pages; production deploy is still pending for this branch.
 
 ## Header Quality Bar
 
@@ -105,11 +106,12 @@
 - `fix/frontend-final-stabilization` was merged into `main` and deployed as `fa8ad5e`.
 - Scope shipped: final frontend readiness audit, `/courses` eyebrow/H1 duplicate wording fix, production browser QA for route shell, course/task flows, NotFound and AI assistant.
 - `fix/backend-session-build-stability` completed as a docs-only stability pass. Backend auth/session/build checks passed; no runtime code/config change was required, so production remains on `fa8ad5e`.
+- `fix/vite-build-tooling-pass` splits route-level pages and `AppLayout` from the initial bundle. The previous 657 kB `index` chunk warning is gone in local build; production deploy is still pending.
 - `fix/ai-assistant-refactor` was merged into `main` and deployed as `cdf62d8`.
 - AI assistant scope shipped: presentation split, cleaner panel subcomponents, stable assistant typography/layout, and no backend/API contract changes.
 - Previous frontend quality hardening is deployed as `0475b21`: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, route/data lookup helpers, and docs rules that prevent the same frontend quality regressions.
 - Guest contexts without an access token or saved user snapshot no longer call `/auth/token/refresh/` on page load. Saved user snapshots still allow the app to attempt cookie-based session restore.
-- The remaining `esbuild` npm audit item is low severity and tied to the current Vite toolchain range; do not add overrides or major tooling changes without a separate build/performance pass.
+- The remaining `esbuild` npm audit item is low severity and tied to the current Vite 7 toolchain range. Vite 7 cannot safely resolve `esbuild@0.28.1`; do not add overrides. Treat Vite 8 as a separate major tooling migration.
 
 ## Next Stage
 
@@ -120,9 +122,8 @@ Next planned work: continue course/content work, starting with OOP C++ section 1
 1. OOP C++ section 11 "Инкапсуляция".
 2. OOP C++ section 12 "Исключения".
 3. Audit OOP sections 0-12 readiness after content backlog is closed.
-4. Vite 8 / build tooling audit follow-up for the low-severity `esbuild` dev-server advisory.
-5. Vite chunk split/performance pass.
-6. Docs cleanup if needed.
+4. Vite 8 tooling migration decision for the low-severity `esbuild` dev-server advisory.
+5. Docs cleanup if needed.
 
 ## Checks Snapshot
 
@@ -133,7 +134,8 @@ Next planned work: continue course/content work, starting with OOP C++ section 1
 - Production smoke passed for `nginx-health`, `api/health`, `/`, `/courses`, `/courses/oop-cpp`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login` and `/register`.
 - Browser QA covered production `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login`, `/register`, unknown route fallback and AI assistant success/error states with cache-busting hash `fa8ad5e`.
 - Backend/session/build stability checks passed: `manage.py check`, `makemigrations --check --dry-run`, `manage.py test` with 77 tests, backend `pip check`, `docker compose` config validation for dev/prod, and `npm run build`.
-- `npm audit --audit-level=low` still reports one low-severity transitive `esbuild` advisory through `vite@7.3.5`. Current Vite 7 range cannot safely resolve `esbuild@0.28.1`; Vite 8 changes the build toolchain and remains a separate tooling pass.
+- Vite build tooling pass checks: route-level lazy split removes the previous chunk-size warning; largest local build chunks are split into course data, Shiki language chunks, React vendor and page chunks instead of one large initial `index` chunk.
+- `npm audit --audit-level=low` still reports one low-severity transitive `esbuild` advisory through `vite@7.3.5`. Current Vite 7 range cannot safely resolve `esbuild@0.28.1`; Vite 8 changes the build toolchain and remains a separate tooling migration.
 - Last frontend checks for AI assistant refactor passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Production smoke passed for `nginx-health`, `api/health`, `/`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
 - Browser QA covered production AI assistant on `/courses/oop-cpp/delegating-constructors` in desktop light/dark/deep-dark and `/tasks/00-01-minimal-program` on mobile deep-dark with cache-busting hash `cdf62d8`; submit, loading, error, scroll-to-latest, resize/open/close and horizontal overflow checks passed.
@@ -152,7 +154,7 @@ Next planned work: continue course/content work, starting with OOP C++ section 1
 - Last frontend checks for P2 deploy passed: `npm run typecheck`, `npm run lint`, `npm run build`.
 - Production smoke passed for `/`, `/courses`, `/tasks`, `/login`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker` and health checks.
 - Browser QA covered `/courses`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker`, AI assistant and profile/login redirect; no console errors or horizontal overflow.
-- Vite chunk-size warning is known and is not a build failure.
+- Vite chunk-size warning was fixed locally in `fix/vite-build-tooling-pass`; deploy the branch before treating it as production state.
 - Docs-only changes should run only repository checks unless code changes accidentally appear.
 
 ## Known Issues

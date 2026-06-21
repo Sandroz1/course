@@ -140,5 +140,5 @@ Content data:
 
 ## Deferred Architecture Tasks
 
-- Page-level `React.lazy` + `Suspense`: отложено до отдельной задачи, где будет выбран единый loading fallback и вручную проверены все основные routes.
+- Page-level `React.lazy` + `Suspense` is enabled in the custom router. Keep route-level pages lazy-loaded and keep `/` outside `AppLayout`; do not move course/task data back into the initial shell.
 - Auth reset без `window.dispatchEvent`: отложено, потому что текущий API-слой очищает auth из fetch flow, а безопасная замена требует отдельного контракта между `lib/api.ts` и `AuthProvider`.

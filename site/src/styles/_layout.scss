@@ -38,3 +38,14 @@
 .path-label {
   color: var(--muted);
 }
+
+.route-fallback {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  background: var(--bg);
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-medium);
+}

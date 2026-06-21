@@ -1,8 +1,17 @@
-import { useEffect, useState } from "react";
-import { AppLayout } from "../components/layout/AppLayout";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { currentPath } from "../utils/slug";
 import { appRoutes } from "./routes";
 import { renderRoute } from "./router";
+
+const AppLayout = lazy(() => import("../components/layout/AppLayout").then(({ AppLayout }) => ({ default: AppLayout })));
+
+function RouteFallback() {
+  return (
+    <div className="route-fallback" role="status" aria-live="polite">
+      Загружаем страницу...
+    </div>
+  );
+}
 
 export default function App() {
   const [path, setPath] = useState(currentPath());
@@ -45,9 +54,9 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
-  if (path === appRoutes.home) {
-    return renderRoute(path);
-  }
-
-  return <AppLayout>{renderRoute(path)}</AppLayout>;
+  return (
+    <Suspense fallback={<RouteFallback />}>
+      {path === appRoutes.home ? renderRoute(path) : <AppLayout>{renderRoute(path)}</AppLayout>}
+    </Suspense>
+  );
 }
