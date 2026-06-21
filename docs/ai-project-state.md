@@ -15,9 +15,10 @@
 
 ## Current Production State
 
-- Production deployed app hash: `cdf62d8 Merge AI assistant refactor`.
-- Latest deployed runtime hash before this docs-only state update: `cdf62d8 Merge AI assistant refactor`.
+- Production deployed app hash: `fa8ad5e Merge frontend final stabilization`.
+- Latest deployed runtime hash before this docs-only state update: `fa8ad5e Merge frontend final stabilization`.
 - Latest docs/state commit: this post-deploy docs-only state update on `main` (no production redeploy required).
+- Frontend final stabilization is deployed.
 - Frontend quality hardening is deployed.
 - AI assistant refactor is deployed; backend API and AI endpoint contract were not changed.
 - Guest auth refresh guard is deployed: clean guest contexts no longer call `/auth/token/refresh/` on page load.
@@ -52,6 +53,7 @@
 - Frontend foundation hardening deployed: stale global `.code-block*` selectors were removed, `AuthLayout` typography was softened, and touched app-shell/static task routes now use `appRoutes`/`routePrefixes`.
 - Frontend quality hardening deployed: route/data lookup helpers are centralized, task search uses a shared search text helper, Vite config type coverage is checked, and guest auth refresh noise is removed for clean guest contexts.
 - AI assistant refactor deployed: panel presentation parts were split from feature state/API wiring, while message format and `/api/ai/chat/` contract stayed unchanged.
+- Frontend final stabilization deployed: final audit found no P1 frontend blockers, and `/courses` no longer repeats the same `Курсы` label in the eyebrow and H1.
 
 ## Header Quality Bar
 
@@ -65,6 +67,8 @@
 
 ## Recent Important Commits
 
+- `fa8ad5e` - `Merge frontend final stabilization`.
+- `2431bd9` - `Stabilize frontend UI system`.
 - `cdf62d8` - `Merge AI assistant refactor`.
 - `29875a0` - `Refactor AI assistant`.
 - `0475b21` - `Merge frontend quality hardening`.
@@ -96,8 +100,10 @@
 
 ## Latest Release State
 
+- `fix/frontend-final-stabilization` was merged into `main` and deployed as `fa8ad5e`.
+- Scope shipped: final frontend readiness audit, `/courses` eyebrow/H1 duplicate wording fix, production browser QA for route shell, course/task flows, NotFound and AI assistant.
 - `fix/ai-assistant-refactor` was merged into `main` and deployed as `cdf62d8`.
-- Scope shipped: AI assistant presentation split, cleaner panel subcomponents, stable assistant typography/layout, and no backend/API contract changes.
+- AI assistant scope shipped: presentation split, cleaner panel subcomponents, stable assistant typography/layout, and no backend/API contract changes.
 - Previous frontend quality hardening is deployed as `0475b21`: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, route/data lookup helpers, and docs rules that prevent the same frontend quality regressions.
 - Guest contexts without an access token or saved user snapshot no longer call `/auth/token/refresh/` on page load. Saved user snapshots still allow the app to attempt cookie-based session restore.
 - The remaining `esbuild` npm audit item is low severity and tied to the current Vite toolchain range; do not add overrides or major tooling changes without a separate build/performance pass.
@@ -117,8 +123,12 @@ Next planned work: backend/auth/session, build-performance and docs stability pa
 
 ## Checks Snapshot
 
-- Last production deployed app hash: `cdf62d8`.
-- Latest docs-only state on `main`: this docs-only post-deploy state update after AI assistant refactor deploy.
+- Last production deployed app hash: `fa8ad5e`.
+- Latest docs-only state on `main`: this docs-only post-deploy state update after frontend final stabilization deploy.
+- Last frontend final stabilization checks passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
+- Frontend audit found no P1 blockers before deploy. The only Fix now change was `/courses` eyebrow text from `Курсы` to `Каталог` to remove a duplicate label/H1 pattern.
+- Production smoke passed for `nginx-health`, `api/health`, `/`, `/courses`, `/courses/oop-cpp`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login` and `/register`.
+- Browser QA covered production `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login`, `/register`, unknown route fallback and AI assistant success/error states with cache-busting hash `fa8ad5e`.
 - Last frontend checks for AI assistant refactor passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Production smoke passed for `nginx-health`, `api/health`, `/`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
 - Browser QA covered production AI assistant on `/courses/oop-cpp/delegating-constructors` in desktop light/dark/deep-dark and `/tasks/00-01-minimal-program` on mobile deep-dark with cache-busting hash `cdf62d8`; submit, loading, error, scroll-to-latest, resize/open/close and horizontal overflow checks passed.
