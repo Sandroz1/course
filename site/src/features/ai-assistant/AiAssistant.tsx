@@ -4,7 +4,6 @@ import {
     useRef,
     useState,
 } from "react";
-import { appRoutes } from "../../app/routes";
 import { useAuth } from "../../context/AuthContext";
 import { ApiError, isApiConfigured } from "../../lib/api";
 import {
@@ -17,15 +16,23 @@ import {
 import { sendAiChat } from "../../lib/aiApi";
 import clsx from "clsx";
 import type { AiChatMessage, AiUsage } from "../../types/api";
-import { toPath } from "../../utils/slug";
-import { MessageContent } from "./components/MessageContent";
+import {
+    AccessNotice,
+    AssistantComposer,
+    AssistantMessages,
+    FloatingAiButton,
+    PanelHeader,
+    ResizeHandles,
+    SelectedTextPreview,
+    SelectionPopoverButton,
+    UsageLimitNotice,
+    type ChatMessage,
+} from "./components/AssistantPanelParts";
 import { useAiPanelSize } from "./hooks/useAiPanelSize";
 import { useLessonSelection } from "./hooks/useLessonSelection";
 import { isNearBottom } from "./panelSize";
 import { getAiAccessMessage, getAiErrorMessage } from "./utils/errors";
 import styles from "./AiAssistant.module.scss";
-
-type ChatMessage = AiChatMessage & { id: string };
 
 function focusTextareaAtEnd(textarea: HTMLTextAreaElement | null) {
     if (!textarea || textarea.disabled) {
@@ -243,7 +250,7 @@ function AiAssistantPanel() {
         setShowJumpToBottom(false);
     }
 
-    async function sendQuestion(event: FormEvent) {
+    async function sendQuestion(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
 
         const cleanQuestion = question.trim();
@@ -337,33 +344,18 @@ function AiAssistantPanel() {
 
     return (
         <>
-            {selectedText && selectionPopover && !isOpen && canUseAi ? (
-                <button
-                    className={clsx(
-                        styles.selectionPopover,
-                        selectionPopover.placement === "below" && styles.selectionPopoverBelow,
-                    )}
-                    type="button"
-                    data-placement={selectionPopover.placement}
-                    style={{
-                        left: `${selectionPopover.x}px`,
-                        top: `${selectionPopover.y}px`,
-                    }}
-                    onMouseDown={(event) => event.preventDefault()}
-                    onClick={askAboutSelectedText}
-                >
-                    Спросить у AI
-                </button>
-            ) : null}
+            <SelectionPopoverButton
+                selectedText={selectedText}
+                selectionPopover={selectionPopover}
+                isOpen={isOpen}
+                canUseAi={canUseAi}
+                onAsk={askAboutSelectedText}
+            />
 
-            <button
-                className={styles.floatingButton}
-                type="button"
-                onClick={() => setIsOpen((value) => !value)}
-                aria-label={isOpen ? "Закрыть помощника" : "Открыть помощника"}
-            >
-                {isOpen ? "×" : "AI"}
-            </button>
+            <FloatingAiButton
+                isOpen={isOpen}
+                onToggle={() => setIsOpen((value) => !value)}
+            />
 
             {isOpen ? (
                 <aside
@@ -374,147 +366,60 @@ function AiAssistantPanel() {
                         height: isLockedPanel ? undefined : `${panelSize.height}px`,
                     }}
                 >
-                    <div className={styles.panelHeader}>
-                        <div>
-                            <p>AI помощник</p>
-                            <h2>
-                                {selectedText ? "Вопрос по выделенному" : "Помощник по C++"}
-                            </h2>
-                            {isAuthenticated && isPhoneVerified ? (
-                                <span className={styles.usageText}>{usageText}</span>
-                            ) : null}
-                        </div>
+                    <PanelHeader
+                        selectedText={selectedText}
+                        isAuthenticated={isAuthenticated}
+                        isPhoneVerified={isPhoneVerified}
+                        usageText={usageText}
+                        onClose={() => setIsOpen(false)}
+                    />
 
-                        <button
-                            type="button"
-                            className={styles.panelClose}
-                            onClick={() => setIsOpen(false)}
-                            aria-label="Закрыть помощника"
-                        >
-                            ×
-                        </button>
-                    </div>
+                    <SelectedTextPreview
+                        selectedText={selectedText}
+                        onClear={clearSelectedText}
+                    />
 
-                    {selectedText ? (
-                        <div className={styles.selectedText}>
-                            <div className={styles.selectedTextTop}>
-                                <span>Выделенный текст из темы</span>
-                                <button type="button" onClick={clearSelectedText}>
-                                    убрать
-                                </button>
-                            </div>
-                            <p>{selectedText}</p>
-                        </div>
-                    ) : null}
+                    <AccessNotice
+                        message={canUseAi ? "" : aiAccessMessage}
+                        isAuthenticated={isAuthenticated}
+                        isAuthLoading={isAuthLoading}
+                        isPhoneVerified={isPhoneVerified}
+                    />
 
-                    {!canUseAi ? (
-                        <div className={styles.accessNotice}>
-                            <p>{aiAccessMessage}</p>
-                            {!isAuthenticated && !isAuthLoading ? (
-                                <a href={toPath(appRoutes.login)}>Войти</a>
-                            ) : null}
-                            {isAuthenticated && !isPhoneVerified ? (
-                                <a href={toPath(appRoutes.profile)}>Открыть профиль</a>
-                            ) : null}
-                        </div>
-                    ) : null}
-
-                    {canUseAi && isLimitReached ? (
-                        <div className={styles.usageNotice}>
-                            <span>{usageText}</span>
-                            <strong>Лимит на сегодня исчерпан</strong>
-                        </div>
-                    ) : null}
+                    <UsageLimitNotice
+                        isVisible={canUseAi && isLimitReached}
+                        usageText={usageText}
+                    />
 
                     {canUseAi || messages.length > 0 ? (
-                        <div className={styles.messagesWrap}>
-                            <div
-                                className={styles.messages}
-                                ref={messagesRef}
-                                onScroll={handleMessagesScroll}
-                            >
-                                {messages.length === 0 && canSendAi ? (
-                                    <div className={styles.empty}>
-                                        <p>Задай вопрос по C++ или выделенному фрагменту.</p>
-                                    </div>
-                                ) : null}
-
-                                {messages.map((message) => (
-                                    <div
-                                        className={clsx(
-                                            styles.message,
-                                            message.role === "user" ? styles.messageUser : styles.messageAssistant,
-                                        )}
-                                        key={message.id}
-                                        ref={(node) => setMessageRef(message.id, node)}
-                                    >
-                                        <span className={styles.messageRole}>
-                                            {message.role === "user" ? "Ты" : "AI"}
-                                        </span>
-                                        <MessageContent content={message.content} role={message.role} />
-                                    </div>
-                                ))}
-
-                                {isLoading ? (
-                                    <div className={clsx(styles.message, styles.messageAssistant)}>
-                                        <span className={styles.messageRole}>AI</span>
-                                        <p>Думаю...</p>
-                                    </div>
-                                ) : null}
-                            </div>
-
-                            {showJumpToBottom ? (
-                                <button
-                                    type="button"
-                                    className={styles.jumpBottom}
-                                    onClick={jumpToLatestMessage}
-                                >
-                                    К последнему сообщению
-                                </button>
-                            ) : null}
-                        </div>
+                        <AssistantMessages
+                            messages={messages}
+                            canSendAi={canSendAi}
+                            isLoading={isLoading}
+                            showJumpToBottom={showJumpToBottom}
+                            messagesRef={messagesRef}
+                            setMessageRef={setMessageRef}
+                            onScroll={handleMessagesScroll}
+                            onJumpToLatest={jumpToLatestMessage}
+                        />
                     ) : null}
 
                     {errorText ? <p className={styles.error}>{errorText}</p> : null}
 
                     {canUseAi ? (
-                        <form className={styles.form} onSubmit={sendQuestion}>
-                            <textarea
-                                ref={textareaRef}
-                                value={question}
-                                onChange={(event) => setQuestion(event.target.value)}
-                                placeholder={
-                                    isLimitReached
-                                        ? "Лимит на сегодня исчерпан"
-                                        : selectedText
-                                        ? "Что объяснить в выделенном фрагменте?"
-                                        : "Спроси что-нибудь по C++..."
-                                }
-                                rows={3}
-                                disabled={!canSendAi || isLoading}
-                            />
-
-                            <button type="submit" disabled={!canSendAi || isLoading || !question.trim()}>
-                                Отправить
-                            </button>
-                        </form>
+                        <AssistantComposer
+                            question={question}
+                            selectedText={selectedText}
+                            isLimitReached={isLimitReached}
+                            canSendAi={canSendAi}
+                            isLoading={isLoading}
+                            textareaRef={textareaRef}
+                            onQuestionChange={setQuestion}
+                            onSubmit={sendQuestion}
+                        />
                     ) : null}
 
-                    <span
-                        className={clsx(styles.resizeZone, styles.resizeZoneLeft)}
-                        onPointerDown={(event) => startResize(event, "left")}
-                        aria-hidden="true"
-                    />
-                    <span
-                        className={clsx(styles.resizeZone, styles.resizeZoneTop)}
-                        onPointerDown={(event) => startResize(event, "top")}
-                        aria-hidden="true"
-                    />
-                    <span
-                        className={clsx(styles.resizeZone, styles.resizeZoneCorner)}
-                        onPointerDown={(event) => startResize(event, "corner")}
-                        aria-hidden="true"
-                    />
+                    <ResizeHandles onStartResize={startResize} />
                 </aside>
             ) : null}
         </>
