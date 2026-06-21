@@ -15,9 +15,11 @@
 
 ## Current Production State
 
-- Production deployed app hash: `a2c4b29 Merge frontend foundation hardening`.
-- Latest deployed main hash before this docs-only state update: `a2c4b29 Merge frontend foundation hardening`.
-- Latest docs/state commit: this docs-only post-deploy state update on `main` (no production redeploy required).
+- Production deployed app hash: `0475b21 Merge frontend quality hardening`.
+- Latest deployed runtime hash before this docs-only state update: `0475b21 Merge frontend quality hardening`.
+- Latest docs/state commit: this post-deploy docs-only state update on `main` (no production redeploy required).
+- Frontend quality hardening is deployed.
+- Guest auth refresh guard is deployed: clean guest contexts no longer call `/auth/token/refresh/` on page load.
 - Production deploy после P2 frontend fixes прошёл успешно.
 - CodeBlock readability hotfix задеплоен.
 - Главная `/` стабилизирована и задеплоена.
@@ -47,6 +49,7 @@
 - CodeBlock readability/top actions hotfix deployed: code text contrast is stronger, CodeBlock owns its font sizing on theory/task pages, copy action is compact and selection AI popover no longer looks like a large unrelated pill.
 - Pre-section UI quality pass deployed: `/profile` page heading now follows the shared page-title scale, and `CodeBlock` text selection is readable in light, dark and deep-dark themes.
 - Frontend foundation hardening deployed: stale global `.code-block*` selectors were removed, `AuthLayout` typography was softened, and touched app-shell/static task routes now use `appRoutes`/`routePrefixes`.
+- Frontend quality hardening deployed: route/data lookup helpers are centralized, task search uses a shared search text helper, Vite config type coverage is checked, and guest auth refresh noise is removed for clean guest contexts.
 
 ## Header Quality Bar
 
@@ -60,6 +63,10 @@
 
 ## Recent Important Commits
 
+- `0475b21` - `Merge frontend quality hardening`.
+- `6d190e3` - `Fix known frontend follow-ups`.
+- `a63d1ed` - `Complete project foundation hardening`.
+- `cdcb4c5` - `Harden frontend quality`.
 - `a2c4b29` - `Merge frontend foundation hardening`.
 - `afeaf03` - `Harden frontend foundation`.
 - `6206dd3` - `Merge pre-section UI quality pass`.
@@ -83,31 +90,34 @@
 - `26038d0` - `Update project stabilization docs`.
 - `e96fdee` - `Document project quality bar`.
 
-## Pending Branch State
+## Latest Release State
 
-- Current hardening work continues on `fix/frontend-quality-hardening` after `a63d1ed Complete project foundation hardening`.
-- Scope: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, and docs rules that prevent the same frontend quality regressions.
-- This branch is not merged or deployed yet. Production remains on deployed app hash `a2c4b29` until an explicit merge/deploy step.
+- `fix/frontend-quality-hardening` was merged into `main` and deployed as `0475b21`.
+- Scope shipped: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, route/data lookup helpers, and docs rules that prevent the same frontend quality regressions.
 - Guest contexts without an access token or saved user snapshot no longer call `/auth/token/refresh/` on page load. Saved user snapshots still allow the app to attempt cookie-based session restore.
 - The remaining `esbuild` npm audit item is low severity and tied to the current Vite toolchain range; do not add overrides or major tooling changes without a separate build/performance pass.
 
 ## Next Stage
 
-Next planned work: review and release `fix/frontend-quality-hardening` if checks stay clean, then backend/session, build-performance and docs stability passes before future course sections and features.
+Next planned work: backend/session, build-performance and docs stability passes before future course sections and features.
 
 ## Backlog
 
-1. Backend/session stability pass.
-2. Backend stability pass.
-3. Build/performance split for the Vite chunk-size warning.
-4. Docs cleanup if needed.
-5. Future course sections and features, including section 11 and section 12.
-6. Audit OOP sections 0-12 readiness after content backlog is closed.
+1. Vite chunk split/performance pass.
+2. `esbuild`/Vite audit follow-up.
+3. AI assistant split/refactor.
+4. Backend/session stability pass.
+5. Docs cleanup if needed.
+6. Future course sections and features, including section 11 and section 12.
+7. Audit OOP sections 0-12 readiness after content backlog is closed.
 
 ## Checks Snapshot
 
-- Last production deployed app hash: `a2c4b29`.
-- Latest docs-only state on `main`: this docs-only post-deploy state update after frontend foundation hardening deploy.
+- Last production deployed app hash: `0475b21`.
+- Latest docs-only state on `main`: this docs-only post-deploy state update after frontend quality hardening deploy.
+- Last frontend checks for frontend quality hardening passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
+- Production smoke passed for `nginx-health`, `api/health`, `/`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login` and `/register`.
+- Browser QA covered production `/`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login`, `/register` and `/profile` guest redirect with cache-busting hash `0475b21`; no guest refresh requests, unexpected console errors or horizontal overflow found.
 - Last frontend checks for frontend foundation hardening passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Production smoke passed for `nginx-health`, `api/health`, `/login`, `/register`, `/tasks`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
 - Browser QA covered production `/login`, `/register`, `/tasks`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors` with cache-busting hash `a2c4b29`.
@@ -121,7 +131,6 @@ Next planned work: review and release `fix/frontend-quality-hardening` if checks
 - Production smoke passed for `/`, `/courses`, `/tasks`, `/login`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker` and health checks.
 - Browser QA covered `/courses`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker`, AI assistant and profile/login redirect; no console errors or horizontal overflow.
 - Vite chunk-size warning is known and is not a build failure.
-- Latest local checks on `fix/frontend-quality-hardening` passed: `npm run typecheck`, `npm run lint`, `npm run build`; guest browser QA found no `/api/auth/token/refresh/` requests without a saved session snapshot.
 - Docs-only changes should run only repository checks unless code changes accidentally appear.
 
 ## Known Issues
