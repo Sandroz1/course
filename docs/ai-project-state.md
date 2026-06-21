@@ -15,13 +15,14 @@
 
 ## Current Production State
 
-- Production deployed app hash: `fa8ad5e Merge frontend final stabilization`.
-- Latest deployed runtime hash before this docs-only state update: `fa8ad5e Merge frontend final stabilization`.
+- Production deployed app hash: `d15d319 Merge Vite build tooling stabilization`.
+- Latest deployed runtime hash before this docs-only state update: `d15d319 Merge Vite build tooling stabilization`.
 - Latest docs/state commit: this post-deploy docs-only state update on `main` (no production redeploy required).
 - Frontend final stabilization is deployed.
 - Frontend quality hardening is deployed.
 - AI assistant refactor is deployed; backend API and AI endpoint contract were not changed.
 - Backend/session/build stability pass is complete on the current release line; no runtime backend changes were needed.
+- Vite build tooling stabilization is deployed: route-level lazy split is live and the previous chunk-size warning is resolved in production build.
 - Guest auth refresh guard is deployed: clean guest contexts no longer call `/auth/token/refresh/` on page load.
 - Production deploy после P2 frontend fixes прошёл успешно.
 - CodeBlock readability hotfix задеплоен.
@@ -56,7 +57,7 @@
 - AI assistant refactor deployed: panel presentation parts were split from feature state/API wiring, while message format and `/api/ai/chat/` contract stayed unchanged.
 - Frontend final stabilization deployed: final audit found no P1 frontend blockers, and `/courses` no longer repeats the same `Курсы` label in the eyebrow and H1.
 - Backend/session/build stability audit completed: auth/session tests, migrations dry-run, backend dependency check, compose config and frontend build/tooling gate were checked without finding a runtime blocker.
-- Vite chunk-size warning is fixed on `fix/vite-build-tooling-pass` by lazy-loading `AppLayout` and route-level pages; production deploy is still pending for this branch.
+- Vite chunk-size warning is fixed and deployed by lazy-loading `AppLayout` and route-level pages.
 
 ## Header Quality Bar
 
@@ -71,6 +72,8 @@
 ## Recent Important Commits
 
 - `fa8ad5e` - `Merge frontend final stabilization`.
+- `d15d319` - `Merge Vite build tooling stabilization`.
+- `b0562e6` - `Stabilize Vite build tooling`.
 - `2431bd9` - `Stabilize frontend UI system`.
 - `cdf62d8` - `Merge AI assistant refactor`.
 - `29875a0` - `Refactor AI assistant`.
@@ -105,8 +108,9 @@
 
 - `fix/frontend-final-stabilization` was merged into `main` and deployed as `fa8ad5e`.
 - Scope shipped: final frontend readiness audit, `/courses` eyebrow/H1 duplicate wording fix, production browser QA for route shell, course/task flows, NotFound and AI assistant.
-- `fix/backend-session-build-stability` completed as a docs-only stability pass. Backend auth/session/build checks passed; no runtime code/config change was required, so production remains on `fa8ad5e`.
-- `fix/vite-build-tooling-pass` splits route-level pages and `AppLayout` from the initial bundle. The previous 657 kB `index` chunk warning is gone in local build; production deploy is still pending.
+- `fix/backend-session-build-stability` completed as a docs-only stability pass. Backend auth/session/build checks passed; no runtime code/config change was required in that pass.
+- `fix/vite-build-tooling-pass` was merged into `main` and deployed as `d15d319`.
+- Scope shipped: route-level pages and `AppLayout` are split from the initial bundle, a small route fallback prevents blank lazy-load states, and the previous 657 kB `index` chunk warning is gone in production build.
 - `fix/ai-assistant-refactor` was merged into `main` and deployed as `cdf62d8`.
 - AI assistant scope shipped: presentation split, cleaner panel subcomponents, stable assistant typography/layout, and no backend/API contract changes.
 - Previous frontend quality hardening is deployed as `0475b21`: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, route/data lookup helpers, and docs rules that prevent the same frontend quality regressions.
@@ -115,26 +119,28 @@
 
 ## Next Stage
 
-Next planned work: continue course/content work, starting with OOP C++ section 11, while keeping tooling/performance follow-ups separate.
+Current stage can be frozen after Vite tooling deploy. Next planned work: continue course/content work, starting with OOP C++ section 11, while keeping Vite 8/esbuild migration as a separate low-priority tooling follow-up.
 
 ## Backlog
 
 1. OOP C++ section 11 "Инкапсуляция".
 2. OOP C++ section 12 "Исключения".
 3. Audit OOP sections 0-12 readiness after content backlog is closed.
-4. Vite 8 tooling migration decision for the low-severity `esbuild` dev-server advisory.
+4. Vite 8 tooling migration decision for the low-severity `esbuild` dev-server advisory; not a blocker for section 11.
 5. Docs cleanup if needed.
 
 ## Checks Snapshot
 
-- Last production deployed app hash: `fa8ad5e`.
-- Latest docs-only state on `main`: this docs-only post-deploy state update after frontend final stabilization deploy.
+- Last production deployed app hash: `d15d319`.
+- Latest docs-only state on `main`: this docs-only post-deploy state update after Vite tooling deploy.
 - Last frontend final stabilization checks passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Frontend audit found no P1 blockers before deploy. The only Fix now change was `/courses` eyebrow text from `Курсы` to `Каталог` to remove a duplicate label/H1 pattern.
 - Production smoke passed for `nginx-health`, `api/health`, `/`, `/courses`, `/courses/oop-cpp`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login` and `/register`.
 - Browser QA covered production `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login`, `/register`, unknown route fallback and AI assistant success/error states with cache-busting hash `fa8ad5e`.
 - Backend/session/build stability checks passed: `manage.py check`, `makemigrations --check --dry-run`, `manage.py test` with 77 tests, backend `pip check`, `docker compose` config validation for dev/prod, and `npm run build`.
-- Vite build tooling pass checks: route-level lazy split removes the previous chunk-size warning; largest local build chunks are split into course data, Shiki language chunks, React vendor and page chunks instead of one large initial `index` chunk.
+- Vite build tooling deploy checks passed: route-level lazy split removes the previous chunk-size warning; production build chunks are split into course data, Shiki language chunks, React vendor and page chunks instead of one large initial `index` chunk.
+- Vite build tooling production smoke passed for `nginx-health`, `api/health`, `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login` and `/register`.
+- Browser QA covered production `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, unknown route fallback and AI assistant auth fallback with cache-busting hash `d15d319`; lazy chunks loaded, CodeBlock remained visible and no browser console errors or horizontal overflow were found.
 - `npm audit --audit-level=low` still reports one low-severity transitive `esbuild` advisory through `vite@7.3.5`. Current Vite 7 range cannot safely resolve `esbuild@0.28.1`; Vite 8 changes the build toolchain and remains a separate tooling migration.
 - Last frontend checks for AI assistant refactor passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Production smoke passed for `nginx-health`, `api/health`, `/`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
@@ -154,7 +160,7 @@ Next planned work: continue course/content work, starting with OOP C++ section 1
 - Last frontend checks for P2 deploy passed: `npm run typecheck`, `npm run lint`, `npm run build`.
 - Production smoke passed for `/`, `/courses`, `/tasks`, `/login`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker` and health checks.
 - Browser QA covered `/courses`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker`, AI assistant and profile/login redirect; no console errors or horizontal overflow.
-- Vite chunk-size warning was fixed locally in `fix/vite-build-tooling-pass`; deploy the branch before treating it as production state.
+- Vite chunk-size warning is fixed in production; keep Vite 8/esbuild migration separate from content work.
 - Docs-only changes should run only repository checks unless code changes accidentally appear.
 
 ## Known Issues
