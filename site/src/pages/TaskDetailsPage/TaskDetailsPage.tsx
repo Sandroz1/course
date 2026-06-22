@@ -37,10 +37,10 @@ import {
 import styles from "./TaskDetailsPage.module.scss";
 
 const DEFAULT_TASK_DESCRIPTION =
-  "Откройте файл из practice, прочитайте комментарии в начале файла и напишите решение вместо TODO. Сначала добейтесь компиляции, затем проверьте поведение на простых данных.";
+  "Прочитайте условие, начните с заготовки ниже и замените TODO своим решением. Сначала добейтесь компиляции, затем проверьте поведение на простых данных.";
 
 const DEFAULT_FILE_DESCRIPTION =
-  "Стартовый файл задачи. Найдите TODO и допишите решение в локальном проекте.";
+  "Стартовая заготовка задачи. Найдите TODO и допишите решение.";
 const MAX_VISIBLE_RESULT_ITEMS = 4;
 
 function getNextFileIndex(currentIndex: number, key: string, fileCount: number) {
@@ -144,21 +144,33 @@ function shouldShowFileDescription(description: string) {
 }
 
 function getResultItems(items: string[], practicePath: string) {
-  if (items.length === 1 && items[0] === `Один файл: ${practicePath}`) {
-    return ["Один файл с решением вместо TODO."];
-  }
+  return items.map((item) => {
+    if (item === `Один файл: ${practicePath}`) {
+      return "Один файл с решением вместо TODO.";
+    }
 
-  return items;
+    if (item.startsWith("practice/")) {
+      return `Файл ${getDisplayFileName(item)} с решением вместо TODO.`;
+    }
+
+    return item;
+  });
+}
+
+function getDisplayFileName(fileName: string) {
+  return fileName.split("/").pop() ?? fileName;
 }
 
 function TaskBriefSection({
   description,
   goal,
+  fileCount,
   items,
   practicePath,
 }: {
   description: string;
   goal: string;
+  fileCount: number;
   items: string[];
   practicePath: string;
 }) {
@@ -177,10 +189,8 @@ function TaskBriefSection({
 
       <dl className={styles.taskFacts}>
         <div>
-          <dt>Файл</dt>
-          <dd>
-            <code className={styles.practicePath}>{practicePath}</code>
-          </dd>
+          <dt>Заготовка</dt>
+          <dd>{fileCount === 1 ? "Стартовый код показан ниже." : `${fileCountLabel(fileCount)} показаны ниже.`}</dd>
         </div>
 
         <div>
@@ -448,6 +458,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
       <TaskBriefSection
         goal={task.goal}
         description={task.description}
+        fileCount={task.files.length}
         items={task.whatToCreate}
         practicePath={task.practicePath}
       />
@@ -455,7 +466,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
       <section className={clsx("panel", styles.codePanel)}>
         <div className={styles.codePanelHeader}>
           <h2>Рабочий файл</h2>
-          <p>Откройте рабочий файл и замените TODO своим решением.</p>
+          <p>Используйте заготовку ниже и замените TODO своим решением.</p>
         </div>
 
         {hasMultipleFiles && (
@@ -473,7 +484,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
                 onClick={() => setActiveFileIndex(index)}
                 onKeyDown={(event) => handleFileTabKeyDown(event, index)}
               >
-                {file.fileName.split("/").pop()}
+                {getDisplayFileName(file.fileName)}
               </button>
             ))}
           </div>
@@ -489,9 +500,9 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
             <div className={styles.filePanelHeader}>
               <div>
                 <span>Выбранный файл</span>
-                <strong>{activeFile.fileName.split("/").pop()}</strong>
+                <strong>{getDisplayFileName(activeFile.fileName)}</strong>
               </div>
-              <code>{activeFile.fileName}</code>
+              <span>{activeFileIndex + 1} из {task.files.length}</span>
             </div>
           )}
 
@@ -503,7 +514,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
             <CodeBlock code={activeFile.starterCode} language="cpp" compact />
           ) : (
             <div className={styles.emptyCodeState}>
-              Стартовый код не задан. Откройте файл из practice и начните с каркаса из условия.
+              Стартовый код пока не задан. Составьте каркас по условию и списку результата.
             </div>
           )}
         </div>

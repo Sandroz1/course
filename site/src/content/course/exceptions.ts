@@ -183,13 +183,4 @@ export const exceptionsContent = [
   "5. Что возвращает `what()`?",
   "6. Почему `return 0` плох для скрытых доходов?",
   "7. Где должны жить правила доступа в `Company`?",
-  "",
-  "## Задачи после темы",
-  "",
-  "- `practice/11_exceptions/ex01_throw_runtime_error.cpp` — выбросить `runtime_error`.",
-  "- `practice/11_exceptions/ex02_try_catch.cpp` — поймать исключение.",
-  "- `practice/11_exceptions/ex03_getter_with_exception.cpp` — запретить доступ в геттере.",
-  "- `practice/11_exceptions/ex04_company_hidden_data.cpp` — скрыть данные компании.",
-  "- `practice/11_exceptions/ex05_company_menu.cpp` — меню с обработкой ошибок.",
-  "- `practice/big_tasks/task6_2_company.cpp` — большая задача Company.",
 ].join("\n");

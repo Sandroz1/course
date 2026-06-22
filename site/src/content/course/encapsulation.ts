@@ -206,13 +206,4 @@ export const encapsulationContent = [
   "5. Почему сортировка должна использовать геттеры?",
   "6. Когда поле не должно иметь сеттер?",
   "7. Зачем нужен `explicit`?",
-  "",
-  "## Задачи после темы",
-  "",
-  "- `practice/10_encapsulation/ex01_private_field_getter.cpp` — private-поле и геттер.",
-  "- `practice/10_encapsulation/ex02_setter_validation.cpp` — проверка в сеттере.",
-  "- `practice/10_encapsulation/ex03_explicit_constructor.cpp` — `explicit`.",
-  "- `practice/10_encapsulation/ex04_planet_getters_setters.cpp` — геттеры и сеттеры Planet.",
-  "- `practice/10_encapsulation/ex05_planet_sort_by_field.cpp` — сортировка через геттеры.",
-  "- `practice/big_tasks/task6_1_planet_getters_sort.cpp` — большая задача Planet.",
 ].join("\n");

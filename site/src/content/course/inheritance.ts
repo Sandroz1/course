@@ -294,8 +294,4 @@ export const inheritanceContent = [
   "5. Почему `AreaBody` не может напрямую читать private-поле `width` из `Body`?",
   "6. Чем `protected` отличается от `private`?",
   "7. Что произойдёт, если забыть `public` после двоеточия при наследовании от `class`?",
-  "",
-  "## Задачи после темы",
-  "",
-  "- `practice/10_inheritance/ex01_body_area_body.cpp` — классы `Body` и `AreaBody`, конструкторы и вывод информации.",
 ].join("\n");
