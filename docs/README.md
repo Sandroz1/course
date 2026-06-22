@@ -62,6 +62,7 @@
 - [ai-project-state.md](ai-project-state.md) - актуальное состояние разработки.
 - [../PROJECT_STATUS.md](../PROJECT_STATUS.md) - совместимый короткий указатель на актуальные status docs.
 - [documentation-audit.md](documentation-audit.md) - заметки по состоянию документации и что было упорядочено.
+- [presentation/README.md](presentation/README.md) - материалы для демонстрации, защиты и продуктового разбора.
 - [../deploy/docs/01_CURRENT_STATE.md](../deploy/docs/01_CURRENT_STATE.md) - текущее production-состояние. Перед deploy сверять с реальным VPS.
 
 ## Правила Поддержки Документации

@@ -77,6 +77,7 @@ git diff --stat
 - Security checks: [docs/pre-commit-security.md](docs/pre-commit-security.md).
 - Secret leak runbook: [docs/security-incident-runbook.md](docs/security-incident-runbook.md).
 - Full production docs: [deploy/docs/README.md](deploy/docs/README.md).
+- Presentation materials: [docs/presentation/README.md](docs/presentation/README.md).
 
 ## Безопасность
 
