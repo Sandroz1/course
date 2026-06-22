@@ -17,15 +17,16 @@ This document records only the current project state, release line and near-term
 
 ## Current Production State
 
-- Production deployed app hash: `f9ad10e Merge route loading and practice UX fixes`.
-- Current runtime includes `50b8c55 Merge project finalization`, `9624f63 Fix production npm lockfile` and the post-finalization route loading/practice UX hotfix.
-- Latest docs/state commit: this docs-only post-hotfix update on `main` after deploy; no production redeploy is required for it.
+- Production deployed app hash: `4b5592d Merge route loading UI hotfix`.
+- Current runtime includes `50b8c55 Merge project finalization`, `9624f63 Fix production npm lockfile`, the post-finalization route loading/practice UX hotfix and the route loading UI hotfix.
+- Latest docs/state commit: this docs-only route loading UI update on `main` after deploy; no production redeploy is required for it.
 - Senior project finalization is complete for the current release line.
 - Vite build tooling is deployed on Vite 8: `vite@8.0.16`, `@vitejs/plugin-react@6.0.2`.
 - Low-level `esbuild` advisory is closed by the Vite 8 toolchain update; `npm audit --audit-level=low` is clean in `site`.
 - Previous Vite chunk-size warning is resolved. The large Shiki C++ grammar remains an intentional lazy chunk, not an initial app chunk.
 - Production browser QA confirmed that direct routes, lazy chunks, CodeBlock pages, AI assistant guest fallback and unknown route fallback work after deploy.
 - Route loading regression is fixed: app-shell routes keep the shell visible while lazy route content loads.
+- Route-level loading UI is removed from normal page refresh/navigation. Regular app routes no longer render a visible "loading page" card.
 - `practice/` remains an internal source for starter files. Task UI no longer presents `practice/...` paths as required user-facing steps.
 - Local first-run setup is documented in [../LOCAL_RUNBOOK.md](../LOCAL_RUNBOOK.md).
 - Backend/session/build stability checks passed; no runtime backend change was required in finalization.
@@ -54,6 +55,9 @@ This document records only the current project state, release line and near-term
 
 ## Recent Important Commits
 
+- `4b5592d` - `Merge route loading UI hotfix`.
+- `5d1eb86` - `Remove route loading UI`.
+- `1bd4769` - `Update project state after route loading and practice UX`.
 - `f9ad10e` - `Merge route loading and practice UX fixes`.
 - `1a24159` - `Document local setup and practice usage`.
 - `bad2680` - `Hide practice internals from task UI`.
@@ -78,9 +82,10 @@ This document records only the current project state, release line and near-term
 - Root checks passed during finalization: `git diff --check`, `git diff --cached --check`, clean status before commits.
 - Production backup succeeded before finalization deploy: `/opt/uchicode/app/backups/20260622T001340Z`.
 - Production backup succeeded before route loading/practice UX hotfix deploy: `/opt/uchicode/app/backups/20260622T075618Z`.
+- Production backup succeeded before route loading UI hotfix deploy: `/opt/uchicode/app/backups/20260622T082255Z`.
 - Production health checks passed after deploy: `nginx-health`, `api/health`.
 - Production curl checks returned `200 OK` for `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login`, `/register`.
-- Production browser QA with cache-bust `v=f9ad10e` covered desktop and mobile routes, lazy chunks, CodeBlock, AI assistant guest fallback, unknown route fallback, console errors, horizontal overflow and absence of user-facing `practice/...` paths.
+- Production browser QA with cache-bust `v=4b5592d` covered desktop and mobile routes, refresh/hard-refresh behavior, back/forward navigation, CodeBlock, AI assistant guest fallback, unknown route fallback, console errors, horizontal overflow, absence of route loading text and absence of user-facing `practice/...` paths.
 
 ## Known Follow-ups
 
