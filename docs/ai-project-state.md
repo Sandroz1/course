@@ -23,6 +23,7 @@
 - AI assistant refactor is deployed; backend API and AI endpoint contract were not changed.
 - Backend/session/build stability pass is complete on the current release line; no runtime backend changes were needed.
 - Vite build tooling stabilization is deployed: route-level lazy split is live and the previous chunk-size warning is resolved in production build.
+- Current finalization branch includes Vite 8 tooling migration and local `npm audit --audit-level=low` is clean; production remains on `d15d319` until this branch is merged and deployed.
 - Guest auth refresh guard is deployed: clean guest contexts no longer call `/auth/token/refresh/` on page load.
 - Production deploy после P2 frontend fixes прошёл успешно.
 - CodeBlock readability hotfix задеплоен.
@@ -115,19 +116,19 @@
 - AI assistant scope shipped: presentation split, cleaner panel subcomponents, stable assistant typography/layout, and no backend/API contract changes.
 - Previous frontend quality hardening is deployed as `0475b21`: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, route/data lookup helpers, and docs rules that prevent the same frontend quality regressions.
 - Guest contexts without an access token or saved user snapshot no longer call `/auth/token/refresh/` on page load. Saved user snapshots still allow the app to attempt cookie-based session restore.
-- The remaining `esbuild` npm audit item is low severity and tied to the current Vite 7 toolchain range. Vite 7 cannot safely resolve `esbuild@0.28.1`; do not add overrides. Treat Vite 8 as a separate major tooling migration.
+- Vite 8 migration is prepared in `fix/project-finalization`: `vite@8.0.16`, `@vitejs/plugin-react@6.0.2`, clean low-level npm audit, and an explicit lazy Shiki C++ chunk warning limit. Deploy is pending.
 
 ## Next Stage
 
-Current stage can be frozen after Vite tooling deploy. Next planned work: continue course/content work, starting with OOP C++ section 11, while keeping Vite 8/esbuild migration as a separate low-priority tooling follow-up.
+Current stage: senior project finalization before new chapters/features. Do not start OOP C++ section 11 until finalization checks, browser QA, merge/deploy if needed, and final state docs are complete.
 
 ## Backlog
 
 1. OOP C++ section 11 "Инкапсуляция".
 2. OOP C++ section 12 "Исключения".
 3. Audit OOP sections 0-12 readiness after content backlog is closed.
-4. Vite 8 tooling migration decision for the low-severity `esbuild` dev-server advisory; not a blocker for section 11.
-5. Docs cleanup if needed.
+4. Backend/auth/payment/security pass before monetization.
+5. Product analytics/progress improvements after content backlog is stable.
 
 ## Checks Snapshot
 
@@ -141,7 +142,7 @@ Current stage can be frozen after Vite tooling deploy. Next planned work: contin
 - Vite build tooling deploy checks passed: route-level lazy split removes the previous chunk-size warning; production build chunks are split into course data, Shiki language chunks, React vendor and page chunks instead of one large initial `index` chunk.
 - Vite build tooling production smoke passed for `nginx-health`, `api/health`, `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login` and `/register`.
 - Browser QA covered production `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, unknown route fallback and AI assistant auth fallback with cache-busting hash `d15d319`; lazy chunks loaded, CodeBlock remained visible and no browser console errors or horizontal overflow were found.
-- `npm audit --audit-level=low` still reports one low-severity transitive `esbuild` advisory through `vite@7.3.5`. Current Vite 7 range cannot safely resolve `esbuild@0.28.1`; Vite 8 changes the build toolchain and remains a separate tooling migration.
+- Finalization branch tooling checks passed locally on Vite 8: `npm run typecheck`, `npm run lint`, `npm run build`, and `npm audit --audit-level=low` with no vulnerabilities. The large Shiki C++ grammar remains an intentional lazy chunk, not an initial app chunk.
 - Last frontend checks for AI assistant refactor passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
 - Production smoke passed for `nginx-health`, `api/health`, `/`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
 - Browser QA covered production AI assistant on `/courses/oop-cpp/delegating-constructors` in desktop light/dark/deep-dark and `/tasks/00-01-minimal-program` on mobile deep-dark with cache-busting hash `cdf62d8`; submit, loading, error, scroll-to-latest, resize/open/close and horizontal overflow checks passed.
@@ -160,7 +161,7 @@ Current stage can be frozen after Vite tooling deploy. Next planned work: contin
 - Last frontend checks for P2 deploy passed: `npm run typecheck`, `npm run lint`, `npm run build`.
 - Production smoke passed for `/`, `/courses`, `/tasks`, `/login`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker` and health checks.
 - Browser QA covered `/courses`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker`, AI assistant and profile/login redirect; no console errors or horizontal overflow.
-- Vite chunk-size warning is fixed in production; keep Vite 8/esbuild migration separate from content work.
+- Vite chunk-size warning is fixed in production for the deployed Vite 7 split; the finalization branch additionally prepares Vite 8 and removes the remaining low-severity `esbuild` advisory locally.
 - Docs-only changes should run only repository checks unless code changes accidentally appear.
 
 ## Known Issues
