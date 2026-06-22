@@ -246,9 +246,4 @@ export const virtualMethodsContent = [
   "5. Почему сигнатура метода должна совпадать?",
   "6. Зачем базовому классу с виртуальными методами виртуальный деструктор?",
   "7. Почему в учебном гараже `vector<Vehicle*>` не должен удалять объекты, созданные в `main`?",
-  "",
-  "## Задачи после темы",
-  "",
-  "- `practice/10_virtual_methods/ex01_old_nouveau_virtual.cpp` — эксперимент `Old` и `Nouveau` с `virtual`.",
-  "- `practice/10_virtual_methods/ex02_garage_virtual_raw_pointers.cpp` — гараж `Vehicle`, `Car`, `Bus` без умных указателей.",
 ].join("\n");

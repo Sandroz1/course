@@ -153,20 +153,13 @@
   min-width: 0;
 }
 
-.taskFacts dd code:not(.practicePath),
+.taskFacts dd code,
 .taskFactText code,
 .taskListText code {
   display: inline;
   overflow-wrap: normal;
   white-space: nowrap;
   word-break: keep-all;
-}
-
-.practicePath {
-  display: inline-block;
-  overflow-wrap: anywhere;
-  white-space: normal;
-  word-break: normal;
 }
 
 .taskFacts ul {
@@ -509,11 +502,6 @@
   color: var(--text);
   font-size: 0.9375rem;
   line-height: 1.35;
-  overflow-wrap: anywhere;
-}
-
-.filePanelHeader code {
-  max-width: 100%;
   overflow-wrap: anywhere;
 }
 

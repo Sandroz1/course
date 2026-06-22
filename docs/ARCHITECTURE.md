@@ -58,7 +58,7 @@
 - `site/src/data/courseSections.ts` - описание section, slug, status, related tasks.
 - `site/src/data/courses.ts` - порядок разделов в курсе и `readyTheorySlugs`.
 - `site/src/data/tasks.ts` - задачи, привязанные к `course` и `section`.
-- `practice` - стартовые файлы для практики.
+- `practice` - internal `.cpp/.hpp` starter sources for tasks. The site should show starter code on task pages instead of asking ordinary users to find files in this folder.
 
 `LessonContent` рендерит markdown-подобный контент через общий renderer. Pure-разбор секций лежит в `site/src/utils/lessonMarkdown.ts`.
 
@@ -83,7 +83,7 @@
 - `commonMistakes`
 - `selfCheck`
 
-Если для задачи нужен стартовый код, файл кладётся в `practice`, а путь указывается в `files`.
+Если для задачи нужен стартовый код, файл кладётся в `practice`, а путь указывается в task data как internal source. User-facing task UI показывает имя/код заготовки, а не требует вручную искать `practice/...`.
 
 ## API
 
@@ -134,11 +134,11 @@ Content data:
 - sections in `site/src/data/courseSections.ts`
 - course order/readiness in `site/src/data/courses.ts`
 - tasks in `site/src/data/tasks.ts`
-- practice starter files in `practice`
+- practice starter files in `practice` as internal source
 
 Если новый раздел требует менять JSX в `CoursePage` или `TaskDetailsPage`, сначала проверь, не нарушен ли content contract.
 
 ## Deferred Architecture Tasks
 
-- Page-level `React.lazy` + `Suspense` is enabled in the custom router. Keep route-level pages lazy-loaded and keep `/` outside `AppLayout`; do not move course/task data back into the initial shell.
+- Page-level `React.lazy` + `Suspense` is enabled in the custom router, but `AppLayout` stays outside the route Suspense boundary for app routes. Keep route-level pages lazy-loaded, keep `/` outside `AppLayout`, and avoid full-page loading states that hide the app shell on refresh or deep links.
 - Auth reset без `window.dispatchEvent`: отложено, потому что текущий API-слой очищает auth из fetch flow, а безопасная замена требует отдельного контракта между `lib/api.ts` и `AuthProvider`.

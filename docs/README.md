@@ -36,7 +36,7 @@
 - [theory-content-standards.md](theory-content-standards.md) - структура теории, примеры, ошибки, самопроверка, источники.
 - [course-content-plan.md](course-content-plan.md) - рабочий план курса ООП C++.
 - [base-cpp-course-plan.md](base-cpp-course-plan.md) - план отдельного курса "База C++".
-- [../practice/README.md](../practice/README.md) - назначение practice-файлов.
+- [../practice/README.md](../practice/README.md) - internal role of practice starter files; ordinary site users should not need this folder.
 
 ## Security
 

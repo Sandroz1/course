@@ -1,8 +1,57 @@
 # LOCAL_RUNBOOK
 
-## Быстрый запуск frontend
+Короткий runbook для первого локального запуска Uchicode после клонирования. Production deploy живёт отдельно в [DEPLOY.md](DEPLOY.md) и [deploy/docs/README.md](deploy/docs/README.md).
 
-```bash
+## Что установить
+
+- Git.
+- Node.js и npm, совместимые с Vite 8. Проверить: `node -v`, `npm -v`.
+- Python с поддержкой Django 6. Проверить: `python --version`.
+- Docker Desktop, если нужен локальный PostgreSQL/Redis или запуск всего стека через compose.
+
+Для простого backend dev без `DATABASE_URL` Django использует локальный SQLite-файл `backend/db.sqlite3`. Его нельзя коммитить.
+
+## Клонирование
+
+```powershell
+git clone <repo-url> uchicode
+cd uchicode
+git status -sb
+```
+
+Работать с реальными secrets в репозитории нельзя. Для локальных значений используйте только свои `.env`, созданные из example-файлов.
+
+## Env-файлы
+
+В репозитории есть безопасные шаблоны:
+
+- `.env.example` - общий список переменных и placeholders.
+- `backend/.env.example` - локальные backend-настройки.
+- `site/.env.example` - frontend-настройки Vite.
+- `.env.production.example` - production-шаблон без реальных секретов.
+
+Локально:
+
+```powershell
+Copy-Item backend\.env.example backend\.env
+Copy-Item site\.env.example site\.env.local
+```
+
+Безопасные локальные значения:
+
+- `DJANGO_DEBUG=True`
+- `DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1`
+- `DJANGO_CORS_ALLOWED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173`
+- `DJANGO_CSRF_TRUSTED_ORIGINS=http://localhost:5173,http://127.0.0.1:5173`
+- `DATABASE_URL=` пустой, если используете SQLite
+- `REDIS_URL=` пустой, если Redis не нужен
+- `SMS_PROVIDER=console`
+
+Не коммитить реальные API keys, passwords, tokens, production hostnames и production `.env`.
+
+## Frontend
+
+```powershell
 cd site
 npm install
 npm run dev
@@ -14,28 +63,36 @@ npm run dev
 http://127.0.0.1:5173
 ```
 
-## Быстрый запуск backend
+Frontend по умолчанию ходит в `/api`; dev proxy в Vite направляет запросы на локальный backend.
+
+Проверки frontend:
+
+```powershell
+cd site
+npm run typecheck
+npm run lint
+npm run build
+npm audit --audit-level=low
+```
+
+`site/dist/` создаётся локально, но не должен попадать в Git.
+
+## Backend
 
 PowerShell:
 
 ```powershell
 cd backend
 python -m venv .venv
-.venv\Scripts\activate
-pip install -r requirements.txt
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
 ```
 
-Открыть:
+Проверить health:
 
-```text
-http://127.0.0.1:8000/api/health/
-```
-
-## Проверка backend health
-
-```bash
+```powershell
 curl http://127.0.0.1:8000/api/health/
 ```
 
@@ -45,144 +102,121 @@ curl http://127.0.0.1:8000/api/health/
 {"status":"ok","service":"uchicode-api"}
 ```
 
-## Проверка frontend build
+Проверки backend:
 
-```bash
-cd site
-npm run typecheck
-npm run build
-npm run lint
+```powershell
+cd backend
+.\.venv\Scripts\python.exe manage.py check
+.\.venv\Scripts\python.exe manage.py makemigrations --check --dry-run
+.\.venv\Scripts\python.exe manage.py test
+.\.venv\Scripts\python.exe -m pip check
 ```
 
-`dist/` создаётся локально, но не должен попадать в Git.
+Если `python` указывает не на нужный interpreter, используйте `.\.venv\Scripts\python.exe`.
 
-## Проверка docker compose config
+## Docker dev
 
-```bash
-docker compose -f docker-compose.dev.yml config
-docker compose -p app -f docker-compose.prod.yml config
+Для локального PostgreSQL/Redis:
+
+```powershell
+docker compose -f docker-compose.dev.yml up -d postgres redis
 ```
 
-## Docker dev запуск
+Для всего dev-стека:
 
-```bash
+```powershell
 docker compose -f docker-compose.dev.yml up --build
 ```
 
-Миграции:
+Миграции внутри compose:
 
-```bash
+```powershell
 docker compose -f docker-compose.dev.yml exec backend python manage.py migrate
 ```
 
-Остановить:
+Остановить контейнеры без удаления volumes:
 
-```bash
+```powershell
 docker compose -f docker-compose.dev.yml down
 ```
 
-## Что делать, если порт занят
+Не использовать `down -v`, если не нужно явно удалить локальные volumes.
 
-PowerShell: найти процесс по порту.
+Проверить compose config:
+
+```powershell
+docker compose -f docker-compose.dev.yml config --quiet
+docker compose -f docker-compose.prod.yml config --quiet
+```
+
+Production compose может требовать заполненный `.env.production`.
+
+## Practice
+
+`practice/` не является обязательной папкой для обычного пользователя сайта. Это internal/course source для `.cpp/.hpp` заготовок, связанный с task data. На сайте стартовый код должен быть виден в задаче, без требования искать файл вручную.
+
+Подробно: [practice/README.md](practice/README.md).
+
+## Частые проблемы
+
+### PowerShell не даёт активировать `.venv`
+
+Разрешите выполнение локально для текущего пользователя:
+
+```powershell
+Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
+```
+
+После этого заново активируйте `.venv`.
+
+### Порт занят
 
 ```powershell
 Get-NetTCPConnection -LocalPort 5173 | Select-Object OwningProcess
 Get-NetTCPConnection -LocalPort 8000 | Select-Object OwningProcess
-```
-
-Посмотреть процесс:
-
-```powershell
 Get-Process -Id <PID>
 ```
 
-Остановить процесс, если точно понятно, что это старый dev server:
+Останавливайте процесс только если уверены, что это старый dev server:
 
 ```powershell
 Stop-Process -Id <PID>
 ```
 
-Не останавливай системные процессы, если не уверен.
+### Docker daemon не запущен
 
-## Что делать, если env не найден
+Запустите Docker Desktop и повторите compose-команду. Ошибка вида `failed to connect to the docker API` означает, что Docker Desktop не поднят или недоступен.
 
-Frontend:
+### Backend не видит env
 
-```bash
-cd site
-copy .env.example .env.local
-```
+Проверьте, что файл называется именно `backend/.env`, а не `.env.example`, и что вы запускаете команды из папки `backend`.
 
-Backend:
+### Миграции не применены
 
 ```powershell
 cd backend
-copy .env.example .env
+.\.venv\Scripts\python.exe manage.py migrate
 ```
 
-Production:
+### Frontend не видит backend
 
-```bash
-cp .env.production.example .env.production
-```
+Проверьте:
 
-После копирования заполнить значения локально или на VPS. Реальные env-файлы не коммитить.
+- backend открыт на `http://127.0.0.1:8000/api/health/`;
+- frontend запущен через `npm run dev`;
+- `site/.env.local` не содержит неправильный `VITE_API_BASE_URL`.
 
-## Что делать, если PostgreSQL/Redis не запущены локально
+### Нельзя коммитить
 
-Для обычного backend dev без `DATABASE_URL` Django использует SQLite `backend/db.sqlite3`.
-
-Если нужен PostgreSQL и Redis как в production:
-
-```bash
-docker compose -f docker-compose.dev.yml up -d postgres redis
-docker compose -f docker-compose.dev.yml up --build backend frontend
-```
-
-Redis не обязателен для простого локального запуска, если `REDIS_URL` не задан.
-
-## Что проверить перед коммитом
-
-```bash
-git status
-```
-
-Проверки:
-
-```bash
-cd site
-npm run typecheck
-npm run build
-npm run lint
-```
+Перед commit:
 
 ```powershell
-cd backend
-.venv\Scripts\python.exe manage.py check
-.venv\Scripts\python.exe manage.py test
+git diff --check
+git status -sb
+git diff --stat
 ```
 
-```bash
-docker compose -p app -f docker-compose.prod.yml config
-```
-
-Production compose требует заполненный `.env.production`. Nginx HTTPS-конфиг ожидает сертификаты Let's Encrypt в `/etc/letsencrypt/live/uchicode.ru/`.
-
-Если проверяешь production frontend после API-правок, убедись, что нет двойного `/api`:
-
-```bash
-rg "/api/api" site/src site/dist
-```
-
-Ожидаемо: пустой вывод.
-
-Поиск старых production-следов. Команда ниже намеренно содержит legacy-строки, чтобы их можно было быстро найти перед коммитом:
-
-```bash
-rg "cppbase.ru|api.cppbase.ru|GITHUB_PAGES|workers.dev|cloudflare"
-```
-
-Что не должно попасть в Git:
+Проверьте, что в Git не попали:
 
 - `.env`
 - `.env.local`
@@ -192,4 +226,4 @@ rg "cppbase.ru|api.cppbase.ru|GITHUB_PAGES|workers.dev|cloudflare"
 - `node_modules/`
 - `site/dist/`
 - `__pycache__/`
-- реальные ключи и пароли
+- реальные keys/passwords/tokens/backups

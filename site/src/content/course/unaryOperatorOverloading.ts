@@ -215,8 +215,4 @@ export const unaryOperatorOverloadingContent = [
   "5. Почему `operator-` должен вернуть копию, а не менять оригинал?",
   "6. Зачем классу с `int* data` нужен деструктор?",
   "7. Что возвращает `int(arr)` в задаче `MyArray`?",
-  "",
-  "## Задачи после темы",
-  "",
-  "- `practice/09_operator_overloading/ex01_myarray_unary_operators.cpp` — класс `MyArray` и унарные операторы.",
 ].join("\n");

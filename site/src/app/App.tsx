@@ -1,9 +1,8 @@
-import { lazy, Suspense, useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { AppLayout } from "../components/layout/AppLayout";
 import { currentPath } from "../utils/slug";
 import { appRoutes } from "./routes";
 import { renderRoute } from "./router";
-
-const AppLayout = lazy(() => import("../components/layout/AppLayout").then(({ AppLayout }) => ({ default: AppLayout })));
 
 function RouteFallback() {
   return (
@@ -54,9 +53,13 @@ export default function App() {
     return () => window.removeEventListener("hashchange", onHashChange);
   }, []);
 
+  if (path === appRoutes.home) {
+    return <Suspense fallback={<RouteFallback />}>{renderRoute(path)}</Suspense>;
+  }
+
   return (
-    <Suspense fallback={<RouteFallback />}>
-      {path === appRoutes.home ? renderRoute(path) : <AppLayout>{renderRoute(path)}</AppLayout>}
-    </Suspense>
+    <AppLayout>
+      <Suspense fallback={<RouteFallback />}>{renderRoute(path)}</Suspense>
+    </AppLayout>
   );
 }
