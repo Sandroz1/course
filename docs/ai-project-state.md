@@ -17,14 +17,17 @@ This document records only the current project state, release line and near-term
 
 ## Current Production State
 
-- Production deployed app hash: `9624f63 Fix production npm lockfile`.
-- Current runtime includes `50b8c55 Merge project finalization`.
-- Latest docs/state commit: this docs-only finalization update on `main` after deploy; no production redeploy is required for it.
+- Production deployed app hash: `f9ad10e Merge route loading and practice UX fixes`.
+- Current runtime includes `50b8c55 Merge project finalization`, `9624f63 Fix production npm lockfile` and the post-finalization route loading/practice UX hotfix.
+- Latest docs/state commit: this docs-only post-hotfix update on `main` after deploy; no production redeploy is required for it.
 - Senior project finalization is complete for the current release line.
 - Vite build tooling is deployed on Vite 8: `vite@8.0.16`, `@vitejs/plugin-react@6.0.2`.
 - Low-level `esbuild` advisory is closed by the Vite 8 toolchain update; `npm audit --audit-level=low` is clean in `site`.
 - Previous Vite chunk-size warning is resolved. The large Shiki C++ grammar remains an intentional lazy chunk, not an initial app chunk.
 - Production browser QA confirmed that direct routes, lazy chunks, CodeBlock pages, AI assistant guest fallback and unknown route fallback work after deploy.
+- Route loading regression is fixed: app-shell routes keep the shell visible while lazy route content loads.
+- `practice/` remains an internal source for starter files. Task UI no longer presents `practice/...` paths as required user-facing steps.
+- Local first-run setup is documented in [../LOCAL_RUNBOOK.md](../LOCAL_RUNBOOK.md).
 - Backend/session/build stability checks passed; no runtime backend change was required in finalization.
 - Docker dev/prod compose configs are valid.
 - Project tree cleanup removed only empty untracked directories that had no files or references.
@@ -47,9 +50,15 @@ This document records only the current project state, release line and near-term
 - Guest auth refresh noise is fixed for clean guest contexts.
 - Route/data lookup helpers and route constants are in use where they reduce route string drift.
 - Vite tooling was migrated and production lockfile compatibility with npm 10 was fixed.
+- Task detail pages now show starter code and file labels without exposing internal `practice/...` paths as ordinary user instructions.
 
 ## Recent Important Commits
 
+- `f9ad10e` - `Merge route loading and practice UX fixes`.
+- `1a24159` - `Document local setup and practice usage`.
+- `bad2680` - `Hide practice internals from task UI`.
+- `c96cfd4` - `Fix route loading regression`.
+- `dfce90e` - `Update project state after finalization`.
 - `9624f63` - `Fix production npm lockfile`.
 - `50b8c55` - `Merge project finalization`.
 - `20c1e36` - `Finalize project documentation`.
@@ -67,10 +76,11 @@ This document records only the current project state, release line and near-term
 - Backend checks passed: `manage.py check`, `makemigrations --check --dry-run`, `manage.py test` with 77 tests, backend `pip check`.
 - Docker/config checks passed: `docker compose -f docker-compose.dev.yml config --quiet`, `docker compose -f docker-compose.prod.yml config --quiet`.
 - Root checks passed during finalization: `git diff --check`, `git diff --cached --check`, clean status before commits.
-- Production backup succeeded before deploy: `/opt/uchicode/app/backups/20260622T001340Z`.
+- Production backup succeeded before finalization deploy: `/opt/uchicode/app/backups/20260622T001340Z`.
+- Production backup succeeded before route loading/practice UX hotfix deploy: `/opt/uchicode/app/backups/20260622T075618Z`.
 - Production health checks passed after deploy: `nginx-health`, `api/health`.
 - Production curl checks returned `200 OK` for `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login`, `/register`.
-- Production browser QA with cache-bust `v=9624f63` covered desktop and mobile routes, CodeBlock, AI assistant guest fallback, unknown route fallback, console errors and horizontal overflow.
+- Production browser QA with cache-bust `v=f9ad10e` covered desktop and mobile routes, lazy chunks, CodeBlock, AI assistant guest fallback, unknown route fallback, console errors, horizontal overflow and absence of user-facing `practice/...` paths.
 
 ## Known Follow-ups
 
