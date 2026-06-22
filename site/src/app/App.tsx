@@ -1,16 +1,8 @@
-import { Suspense, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { AppLayout } from "../components/layout/AppLayout";
 import { currentPath } from "../utils/slug";
 import { appRoutes } from "./routes";
 import { renderRoute } from "./router";
-
-function RouteFallback() {
-  return (
-    <div className="route-fallback" role="status" aria-live="polite">
-      Загружаем страницу...
-    </div>
-  );
-}
 
 export default function App() {
   const [path, setPath] = useState(currentPath());
@@ -54,12 +46,8 @@ export default function App() {
   }, []);
 
   if (path === appRoutes.home) {
-    return <Suspense fallback={<RouteFallback />}>{renderRoute(path)}</Suspense>;
+    return renderRoute(path);
   }
 
-  return (
-    <AppLayout>
-      <Suspense fallback={<RouteFallback />}>{renderRoute(path)}</Suspense>
-    </AppLayout>
-  );
+  return <AppLayout>{renderRoute(path)}</AppLayout>;
 }
