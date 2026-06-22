@@ -1,181 +1,94 @@
 # AI Project State
 
-Документ фиксирует только текущее состояние проекта и ближайшие задачи. Постоянные правила лежат в [../AGENTS.md](../AGENTS.md) и [../README.md](../README.md).
+This document records only the current project state, release line and near-term backlog. Stable rules live in [../AGENTS.md](../AGENTS.md), [README.md](README.md) and the focused docs linked from [README.md](README.md).
 
 ## Project Map
 
-- Проект: Uchicode.
-- Стек: React + TypeScript + Vite, Django backend.
-- Основная зона frontend: `site/src`.
-- Контент курса: `site/src/content/course`.
-- Разделы курса: `site/src/data/courseSections.ts`.
-- Порядок курса: `site/src/data/courses.ts`.
-- Задачи: `site/src/data/tasks.ts`.
-- Практические файлы: `practice`.
+- Project: Uchicode.
+- Stack: React + TypeScript + Vite frontend, Django backend.
+- Main frontend area: `site/src`.
+- Course content: `site/src/content/course`.
+- Course sections: `site/src/data/courseSections.ts`.
+- Course order: `site/src/data/courses.ts`.
+- Tasks: `site/src/data/tasks.ts`.
+- Practice files: `practice`.
+- Deploy docs: [../DEPLOY.md](../DEPLOY.md) and [../deploy/docs/README.md](../deploy/docs/README.md).
+- Presentation materials: [presentation/README.md](presentation/README.md).
 
 ## Current Production State
 
-- Production deployed app hash: `d15d319 Merge Vite build tooling stabilization`.
-- Latest deployed runtime hash before this docs-only state update: `d15d319 Merge Vite build tooling stabilization`.
-- Latest docs/state commit: this post-deploy docs-only state update on `main` (no production redeploy required).
-- Frontend final stabilization is deployed.
-- Frontend quality hardening is deployed.
-- AI assistant refactor is deployed; backend API and AI endpoint contract were not changed.
-- Backend/session/build stability pass is complete on the current release line; no runtime backend changes were needed.
-- Vite build tooling stabilization is deployed: route-level lazy split is live and the previous chunk-size warning is resolved in production build.
-- Current finalization branch includes Vite 8 tooling migration and local `npm audit --audit-level=low` is clean; production remains on `d15d319` until this branch is merged and deployed.
-- Guest auth refresh guard is deployed: clean guest contexts no longer call `/auth/token/refresh/` on page load.
-- Production deploy после P2 frontend fixes прошёл успешно.
-- CodeBlock readability hotfix задеплоен.
-- Главная `/` стабилизирована и задеплоена.
-- `/` остаётся public HomePage без `AppLayout`, sidebar, search, app topbar и AI assistant.
-- App routes остаются внутри `AppLayout`: `/courses`, `/courses/base-cpp`, `/courses/oop-cpp`, `/tasks`, `/guide`, `/common-errors`, auth/profile/course/task pages.
-- Unknown routes показывают app-shell fallback `NotFoundPage`, а не public HomePage.
-- ООП C++ разделы 0-10 закрыты без пробела.
-- Не готовы: 11 "Инкапсуляция", 12 "Исключения".
-- Будущие части 9.2, 10.1, 10.2 уже существуют, но продолжать их нельзя, пока не закрыты 11-12.
-- Content backlog по sections 11-12 не блокирует production deploy.
+- Production deployed app hash: `9624f63 Fix production npm lockfile`.
+- Current runtime includes `50b8c55 Merge project finalization`.
+- Latest docs/state commit: this docs-only finalization update on `main` after deploy; no production redeploy is required for it.
+- Senior project finalization is complete for the current release line.
+- Vite build tooling is deployed on Vite 8: `vite@8.0.16`, `@vitejs/plugin-react@6.0.2`.
+- Low-level `esbuild` advisory is closed by the Vite 8 toolchain update; `npm audit --audit-level=low` is clean in `site`.
+- Previous Vite chunk-size warning is resolved. The large Shiki C++ grammar remains an intentional lazy chunk, not an initial app chunk.
+- Production browser QA confirmed that direct routes, lazy chunks, CodeBlock pages, AI assistant guest fallback and unknown route fallback work after deploy.
+- Backend/session/build stability checks passed; no runtime backend change was required in finalization.
+- Docker dev/prod compose configs are valid.
+- Project tree cleanup removed only empty untracked directories that had no files or references.
+- Presentation materials are available in `docs/presentation`.
+
+## Course State
+
+- OOP C++ sections 0-10 are closed without a gap.
+- Not ready: 11 "Инкапсуляция", 12 "Исключения".
+- Future parts 9.2, 10.1 and 10.2 already exist, but do not continue them until 11-12 are closed.
+- Content backlog for sections 11-12 is not a production blocker.
+- Do not start section 11 inside infrastructure/finalization tasks.
 
 ## Stabilized Recently
 
-- Public HomePage вынесена из app-shell и больше не показывает sidebar/search/app topbar/AI.
-- `BrandLogo` и core typography унифицированы для public и app-shell зон.
-- Project quality bar зафиксирован в docs.
-- HomePage CTA hierarchy и повторяющиеся секции сокращены.
-- Mobile route map исправлена: подписи не слипаются на узких экранах.
-- Добавлен `NotFoundPage` для unknown routes.
-- Main page visual regressions исправлены после release stabilization.
-- Header/auth shift исправлен: `ThemeSwitcher` и auth action не прыгают при refresh.
-- HomePage typography, hover/focus и CTA стали мягче и стабильнее.
-- App-shell logo destination исправлен: public logo ведёт на `/`; app-shell logo остаётся в учебной зоне; course pages ведут к course root или `/courses`.
-- P2 frontend fixes deployed: course cards click as full cards, `task5-2-worker` is linked from `delegating-constructors`, AI assistant typography and Profile typography are lighter.
-- Codex docs workflow added: before state-changing work, verify docs against git status/log/current branch/code state and update docs when production/backlog/architecture/workflow state changes.
-- `codex/app-logo-course-start` закрыта как obsolete: local branch удалена, remote branch отсутствует, `main` сохраняет актуальную `getAppLogoHref`-логику.
-- CodeBlock readability/top actions hotfix deployed: code text contrast is stronger, CodeBlock owns its font sizing on theory/task pages, copy action is compact and selection AI popover no longer looks like a large unrelated pill.
-- Pre-section UI quality pass deployed: `/profile` page heading now follows the shared page-title scale, and `CodeBlock` text selection is readable in light, dark and deep-dark themes.
-- Frontend foundation hardening deployed: stale global `.code-block*` selectors were removed, `AuthLayout` typography was softened, and touched app-shell/static task routes now use `appRoutes`/`routePrefixes`.
-- Frontend quality hardening deployed: route/data lookup helpers are centralized, task search uses a shared search text helper, Vite config type coverage is checked, and guest auth refresh noise is removed for clean guest contexts.
-- AI assistant refactor deployed: panel presentation parts were split from feature state/API wiring, while message format and `/api/ai/chat/` contract stayed unchanged.
-- Frontend final stabilization deployed: final audit found no P1 frontend blockers, and `/courses` no longer repeats the same `Курсы` label in the eyebrow and H1.
-- Backend/session/build stability audit completed: auth/session tests, migrations dry-run, backend dependency check, compose config and frontend build/tooling gate were checked without finding a runtime blocker.
-- Vite chunk-size warning is fixed and deployed by lazy-loading `AppLayout` and route-level pages.
-
-## Header Quality Bar
-
-- Расположение кнопок в public header входит в UI quality bar.
-- `ThemeSwitcher` и auth action должны занимать стабильные слоты и не прыгать при refresh.
-- `Войти` и `Профиль` должны занимать один согласованный auth slot.
-- Правая группа header должна быть визуально ровной.
-- Размеры кнопок и селекта темы должны быть согласованы.
-- Hover/focus/active не должны менять layout.
-- Mobile header не должен ломаться или давать horizontal overflow.
+- Public `/` is outside `AppLayout`: no sidebar, app search, app topbar or AI assistant on the public HomePage.
+- App routes remain inside `AppLayout`: `/courses`, `/courses/base-cpp`, `/courses/oop-cpp`, `/tasks`, `/guide`, `/common-errors`, auth/profile/course/task pages.
+- Unknown routes show app-shell `NotFoundPage`, not public HomePage.
+- BrandLogo, header/auth slot, core typography, CodeBlock readability, course/task layout and AI assistant presentation have been stabilized.
+- Guest auth refresh noise is fixed for clean guest contexts.
+- Route/data lookup helpers and route constants are in use where they reduce route string drift.
+- Vite tooling was migrated and production lockfile compatibility with npm 10 was fixed.
 
 ## Recent Important Commits
 
-- `fa8ad5e` - `Merge frontend final stabilization`.
+- `9624f63` - `Fix production npm lockfile`.
+- `50b8c55` - `Merge project finalization`.
+- `20c1e36` - `Finalize project documentation`.
+- `56c7923` - `Add presentation materials`.
+- `51c3a93` - `Migrate Vite build tooling`.
 - `d15d319` - `Merge Vite build tooling stabilization`.
-- `b0562e6` - `Stabilize Vite build tooling`.
-- `2431bd9` - `Stabilize frontend UI system`.
-- `cdf62d8` - `Merge AI assistant refactor`.
-- `29875a0` - `Refactor AI assistant`.
+- `fa8ad5e` - `Merge frontend final stabilization`.
 - `0475b21` - `Merge frontend quality hardening`.
-- `6d190e3` - `Fix known frontend follow-ups`.
-- `a63d1ed` - `Complete project foundation hardening`.
-- `cdcb4c5` - `Harden frontend quality`.
+- `cdf62d8` - `Merge AI assistant refactor`.
 - `a2c4b29` - `Merge frontend foundation hardening`.
-- `afeaf03` - `Harden frontend foundation`.
-- `6206dd3` - `Merge pre-section UI quality pass`.
-- `8d0014c` - `Polish UI and frontend structure before encapsulation`.
-- `698eb0e` - `Merge code block readability hotfix`.
-- `0df4f61` - `Fix code block readability`.
-- `5d6d7f5` - `Update project quality rules`.
-- `1cd2cc5` - `Merge header and homepage typography hotfix`.
-- `ec347d8` - `Merge frontend audit P2 fixes`.
-- `a23b30e` - `Clarify post-deploy state labels`.
-- `442cc74` - `Update project state after P2 deploy`.
-- `e383342` - `Document Codex state update workflow`.
-- `aa5ca59` - `Fix frontend audit P2 issues`.
-- `e882030` - `Fix header auth shift and homepage typography`.
-- `d103c83` - `Merge main page visual hotfix`.
-- `698211b` - `Fix main page visual regressions`.
-- `fb26678` - `Merge homepage stabilization release`.
-- `31f6991` - `Add not found route fallback`.
-- `21f7382` - `Fix homepage mobile route map`.
-- `be464ee` - `Clarify release documentation state`.
-- `26038d0` - `Update project stabilization docs`.
-- `e96fdee` - `Document project quality bar`.
 
-## Latest Release State
+## Checks Snapshot
 
-- `fix/frontend-final-stabilization` was merged into `main` and deployed as `fa8ad5e`.
-- Scope shipped: final frontend readiness audit, `/courses` eyebrow/H1 duplicate wording fix, production browser QA for route shell, course/task flows, NotFound and AI assistant.
-- `fix/backend-session-build-stability` completed as a docs-only stability pass. Backend auth/session/build checks passed; no runtime code/config change was required in that pass.
-- `fix/vite-build-tooling-pass` was merged into `main` and deployed as `d15d319`.
-- Scope shipped: route-level pages and `AppLayout` are split from the initial bundle, a small route fallback prevents blank lazy-load states, and the previous 657 kB `index` chunk warning is gone in production build.
-- `fix/ai-assistant-refactor` was merged into `main` and deployed as `cdf62d8`.
-- AI assistant scope shipped: presentation split, cleaner panel subcomponents, stable assistant typography/layout, and no backend/API contract changes.
-- Previous frontend quality hardening is deployed as `0475b21`: Vite config type coverage, safe npm audit review, small layout-stability fixes, guest auth refresh noise cleanup, route/data lookup helpers, and docs rules that prevent the same frontend quality regressions.
-- Guest contexts without an access token or saved user snapshot no longer call `/auth/token/refresh/` on page load. Saved user snapshots still allow the app to attempt cookie-based session restore.
-- Vite 8 migration is prepared in `fix/project-finalization`: `vite@8.0.16`, `@vitejs/plugin-react@6.0.2`, clean low-level npm audit, and an explicit lazy Shiki C++ chunk warning limit. Deploy is pending.
+- Frontend checks passed after Vite 8 migration: `npm run typecheck`, `npm run lint`, `npm run build`, `npm audit --audit-level=low`.
+- Backend checks passed: `manage.py check`, `makemigrations --check --dry-run`, `manage.py test` with 77 tests, backend `pip check`.
+- Docker/config checks passed: `docker compose -f docker-compose.dev.yml config --quiet`, `docker compose -f docker-compose.prod.yml config --quiet`.
+- Root checks passed during finalization: `git diff --check`, `git diff --cached --check`, clean status before commits.
+- Production backup succeeded before deploy: `/opt/uchicode/app/backups/20260622T001340Z`.
+- Production health checks passed after deploy: `nginx-health`, `api/health`.
+- Production curl checks returned `200 OK` for `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login`, `/register`.
+- Production browser QA with cache-bust `v=9624f63` covered desktop and mobile routes, CodeBlock, AI assistant guest fallback, unknown route fallback, console errors and horizontal overflow.
 
-## Next Stage
-
-Current stage: senior project finalization before new chapters/features. Do not start OOP C++ section 11 until finalization checks, browser QA, merge/deploy if needed, and final state docs are complete.
-
-## Backlog
+## Known Follow-ups
 
 1. OOP C++ section 11 "Инкапсуляция".
 2. OOP C++ section 12 "Исключения".
 3. Audit OOP sections 0-12 readiness after content backlog is closed.
 4. Backend/auth/payment/security pass before monetization.
 5. Product analytics/progress improvements after content backlog is stable.
-
-## Checks Snapshot
-
-- Last production deployed app hash: `d15d319`.
-- Latest docs-only state on `main`: this docs-only post-deploy state update after Vite tooling deploy.
-- Last frontend final stabilization checks passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
-- Frontend audit found no P1 blockers before deploy. The only Fix now change was `/courses` eyebrow text from `Курсы` to `Каталог` to remove a duplicate label/H1 pattern.
-- Production smoke passed for `nginx-health`, `api/health`, `/`, `/courses`, `/courses/oop-cpp`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login` and `/register`.
-- Browser QA covered production `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login`, `/register`, unknown route fallback and AI assistant success/error states with cache-busting hash `fa8ad5e`.
-- Backend/session/build stability checks passed: `manage.py check`, `makemigrations --check --dry-run`, `manage.py test` with 77 tests, backend `pip check`, `docker compose` config validation for dev/prod, and `npm run build`.
-- Vite build tooling deploy checks passed: route-level lazy split removes the previous chunk-size warning; production build chunks are split into course data, Shiki language chunks, React vendor and page chunks instead of one large initial `index` chunk.
-- Vite build tooling production smoke passed for `nginx-health`, `api/health`, `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login` and `/register`.
-- Browser QA covered production `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, unknown route fallback and AI assistant auth fallback with cache-busting hash `d15d319`; lazy chunks loaded, CodeBlock remained visible and no browser console errors or horizontal overflow were found.
-- Finalization branch tooling checks passed locally on Vite 8: `npm run typecheck`, `npm run lint`, `npm run build`, and `npm audit --audit-level=low` with no vulnerabilities. The large Shiki C++ grammar remains an intentional lazy chunk, not an initial app chunk.
-- Last frontend checks for AI assistant refactor passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
-- Production smoke passed for `nginx-health`, `api/health`, `/`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
-- Browser QA covered production AI assistant on `/courses/oop-cpp/delegating-constructors` in desktop light/dark/deep-dark and `/tasks/00-01-minimal-program` on mobile deep-dark with cache-busting hash `cdf62d8`; submit, loading, error, scroll-to-latest, resize/open/close and horizontal overflow checks passed.
-- Last frontend checks for frontend quality hardening passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
-- Production smoke passed for `nginx-health`, `api/health`, `/`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login` and `/register`.
-- Browser QA covered production `/`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/login`, `/register` and `/profile` guest redirect with cache-busting hash `0475b21`; no guest refresh requests, unexpected console errors or horizontal overflow found.
-- Last frontend checks for frontend foundation hardening passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
-- Production smoke passed for `nginx-health`, `api/health`, `/login`, `/register`, `/tasks`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
-- Browser QA covered production `/login`, `/register`, `/tasks`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors` with cache-busting hash `a2c4b29`.
-- Last frontend checks for pre-section UI quality pass passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
-- Production smoke passed for `nginx-health`, `api/health`, `/profile`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
-- Browser QA covered `/profile`, CodeBlock pages locally and on production in desktop/mobile, light/dark/deep-dark, copy action and AI selection popover; no horizontal overflow found.
-- Last frontend checks for CodeBlock hotfix passed: `npm run typecheck`, `npm run lint`, `npm run build`, `git diff --check`.
-- Production smoke passed for `nginx-health`, `api/health`, `/tasks/00-01-minimal-program` and `/courses/oop-cpp/delegating-constructors`.
-- Browser QA covered CodeBlock pages locally and on production in desktop/mobile, dark/deep-dark; no horizontal overflow found.
-- Last frontend checks for P2 deploy passed: `npm run typecheck`, `npm run lint`, `npm run build`.
-- Production smoke passed for `/`, `/courses`, `/tasks`, `/login`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker` and health checks.
-- Browser QA covered `/courses`, `/courses/oop-cpp/delegating-constructors`, `/tasks/task5-2-worker`, AI assistant and profile/login redirect; no console errors or horizontal overflow.
-- Vite chunk-size warning is fixed in production for the deployed Vite 7 split; the finalization branch additionally prepares Vite 8 and removes the remaining low-severity `esbuild` advisory locally.
-- Docs-only changes should run only repository checks unless code changes accidentally appear.
-
-## Known Issues
-
-- `docs/course-content-plan.md` may contain old wording for early sections 6-7; update only in a dedicated course-plan pass.
-- База C++ sections 0-4 remain `needs-theory`; CoursePage shows placeholder pages for them.
-- If real production secrets were pushed or shared before the security pass, manual rotation and history cleanup are still required.
-- Page-level lazy loading, auth reset event cleanup and a unit test runner remain future frontend tasks.
-- Auth/session behavior passed the current stability audit. Further auth work should be driven by confirmed product/backend requirements, not by the old generic backlog item.
+6. Monitor Rolldown/Vite CSS plugin timing if build time becomes a practical problem. It is not a current production blocker.
 
 ## Do Not Do Now
 
 - Do not push or deploy unless explicitly requested.
-- Section 11 can start next; keep it scoped to course/content unless a confirmed blocker appears.
-- Do not continue 9.2, 10.1, 10.2 before 11-12 are closed.
+- Do not redeploy for docs-only state commits.
+- Do not continue 9.2, 10.1 or 10.2 before 11-12 are closed.
 - Do not add section 12 before section 11.
 - Do not mix content work with Docker/nginx/security changes.
+
+## Next Stage
+
+The project is ready for review, presentation and further development on the current release line. The next product/content task can be planned as OOP C++ section 11, but start it only in a separate scoped prompt/branch.
