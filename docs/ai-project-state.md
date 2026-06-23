@@ -17,9 +17,9 @@ This document records only the current project state, release line and near-term
 
 ## Current Production State
 
-- Production deployed app hash: `4b5592d Merge route loading UI hotfix`.
-- Current runtime includes `50b8c55 Merge project finalization`, `9624f63 Fix production npm lockfile`, the post-finalization route loading/practice UX hotfix and the route loading UI hotfix.
-- Latest docs/state commit: this docs-only route loading UI update on `main` after deploy; no production redeploy is required for it.
+- Production deployed app hash: `bf43494 Merge responsive layout improvements`.
+- Current runtime includes project finalization, production npm lockfile fix, route loading/practice UX fixes, route loading UI hotfix and responsive layout hardening.
+- Latest docs/state commit: this responsive hardening state update on `main` after deploy; no production redeploy is required for it.
 - Senior project finalization is complete for the current release line.
 - Vite build tooling is deployed on Vite 8: `vite@8.0.16`, `@vitejs/plugin-react@6.0.2`.
 - Low-level `esbuild` advisory is closed by the Vite 8 toolchain update; `npm audit --audit-level=low` is clean in `site`.
@@ -27,6 +27,7 @@ This document records only the current project state, release line and near-term
 - Production browser QA confirmed that direct routes, lazy chunks, CodeBlock pages, AI assistant guest fallback and unknown route fallback work after deploy.
 - Route loading regression is fixed: app-shell routes keep the shell visible while lazy route content loads.
 - Route-level loading UI is removed from normal page refresh/navigation. Regular app routes no longer render a visible "loading page" card.
+- Responsive hardening is deployed. The app shell, public HomePage, course/task pages, auth/profile pages, CodeBlock, inline code, filters, cards and AI assistant layout were hardened for 320-430px mobile widths, tablet and desktop by code/static audit and build checks.
 - `practice/` remains an internal source for starter files. Task UI no longer presents `practice/...` paths as required user-facing steps.
 - Local first-run setup is documented in [../LOCAL_RUNBOOK.md](../LOCAL_RUNBOOK.md).
 - Backend/session/build stability checks passed; no runtime backend change was required in finalization.
@@ -55,6 +56,9 @@ This document records only the current project state, release line and near-term
 
 ## Recent Important Commits
 
+- `bf43494` - `Merge responsive layout improvements`.
+- `3f4cd3d` - `Improve responsive layout`.
+- `92b52c5` - `Update project state after route loading UI hotfix`.
 - `4b5592d` - `Merge route loading UI hotfix`.
 - `5d1eb86` - `Remove route loading UI`.
 - `1bd4769` - `Update project state after route loading and practice UX`.
@@ -76,6 +80,8 @@ This document records only the current project state, release line and near-term
 
 ## Checks Snapshot
 
+- Responsive hardening checks passed: `npm run typecheck`, `npm run lint`, `npm run build`, `npm audit --audit-level=low`, `git diff --check`.
+- Responsive static audit checked app shell, sidebar/topbar, public HomePage, courses, course detail, task list, task detail, guide, common errors, login/register/profile, NotFound, CodeBlock, inline code, filters, cards, forms, dropdowns and AI assistant. Browser QA was intentionally not run for this pass by task constraint.
 - Frontend checks passed after Vite 8 migration: `npm run typecheck`, `npm run lint`, `npm run build`, `npm audit --audit-level=low`.
 - Backend checks passed: `manage.py check`, `makemigrations --check --dry-run`, `manage.py test` with 77 tests, backend `pip check`.
 - Docker/config checks passed: `docker compose -f docker-compose.dev.yml config --quiet`, `docker compose -f docker-compose.prod.yml config --quiet`.
@@ -83,9 +89,10 @@ This document records only the current project state, release line and near-term
 - Production backup succeeded before finalization deploy: `/opt/uchicode/app/backups/20260622T001340Z`.
 - Production backup succeeded before route loading/practice UX hotfix deploy: `/opt/uchicode/app/backups/20260622T075618Z`.
 - Production backup succeeded before route loading UI hotfix deploy: `/opt/uchicode/app/backups/20260622T082255Z`.
+- Production backup succeeded before responsive hardening deploy: `/opt/uchicode/app/backups/20260623T112442Z`.
 - Production health checks passed after deploy: `nginx-health`, `api/health`.
 - Production curl checks returned `200 OK` for `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login`, `/register`.
-- Production browser QA with cache-bust `v=4b5592d` covered desktop and mobile routes, refresh/hard-refresh behavior, back/forward navigation, CodeBlock, AI assistant guest fallback, unknown route fallback, console errors, horizontal overflow, absence of route loading text and absence of user-facing `practice/...` paths.
+- Production curl checks also returned `200 OK` for `/courses/oop-cpp` after responsive hardening deploy.
 
 ## Known Follow-ups
 
