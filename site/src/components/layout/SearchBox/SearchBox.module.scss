@@ -2,6 +2,7 @@
   flex: 1;
   position: relative;
   max-width: 36rem;
+  min-width: 0;
 }
 
 .input {
@@ -39,6 +40,7 @@
   left: 0;
   z-index: 10;
   overflow: hidden;
+  max-width: 100%;
   border: 1px solid var(--line);
   border-radius: 0.5rem;
   background: var(--surface);
@@ -48,8 +50,10 @@
 .resultLink {
   display: grid;
   gap: 0.25rem;
+  min-width: 0;
   border-bottom: 1px solid var(--line);
   padding: 0.6875rem 0.75rem;
+  overflow-wrap: anywhere;
 }
 
 .resultLink:hover,

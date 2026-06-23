@@ -68,7 +68,7 @@
   z-index: 35;
   display: grid;
   width: 100%;
-  min-width: min(17rem, calc(100vw - 2rem));
+  min-width: min(17rem, calc(100dvw - 2rem));
   max-height: min(20rem, 52vh);
   overflow-y: auto;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);

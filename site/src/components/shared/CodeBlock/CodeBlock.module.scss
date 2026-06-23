@@ -3,6 +3,8 @@
   --code-selection-text: var(--code);
 
   overflow: hidden;
+  max-width: 100%;
+  min-width: 0;
   border: 1px solid color-mix(in srgb, var(--code-border) 86%, var(--code-text) 14%);
   border-radius: 0.625rem;
   background: var(--code);
@@ -16,6 +18,7 @@
   flex-wrap: wrap;
   gap: 0.5rem 0.75rem;
   justify-content: space-between;
+  min-width: 0;
   border-bottom: 1px solid var(--code-line);
   background: color-mix(in srgb, var(--code-panel) 90%, var(--code) 10%);
   color: color-mix(in srgb, var(--code-text) 86%, transparent);
@@ -39,6 +42,7 @@
   flex: 0 0 auto;
   align-items: center;
   gap: 0.375rem;
+  min-width: 0;
 }
 
 .copyButton {
@@ -91,6 +95,7 @@
 .root.root .pre {
   margin: 0;
   overflow: auto;
+  max-width: 100%;
   background: color-mix(in srgb, var(--code) 96%, white 4%) !important;
   color: var(--code-text);
   padding: 0.9375rem 1rem;
@@ -170,7 +175,12 @@
     padding: 0.4375rem 0.5rem 0.4375rem 0.625rem;
   }
 
+  .language {
+    flex: 1 1 auto;
+  }
+
   .copyButton {
+    flex: 0 1 auto;
     min-width: 7.25rem;
     min-height: 1.9375rem;
     padding-inline: 0.5rem;

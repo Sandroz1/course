@@ -157,9 +157,9 @@
 .taskFactText code,
 .taskListText code {
   display: inline;
-  overflow-wrap: normal;
-  white-space: nowrap;
-  word-break: keep-all;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: normal;
 }
 
 .taskFacts ul {
@@ -562,6 +562,10 @@
     align-items: flex-start;
     flex-direction: column;
     gap: 0.1875rem;
+  }
+
+  .relatedTheory strong {
+    white-space: normal;
   }
 
   .fileTab {
