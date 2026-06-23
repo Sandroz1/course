@@ -13,6 +13,7 @@
   justify-content: space-between;
   gap: 0.625rem;
   width: 8.25rem;
+  max-width: 100%;
   min-height: 2.25rem;
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
   border-radius: 0.5rem;
@@ -56,6 +57,7 @@
   z-index: 30;
   display: grid;
   width: 8.25rem;
+  max-width: calc(100dvw - 1.5rem);
   border: 1px solid color-mix(in srgb, var(--line) 86%, transparent);
   border-radius: 0.625rem;
   background: color-mix(in srgb, var(--surface) 92%, var(--bg) 8%);
@@ -94,5 +96,17 @@
 @media (max-width: 56.25rem) {
   .root {
     justify-content: flex-start;
+  }
+}
+
+@media (max-width: 35rem) {
+  .trigger,
+  .menu {
+    width: 7.25rem;
+  }
+
+  .trigger {
+    gap: 0.4375rem;
+    padding-inline: 0.5625rem;
   }
 }

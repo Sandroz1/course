@@ -48,6 +48,7 @@
 
 .nav {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.4rem;
   justify-content: center;
   min-width: 0;
@@ -80,6 +81,7 @@
 
 .headerActions {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.55rem;
   align-items: center;
   justify-content: flex-end;
@@ -567,6 +569,7 @@
   .nav {
     grid-column: 1 / -1;
     grid-row: 2;
+    min-width: 0;
     justify-content: flex-start;
   }
 
@@ -619,6 +622,7 @@
 
   .headerActions {
     gap: 0.35rem;
+    min-width: 0;
   }
 
   .authSlot {

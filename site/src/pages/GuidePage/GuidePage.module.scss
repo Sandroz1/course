@@ -150,7 +150,9 @@
 .checkList code,
 .tipGrid code {
   display: inline;
-  white-space: nowrap;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  word-break: normal;
   border: 1px solid var(--course-inline-code-border);
   border-radius: 0.3rem;
   background: var(--course-inline-code-bg);

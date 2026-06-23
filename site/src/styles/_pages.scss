@@ -6,6 +6,7 @@
   width: 100%;
   min-width: 0;
   max-width: 60rem;
+  overflow-wrap: break-word;
 }
 
 .compact-page {
@@ -51,6 +52,7 @@
 }
 
 .panel {
+  max-width: 100%;
   min-width: 0;
   border: 1px solid var(--line);
   border-radius: 0.625rem;
@@ -83,6 +85,7 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
+  max-width: 100%;
   min-height: 2.25rem;
   border: 1px solid var(--line);
   border-radius: 0.5rem;

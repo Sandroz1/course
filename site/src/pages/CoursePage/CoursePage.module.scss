@@ -33,6 +33,7 @@
 
 .progressPanel :global(.button) {
   justify-content: center;
+  max-width: 100%;
   min-width: 10.75rem;
 }
 
@@ -254,6 +255,7 @@
 }
 
 .relatedTaskAction {
+  max-width: 100%;
   border: 1px solid var(--line);
   border-radius: 999px;
   color: var(--text);
