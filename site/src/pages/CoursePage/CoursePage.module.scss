@@ -282,18 +282,20 @@
 }
 
 @media (max-width: 35rem) {
-  .progressPanel,
+  .progressPanel:global(.panel),
   .toc,
   .relatedTasks {
-    border-color: var(--border-subtle);
-    border-radius: 0.75rem;
-    background: var(--surface);
-    padding: 0.75rem;
+    border-color: transparent;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
   }
 
   .progressPanel {
     align-items: stretch;
     gap: 0.625rem;
+    border: 0;
   }
 
   .progressPanel :global(.button) {
@@ -302,6 +304,10 @@
 
   .toc div {
     gap: 0.25rem;
+  }
+
+  .toc strong::before {
+    display: none;
   }
 
   .toc a {
