@@ -17,9 +17,9 @@ This document records only the current project state, release line and near-term
 
 ## Current Production State
 
-- Production deployed app hash: `bf43494 Merge responsive layout improvements`.
-- Current runtime includes project finalization, production npm lockfile fix, route loading/practice UX fixes, route loading UI hotfix and responsive layout hardening.
-- Latest docs/state commit: this responsive hardening state update on `main` after deploy; no production redeploy is required for it.
+- Production deployed app hash: `89699a5 Merge mobile visual cleanup`.
+- Current runtime includes project finalization, production npm lockfile fix, route loading/practice UX fixes, route loading UI hotfix, responsive layout hardening and mobile visual cleanup.
+- Latest docs/state commit: this mobile visual cleanup state update on `main` after deploy; no production redeploy is required for it.
 - Senior project finalization is complete for the current release line.
 - Vite build tooling is deployed on Vite 8: `vite@8.0.16`, `@vitejs/plugin-react@6.0.2`.
 - Low-level `esbuild` advisory is closed by the Vite 8 toolchain update; `npm audit --audit-level=low` is clean in `site`.
@@ -28,6 +28,7 @@ This document records only the current project state, release line and near-term
 - Route loading regression is fixed: app-shell routes keep the shell visible while lazy route content loads.
 - Route-level loading UI is removed from normal page refresh/navigation. Regular app routes no longer render a visible "loading page" card.
 - Responsive hardening is deployed. The app shell, public HomePage, course/task pages, auth/profile pages, CodeBlock, inline code, filters, cards and AI assistant layout were hardened for 320-430px mobile widths, tablet and desktop by code/static audit and build checks.
+- Mobile visual cleanup is deployed. Mobile pages were checked in browser at 320, 360, 390, 430, 768 and 1280px across light/dark/deep-dark themes; nested visual noise, bulky mobile cards, oversized panels and AI assistant obstruction were reduced without changing course/task content.
 - `practice/` remains an internal source for starter files. Task UI no longer presents `practice/...` paths as required user-facing steps.
 - Local first-run setup is documented in [../LOCAL_RUNBOOK.md](../LOCAL_RUNBOOK.md).
 - Backend/session/build stability checks passed; no runtime backend change was required in finalization.
@@ -56,6 +57,8 @@ This document records only the current project state, release line and near-term
 
 ## Recent Important Commits
 
+- `89699a5` - `Merge mobile visual cleanup`.
+- `f6a9d69` - `Improve mobile visual layout`.
 - `bf43494` - `Merge responsive layout improvements`.
 - `3f4cd3d` - `Improve responsive layout`.
 - `92b52c5` - `Update project state after route loading UI hotfix`.
@@ -80,6 +83,9 @@ This document records only the current project state, release line and near-term
 
 ## Checks Snapshot
 
+- Mobile visual cleanup checks passed: `npm run typecheck`, `npm run lint`, `npm run build`, `npm audit --audit-level=low`, `git diff --check`.
+- Mobile browser QA passed locally for `/`, `/courses`, `/courses/oop-cpp`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login`, `/register` and unknown route at 320, 360, 390, 430, 768 and 1280px across light/dark/deep-dark themes.
+- Production browser QA passed after mobile visual cleanup deploy with cache-bust `?v=89699a5`: direct routes, lazy chunks, CodeBlock pages, AI assistant guest fallback, unknown route, mobile overflow and route loading regression were checked.
 - Responsive hardening checks passed: `npm run typecheck`, `npm run lint`, `npm run build`, `npm audit --audit-level=low`, `git diff --check`.
 - Responsive static audit checked app shell, sidebar/topbar, public HomePage, courses, course detail, task list, task detail, guide, common errors, login/register/profile, NotFound, CodeBlock, inline code, filters, cards, forms, dropdowns and AI assistant. Browser QA was intentionally not run for this pass by task constraint.
 - Frontend checks passed after Vite 8 migration: `npm run typecheck`, `npm run lint`, `npm run build`, `npm audit --audit-level=low`.
@@ -90,6 +96,7 @@ This document records only the current project state, release line and near-term
 - Production backup succeeded before route loading/practice UX hotfix deploy: `/opt/uchicode/app/backups/20260622T075618Z`.
 - Production backup succeeded before route loading UI hotfix deploy: `/opt/uchicode/app/backups/20260622T082255Z`.
 - Production backup succeeded before responsive hardening deploy: `/opt/uchicode/app/backups/20260623T112442Z`.
+- Production backup succeeded before mobile visual cleanup deploy: `/opt/uchicode/app/backups/20260624T163402Z`.
 - Production health checks passed after deploy: `nginx-health`, `api/health`.
 - Production curl checks returned `200 OK` for `/`, `/courses`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login`, `/register`.
 - Production curl checks also returned `200 OK` for `/courses/oop-cpp` after responsive hardening deploy.
