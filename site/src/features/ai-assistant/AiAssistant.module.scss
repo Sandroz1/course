@@ -562,22 +562,22 @@
 
 @media (max-width: 640px) {
   .floatingButton {
-    right: 14px;
-    bottom: 14px;
-    width: 42px;
-    height: 42px;
+    right: 12px;
+    bottom: 12px;
+    width: 40px;
+    height: 40px;
   }
 
   .panel {
-    left: 10px;
-    right: 10px;
-    bottom: 72px;
+    left: 8px;
+    right: 8px;
+    bottom: 62px;
     width: auto !important;
     max-width: none;
     min-width: 0;
     height: auto !important;
-    max-height: calc(100dvh - 92px);
-    border-radius: 10px;
+    max-height: calc(100dvh - 78px);
+    border-radius: 12px;
   }
 
   .resizeZone {
@@ -589,10 +589,44 @@
   }
 
   .message {
-    max-width: 94%;
+    max-width: 100%;
   }
 
   .form button {
     width: 100%;
+  }
+
+  .panelHeader {
+    gap: 10px;
+    padding: 10px 12px;
+  }
+
+  .selectedText {
+    margin: 8px 10px 0;
+    padding: 8px 9px;
+  }
+
+  .selectedText p {
+    max-height: 76px;
+  }
+
+  .messages {
+    padding: 10px;
+  }
+
+  .message {
+    margin-bottom: 8px;
+    padding: 9px 10px;
+  }
+
+  .form {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .form textarea {
+    min-height: 72px;
+    max-height: 120px;
+    padding: 9px 10px;
   }
 }

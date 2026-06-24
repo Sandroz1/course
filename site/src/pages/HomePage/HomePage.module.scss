@@ -642,6 +642,8 @@
   .hero,
   .mapCard,
   .section {
+    box-shadow: none;
+    border-color: var(--border-subtle);
     border-radius: 1rem;
   }
 
@@ -687,6 +689,7 @@
   .mapCard {
     gap: 0.72rem;
     padding: 0.85rem;
+    background: var(--surface);
   }
 
   .mapHeader {
@@ -761,6 +764,19 @@
   }
 
   .statusLine {
+    border-color: var(--border-subtle);
+    background: var(--surface);
     text-align: left;
+  }
+
+  .lessonItem,
+  .nextCard {
+    border-color: var(--border-subtle);
+    background: var(--surface);
+    box-shadow: none;
+  }
+
+  .nextCard {
+    min-height: 0;
   }
 }
