@@ -243,16 +243,16 @@
   }
 
   .guestActions {
-    flex-wrap: wrap;
-    gap: 0.3125rem;
+    flex-wrap: nowrap;
+    gap: 0.25rem;
     justify-content: flex-end;
-    max-width: calc(100dvw - 9rem);
+    max-width: none;
   }
 
   .loginLink,
   .registerLink {
     min-height: 2.125rem;
-    padding-inline: 0.5rem;
-    font-size: 0.8125rem;
+    padding-inline: 0.45rem;
+    font-size: 0.75rem;
   }
 }

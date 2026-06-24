@@ -562,21 +562,23 @@
 
 @media (max-width: 640px) {
   .floatingButton {
-    right: 12px;
-    bottom: 12px;
-    width: 40px;
-    height: 40px;
+    right: 8px;
+    bottom: 8px;
+    width: 36px;
+    height: 36px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.16);
+    font-size: 0.75rem;
   }
 
   .panel {
-    left: 8px;
-    right: 8px;
-    bottom: 62px;
+    left: 6px;
+    right: 6px;
+    bottom: 52px;
     width: auto !important;
     max-width: none;
     min-width: 0;
     height: auto !important;
-    max-height: calc(100dvh - 78px);
+    max-height: calc(100dvh - 64px);
     border-radius: 12px;
   }
 

@@ -248,12 +248,13 @@
     gap: 0.625rem;
   }
 
-  .search {
+  .search:global(.panel) {
     gap: 0.625rem;
-    border-color: var(--border-subtle);
-    border-radius: 0.75rem;
-    background: var(--surface);
-    padding: 0.75rem;
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0;
   }
 
   .searchMeta {

@@ -161,11 +161,11 @@
   .card {
     grid-template-rows: auto auto auto auto;
     min-height: 0;
-    gap: 0.5rem;
+    gap: 0.45rem;
     border-color: var(--border-subtle);
     border-radius: 0.75rem;
     background: var(--surface);
-    padding: 0.75rem;
+    padding: 0.75rem 0.8rem;
   }
 
   .top {
@@ -185,20 +185,26 @@
 
   .title {
     min-height: 0;
+    font-size: 0.95rem;
   }
 
-  .topics {
-    min-height: 0;
-    max-height: 2.75rem;
+  .topics:global(.topic-list) {
+    display: none;
   }
 
   .footer {
-    justify-content: stretch;
+    justify-content: flex-start;
     min-height: 0;
-    padding-top: 0.5625rem;
+    border-top: 0;
+    padding-top: 0.125rem;
   }
 
   .cta {
-    width: 100%;
+    width: fit-content;
+    min-height: 1.75rem;
+    border-color: transparent;
+    background: transparent;
+    color: var(--accent);
+    padding-inline: 0;
   }
 }
