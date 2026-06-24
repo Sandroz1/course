@@ -1,6 +1,10 @@
 /* Global responsive rules */
 
 @media (max-width: 35rem) {
+  .reading-page {
+    gap: 0.875rem;
+  }
+
   .reading-page h1 {
     max-width: 100%;
     overflow-wrap: anywhere;
@@ -19,8 +23,24 @@
     flex-direction: column;
   }
 
-  a.button,
-  button.button {
+  .actions a.button,
+  .actions button.button {
     width: 100%;
+  }
+
+  .panel {
+    border-color: var(--border-subtle);
+    border-radius: 0.75rem;
+    padding: 0.875rem;
+  }
+
+  .page-header {
+    gap: 0.35rem;
+    padding-top: 0;
+  }
+
+  .lead {
+    font-size: 0.96875rem;
+    line-height: 1.5;
   }
 }

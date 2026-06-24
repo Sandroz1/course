@@ -158,6 +158,8 @@
 @media (max-width: 38rem) {
   .topbar {
     grid-template-columns: auto minmax(0, 1fr) auto;
+    gap: 0.5rem;
+    padding: 0.5rem 0.625rem;
   }
 
   .topbarActions {
@@ -166,5 +168,9 @@
     justify-content: flex-end;
     flex-wrap: wrap;
     min-width: 0;
+  }
+
+  .content {
+    padding: 1rem 0.625rem 5rem;
   }
 }

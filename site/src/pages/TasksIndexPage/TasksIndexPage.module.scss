@@ -170,6 +170,13 @@
 }
 
 @media (max-width: 35rem) {
+  .filters {
+    border-color: var(--border-subtle);
+    border-radius: 0.75rem;
+    background: var(--surface);
+    padding: 0.75rem;
+  }
+
   .sectionHeading {
     align-items: center;
     flex-direction: row;

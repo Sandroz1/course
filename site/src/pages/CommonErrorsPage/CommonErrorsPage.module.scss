@@ -250,6 +250,9 @@
 
   .search {
     gap: 0.625rem;
+    border-color: var(--border-subtle);
+    border-radius: 0.75rem;
+    background: var(--surface);
     padding: 0.75rem;
   }
 
@@ -262,6 +265,10 @@
 
   .cardBody {
     padding: 0;
+  }
+
+  .reason {
+    border-left-color: var(--border-subtle);
   }
 
   .rememberNote {

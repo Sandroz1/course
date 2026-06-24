@@ -299,11 +299,36 @@
 @media (max-width: 35rem) {
   .root {
     min-height: 0;
-    padding: 0.375rem 0 2.5rem;
+    padding: 0.25rem 0 2rem;
   }
 
   .card,
   .context {
-    padding: 1rem;
+    border-color: var(--border-subtle);
+    border-radius: 0.75rem;
+    box-shadow: none;
+    padding: 0.9375rem;
+  }
+
+  .context {
+    gap: 0.75rem;
+    background: var(--surface);
+  }
+
+  .benefit {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    padding: 0;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .description,
+  .contextText,
+  .contextNote {
+    line-height: 1.48;
   }
 }

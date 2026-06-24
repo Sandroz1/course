@@ -549,8 +549,50 @@
 }
 
 @media (max-width: 35rem) {
+  .header,
+  .taskBrief,
+  .codePanel,
+  .helpPanel,
+  .plainPanel {
+    border-color: var(--border-subtle);
+    border-radius: 0.75rem;
+    background: var(--surface);
+    padding: 0.875rem;
+  }
+
+  .taskBrief,
+  .codePanel,
+  .helpPanel {
+    gap: 0.6875rem;
+  }
+
   .root .header h1 {
     overflow-wrap: break-word;
+  }
+
+  .taskFacts {
+    gap: 0.5rem;
+  }
+
+  .taskFacts div {
+    border-width: 0 0 0 2px;
+    border-color: color-mix(in srgb, var(--accent) 28%, var(--border-subtle) 72%);
+    border-radius: 0;
+    background: transparent;
+    padding: 0.25rem 0 0.25rem 0.6875rem;
+  }
+
+  .taskList li {
+    gap: 0.5rem;
+  }
+
+  .helpDisclosure {
+    border-color: var(--border-subtle);
+    background: transparent;
+  }
+
+  .helpDisclosure > button {
+    min-height: 2.5rem;
   }
 
   .helpTop :global(.button),

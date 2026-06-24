@@ -282,6 +282,45 @@
 }
 
 @media (max-width: 35rem) {
+  .progressPanel,
+  .toc,
+  .relatedTasks {
+    border-color: var(--border-subtle);
+    border-radius: 0.75rem;
+    background: var(--surface);
+    padding: 0.75rem;
+  }
+
+  .progressPanel {
+    align-items: stretch;
+    gap: 0.625rem;
+  }
+
+  .progressPanel :global(.button) {
+    min-width: 0;
+  }
+
+  .toc div {
+    gap: 0.25rem;
+  }
+
+  .toc a {
+    padding: 0.25rem 0;
+  }
+
+  .nav {
+    gap: 0.5rem;
+    padding-top: 0.75rem;
+  }
+
+  .navLink {
+    min-height: 0;
+    border-color: var(--border-subtle);
+    border-radius: 0.75rem;
+    background: var(--surface);
+    padding: 0.6875rem 0.75rem;
+  }
+
   .relatedTasksHeader {
     display: grid;
   }
@@ -294,6 +333,15 @@
   .relatedTaskLink {
     align-items: flex-start;
     flex-direction: column;
+    gap: 0.625rem;
+    border-width: 0;
+    border-color: var(--border-subtle);
+    background: transparent;
+    padding: 0.6875rem 0;
+  }
+
+  .relatedTaskLink + .relatedTaskLink {
+    border-top: 1px solid var(--border-subtle);
   }
 
   .navLinkNext {
