@@ -10,7 +10,7 @@
 - `npm run lint`
 - `npm run build`
 
-Эти проверки обязательны для frontend-изменений. `npm run build` может показывать известный Vite chunk-size warning; это не считается падением сборки.
+Эти проверки обязательны для frontend-изменений. Не объявлять новый warning известным non-blocker без проверки причины и фиксации решения в current state.
 
 ## Ручной smoke для routing/layout
 

@@ -1,6 +1,6 @@
 # Learning Loop + C++ Checker MVP
 
-Status: approved. Backend checker data/API foundation and frontend draft saving are implemented on the local checker branch. Runner and runtime code execution remain separate future work.
+Status: approved technical design. Backend checker data/API foundation and frontend draft saving are implemented on the local checker branch. Product sequencing is defined only in [product-roadmap.md](product-roadmap.md); runner and runtime code execution remain separate future work.
 
 ## 1. Purpose
 
@@ -43,7 +43,7 @@ The MVP does not include:
 - Task pages are readable by guests. Saving progress requires an authenticated user.
 - Production currently runs Django, PostgreSQL, Redis and Nginx on the app deployment. There is no submission worker or sandbox runner.
 - `practice/` is an internal source for starter material, not a user-facing filesystem contract.
-- The current task page shows starter code and help but has no editable draft or checker result.
+- The local checker branch adds an editable, authenticated draft for checker-configured tasks. It still has no checker result or runtime execution.
 
 ## 5. Source of truth and `task_version`
 
@@ -101,7 +101,7 @@ AI explanation is a later phase. It may explain a sanitized compiler/result summ
 
 ## 7. Data model
 
-Names are proposed implementation names, not migrations in this pass.
+These model names are implemented in `backend/apps/checker`. Execution-related fields and transitions below remain the target contract for the future runner stage.
 
 ### `CheckerTaskVersion`
 
@@ -200,7 +200,7 @@ Authenticated and idempotent for the current task version:
 }
 ```
 
-Response: the user's attempt id, status, version and timestamps. Autosave should be debounced and must show `saving`, `saved` or `save_error` without blocking local editing.
+Response: the user's attempt id, status, version and timestamps. The current UI uses explicit draft save and shows `saving`, `saved` or `save_error` without clearing local editing. Debounced autosave is optional later work, not current behavior.
 
 ### Attempt history
 
@@ -316,17 +316,22 @@ These are candidates, pending a visible input/output contract review before enab
 
 Do not start with `00-01-minimal-program`: compile success cannot prove the requested structure and could create a misleading pass. Also exclude function-harness tasks, menus, multi-file projects, filesystem access, complex OOP tasks and tasks that grade internal implementation instead of observable behavior.
 
-## 13. Rollout and measurement
+## 13. Technical rollout and measurement
 
-1. Review and approve this design.
-2. Add backend task-version, attempt, submission and test-case models plus admin/import validation. No runner yet.
-3. Add availability and authenticated draft APIs behind a feature flag.
-4. Add the single-file draft UI and preserve all existing task help states.
-5. Provision the separate worker boundary, durable queue and sandbox validation suite.
-6. Enable submissions only for the four reviewed tasks and a small user cohort.
-7. Connect accepted results to `TaskProgress` transactionally.
-8. Add sanitized AI error explanation only after deterministic checker results are stable.
-9. Expand task coverage only after security, reliability and learning metrics pass review.
+Completed locally, not pushed/deployed:
+
+1. Design and ownership boundaries.
+2. Backend task-version, attempt, submission and test-case foundation.
+3. Availability, owner-only draft/history API and fail-closed submission contract.
+4. Single-file draft UI with guest/auth and save/error states.
+
+Remaining technical order after the product roadmap review/merge/deploy gates:
+
+1. Provision the separate worker boundary, durable queue and sandbox validation suite.
+2. Connect accepted results to `TaskProgress` transactionally.
+3. Enable submissions only for reviewed simple tasks and a small user cohort.
+4. Add sanitized AI error explanation only after deterministic results are stable.
+5. Expand coverage only after security, reliability and learning metrics pass review.
 
 Minimal events: `checker_task_viewed`, `attempt_saved`, `submission_created`, `submission_finished`, `task_passed`. Never include source code, test input/output or compiler logs in analytics.
 

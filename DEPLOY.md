@@ -1,72 +1,24 @@
 # DEPLOY
 
-Короткий entrypoint для production-деплоя. Полные инструкции находятся в [deploy/docs/README.md](deploy/docs/README.md).
+Короткий entrypoint. Полные production-команды находятся в [deploy/docs/README.md](deploy/docs/README.md); не поддерживать их копию здесь.
 
-## Важные правила
+## Safety Gate
 
-- `.env.production` создаётся и хранится только на VPS.
-- Не пушить tag `v*`, если не нужен запуск GitHub Actions deploy.
-- Перед production update или rollback выполнить `/opt/uchicode/backup.sh`.
-- После frontend-изменений пересобирать `nginx` image, потому что frontend собирается внутри `docker/nginx/Dockerfile`.
-- Не использовать `git add .` перед release, если в рабочем дереве есть env, `site/dist`, `node_modules`, `.venv`, `.vs`, `db.sqlite3` или backup-файлы.
+- Deploy выполнять только по явному запросу и только из проверенного pushed commit.
+- Перед update или rollback сделать `/opt/uchicode/backup.sh`; при ошибке backup остановиться.
+- Проверить чистый local/VPS tree, fast-forward pull и совпадение выбранного hash.
+- Не менять secrets, production env, volumes или history в обычном deploy.
+- Не выполнять `docker compose down -v`.
+- Frontend входит в nginx image, поэтому runtime frontend changes требуют rebuild.
 
-## Ручной deploy текущего main на VPS
+## Runbooks
 
-```bash
-cd /opt/uchicode/app
-git fetch origin main
-git checkout origin/main
-/opt/uchicode/backup.sh
-docker compose -p app -f docker-compose.prod.yml build --pull
-docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
-docker compose -p app -f docker-compose.prod.yml ps
-curl -fsS https://uchicode.ru/nginx-health
-curl -fsS https://uchicode.ru/api/health
-```
-
-Если нужно закрепиться на конкретном commit:
-
-```bash
-git checkout <commit-sha>
-```
-
-## Ручной deploy по tag
-
-Перед использованием tag убедиться, что он опубликован:
-
-```bash
-git ls-remote --tags origin v0.1.2
-```
-
-Если tag существует:
-
-```bash
-cd /opt/uchicode/app
-git fetch --all --tags
-git checkout v0.1.2
-/opt/uchicode/backup.sh
-docker compose -p app -f docker-compose.prod.yml build --pull
-docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
-curl -fsS https://uchicode.ru/api/health
-```
-
-## Rollback
-
-```bash
-cd /opt/uchicode/app
-git fetch --all --tags
-git checkout v0.1.1
-/opt/uchicode/backup.sh
-docker compose -p app -f docker-compose.prod.yml build
-docker compose -p app -f docker-compose.prod.yml up -d --remove-orphans
-curl -fsS https://uchicode.ru/api/health
-```
-
-## Где смотреть детали
-
-- Первый деплой: [deploy/docs/02_DEPLOY_FROM_ZERO.md](deploy/docs/02_DEPLOY_FROM_ZERO.md).
-- Обновление и rollback: [deploy/docs/03_UPDATE_ROLLBACK_HOTFIX.md](deploy/docs/03_UPDATE_ROLLBACK_HOTFIX.md).
+- Первый VPS deploy: [deploy/docs/02_DEPLOY_FROM_ZERO.md](deploy/docs/02_DEPLOY_FROM_ZERO.md).
+- Update, rollback, hotfix: [deploy/docs/03_UPDATE_ROLLBACK_HOTFIX.md](deploy/docs/03_UPDATE_ROLLBACK_HOTFIX.md).
 - Troubleshooting: [deploy/docs/04_TROUBLESHOOTING.md](deploy/docs/04_TROUBLESHOOTING.md).
-- Security: [deploy/docs/05_SECURITY_SECRETS_ACCESS.md](deploy/docs/05_SECURITY_SECRETS_ACCESS.md).
-- Backup: [deploy/docs/06_BACKUP_RESTORE.md](deploy/docs/06_BACKUP_RESTORE.md).
-- Post-deploy checklist: [deploy/docs/09_POST_DEPLOY_CHECKLIST.md](deploy/docs/09_POST_DEPLOY_CHECKLIST.md).
+- Production security/access: [deploy/docs/05_SECURITY_SECRETS_ACCESS.md](deploy/docs/05_SECURITY_SECRETS_ACCESS.md).
+- Backup/restore: [deploy/docs/06_BACKUP_RESTORE.md](deploy/docs/06_BACKUP_RESTORE.md).
+- Commands cheatsheet: [deploy/docs/07_COMMANDS_CHEATSHEET.md](deploy/docs/07_COMMANDS_CHEATSHEET.md).
+- Post-deploy checks: [deploy/docs/09_POST_DEPLOY_CHECKLIST.md](deploy/docs/09_POST_DEPLOY_CHECKLIST.md), [SMOKE_TESTS.md](SMOKE_TESTS.md).
+
+Перед deploy сверить current production state с фактическим VPS; документация без server check не является доказательством текущего `HEAD`.

@@ -6,6 +6,7 @@ Project: Uchicode.
 
 - Documentation map: [docs/README.md](docs/README.md).
 - Current state and next task: [docs/ai-project-state.md](docs/ai-project-state.md).
+- Product sequence and current restrictions: [docs/product-roadmap.md](docs/product-roadmap.md).
 - Frontend architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 - Frontend UI rules: [docs/frontend-ui-standards.md](docs/frontend-ui-standards.md).
 - Theory/content rules: [docs/theory-content-standards.md](docs/theory-content-standards.md).
@@ -28,6 +29,16 @@ Project: Uchicode.
 - Treat docs as required context, not as the only source of truth. If docs conflict with the current git branch, commits, production state or code, record the mismatch and update docs or clearly report that they are stale.
 - When a task changes production state, routing, deploy status, backlog, UI quality bar, architecture or an important workflow, update the matching `.md` file in the same pass unless the user explicitly asks for code-only work.
 - Keep deployment state labels precise: use `production deployed app hash`, `latest docs/state commit` and `current main hash`. Do not write `production/main hash` when those values differ.
+- If roadmap, current state and a specialized document disagree, stop and resolve the documentation conflict before implementation.
+
+## Documentation Routing
+
+- General task: read the docs index, current state and product roadmap.
+- Checker/runner task: also read `docs/learning-loop-checker-design.md`.
+- Course task: read the matching course plan and `docs/theory-content-standards.md`.
+- UI task: read `docs/frontend-ui-standards.md` and the relevant focused plan.
+- Deploy task: use `DEPLOY.md` and `deploy/docs/README.md`; do not reconstruct production commands from old chat history.
+- Security/secrets task: use `docs/pre-commit-security.md`, the incident runbook and production security docs.
 
 ## Quality Bar
 

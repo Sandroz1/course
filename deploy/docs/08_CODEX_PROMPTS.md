@@ -1,5 +1,7 @@
 # 08. Codex/Cursor prompts
 
+Reference-only examples. Перед использованием сверить [../../AGENTS.md](../../AGENTS.md), [../../docs/ai-project-state.md](../../docs/ai-project-state.md) и [../../docs/product-roadmap.md](../../docs/product-roadmap.md). Эти примеры не задают текущий next step и не разрешают push/deploy без явного запроса.
+
 ## Production-ready проверка перед деплоем
 
 Задача: проверить production-ready состояние проекта Uchicode перед деплоем.

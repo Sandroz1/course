@@ -1,42 +1,31 @@
 # Documentation Audit
 
-Актуально на 2026-06-10. Это краткая заметка по docs cleanup, не отдельный runbook.
+Актуально на 2026-06-28. Это audit note, не current state и не roadmap.
 
-## Checked
+## Scope
 
-- Root docs: `README.md`, `AGENTS.md`, `PROJECT_STATUS.md`, `LOCAL_RUNBOOK.md`, `DEPLOY.md`, `DEPLOY_SSL.md`, `SMOKE_TESTS.md`.
-- Main docs: all markdown files in `docs`.
-- Production docs: `deploy/README.md` and `deploy/docs/*.md`.
-- Supporting README files: `practice/README.md`, `site/src/styles/README.md`.
+- Root entrypoints and local/smoke/deploy runbooks.
+- All markdown under `docs`, `deploy/docs`, `practice` and `site/src/styles`.
+- Relative markdown links and conflicting next-step/roadmap statements.
 
-## Findings
+## Findings And Decisions
 
-- Root `README.md` duplicated local run, deploy, env and security details that already exist in runbooks.
-- `docs/README.md` did not include current frontend architecture, AI state, security docs, test strategy and deploy runbooks.
-- `AGENTS.md` repeated detailed frontend/course/deploy rules instead of linking to dedicated docs.
-- `PROJECT_STATUS.md` contained stale project and course status.
-- `docs/ai-project-state.md` mixed current state with permanent update-format rules.
-- `DEPLOY.md` contained an old concrete commit in a generic checkout example.
+- Roadmap был размазан между current state, checker design, course plans и presentation materials. Канонический порядок перенесён в [product-roadmap.md](product-roadmap.md).
+- `ai-project-state.md` содержал длинную release history, backup list и повтор checks. Оставлен короткий verified snapshot, local work и next stage.
+- Root `README.md`, `DEPLOY.md` и `deploy/README.md` повторяли команды профильных runbooks. Они сокращены до entrypoints и safety rules.
+- Course и presentation docs указывали sections 11/12 как ближайшую работу. Теперь они сохраняют content order, но подчиняются product phases.
+- Checker design остаётся техническим source of truth и больше не задаёт общий продуктовый next step.
+- UI, security, local setup, backup/restore and deploy troubleshooting docs оставлены специализированными: их детали не переносились в roadmap.
+- `frontend-test-strategy.md` содержал устаревшее допущение про Vite chunk warning; оно удалено.
+- Broken relative markdown links не найдены до правок; ссылки повторно проверяются после consolidation.
 
-## Current Structure
+## Canonical Roles
 
-- Root `README.md` is the short project entrypoint.
-- `docs/README.md` is the full documentation map.
-- `AGENTS.md` contains stable Codex rules and links to profile docs.
-- `docs/ai-project-state.md` contains current development state only.
-- `LOCAL_RUNBOOK.md` remains the local development runbook.
-- `DEPLOY.md`, `deploy/README.md` and `deploy/docs/*.md` remain the deploy/Docker/migration/backup/rollback source of truth.
-- Security procedures remain in `docs/pre-commit-security.md`, `docs/security-incident-runbook.md`, `docs/security-release-checklist.md` and `deploy/docs/05_SECURITY_SECRETS_ACCESS.md`.
-
-## Preserved Instructions
-
-- Local run and backend/frontend checks.
-- Production deploy, update, rollback and hotfix instructions.
-- Docker Compose, migrations and backup/restore instructions.
-- Security incident, secret rotation and pre-commit checks.
-- Course and frontend content standards.
+- Docs entrypoint: [README.md](README.md).
+- Current state: [ai-project-state.md](ai-project-state.md).
+- Product order and restrictions: [product-roadmap.md](product-roadmap.md).
+- Specialized technical/operations docs: architecture, UI, checker, course, deploy and security files linked from the index.
 
 ## Needs Verification
 
-- Production state in `deploy/docs/01_CURRENT_STATE.md` was not rechecked against VPS in this docs-only pass.
-- Long course plans may still contain historical wording. They were left intact to avoid changing course meaning during documentation cleanup.
+- Production server `HEAD`, containers and backup state не проверялись в docs-only pass. Перед deploy сверить фактический VPS по production runbook.
