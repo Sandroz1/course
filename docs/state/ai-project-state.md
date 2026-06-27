@@ -9,9 +9,10 @@
 - Production deployed app hash: `cc8d75d` по последней зафиксированной успешной публикации. VPS в этом docs-only проходе не проверялся; перед deploy сверить server `HEAD`.
 - `origin/main`: `546015d`.
 - Local `main`: `43a827f` (design merge локально, не pushed).
-- Current implementation branch: `codex/checker-data-foundation`.
-- Local checker commits: `a38c34e Add checker data foundation`, `352919f Add checker draft flow`.
-- Working tree был чистым до этого docs-only pass.
+- Current integration branch: `codex/product-foundation-phase-1`.
+- Local foundation commits: `a38c34e Add checker data foundation`, `352919f Add checker draft flow`, `7fa498d Consolidate documentation roadmap`, `2760cff Organize documentation structure`.
+- Integration hardening commits: `0a7b12f Harden checker admin foundation`, `c9ebb39 Complete product foundation UI pass`.
+- Integration branch не pushed, не merged в `main` и не deployed.
 
 ## Production
 
@@ -28,6 +29,9 @@
 - Authenticated users могут сохранять/восстанавливать draft; guests видят требование входа.
 - Checker-enabled task нельзя вручную перевести в `solved` без accepted checker result.
 - Runner и выполнение пользовательского C++ кода не добавлены; submission без runner возвращает controlled `503` и не создаётся.
+- Checker admin не позволяет обойти immutable-правила через bulk delete; attempts доступны в admin только для чтения.
+- HomePage и затронутые mobile surfaces прошли UI cleanup; public `/` по-прежнему работает вне `AppLayout`.
+- Desktop/mobile browser QA проверил основные routes, CTA, mobile navigation, guest/auth draft save/restore и light/dark/deep-dark без horizontal overflow.
 
 ## Course State
 
@@ -37,7 +41,7 @@
 
 ## Next Stage
 
-Phase 1: HomePage redesign + site-wide UI audit. После него — review/merge checker draft flow, затем отдельный stable deploy. Runner не является немедленным следующим шагом.
+Фазы 0-2 завершены локально в integration-ветке. Следующий шаг — отдельный review и merge `codex/product-foundation-phase-1` в `main` с повторными checks; stable deploy выполняется только отдельной задачей после merge. Runner остаётся будущей фазой 4 и не является немедленным следующим шагом.
 
 ## Read For Details
 

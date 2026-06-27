@@ -4,10 +4,10 @@
 
 ## Current Position
 
-- Текущий этап: фаза 0 завершается этим docs-only pass.
-- Следующий этап после принятия этого docs-pass: фаза 1, HomePage redesign и site-wide UI audit.
-- Checker data foundation и draft flow уже реализованы локально, но проходят review/merge только в фазе 2.
-- Production deploy выполняется отдельной фазой после review и проверок.
+- Фаза 0 завершена: docs index, current state, roadmap и тематическая структура документации согласованы.
+- Фаза 1 завершена локально в `codex/product-foundation-phase-1`: HomePage и затронутые UI surfaces прошли audit, cleanup и browser QA.
+- Реализация и review gate фазы 2 завершены в той же integration-ветке: checker foundation и draft flow проверены без исполнения пользовательского кода.
+- Следующий шаг — отдельный review/merge integration-ветки в `main`; production deploy остаётся отдельной фазой 3 после merge и повторных проверок.
 
 ## Phases
 
