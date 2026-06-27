@@ -12,6 +12,7 @@ urlpatterns = [
     path("api/admin/", include("apps.accounts.urls_admin")),
     path("api/auth/", include("apps.accounts.urls")),
     path("api/ai/", include("apps.ai.urls")),
+    path("api/checker/", include("apps.checker.urls")),
     path("api/progress/", include("apps.progress.urls")),
     path("api/me/", MeView.as_view(), name="me"),
 ]
