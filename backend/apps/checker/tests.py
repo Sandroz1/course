@@ -314,6 +314,23 @@ class CheckerApiTests(APITestCase):
         self.assertEqual(Submission.objects.count(), 0)
         self.assertFalse(TaskProgress.objects.filter(user=self.user, task_id=self.version.task_id).exists())
 
+    def test_checker_enabled_task_cannot_be_marked_solved_manually(self):
+        self.authenticate()
+
+        response = self.client.post(
+            "/api/progress/tasks/",
+            {
+                "task_id": self.version.task_id,
+                "status": TaskProgress.Status.SOLVED,
+            },
+            format="json",
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn("status", response.data["fields"])
+        self.assertFalse(TaskProgress.objects.filter(user=self.user, task_id=self.version.task_id).exists())
+
     def test_active_submission_status_is_not_exposed_without_runner(self):
         attempt = TaskAttempt.objects.create(
             user=self.user,

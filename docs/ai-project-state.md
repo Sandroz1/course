@@ -37,7 +37,10 @@ This document records only the current project state, release line and near-term
 - Docker dev/prod compose configs are valid.
 - Project tree cleanup removed only empty untracked directories that had no files or references.
 - Presentation materials are available in `docs/presentation`.
-- Learning Loop + C++ Checker MVP is documented. This is a docs-only design decision; runtime and the production deployed app hash are unchanged.
+- Learning Loop + C++ Checker design is approved. Backend versioned task/attempt/submission/test data and API contracts are implemented in `apps.checker`.
+- The task page has a typed checker client and a draft-only "Моя попытка" flow for checker-configured tasks. Authenticated users can save and restore code; guests see the sign-in requirement.
+- Checker execution remains disabled: no runner or user-code execution exists, submission creation fails closed and no production checker task versions or hidden tests are seeded.
+- These checker changes are local only. They have not been pushed or deployed, so the production deployed app hash remains unchanged.
 
 ## Course State
 
@@ -60,6 +63,7 @@ This document records only the current project state, release line and near-term
 
 ## Recent Important Commits
 
+- `a38c34e` - `Add checker data foundation` (local checker branch, not pushed/deployed).
 - `cc8d75d` - `Merge visual UI cleanup`.
 - `ef53cf4` - `Improve visual UI layout`.
 - `89699a5` - `Merge mobile visual cleanup`.
@@ -88,6 +92,8 @@ This document records only the current project state, release line and near-term
 
 ## Checks Snapshot
 
+- Checker foundation review passed for disabled-runner availability, draft save, ownership, stale versions, source limits, hidden-test isolation, fail-closed submission creation and progress protection.
+- Checker draft flow checks passed: backend checker/progress tests, frontend typecheck/lint/build and local browser QA for guest/authenticated save/restore plus 390px mobile layout. No runner was enabled.
 - Visual UI cleanup checks passed: `npm run typecheck`, `npm run lint`, `npm run build`, `npm audit --audit-level=low`, `git diff --check`.
 - Visual UI browser QA passed locally for `/`, `/courses`, `/courses/oop-cpp`, `/tasks`, `/tasks/00-01-minimal-program`, `/courses/oop-cpp/delegating-constructors`, `/guide`, `/common-errors`, `/login`, `/register` and unknown route at 360, 390, 430, 768 and 1280px across light/dark/deep-dark themes. A 320px check remains a basic overflow guardrail only.
 - Production deployed app hash after visual UI cleanup: `cc8d75d`.
@@ -112,9 +118,9 @@ This document records only the current project state, release line and near-term
 
 ## Known Follow-ups
 
-1. Review and approve [Learning Loop + C++ Checker MVP](learning-loop-checker-design.md).
-2. Implement versioned checker task data and attempt/submission APIs without enabling code execution.
-3. Add draft saving, then provision a separate isolated runner and enable the checker for the reviewed basic tasks.
+1. Review and merge the checker data foundation and frontend draft flow; production task versions remain intentionally unseeded.
+2. Provision and review a separate isolated runner before enabling submissions or any user-code execution.
+3. Enable the checker only for reviewed basic tasks after runner isolation, failure handling and production operations are approved.
 4. Add sanitized AI result explanation, learning-loop analytics and profile/next-step improvements after deterministic checks are stable.
 5. Complete OOP C++ sections 11 and 12 only after the platform foundation is stable, then audit sections 0-12.
 6. Run the backend/auth/payment/security pass before monetization.
@@ -132,4 +138,4 @@ This document records only the current project state, release line and near-term
 
 ## Next Stage
 
-Review and approve the Learning Loop + C++ Checker MVP design. After approval, the first implementation pass is backend versioned checker data plus attempt/submission models and API contracts, without a runner. Sections 11/12 remain paused.
+Review the checker data foundation and draft-only task flow. The next implementation stage is isolated runner design/provisioning and deterministic execution behind the existing fail-closed API; sections 11/12 remain paused.

@@ -1,6 +1,6 @@
 # Learning Loop + C++ Checker MVP
 
-Status: design only. This document does not add runtime code, a runner or course content.
+Status: approved. Backend checker data/API foundation and frontend draft saving are implemented on the local checker branch. Runner and runtime code execution remain separate future work.
 
 ## 1. Purpose
 
