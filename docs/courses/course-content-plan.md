@@ -2,7 +2,7 @@
 
 Документ фиксирует рабочую карту курса: что уже есть в проекте, что нужно расширить, что нужно создать позже.
 
-Это content plan, а не общий product roadmap. Когда начинать content work, определяет [product-roadmap.md](product-roadmap.md); sections 11/12 остаются phases 7/8 и сейчас не начинаются.
+Это content plan, а не общий product roadmap. Когда начинать content work, определяет [product-roadmap.md](../product/product-roadmap.md); sections 11/12 остаются phases 7/8 и сейчас не начинаются.
 
 ## Источники
 

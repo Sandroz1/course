@@ -37,7 +37,7 @@
 
 ## Будущие product follow-ups
 
-Эти идеи не задают порядок работ. Актуальная последовательность находится в [../docs/product-roadmap.md](../docs/product-roadmap.md), checker boundaries — в [../docs/learning-loop-checker-design.md](../docs/learning-loop-checker-design.md).
+Эти идеи не задают порядок работ. Актуальная последовательность находится в [../docs/product/product-roadmap.md](../docs/product/product-roadmap.md), checker boundaries — в [../docs/platform/learning-loop-checker-design.md](../docs/platform/learning-loop-checker-design.md).
 
 - скачать файлы практики из задачи;
 - открыть заготовку прямо на сайте;

@@ -91,7 +91,7 @@
 - Auth API: `site/src/lib/authApi.ts`.
 - Progress API/cache: `site/src/lib/progressApi.ts`.
 - AI API/usage: `site/src/lib/aiApi.ts`, `site/src/lib/aiUsage.ts`.
-- Checker availability/drafts: `site/src/lib/checkerApi.ts`; backend ownership and execution boundaries are defined in [learning-loop-checker-design.md](learning-loop-checker-design.md).
+- Checker availability/drafts: `site/src/lib/checkerApi.ts`; backend ownership and execution boundaries are defined in [learning-loop-checker-design.md](../platform/learning-loop-checker-design.md).
 
 API-слой не должен знать про конкретные страницы. Страницы и features вызывают `lib`, а не наоборот.
 

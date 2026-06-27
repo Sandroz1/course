@@ -1,6 +1,6 @@
 # Learning Loop + C++ Checker MVP
 
-Status: approved technical design. Backend checker data/API foundation and frontend draft saving are implemented on the local checker branch. Product sequencing is defined only in [product-roadmap.md](product-roadmap.md); runner and runtime code execution remain separate future work.
+Status: approved technical design. Backend checker data/API foundation and frontend draft saving are implemented on the local checker branch. Product sequencing is defined only in [product-roadmap.md](../product/product-roadmap.md); runner and runtime code execution remain separate future work.
 
 ## 1. Purpose
 

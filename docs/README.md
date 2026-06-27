@@ -1,41 +1,54 @@
 # Documentation Index
 
-Главный вход в документацию Uchicode. Здесь указана роль каждого документа; подробные инструкции не дублируются.
+Главный вход в документацию Uchicode. Этот файл показывает, где лежит актуальное состояние, roadmap, архитектура, UI-правила, course docs, platform docs, security docs, deploy docs и presentation materials.
 
 ## Read First
 
-1. [../README.md](../README.md) — что такое проект и его структура.
+1. [../README.md](../README.md) — что такое проект и как он устроен.
 2. [../AGENTS.md](../AGENTS.md) — обязательные правила для Codex/AI.
-3. [ai-project-state.md](ai-project-state.md) — короткий current snapshot.
-4. [product-roadmap.md](product-roadmap.md) — единый порядок продуктовых фаз и `Do not do now`.
+3. [state/ai-project-state.md](state/ai-project-state.md) — короткий current snapshot и следующий шаг.
+4. [product/product-roadmap.md](product/product-roadmap.md) — единый порядок продуктовых фаз и `Do not do now`.
 
-Новый разработчик затем читает [../LOCAL_RUNBOOK.md](../LOCAL_RUNBOOK.md) и [ARCHITECTURE.md](ARCHITECTURE.md).
+Новый разработчик затем читает [../LOCAL_RUNBOOK.md](../LOCAL_RUNBOOK.md) и [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md).
+
+## Structure
+
+- `state/` — current state, documentation audit/status.
+- `product/` — product roadmap and public HomePage plan.
+- `architecture/` — frontend/application architecture.
+- `frontend/` — UI standards and frontend test strategy.
+- `courses/` — course plans and theory/content standards.
+- `platform/` — Learning Loop, checker and future runner design.
+- `security/` — pre-commit security, incident and release checklists.
+- `presentation/` — presentation materials for demos and product discussion.
 
 ## Route By Task
 
-- Frontend architecture: [ARCHITECTURE.md](ARCHITECTURE.md).
-- UI/HomePage: [frontend-ui-standards.md](frontend-ui-standards.md), [homepage-landing-plan.md](homepage-landing-plan.md).
-- Frontend checks: [frontend-test-strategy.md](frontend-test-strategy.md).
-- Checker/runner: [learning-loop-checker-design.md](learning-loop-checker-design.md).
-- Course content: [theory-content-standards.md](theory-content-standards.md), [course-content-plan.md](course-content-plan.md), [base-cpp-course-plan.md](base-cpp-course-plan.md).
+- Current work: [state/ai-project-state.md](state/ai-project-state.md).
+- Product sequence: [product/product-roadmap.md](product/product-roadmap.md).
+- Frontend architecture: [architecture/ARCHITECTURE.md](architecture/ARCHITECTURE.md).
+- UI/HomePage: [frontend/frontend-ui-standards.md](frontend/frontend-ui-standards.md), [product/homepage-landing-plan.md](product/homepage-landing-plan.md).
+- Frontend checks: [frontend/frontend-test-strategy.md](frontend/frontend-test-strategy.md).
+- Checker/runner: [platform/learning-loop-checker-design.md](platform/learning-loop-checker-design.md).
+- Course content: [courses/theory-content-standards.md](courses/theory-content-standards.md), [courses/course-content-plan.md](courses/course-content-plan.md), [courses/base-cpp-course-plan.md](courses/base-cpp-course-plan.md).
 - Practice starter sources: [../practice/README.md](../practice/README.md).
 - Local setup: [../LOCAL_RUNBOOK.md](../LOCAL_RUNBOOK.md).
 - Deploy/rollback/backup: [../DEPLOY.md](../DEPLOY.md), [../deploy/docs/README.md](../deploy/docs/README.md).
-- Security/secrets: [pre-commit-security.md](pre-commit-security.md), [security-incident-runbook.md](security-incident-runbook.md), [security-release-checklist.md](security-release-checklist.md).
+- Security/secrets: [security/pre-commit-security.md](security/pre-commit-security.md), [security/security-incident-runbook.md](security/security-incident-runbook.md), [security/security-release-checklist.md](security/security-release-checklist.md).
 - Presentation: [presentation/README.md](presentation/README.md).
 
 ## Status Sources
 
-- Development/current work: [ai-project-state.md](ai-project-state.md).
-- Product sequence: [product-roadmap.md](product-roadmap.md).
+- Development/current work: [state/ai-project-state.md](state/ai-project-state.md).
+- Product sequence: [product/product-roadmap.md](product/product-roadmap.md).
 - Production infrastructure: [../deploy/docs/01_CURRENT_STATE.md](../deploy/docs/01_CURRENT_STATE.md), verified against VPS before an operation.
-- Legacy status links: [../PROJECT_STATUS.md](../PROJECT_STATUS.md).
-- Documentation consolidation audit: [documentation-audit.md](documentation-audit.md).
+- Legacy status entrypoint: [../PROJECT_STATUS.md](../PROJECT_STATUS.md).
+- Documentation consolidation audit: [state/documentation-audit.md](state/documentation-audit.md).
 
 ## Documentation Rules
 
-- Один полный процесс живёт в одном профильном документе; остальные docs дают короткую ссылку.
-- Current state не хранит полный roadmap или длинную release history.
-- Если docs конфликтуют с git/code/VPS, сначала зафиксировать конфликт и обновить docs, а не выбирать случайную версию.
-- Непроверенный runtime/production факт помечать `needs verification`.
-- Docs-only task: только markdown checks. Runtime task: проверки соответствующей зоны.
+- One full process lives in one specialized document; other docs link to it.
+- Current state does not store the full roadmap or long release history.
+- If docs conflict with git/code/VPS, record and resolve the conflict before implementation.
+- Mark unverified runtime/production facts as `needs verification`.
+- Docs-only task: run markdown/link/git checks. Runtime task: run checks for the affected area.

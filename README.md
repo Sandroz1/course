@@ -5,8 +5,8 @@ Uchicode — учебная платформа по C++ с курсами «Ба
 ## Start Here
 
 - [docs/README.md](docs/README.md) — главный индекс документации.
-- [docs/ai-project-state.md](docs/ai-project-state.md) — текущее состояние.
-- [docs/product-roadmap.md](docs/product-roadmap.md) — единый product roadmap.
+- [docs/state/ai-project-state.md](docs/state/ai-project-state.md) — текущее состояние.
+- [docs/product/product-roadmap.md](docs/product/product-roadmap.md) — единый product roadmap.
 - [AGENTS.md](AGENTS.md) — правила для Codex/AI.
 - [LOCAL_RUNBOOK.md](LOCAL_RUNBOOK.md) — локальный запуск и проверки.
 - [DEPLOY.md](DEPLOY.md) — production entrypoint.
@@ -24,8 +24,8 @@ Production использует Docker Compose, host Nginx, PostgreSQL и Redis.
 
 ## Focused Documentation
 
-- Frontend: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md), [docs/frontend-ui-standards.md](docs/frontend-ui-standards.md).
-- Checker/runner: [docs/learning-loop-checker-design.md](docs/learning-loop-checker-design.md).
-- Course content: [docs/theory-content-standards.md](docs/theory-content-standards.md).
-- Security: [docs/pre-commit-security.md](docs/pre-commit-security.md).
+- Frontend: [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md), [docs/frontend/frontend-ui-standards.md](docs/frontend/frontend-ui-standards.md).
+- Checker/runner: [docs/platform/learning-loop-checker-design.md](docs/platform/learning-loop-checker-design.md).
+- Course content: [docs/courses/theory-content-standards.md](docs/courses/theory-content-standards.md).
+- Security: [docs/security/pre-commit-security.md](docs/security/pre-commit-security.md).
 - Production: [deploy/docs/README.md](deploy/docs/README.md).

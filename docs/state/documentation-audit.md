@@ -10,7 +10,7 @@
 
 ## Findings And Decisions
 
-- Roadmap был размазан между current state, checker design, course plans и presentation materials. Канонический порядок перенесён в [product-roadmap.md](product-roadmap.md).
+- Roadmap был размазан между current state, checker design, course plans и presentation materials. Канонический порядок перенесён в [product-roadmap.md](../product/product-roadmap.md).
 - `ai-project-state.md` содержал длинную release history, backup list и повтор checks. Оставлен короткий verified snapshot, local work и next stage.
 - Root `README.md`, `DEPLOY.md` и `deploy/README.md` повторяли команды профильных runbooks. Они сокращены до entrypoints и safety rules.
 - Course и presentation docs указывали sections 11/12 как ближайшую работу. Теперь они сохраняют content order, но подчиняются product phases.
@@ -21,9 +21,9 @@
 
 ## Canonical Roles
 
-- Docs entrypoint: [README.md](README.md).
+- Docs entrypoint: [README.md](../README.md).
 - Current state: [ai-project-state.md](ai-project-state.md).
-- Product order and restrictions: [product-roadmap.md](product-roadmap.md).
+- Product order and restrictions: [product-roadmap.md](../product/product-roadmap.md).
 - Specialized technical/operations docs: architecture, UI, checker, course, deploy and security files linked from the index.
 
 ## Needs Verification

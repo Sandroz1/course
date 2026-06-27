@@ -75,7 +75,7 @@ Uchicode решает одну конкретную проблему: нович
 
 ## План развития
 
-Единый порядок находится в [../product-roadmap.md](../product-roadmap.md). Для презентации показывать только верхний уровень:
+Единый порядок находится в [product roadmap](../product/product-roadmap.md). Для презентации показывать только верхний уровень:
 
 - улучшить HomePage и провести site-wide UI audit;
 - review/merge checker draft flow и задеплоить стабильную версию;

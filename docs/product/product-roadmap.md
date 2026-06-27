@@ -54,7 +54,7 @@ Gate: isolation/security review принят до первого выполне�
 
 ### Phase 5. Enable checker for simple tasks
 
-- Начать с простых детерминированных console tasks из [learning-loop-checker-design.md](learning-loop-checker-design.md).
+- Начать с простых детерминированных console tasks из [learning-loop-checker-design.md](../platform/learning-loop-checker-design.md).
 - Проверить visible I/O contract, immutable version и тесты каждой задачи.
 - Не включать сложные ООП, filesystem, menu и multi-file tasks.
 
@@ -101,9 +101,9 @@ Gate: runner isolation, failure handling и production operations провере
 
 ## Detailed Sources
 
-- Current state: [ai-project-state.md](ai-project-state.md).
-- Checker/API/runner boundaries: [learning-loop-checker-design.md](learning-loop-checker-design.md).
-- Frontend architecture and UI: [ARCHITECTURE.md](ARCHITECTURE.md), [frontend-ui-standards.md](frontend-ui-standards.md).
-- Course plans: [course-content-plan.md](course-content-plan.md), [base-cpp-course-plan.md](base-cpp-course-plan.md).
-- Deploy and rollback: [../DEPLOY.md](../DEPLOY.md), [../deploy/docs/README.md](../deploy/docs/README.md).
-- Security: [pre-commit-security.md](pre-commit-security.md), [security-incident-runbook.md](security-incident-runbook.md).
+- Current state: [ai-project-state.md](../state/ai-project-state.md).
+- Checker/API/runner boundaries: [learning-loop-checker-design.md](../platform/learning-loop-checker-design.md).
+- Frontend architecture and UI: [ARCHITECTURE.md](../architecture/ARCHITECTURE.md), [frontend-ui-standards.md](../frontend/frontend-ui-standards.md).
+- Course plans: [course-content-plan.md](../courses/course-content-plan.md), [base-cpp-course-plan.md](../courses/base-cpp-course-plan.md).
+- Deploy and rollback: [DEPLOY.md](../../DEPLOY.md), [deploy/docs/README.md](../../deploy/docs/README.md).
+- Security: [pre-commit-security.md](../security/pre-commit-security.md), [security-incident-runbook.md](../security/security-incident-runbook.md).
