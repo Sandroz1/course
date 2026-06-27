@@ -207,13 +207,19 @@
     gap: 0.75rem;
   }
 
-  .hero,
-  .processPanel,
-  .helpPanel {
-    border-color: var(--border-subtle);
-    border-radius: 0.75rem;
-    background: var(--surface);
-    padding: 0.875rem;
+  :global(.reading-page).root .hero,
+  :global(.reading-page).root .processPanel,
+  :global(.reading-page).root .helpPanel {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    padding: 0.875rem 0.125rem;
+  }
+
+  :global(.reading-page).root .processPanel,
+  :global(.reading-page).root .helpPanel {
+    border-top: 1px solid var(--border-subtle);
   }
 
   .hero h1 {

@@ -497,7 +497,9 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
             title="Работа над задачей"
             description={
               isManualSolveBlocked
-                ? "Решение засчитывается только после автопроверки."
+                ? checkerAvailability?.available
+                  ? "Решение засчитывается после автопроверки."
+                  : "Автопроверка ещё не подключена, поэтому завершение пока недоступно."
                 : `Текущий статус: ${progressStatusLabel.toLowerCase()}`
             }
             actionLabel={progressActionLabel}

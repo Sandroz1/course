@@ -131,13 +131,13 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
       <div className={styles.header}>
         <div>
           <h2 id="checker-draft-title">Моя попытка</h2>
-          <p>Редактируйте решение здесь и сохраняйте его в профиле.</p>
+          <p>Редактируйте решение здесь и сохраняйте его в своём аккаунте.</p>
         </div>
         <StatusBadge tone="muted">Автопроверка пока недоступна</StatusBadge>
       </div>
 
       <p className={styles.availabilityNote}>
-        Код не запускается на сайте. Черновик можно сохранить и продолжить позже.
+        Черновик можно сохранить и продолжить позже. Код на этом этапе не запускается.
       </p>
 
       {isAuthLoading || loadState === "loading" ? (
