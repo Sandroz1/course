@@ -31,6 +31,10 @@
 - [frontend-test-strategy.md](frontend-test-strategy.md) - текущие frontend checks и ручной smoke.
 - [../site/src/styles/README.md](../site/src/styles/README.md) - краткая карта global styles.
 
+## Platform Design
+
+- [learning-loop-checker-design.md](learning-loop-checker-design.md) - согласованные границы Learning Loop 2.0, versioned attempts/submissions и безопасного C++ Checker MVP.
+
 ## Courses And Content
 
 - [theory-content-standards.md](theory-content-standards.md) - структура теории, примеры, ошибки, самопроверка, источники.

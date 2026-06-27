@@ -14,12 +14,13 @@ This document records only the current project state, release line and near-term
 - Practice files: `practice`.
 - Deploy docs: [../DEPLOY.md](../DEPLOY.md) and [../deploy/docs/README.md](../deploy/docs/README.md).
 - Presentation materials: [presentation/README.md](presentation/README.md).
+- Next platform design: [learning-loop-checker-design.md](learning-loop-checker-design.md).
 
 ## Current Production State
 
 - Production deployed app hash: `cc8d75d Merge visual UI cleanup`.
 - Current runtime includes project finalization, production npm lockfile fix, route loading/practice UX fixes, route loading UI hotfix, responsive layout hardening, mobile visual cleanup and visual UI cleanup.
-- Latest docs/state commit: this visual UI cleanup state update on `main` after deploy; no production redeploy is required for it.
+- Latest docs/state commit: this Learning Loop + C++ Checker design update; no production redeploy is required for it.
 - Senior project finalization is complete for the current release line.
 - Vite build tooling is deployed on Vite 8: `vite@8.0.16`, `@vitejs/plugin-react@6.0.2`.
 - Low-level `esbuild` advisory is closed by the Vite 8 toolchain update; `npm audit --audit-level=low` is clean in `site`.
@@ -36,6 +37,7 @@ This document records only the current project state, release line and near-term
 - Docker dev/prod compose configs are valid.
 - Project tree cleanup removed only empty untracked directories that had no files or references.
 - Presentation materials are available in `docs/presentation`.
+- Learning Loop + C++ Checker MVP is documented. This is a docs-only design decision; runtime and the production deployed app hash are unchanged.
 
 ## Course State
 
@@ -43,7 +45,7 @@ This document records only the current project state, release line and near-term
 - Not ready: 11 "Инкапсуляция", 12 "Исключения".
 - Future parts 9.2, 10.1 and 10.2 already exist, but do not continue them until 11-12 are closed.
 - Content backlog for sections 11-12 is not a production blocker.
-- Do not start section 11 inside infrastructure/finalization tasks.
+- Sections 11-12 have not started. Do not add them until the platform learning-loop/checker foundation is implemented and stabilized.
 
 ## Stabilized Recently
 
@@ -110,21 +112,24 @@ This document records only the current project state, release line and near-term
 
 ## Known Follow-ups
 
-1. OOP C++ section 11 "Инкапсуляция".
-2. OOP C++ section 12 "Исключения".
-3. Audit OOP sections 0-12 readiness after content backlog is closed.
-4. Backend/auth/payment/security pass before monetization.
-5. Product analytics/progress improvements after content backlog is stable.
-6. Monitor Rolldown/Vite CSS plugin timing if build time becomes a practical problem. It is not a current production blocker.
+1. Review and approve [Learning Loop + C++ Checker MVP](learning-loop-checker-design.md).
+2. Implement versioned checker task data and attempt/submission APIs without enabling code execution.
+3. Add draft saving, then provision a separate isolated runner and enable the checker for the reviewed basic tasks.
+4. Add sanitized AI result explanation, learning-loop analytics and profile/next-step improvements after deterministic checks are stable.
+5. Complete OOP C++ sections 11 and 12 only after the platform foundation is stable, then audit sections 0-12.
+6. Run the backend/auth/payment/security pass before monetization.
+7. Monitor Rolldown/Vite CSS plugin timing only if build time becomes a practical problem; it is not a current blocker.
 
 ## Do Not Do Now
 
 - Do not push or deploy unless explicitly requested.
 - Do not redeploy for docs-only state commits.
+- Do not implement a runner in the backend container or on the production app host.
+- Do not start sections 11/12 before the platform learning loop is stable.
 - Do not continue 9.2, 10.1 or 10.2 before 11-12 are closed.
 - Do not add section 12 before section 11.
 - Do not mix content work with Docker/nginx/security changes.
 
 ## Next Stage
 
-The project is ready for review, presentation and further development on the current release line. The next product/content task can be planned as OOP C++ section 11, but start it only in a separate scoped prompt/branch.
+Review and approve the Learning Loop + C++ Checker MVP design. After approval, the first implementation pass is backend versioned checker data plus attempt/submission models and API contracts, without a runner. Sections 11/12 remain paused.
