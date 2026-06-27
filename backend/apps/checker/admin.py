@@ -21,6 +21,7 @@ class TestCaseInline(admin.StackedInline):
 
 @admin.register(CheckerTaskVersion)
 class CheckerTaskVersionAdmin(admin.ModelAdmin):
+    actions = None
     inlines = (TestCaseInline,)
     list_display = (
         "task_id",
@@ -52,15 +53,14 @@ class TaskAttemptAdmin(admin.ModelAdmin):
     list_display = ("user", "task_id", "task_version", "status", "updated_at")
     list_filter = ("status", "course_slug")
     search_fields = ("user__username", "task_id", "course_slug", "lesson_slug")
-    readonly_fields = (
-        "task_id",
-        "task_version",
-        "course_slug",
-        "lesson_slug",
-        "result_summary",
-        "created_at",
-        "updated_at",
-    )
+    def get_readonly_fields(self, request, obj=None):
+        return tuple(field.name for field in self.model._meta.fields)
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 @admin.register(Submission)
@@ -84,6 +84,7 @@ class SubmissionAdmin(admin.ModelAdmin):
 
 @admin.register(TestCase)
 class TestCaseAdmin(admin.ModelAdmin):
+    actions = None
     list_display = ("task_version", "position", "is_hidden", "weight")
     list_filter = ("is_hidden", "task_version__language")
     search_fields = ("task_version__task_id",)

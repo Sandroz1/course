@@ -1,12 +1,14 @@
 from django.contrib.auth import get_user_model
+from django.contrib.admin.sites import AdminSite
 from django.core.cache import cache
 from django.core.exceptions import ValidationError
-from django.test import TestCase as DjangoTestCase
+from django.test import RequestFactory, TestCase as DjangoTestCase
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from apps.progress.models import TaskProgress
 
+from .admin import CheckerTaskVersionAdmin, TaskAttemptAdmin, TestCaseAdmin
 from .models import CheckerTaskVersion, Submission, TaskAttempt, TestCase as CheckerTestCase
 
 
@@ -146,6 +148,27 @@ class CheckerModelTests(DjangoTestCase):
                 source_code=attempt.code_snapshot,
                 status=Submission.Status.PASSED,
             )
+
+    def test_admin_records_and_locked_definitions_cannot_be_bulk_deleted(self):
+        request = RequestFactory().get("/admin/")
+        request.user = User.objects.create_superuser(
+            username="checker-admin",
+            password="StrongPass123!",
+        )
+        site = AdminSite()
+
+        version_admin = CheckerTaskVersionAdmin(CheckerTaskVersion, site)
+        test_case_admin = TestCaseAdmin(CheckerTestCase, site)
+        attempt_admin = TaskAttemptAdmin(TaskAttempt, site)
+
+        self.assertNotIn("delete_selected", version_admin.get_actions(request))
+        self.assertNotIn("delete_selected", test_case_admin.get_actions(request))
+        self.assertFalse(attempt_admin.has_add_permission(request))
+        self.assertFalse(attempt_admin.has_delete_permission(request))
+        self.assertEqual(
+            set(attempt_admin.get_readonly_fields(request)),
+            {field.name for field in TaskAttempt._meta.fields},
+        )
 
 
 class CheckerApiTests(APITestCase):
