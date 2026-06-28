@@ -312,7 +312,10 @@
 
   .context {
     gap: 0.75rem;
-    background: var(--surface);
+    border-width: 1px 0 0;
+    border-radius: 0;
+    background: transparent;
+    padding-inline: 0.125rem;
   }
 
   .benefit {

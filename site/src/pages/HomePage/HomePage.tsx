@@ -113,11 +113,11 @@ export function HomePage() {
       <main className={styles.main}>
         <section className={styles.hero} aria-labelledby="home-title">
           <div className={styles.heroText}>
-            <p className={styles.eyebrow}>Учебник с практикой</p>
+            <p className={styles.eyebrow}>C++ с нуля</p>
             <h1 id="home-title">Начни C++ с понятного первого шага</h1>
             <p className={styles.lead}>
-              Uchicode даёт короткие темы и задачи с понятным результатом.
-              Если ты только начинаешь, открой базу C++ и двигайся по порядку.
+              Короткое объяснение, пример, типичная ошибка и задача идут по порядку.
+              Начни с базы и не трать время на поиск следующей темы.
             </p>
             <div className={styles.heroActions}>
               <LinkButton href={toPath(appRoutes.baseCppCourse)} variant="primary">
@@ -127,13 +127,17 @@ export function HomePage() {
                 Открыть каталог задач
               </a>
             </div>
+            <p className={styles.availabilityLine}>
+              Открыто сейчас: <strong>{readySections} тем</strong> и{" "}
+              <strong>{availableTasks} задач</strong>.
+            </p>
           </div>
 
           <section className={styles.mapCard} aria-labelledby="route-map-title">
             <div className={styles.mapHeader}>
-              <p className={styles.eyebrow}>Карта первого маршрута</p>
-              <h2 id="route-map-title">Пять шагов до первой задачи</h2>
-              <p>Карта показывает порядок, чтобы не выбирать тему вслепую.</p>
+              <p className={styles.eyebrow}>Первое занятие</p>
+              <h2 id="route-map-title">От темы до первой задачи</h2>
+              <p>Один маршрут показывает, что открыть и что сделать дальше.</p>
             </div>
 
             <div className={styles.routePath}>
@@ -161,55 +165,58 @@ export function HomePage() {
 
             <article className={styles.activeStep}>
               <span>Шаг 1</span>
-              <h3>Открой базу C++</h3>
-              <p>Начни с темы про минимальную программу: там видно, какой файл открыть и что запустить.</p>
+              <div>
+                <h3>Открой базу C++</h3>
+                <p>Первая тема объясняет устройство минимальной программы и даёт короткое задание.</p>
+              </div>
             </article>
           </section>
         </section>
 
-        <section className={styles.section} aria-labelledby="first-lesson-title">
+        <section className={styles.lessonSection} aria-labelledby="first-lesson-title">
           <div className={styles.sectionIntro}>
-            <p className={styles.eyebrow}>Формат урока</p>
-            <h2 id="first-lesson-title">Внутри темы нет лишних блоков</h2>
+            <p className={styles.eyebrow}>Одна тема</p>
+            <h2 id="first-lesson-title">Сначала смысл, затем код</h2>
+            <p>Материал разбит на короткие действия, поэтому сразу понятно, что проверить.</p>
           </div>
-          <div className={styles.lessonList}>
-            {firstLessonItems.map((item) => (
-              <article className={styles.lessonItem} key={item.title}>
-                <h3>{item.title}</h3>
-                <p>{item.text}</p>
-              </article>
+          <ol className={styles.lessonList}>
+            {firstLessonItems.map((item, index) => (
+              <li className={styles.lessonItem} key={item.title}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div>
+                  <h3>{item.title}</h3>
+                  <p>{item.text}</p>
+                </div>
+              </li>
             ))}
-          </div>
+          </ol>
         </section>
 
-        <section className={styles.section} aria-labelledby="next-title">
+        <section className={styles.routesSection} aria-labelledby="next-title">
           <div className={styles.sectionIntro}>
-            <p className={styles.eyebrow}>Выбери вход</p>
-            <h2 id="next-title">Куда перейти после главной</h2>
+            <p className={styles.eyebrow}>Выбери старт</p>
+            <h2 id="next-title">Продолжи со своего уровня</h2>
+            <p>База — для первого знакомства, ООП — после синтаксиса, задачи — для закрепления.</p>
           </div>
-          <div className={styles.nextGrid}>
+          <div className={styles.routeList}>
             {nextRoutes.map((route) => (
               <a
-                className={styles.nextCard}
+                className={styles.routeLink}
                 href={toPath(route.href)}
                 key={route.title}
                 aria-label={`${route.action}: ${route.text}`}
               >
-                <span className={styles.nextCardContent}>
+                <span className={styles.routeContent}>
                   <h3>{route.title}</h3>
                   <p>{route.text}</p>
                 </span>
-                <span className={styles.nextAction}>
+                <span className={styles.routeAction}>
                   {route.action}
                   <span aria-hidden="true">→</span>
                 </span>
               </a>
             ))}
           </div>
-          <p className={styles.statusLine}>
-            Доступно сейчас: <strong>{readySections} тем</strong> и{" "}
-            <strong>{availableTasks} задач</strong>. Новые темы добавляются по порядку.
-          </p>
         </section>
       </main>
     </div>

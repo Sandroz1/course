@@ -54,4 +54,4 @@ Then move real secrets to a local ignored env file and keep only placeholders in
 1. Stop and do not push.
 2. Remove the file from the index with `git rm --cached -- <path>` if the local file must stay.
 3. Replace committed content with placeholders.
-4. Follow `docs/security-incident-runbook.md` if the secret was committed, pushed, shared, logged or exposed outside the local machine.
+4. Follow [security-incident-runbook.md](security-incident-runbook.md) if the secret was committed, pushed, shared, logged or exposed outside the local machine.

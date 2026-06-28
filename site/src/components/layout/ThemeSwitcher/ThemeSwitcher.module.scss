@@ -28,11 +28,17 @@
   transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
 }
 
-.trigger span:first-child {
+.label,
+.fullLabel,
+.compactLabel {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.compactLabel {
+  display: none;
 }
 
 .trigger:hover,
@@ -109,12 +115,20 @@
 @media (max-width: 35rem) {
   .trigger,
   .menu {
-    width: 5.75rem;
+    width: 6.5rem;
   }
 
   .trigger {
     gap: 0.35rem;
     min-height: 2.125rem;
     padding-inline: 0.5rem;
+  }
+
+  .fullLabel {
+    display: none;
+  }
+
+  .compactLabel {
+    display: inline;
   }
 }

@@ -13,8 +13,9 @@ import {
   setCachedTaskProgress,
   upsertTaskProgress,
 } from "../../lib/progressApi";
+import { getCheckerAvailability } from "../../lib/checkerApi";
 import clsx from "clsx";
-import type { TaskProgressStatus } from "../../types/api";
+import type { CheckerAvailability, TaskProgressStatus } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import { LinkButton } from "../../components/shared/ActionButton/ActionButton";
 import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
@@ -34,6 +35,7 @@ import {
   isGenericTaskPlan,
   taskLevelLabels,
 } from "../../utils/taskDisplay";
+import { CheckerDraftPanel } from "./components/CheckerDraftPanel";
 import styles from "./TaskDetailsPage.module.scss";
 
 const DEFAULT_TASK_DESCRIPTION =
@@ -285,6 +287,8 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
   const [isProgressLoading, setIsProgressLoading] = useState(false);
   const [isProgressSaving, setIsProgressSaving] = useState(false);
   const [progressMessage, setProgressMessage] = useState("");
+  const [checkerAvailability, setCheckerAvailability] = useState<CheckerAvailability | null>(null);
+  const [isCheckerAvailabilityLoading, setIsCheckerAvailabilityLoading] = useState(false);
 
   useEffect(() => {
     const currentTask = task;
@@ -339,10 +343,46 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
     };
   }, [authKey, isAuthenticated, task]);
 
+  useEffect(() => {
+    const currentTaskId = task?.id;
+
+    if (!currentTaskId) {
+      setCheckerAvailability(null);
+      setIsCheckerAvailabilityLoading(false);
+      return;
+    }
+
+    const controller = new AbortController();
+    setCheckerAvailability(null);
+    setIsCheckerAvailabilityLoading(true);
+
+    getCheckerAvailability(currentTaskId, controller.signal)
+      .then((availability) => {
+        setCheckerAvailability(availability);
+      })
+      .catch((error: unknown) => {
+        if (error instanceof DOMException && error.name === "AbortError") return;
+        setCheckerAvailability(null);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) {
+          setIsCheckerAvailabilityLoading(false);
+        }
+      });
+
+    return () => controller.abort();
+  }, [task?.id]);
+
   async function handleSetTaskStatus(nextStatus: TaskProgressStatus) {
     const currentTask = task;
 
-    if (!currentTask || isProgressSaving) return;
+    if (
+      !currentTask ||
+      isProgressSaving ||
+      (nextStatus === "solved" && checkerAvailability?.task_version)
+    ) {
+      return;
+    }
 
     const previousStatus = taskStatus ?? "not_started";
     setIsProgressSaving(true);
@@ -407,20 +447,30 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
     tone: getTaskDisplayTone(displayStatus),
   };
   const progressStatusLabel = isProgressLoading ? "Проверяем..." : taskStatusBadge.label;
-  const progressActionLabel = isProgressSaving
-    ? "Сохраняем..."
-    : effectiveTaskStatus === "solved"
-      ? "Снять отметку"
-      : effectiveTaskStatus === "in_progress"
-        ? "Отметить решённой"
-        : "Начать задачу";
-  const hasSpecificPlan = !isGenericTaskPlan(task.steps);
   const nextTaskStatus: TaskProgressStatus =
     effectiveTaskStatus === "solved"
       ? "in_progress"
       : effectiveTaskStatus === "in_progress"
         ? "solved"
         : "in_progress";
+  const isCheckerConfigured =
+    checkerAvailability?.task_id === task.id &&
+    typeof checkerAvailability.task_version === "number";
+  const isCheckerGateLoading =
+    isCheckerAvailabilityLoading && nextTaskStatus === "solved";
+  const isManualSolveBlocked = isCheckerConfigured && nextTaskStatus === "solved";
+  const progressActionLabel = isProgressSaving
+    ? "Сохраняем..."
+    : isCheckerGateLoading
+      ? "Проверяем..."
+      : isManualSolveBlocked
+        ? "Нужна автопроверка"
+        : effectiveTaskStatus === "solved"
+          ? "Снять отметку"
+          : effectiveTaskStatus === "in_progress"
+            ? "Отметить решённой"
+            : "Начать задачу";
+  const hasSpecificPlan = !isGenericTaskPlan(task.steps);
 
   return (
     <article className={clsx("reading-page", styles.root)}>
@@ -445,9 +495,20 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         {isAuthenticated && (
           <TaskActionBar
             title="Работа над задачей"
-            description={`Текущий статус: ${progressStatusLabel.toLowerCase()}`}
+            description={
+              isManualSolveBlocked
+                ? checkerAvailability?.available
+                  ? "Решение засчитывается после автопроверки."
+                  : "Автопроверка ещё не подключена, поэтому завершение пока недоступно."
+                : `Текущий статус: ${progressStatusLabel.toLowerCase()}`
+            }
             actionLabel={progressActionLabel}
-            disabled={isProgressLoading || isProgressSaving}
+            disabled={
+              isProgressLoading ||
+              isProgressSaving ||
+              isCheckerGateLoading ||
+              isManualSolveBlocked
+            }
             primary={effectiveTaskStatus !== "solved"}
             message={progressMessage}
             onAction={() => void handleSetTaskStatus(nextTaskStatus)}
@@ -519,6 +580,15 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
           )}
         </div>
       </section>
+
+      {isCheckerConfigured && checkerAvailability && (
+        <CheckerDraftPanel
+          key={`${task.id}-${checkerAvailability.task_version}`}
+          availability={checkerAvailability}
+          starterCode={task.files[0]?.starterCode ?? ""}
+          taskId={task.id}
+        />
+      )}
 
       <TaskHelpSection task={task} hasSpecificPlan={hasSpecificPlan} />
 

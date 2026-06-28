@@ -5,17 +5,18 @@ Project: Uchicode.
 ## Read First
 
 - Documentation map: [docs/README.md](docs/README.md).
-- Current state and next task: [docs/ai-project-state.md](docs/ai-project-state.md).
-- Frontend architecture: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-- Frontend UI rules: [docs/frontend-ui-standards.md](docs/frontend-ui-standards.md).
-- Theory/content rules: [docs/theory-content-standards.md](docs/theory-content-standards.md).
-- Security checks: [docs/pre-commit-security.md](docs/pre-commit-security.md).
+- Current state and next task: [docs/state/ai-project-state.md](docs/state/ai-project-state.md).
+- Product sequence and current restrictions: [docs/product/product-roadmap.md](docs/product/product-roadmap.md).
+- Frontend architecture: [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md).
+- Frontend UI rules: [docs/frontend/frontend-ui-standards.md](docs/frontend/frontend-ui-standards.md).
+- Theory/content rules: [docs/courses/theory-content-standards.md](docs/courses/theory-content-standards.md).
+- Security checks: [docs/security/pre-commit-security.md](docs/security/pre-commit-security.md).
 
 ## Main Rules
 
 - Work narrowly. Prefer small safe changes over broad refactors.
 - Read the relevant files before editing.
-- Before a task, read `AGENTS.md`, `docs/ai-project-state.md` and the task-specific docs, then verify them against `git status`, `git log`, the current branch and the actual code state.
+- Before a task, read `AGENTS.md`, `docs/state/ai-project-state.md` and the task-specific docs, then verify them against `git status`, `git log`, the current branch and the actual code state.
 - Preserve existing behavior unless the task explicitly asks to change it.
 - Do not invent files, endpoints, commands or project behavior.
 - Do not add dependencies unless the task truly requires it.
@@ -28,6 +29,16 @@ Project: Uchicode.
 - Treat docs as required context, not as the only source of truth. If docs conflict with the current git branch, commits, production state or code, record the mismatch and update docs or clearly report that they are stale.
 - When a task changes production state, routing, deploy status, backlog, UI quality bar, architecture or an important workflow, update the matching `.md` file in the same pass unless the user explicitly asks for code-only work.
 - Keep deployment state labels precise: use `production deployed app hash`, `latest docs/state commit` and `current main hash`. Do not write `production/main hash` when those values differ.
+- If roadmap, current state and a specialized document disagree, stop and resolve the documentation conflict before implementation.
+
+## Documentation Routing
+
+- General task: read the docs index, current state and product roadmap.
+- Checker/runner task: also read `docs/platform/learning-loop-checker-design.md`.
+- Course task: read the matching course plan and `docs/courses/theory-content-standards.md`.
+- UI task: read `docs/frontend/frontend-ui-standards.md` and the relevant focused plan.
+- Deploy task: use `DEPLOY.md` and `deploy/docs/README.md`; do not reconstruct production commands from old chat history.
+- Security/secrets task: use `docs/security/pre-commit-security.md`, the incident runbook and production security docs.
 
 ## Quality Bar
 
@@ -73,23 +84,23 @@ Project: Uchicode.
 
 ## Frontend Work
 
-- Follow [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) for layout vs content data boundaries.
-- Follow [docs/frontend-ui-standards.md](docs/frontend-ui-standards.md) for visual rules.
+- Follow [docs/architecture/ARCHITECTURE.md](docs/architecture/ARCHITECTURE.md) for layout vs content data boundaries.
+- Follow [docs/frontend/frontend-ui-standards.md](docs/frontend/frontend-ui-standards.md) for visual rules.
 - Keep shared course/task rendering shared. New sections should add content/data, not custom page layout.
 - Do not run Docker or production checks for frontend-only work.
 
 ## Course And Content Work
 
-- Follow [docs/theory-content-standards.md](docs/theory-content-standards.md).
-- Use [docs/course-content-plan.md](docs/course-content-plan.md) and [docs/base-cpp-course-plan.md](docs/base-cpp-course-plan.md) for course plans.
+- Follow [docs/courses/theory-content-standards.md](docs/courses/theory-content-standards.md).
+- Use [docs/courses/course-content-plan.md](docs/courses/course-content-plan.md) and [docs/courses/base-cpp-course-plan.md](docs/courses/base-cpp-course-plan.md) for course plans.
 - Keep explanations practical, short and beginner-friendly.
 - Do not add advanced C++ details that distract from the current section level.
 - Add a theory slug to `readyTheorySlugs` only when theory and related tasks are actually ready.
 
 ## Security Work
 
-- Follow [docs/pre-commit-security.md](docs/pre-commit-security.md).
-- For suspected secret leaks, follow [docs/security-incident-runbook.md](docs/security-incident-runbook.md).
+- Follow [docs/security/pre-commit-security.md](docs/security/pre-commit-security.md).
+- For suspected secret leaks, follow [docs/security/security-incident-runbook.md](docs/security/security-incident-runbook.md).
 - Never print, copy, commit or move real secrets into tracked files.
 
 ## Deploy Work

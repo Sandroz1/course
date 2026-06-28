@@ -10,6 +10,13 @@ import {
 import styles from "./ThemeSwitcher.module.scss";
 
 const themeOptions: ThemePreference[] = ["system", "light", "dark", "deep-dark", "blue"];
+const compactThemeLabels: Record<ThemePreference, string> = {
+  system: "Система",
+  light: "Светлая",
+  dark: "Тёмная",
+  "deep-dark": "Глубокая",
+  blue: "Синяя",
+};
 
 export function ThemeSwitcher() {
   const [preference, setPreference] = useState<ThemePreference>(() => getStoredThemePreference());
@@ -73,7 +80,12 @@ export function ThemeSwitcher() {
         aria-label="Выбор темы оформления"
         onClick={() => setIsOpen((value) => !value)}
       >
-        <span>{themeLabels[preference]}</span>
+        <span className={styles.label}>
+          <span className={styles.fullLabel}>{themeLabels[preference]}</span>
+          <span className={styles.compactLabel} aria-hidden="true">
+            {compactThemeLabels[preference]}
+          </span>
+        </span>
         <span className={styles.chevron} aria-hidden="true" />
       </button>
 

@@ -99,6 +99,7 @@ INSTALLED_APPS = [
     "apps.core",
     "apps.accounts",
     "apps.ai",
+    "apps.checker",
     "apps.progress",
 ]
 
@@ -242,6 +243,7 @@ SECURE_HSTS_SECONDS = env_int("DJANGO_SECURE_HSTS_SECONDS", 0)
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env_bool("DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", False)
 SECURE_HSTS_PRELOAD = env_bool("DJANGO_SECURE_HSTS_PRELOAD", False)
 X_FRAME_OPTIONS = "DENY"
+CHECKER_EXECUTION_ENABLED = False
 
 if not DEBUG or env_bool("DJANGO_SECURE_SSL", False):
     SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
@@ -271,6 +273,10 @@ REST_FRAMEWORK = {
         "phone_send_code_daily": "10/day",
         "phone_verify_code": "5/min",
         "change_password": "5/hour",
+        "checker_draft": "60/min",
+        "checker_read": "120/min",
+        "checker_submit": "6/min",
+        "checker_poll": "120/min",
         "ai_global_burst": "60/min",
         "ai_user_burst": "10/min",
     },

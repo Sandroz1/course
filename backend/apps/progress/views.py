@@ -2,9 +2,12 @@ import time
 
 from django.db import IntegrityError, OperationalError
 from django.utils import timezone
+from rest_framework.exceptions import ValidationError
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+
+from apps.checker.services import checker_task_requires_accepted_submission
 
 from .models import LessonProgress, TaskProgress, UserStudyState
 from .serializers import (
@@ -140,6 +143,14 @@ class TaskProgressView(APIView):
             )
 
             return Response(TaskProgressSerializer(progress).data)
+
+        if (
+            data["status"] == TaskProgress.Status.SOLVED
+            and checker_task_requires_accepted_submission(data["task_id"])
+        ):
+            raise ValidationError(
+                {"status": ["Checker-enabled tasks can only be solved by an accepted submission."]}
+            )
 
         progress, _created = TaskProgress.objects.update_or_create(
             user=request.user,
