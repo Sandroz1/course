@@ -43,8 +43,12 @@ Cron backup:
 ## Release target
 
 ```text
-needs verification - сверить фактический server HEAD на VPS
+production deployed app hash: a4b33d6
+previous deployed hash / rollback target: cc8d75d
+verified backup: /opt/uchicode/app/backups/20260628T131832Z
 ```
+
+Release `a4b33d6` задеплоен 2026-06-28. VPS закреплён на clean detached `HEAD`; backend, PostgreSQL и Redis healthy, Docker nginx up. `/nginx-health` и `/api/health` прошли, основные product routes вернули ожидаемые ответы.
 
 Проверка фактического состояния VPS:
 

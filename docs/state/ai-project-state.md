@@ -6,23 +6,27 @@
 
 Проверено локально 2026-06-28:
 
-- Production deployed app hash: `cc8d75d` по последней зафиксированной успешной публикации. VPS в этом docs-only проходе не проверялся; перед deploy сверить server `HEAD`.
-- `origin/main`: `546015d`.
-- Product foundation local merge commit on `main`: `39fb8cc` (не pushed).
-- Retained integration branch: `codex/product-foundation-phase-1`.
+- Production deployed app hash: `a4b33d6`; previous deployed hash and rollback target: `cc8d75d`.
+- Runtime integration merge: `39fb8cc`; `main` и `origin/main` совпадали на `a4b33d6` в момент deploy.
+- Production backup: `/opt/uchicode/app/backups/20260628T131832Z`.
+- VPS закреплён на clean detached `HEAD` `a4b33d6`.
 - Local foundation commits: `a38c34e Add checker data foundation`, `352919f Add checker draft flow`, `7fa498d Consolidate documentation roadmap`, `2760cff Organize documentation structure`.
 - Integration hardening commits: `0a7b12f Harden checker admin foundation`, `c9ebb39 Complete product foundation UI pass`.
-- Integration branch локально merged в `main`; `main` не pushed, runtime не deployed, ветка сохранена до успешного deploy.
+- Этот post-deploy state update является docs-only и не требует повторного production deploy.
 
 ## Production
 
 - Public `/` работает вне `AppLayout`; app routes остаются внутри app-shell.
-- Route loading, responsive/mobile layout и visual UI cleanup задеплоены.
+- Product foundation phase 1, HomePage/UI pass, checker backend foundation и frontend draft flow задеплоены.
+- Route loading, responsive/mobile layout и visual UI cleanup остаются задеплоены.
 - Vite 8 tooling задеплоен; frontend audit был clean на последней проверенной release line.
-- Production checker execution отсутствует; production checker task versions и hidden tests не добавлены.
+- `CHECKER_EXECUTION_ENABLED=false`; runner, execution queue и выполнение пользовательского C++ кода отсутствуют.
+- Production checker task versions и hidden tests не добавлены: `CheckerTaskVersion=0`, `TestCase=0`.
+- Без production task version task page не показывает draft/checker UI; checker availability fail-closed.
+- Backend/frontend checks, migrations, production health checks и desktop/mobile browser smoke прошли; rollback не потребовался.
 - Подробное production-состояние перед операцией сверять по [deploy/docs/01_CURRENT_STATE.md](../../deploy/docs/01_CURRENT_STATE.md) и фактическому VPS.
 
-## Local Work Not Pushed Or Deployed
+## Deployed Product Foundation
 
 - `apps.checker`: versioned task data, attempts, submissions, test cases, permissions and fail-closed API contracts.
 - Task page: typed checker client и draft-only блок «Моя попытка» для checker-configured tasks.
@@ -31,7 +35,7 @@
 - Runner и выполнение пользовательского C++ кода не добавлены; submission без runner возвращает controlled `503` и не создаётся.
 - Checker admin не позволяет обойти immutable-правила через bulk delete; attempts доступны в admin только для чтения.
 - HomePage и затронутые mobile surfaces прошли UI cleanup; public `/` по-прежнему работает вне `AppLayout`.
-- Desktop/mobile browser QA проверил основные routes, CTA, mobile navigation, guest/auth draft save/restore и light/dark/deep-dark без horizontal overflow.
+- Production browser QA проверил основные routes, CTA, mobile navigation и light/dark/deep-dark без horizontal overflow и console errors.
 
 ## Course State
 
@@ -41,7 +45,7 @@
 
 ## Next Stage
 
-Фазы 0-2 локально merged в `main`; backend/frontend checks и browser QA после merge прошли. Следующий шаг — отдельный stable deploy по фазе 3. Runner остаётся будущей фазой 4 и не является немедленным следующим шагом.
+Фазы 0-3 завершены, product foundation задеплоен. Следующий этап roadmap — отдельный design/provisioning pass фазы 4 для изолированного runner host/VM, queue, sandbox limits, cleanup, observability и rollback. До принятия isolation/security gate пользовательский код не запускается. Sections 11/12 не начаты.
 
 ## Read For Details
 

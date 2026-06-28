@@ -5,9 +5,10 @@
 ## Current Position
 
 - Фаза 0 завершена: docs index, current state, roadmap и тематическая структура документации согласованы.
-- Фаза 1 локально merged в `main`: HomePage и затронутые UI surfaces прошли audit, cleanup и browser QA.
-- Реализация и review gate фазы 2 локально merged в `main`: checker foundation и draft flow проверены без исполнения пользовательского кода.
-- Следующий шаг — production deploy отдельной фазой 3; integration-ветка сохраняется до успешного deploy.
+- Фаза 1 завершена и задеплоена: HomePage и затронутые UI surfaces прошли audit, cleanup и browser QA.
+- Фаза 2 завершена и задеплоена: checker foundation и draft flow проверены без исполнения пользовательского кода.
+- Фаза 3 завершена: backup, migrations, build, health checks и production smoke прошли на `a4b33d6`.
+- Следующий этап — отдельная фаза 4: design и provisioning изолированного runner без запуска пользовательского кода до принятия security gate.
 
 ## Phases
 
