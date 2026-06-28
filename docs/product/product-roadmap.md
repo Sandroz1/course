@@ -5,9 +5,9 @@
 ## Current Position
 
 - Фаза 0 завершена: docs index, current state, roadmap и тематическая структура документации согласованы.
-- Фаза 1 завершена локально в `codex/product-foundation-phase-1`: HomePage и затронутые UI surfaces прошли audit, cleanup и browser QA.
-- Реализация и review gate фазы 2 завершены в той же integration-ветке: checker foundation и draft flow проверены без исполнения пользовательского кода.
-- Следующий шаг — отдельный review/merge integration-ветки в `main`; production deploy остаётся отдельной фазой 3 после merge и повторных проверок.
+- Фаза 1 локально merged в `main`: HomePage и затронутые UI surfaces прошли audit, cleanup и browser QA.
+- Реализация и review gate фазы 2 локально merged в `main`: checker foundation и draft flow проверены без исполнения пользовательского кода.
+- Следующий шаг — production deploy отдельной фазой 3; integration-ветка сохраняется до успешного deploy.
 
 ## Phases
 

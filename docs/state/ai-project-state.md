@@ -8,11 +8,11 @@
 
 - Production deployed app hash: `cc8d75d` по последней зафиксированной успешной публикации. VPS в этом docs-only проходе не проверялся; перед deploy сверить server `HEAD`.
 - `origin/main`: `546015d`.
-- Local `main`: `43a827f` (design merge локально, не pushed).
-- Current integration branch: `codex/product-foundation-phase-1`.
+- Product foundation local merge commit on `main`: `39fb8cc` (не pushed).
+- Retained integration branch: `codex/product-foundation-phase-1`.
 - Local foundation commits: `a38c34e Add checker data foundation`, `352919f Add checker draft flow`, `7fa498d Consolidate documentation roadmap`, `2760cff Organize documentation structure`.
 - Integration hardening commits: `0a7b12f Harden checker admin foundation`, `c9ebb39 Complete product foundation UI pass`.
-- Integration branch не pushed, не merged в `main` и не deployed.
+- Integration branch локально merged в `main`; `main` не pushed, runtime не deployed, ветка сохранена до успешного deploy.
 
 ## Production
 
@@ -41,7 +41,7 @@
 
 ## Next Stage
 
-Фазы 0-2 завершены локально в integration-ветке. Следующий шаг — отдельный review и merge `codex/product-foundation-phase-1` в `main` с повторными checks; stable deploy выполняется только отдельной задачей после merge. Runner остаётся будущей фазой 4 и не является немедленным следующим шагом.
+Фазы 0-2 локально merged в `main`; backend/frontend checks и browser QA после merge прошли. Следующий шаг — отдельный stable deploy по фазе 3. Runner остаётся будущей фазой 4 и не является немедленным следующим шагом.
 
 ## Read For Details
 
