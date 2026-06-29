@@ -53,7 +53,7 @@
 
 ## Next Stage
 
-Фазы 0-3 завершены, product foundation задеплоен. Phase 4 начата как design-only: [runner-design.md](../platform/runner-design.md) фиксирует threat model, isolation boundary, queue/status contract, resource limits, observability, feature flag and rollback expectations. Provisioning/prototype не начаты. До принятия isolation/security gate пользовательский код не запускается. Sections 11/12 не начаты.
+Фазы 0-3 завершены, product foundation задеплоен. Phase 4 runner design review выполнен docs-only: [runner-design.md](../platform/runner-design.md) approved for isolated non-production prototype planning with a dedicated worker VM target. Provisioning/prototype не начаты. До отдельного prototype этапа пользовательский код не запускается. Sections 11/12 не начаты.
 
 ## Read For Details
 

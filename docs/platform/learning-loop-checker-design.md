@@ -137,7 +137,7 @@ MVP constraint: one non-archived attempt per `(user, task_id, task_version_numbe
 - `attempt`
 - `language`
 - `source_code` (immutable snapshot, size-limited)
-- `status`: `queued`, `compiling`, `running`, `passed`, `failed`, `compiler_error`, `runtime_error`, `timeout`, `output_limit`, `system_error`, `cancelled`
+- `status`: target public runner vocabulary is `queued`, `compiling`, `running`, `accepted`, `wrong_answer`, `compile_error`, `runtime_error`, `time_limit`, `output_limit`, `internal_error`, `checker_unavailable`
 - `compiler_output`, `runtime_output` (sanitized and truncated)
 - `passed_tests`, `failed_tests`, `total_tests`
 - `execution_time_ms`, `memory_used_kb`
@@ -254,12 +254,12 @@ The task page keeps its current assignment/help structure and adds one single-fi
 | `ready_to_submit` | Submit enabled only for authenticated users and a current version. |
 | `submitting` / `queued` | Disable repeated submit; allow continued reading. |
 | `compiling` / `running` | Show the actual phase, not a fake percentage. |
-| `passed` | Show tests passed and the next learning action. |
-| `failed` | Show public mismatch details and retry action. |
-| `compiler_error` | Show bounded compiler output with readable code formatting. |
-| `runtime_error` / `timeout` / `output_limit` | Explain the failure class without exposing infrastructure. |
+| `accepted` | Show tests passed and the next learning action. |
+| `wrong_answer` | Show public mismatch details and retry action. |
+| `compile_error` | Show bounded compiler output with readable code formatting. |
+| `runtime_error` / `time_limit` / `output_limit` | Explain the failure class without exposing infrastructure. |
 | `stale_version` | Preserve old code and offer copying it into the current version. |
-| `checker_unavailable` / `system_error` | Keep draft editing available and avoid changing progress. |
+| `checker_unavailable` / `internal_error` | Keep draft editing available and avoid changing progress. |
 
 Theme changes must not change editor/result typography metrics. Mobile keeps the editor and result inside the content width; long code/output scrolls inside its own block.
 

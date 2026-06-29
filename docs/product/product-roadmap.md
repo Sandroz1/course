@@ -8,7 +8,7 @@
 - Фаза 1 завершена и задеплоена: HomePage и затронутые UI surfaces прошли audit, cleanup и browser QA.
 - Фаза 2 завершена и задеплоена: checker foundation и draft flow проверены без исполнения пользовательского кода.
 - Фаза 3 завершена: backup, migrations, build, health checks и production smoke прошли на `a4b33d6`.
-- Фаза 4 начата как design-only этап: runner threat model documented, provisioning/prototype не начаты, пользовательский код не запускается.
+- Фаза 4 прошла design review для isolated non-production prototype planning: concrete target is a dedicated non-production worker VM. Provisioning/prototype не начаты, пользовательский код не запускается.
 
 ## Phases
 

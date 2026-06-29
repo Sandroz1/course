@@ -1,6 +1,6 @@
 # Runner Design And Threat Model
 
-Status: design-only. No runner implementation, worker provisioning, queue, Docker/VPS change or user C++ execution has been added.
+Status: reviewed and approved for isolated prototype planning only. No runner implementation, worker provisioning, queue, Docker/VPS change or user C++ execution has been added.
 
 This document defines the safety gate before Uchicode can execute submitted C++ code. It extends the checker contract in [learning-loop-checker-design.md](learning-loop-checker-design.md).
 
@@ -32,9 +32,19 @@ Browser
 
 The app host may create submissions and read terminal results. It must not compile or execute submitted code.
 
+Concrete prototype target:
+
+- A dedicated non-production worker VM.
+- Not the current production VPS.
+- Not the Django container.
+- Not the Docker host that runs production PostgreSQL, Redis, backend or nginx.
+- No production `.env`, database credentials, deploy keys, backups or provider tokens.
+- No public user traffic; prototype access is developer-only.
+- Synthetic/local test cases only; no production hidden tests.
+
 Required boundaries:
 
-- Separate worker host/VM or an equivalent isolation layer approved by a security review.
+- Separate worker VM for the prototype. Any "equivalent isolation" option is a future security decision, not approved by this review.
 - No route from the sandbox to PostgreSQL, Redis, app containers or production private networks.
 - No production secrets mounted or inherited by the runner process.
 - No network access from the sandbox unless a later reviewed task explicitly requires it.
@@ -42,18 +52,25 @@ Required boundaries:
 
 ## Threat Model
 
-| Risk | Required control |
-| --- | --- |
-| Infinite loops or fork bombs | Wall-clock timeout, process-group kill and strict process limits. |
-| CPU or memory exhaustion | CPU quota, memory limit and worker concurrency limit. |
-| Huge output | stdout/stderr byte limit and terminal `output_limit` status. |
-| Filesystem escape | Disposable working directory, no host mounts except a minimal read-only toolchain if required. |
-| Secret leakage | Empty allowlisted environment; no app `.env`, tokens, keys or credentials. |
-| Network abuse | Network disabled by default at sandbox level. |
-| Compiler/runtime exploit | Worker isolated from app host; runner patching and image rebuild are operational tasks. |
-| Hidden test leakage | Hidden test input/output never returned to frontend, AI prompts, analytics or public logs. |
-| Stuck queue | Backpressure, queue depth limit, stale job cleanup and `checker_unavailable` fallback. |
-| Wrong progress state | Only terminal `accepted` may mark checker-enabled task progress solved. |
+| Risk | Required control | Remaining risk | Prototype status |
+| --- | --- | --- | --- |
+| Malicious C++ code | Dedicated worker VM, non-root execution, no production network, no secrets, no host mounts. | VM escape remains a class risk, so prototype stays non-production. | Non-blocker for isolated prototype. |
+| Infinite loop or fork/process abuse | Wall-clock timeout, PID/process limits and process-tree kill. | Limit configuration can be wrong. Prototype must include abuse tests. | Non-blocker after tests. |
+| CPU abuse | CPU quota and low worker concurrency. | Host-level contention is possible if limits are misconfigured. | Non-blocker for non-production VM. |
+| Memory abuse | Hard memory/swap limits per run. | OOM behavior must be observed in prototype. | Non-blocker after tests. |
+| Disk/temp abuse | Bounded disposable workspace, file-size limits and cleanup verification. | Cleanup bugs can fill disk. Prototype must include failed-cleanup test. | Non-blocker after tests. |
+| stdout/stderr output spam | Byte cap, stop reading at limit and terminal `output_limit`. | Truncation must not hide infrastructure errors. | Non-blocker after tests. |
+| Network access | Sandbox network disabled by default. | VM host networking must also be checked. | Non-blocker after no-network proof. |
+| Secret/env leak | Empty allowlisted environment and no mounted production files. | Developer mistakes can copy env files. Prototype VM must not receive production env. | Non-blocker with VM setup rule. |
+| Filesystem access | No host paths, no Docker socket, isolated temp directory. | Toolchain files may need read-only access. | Non-blocker if read-only and minimal. |
+| Compiler/runtime exploit | Fixed patched toolchain image and worker isolation from app host. | Compiler vulnerabilities remain possible. | Non-blocker for prototype, review before production. |
+| Stuck jobs | Lease/heartbeat, timeout cleanup and terminal `internal_error` or `checker_unavailable`. | Queue implementation can still wedge. | Must be tested before backend integration. |
+| Queue flood / DoS | Auth, throttles, one active job per user, global queue/concurrency caps and fail-closed backpressure. | Requires real queue implementation to prove. | Not in isolated prototype scope. |
+| Log leakage | Sanitized logs; no hidden tests, full source, secrets or env values. | Debug logging can regress. | Non-blocker with log review. |
+| Runner unavailable | Health/heartbeat check and `checker_unavailable` fallback. | Availability signal can be stale. | Must be tested before API integration. |
+| Failed cleanup | Cleanup after success, failure and forced kill. | Orphan files/processes can remain. | Must be tested in prototype. |
+| Worker compromise | Worker has no production secrets, DB access or app network route. | Worker rebuild/rotation procedure still needed. | Non-blocker for non-production prototype, blocker for production. |
+| Wrong progress state | Only terminal `accepted` can update checker-enabled `TaskProgress`. | Status mapping bugs can mark solved incorrectly. | Blocker before API integration. |
 
 ## Submission State Contract
 
@@ -79,14 +96,19 @@ Rules:
 - Non-terminal states (`queued`, `compiling`, `running`) must not be returned unless a real queue/runner exists.
 - Terminal result fields are immutable after finalization.
 - Runner logs may store sanitized diagnostics only. They must not store hidden input/output or full source in analytics.
+- The current deployed checker foundation still uses historical model names such as `passed`, `failed`, `compiler_error`, `timeout` and `system_error`. Before API-integrated runner work, add a migration or explicit compatibility mapping to the canonical public statuses above. Do not expose two competing status vocabularies in the frontend.
 
 ## Queue And Dispatch Contract
 
 Before implementation, choose and document one queue mechanism. Minimum contract:
 
-- Django creates a submission only after execution is enabled and the task version is current.
+- Django validates auth, ownership, current task version and source size before persistence.
+- If execution is disabled or the runner/queue is unavailable, return `503 checker_unavailable` before creating a `Submission`.
+- If execution is enabled and queue handoff is available, Django creates the immutable `Submission` with `queued` and performs durable queue handoff.
 - Dispatch payload includes submission id, task id, task version, source snapshot id/content, visible/hidden test references and limits.
-- Worker reports state transitions with idempotent updates.
+- Worker moves status to `compiling` only when compile starts and to `running` only when test execution starts.
+- Worker reports terminal states with idempotent updates.
+- Frontend receives results by polling `GET /api/checker/submissions/{submission_id}/`; polling must respect throttles and `Retry-After`.
 - Duplicate worker callbacks cannot create duplicate terminal results.
 - Lost or stale jobs are marked `checker_unavailable` or `internal_error` by a controlled cleanup task.
 - Queue depth and worker availability must be observable before production enablement.
@@ -136,13 +158,22 @@ If execution causes instability:
 3. Confirm new submissions no longer start execution.
 4. Keep existing drafts and attempts.
 5. Inspect runner/queue logs outside the app container.
-6. If needed, rollback the app using the deploy runbook without deleting volumes.
+6. For stuck jobs, mark stale active submissions terminal with a safe system status and stop worker intake.
+7. For high load, lower worker concurrency or disable execution before scaling.
+8. If needed, rollback the app using the deploy runbook without deleting volumes.
+
+Operational rules:
+
+- Health check must cover queue reachability, worker heartbeat and sandbox self-test status.
+- Logs to inspect: Django checker API, queue/dispatch worker, runner controller and sandbox lifecycle logs.
+- `docker compose down -v` remains forbidden because it can delete production volumes and data.
+- Production app host must not execute C++ because it holds the web process boundary, database/Redis network access and production operational availability.
 
 ## Prototype Readiness Checklist
 
 The isolated prototype may start only after this checklist is true:
 
-- Worker host/VM isolation approach is selected.
+- Dedicated non-production worker VM is selected.
 - No-network/no-secrets policy is testable.
 - Timeout, memory and output limits are defined.
 - Temp directory cleanup is testable.
@@ -150,13 +181,15 @@ The isolated prototype may start only after this checklist is true:
 - Queue/status contract is agreed.
 - Rollback/disable switch is documented.
 - Prototype is explicitly non-production and does not touch production data.
+- Prototype does not enable `CHECKER_EXECUTION_ENABLED`.
+- Prototype does not create production `CheckerTaskVersion` rows or hidden tests.
 
 ## Production Enablement Gate
 
 Before enabling for users:
 
 - backend tests cover queue unavailable, stale task version, ownership and progress guard;
-- runner tests cover compile success, wrong answer, compile error, runtime error, timeout, output limit and cleanup;
+- runner tests cover compile success, wrong answer, compile error, runtime error, time limit, output limit and cleanup;
 - production backup is completed;
 - feature flag starts disabled;
 - only 1-2 simple tasks are enabled first;
