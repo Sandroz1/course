@@ -1,6 +1,6 @@
 # Runner Worker Provisioning And Security Checklist
 
-Status: required docs-only gate before API-integrated runner work. This document is for a dedicated non-production Linux worker VM used to validate the standalone runner prototype in `tools/runner_prototype/`.
+Status: required docs-only gate before API-integrated runner work. This document is for provisioning and later validating a dedicated non-production Linux worker VM used to validate the standalone runner prototype in `tools/runner_prototype/`.
 
 This checklist does not approve production execution. It does not add a queue, Django endpoint, hidden tests, production task versions or `CHECKER_EXECUTION_ENABLED=true`.
 
@@ -9,7 +9,7 @@ This checklist does not approve production execution. It does not add a queue, D
 The worker VM must be:
 
 - dedicated to runner prototype validation;
-- Linux-only, preferably a current LTS distribution;
+- Linux-only, Ubuntu 24.04 LTS by default;
 - non-production;
 - separate from the production VPS and Docker host;
 - separate from Django, PostgreSQL, Redis, nginx and backups;
@@ -24,6 +24,26 @@ The worker VM must not contain:
 - SSH deploy keys for the production app;
 - access to production private networks;
 - production `CheckerTaskVersion` rows or hidden tests.
+
+Resource baseline:
+
+- minimum for prototype validation: 2 vCPU, 2 GB RAM, 30 GB disk;
+- recommended for future Piston validation: 2 vCPU, 4 GB RAM, 40 GB disk.
+
+Dedicated VM and access are not yet confirmed. Until they are confirmed, this document is a provisioning-first packet, not evidence that isolation has passed.
+
+## Repository Baseline
+
+`98b3731` is the current approved docs/prototype baseline at the time this checklist was written. Actual VM validation must use the latest approved `origin/main` commit at validation time. Do not treat `98b3731` as a permanent target if a newer reviewed main commit exists.
+
+Validation checkout pattern:
+
+```bash
+git fetch origin main
+git checkout main
+git pull --ff-only origin main
+git rev-parse --short HEAD
+```
 
 ## Required Packages
 
@@ -46,6 +66,20 @@ timeout --version
 ```
 
 If a command is unavailable, install the smallest OS package that provides it. Do not install app dependencies, database clients or production tooling unless a later reviewed task requires them.
+
+## Preferred Future Runner Target
+
+Piston is the preferred future runner service target for the dedicated non-production worker VM, after this provisioning gate is satisfied.
+
+Piston constraints:
+
+- do not install Piston on the production VPS;
+- do not embed Piston into Django;
+- do not expose the Piston API publicly;
+- do not connect Piston to production DB, Redis, backups, deploy keys or `.env` files;
+- backend integration, when approved later, must call Piston only through a runner adapter/client after validation gates pass.
+
+This document does not install Piston and does not approve a Piston deployment.
 
 ## Runner User
 
@@ -80,7 +114,7 @@ Do not print secret values. Only check names, paths and presence.
 Run from the runner user shell:
 
 ```bash
-env | sort | grep -Ei 'secret|token|password|passwd|key|credential|database|postgres|redis|django|openai|deploy|backup' || true
+printenv | cut -d= -f1 | sort | grep -Ei 'secret|token|password|passwd|key|credential|database|postgres|redis|django|openai|deploy|backup' || true
 find "$HOME" -maxdepth 4 -type f \( -name ".env*" -o -iname "*secret*" -o -iname "*token*" -o -iname "*key*" -o -iname "*credential*" \) -print
 test ! -f .env
 test ! -f .env.production
@@ -100,7 +134,7 @@ Fail criteria:
 
 ## No Production DB, Redis Or Private Network Access
 
-The worker VM must have no route to production PostgreSQL, Redis, app containers or private service networks.
+The worker VM must have no route to production PostgreSQL, Redis, app containers or private service networks. Proving that credentials are absent is necessary but not sufficient: route, firewall and network access must also be checked where applicable.
 
 Baseline checks:
 
@@ -108,7 +142,7 @@ Baseline checks:
 ip addr
 ip route
 ss -ltnp
-env | grep -Ei 'postgres|database|redis|django|db_|redis_' || true
+printenv | cut -d= -f1 | sort | grep -Ei 'postgres|database|redis|django|db_|redis_' || true
 ```
 
 If production private hostnames or IPs are known, verify that TCP access fails without using credentials:
@@ -118,6 +152,8 @@ timeout 3 bash -lc '</dev/tcp/<production-db-host-or-ip>/5432' && exit 1 || true
 timeout 3 bash -lc '</dev/tcp/<production-redis-host-or-ip>/6379' && exit 1 || true
 timeout 3 bash -lc '</dev/tcp/<production-vps-private-ip>/22' && exit 1 || true
 ```
+
+If production private network details are unavailable or should not be exposed in docs/logs, record the verification as an acceptance gate with a redacted operator note. Do not print private hostnames, credentials or secret values into logs.
 
 Pass criteria:
 
@@ -177,6 +213,7 @@ Fail criteria:
 - executed code can reach the internet;
 - executed code can reach production private networks;
 - no-network cannot be tested from the actual execution context.
+- no actual sandbox command exists yet; this is a blocker before API-integrated runner work.
 
 ## Temp Workspace And Filesystem Rules
 
@@ -303,10 +340,12 @@ For future API-integrated runner:
 You may proceed to API-integrated runner planning only when all are true:
 
 - dedicated non-production worker VM is selected and documented;
+- latest approved `origin/main` commit is selected for validation and recorded;
 - prototype runs as non-root;
 - no production env, secrets, deploy keys, DB credentials or backups are present;
 - worker cannot reach production DB, Redis or private app networks;
 - executed code no-network proof passes from the actual sandbox context;
+- Piston target, if installed later, is private to the worker VM and not on the production VPS;
 - temp cleanup passes after success, failure and timeout;
 - process kill/time-limit/output-limit tests pass;
 - RAM/memory limit is configured and evidenced by the worker sandbox or OS before integration;
