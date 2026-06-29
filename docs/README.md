@@ -18,7 +18,7 @@
 - `architecture/` — frontend/application architecture.
 - `frontend/` — UI standards and frontend test strategy.
 - `courses/` — course plans and theory/content standards.
-- `platform/` — Learning Loop, checker contracts and runner threat model.
+- `platform/` — Learning Loop, checker contracts, runner threat model and worker provisioning gates.
 - `security/` — pre-commit security, incident and release checklists.
 - `presentation/` — presentation materials for demos and product discussion.
 
@@ -31,6 +31,7 @@
 - Frontend checks: [frontend/frontend-test-strategy.md](frontend/frontend-test-strategy.md).
 - Checker/API contracts: [platform/learning-loop-checker-design.md](platform/learning-loop-checker-design.md).
 - Runner design/threat model: [platform/runner-design.md](platform/runner-design.md).
+- Runner worker provisioning/security: [platform/runner-worker-provisioning.md](platform/runner-worker-provisioning.md).
 - Course content: [courses/theory-content-standards.md](courses/theory-content-standards.md), [courses/course-content-plan.md](courses/course-content-plan.md), [courses/base-cpp-course-plan.md](courses/base-cpp-course-plan.md).
 - Practice starter sources: [../practice/README.md](../practice/README.md).
 - Local setup: [../LOCAL_RUNBOOK.md](../LOCAL_RUNBOOK.md).

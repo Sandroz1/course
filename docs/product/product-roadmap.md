@@ -8,7 +8,7 @@
 - Фаза 1 завершена и задеплоена: HomePage и затронутые UI surfaces прошли audit, cleanup и browser QA.
 - Фаза 2 завершена и задеплоена: checker foundation и draft flow проверены без исполнения пользовательского кода.
 - Фаза 3 завершена: backup, migrations, build, health checks и production smoke прошли на `a4b33d6`.
-- Фаза 4 прошла design review для isolated non-production prototype planning: concrete target is a dedicated non-production worker VM. Standalone prototype добавлен в `tools/runner_prototype/`; production/API execution не включены.
+- Фаза 4 прошла design review для isolated non-production prototype planning: concrete target is a dedicated non-production worker VM. Standalone prototype добавлен в `tools/runner_prototype/`; worker provisioning checklist добавлен, production/API execution не включены.
 
 ## Phases
 
@@ -50,9 +50,10 @@ Gate: backup успешен, VPS tree чист, pull fast-forward, health checks
 - Проектировать выполнение только на отдельном worker host/VM.
 - Определить queue, sandbox boundary, limits, cleanup, observability и rollback.
 - Держать standalone prototype отдельно от backend/API до проверки worker VM isolation и no-network proof.
+- Выполнить [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md) до API-integrated runner work.
 - Не запускать пользовательский код в Django container или на production app host.
 
-Gate: isolation/security review принят, standalone prototype проверен в non-production Linux environment, а API-integrated runner допускается только после dedicated worker VM/no-network proof и status enum mapping cleanup.
+Gate: isolation/security review принят, standalone prototype проверен в non-production Linux environment, worker provisioning checklist проходит на dedicated VM, а API-integrated runner допускается только после dedicated worker VM/no-network proof и status enum mapping cleanup.
 
 ### Phase 5. Enable checker for simple tasks
 
@@ -106,6 +107,7 @@ Gate: runner isolation, failure handling и production operations провере
 - Current state: [ai-project-state.md](../state/ai-project-state.md).
 - Checker/API boundaries: [learning-loop-checker-design.md](../platform/learning-loop-checker-design.md).
 - Runner threat model: [runner-design.md](../platform/runner-design.md).
+- Runner worker provisioning/security: [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md).
 - Frontend architecture and UI: [ARCHITECTURE.md](../architecture/ARCHITECTURE.md), [frontend-ui-standards.md](../frontend/frontend-ui-standards.md).
 - Course plans: [course-content-plan.md](../courses/course-content-plan.md), [base-cpp-course-plan.md](../courses/base-cpp-course-plan.md).
 - Deploy and rollback: [DEPLOY.md](../../DEPLOY.md), [deploy/docs/README.md](../../deploy/docs/README.md).
