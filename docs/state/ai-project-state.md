@@ -7,7 +7,7 @@
 Проверено локально и production read-only 2026-06-29:
 
 - Production deployed app hash: `a4b33d6`; previous deployed hash and rollback target: `cc8d75d`.
-- Runtime integration merge: `39fb8cc`; latest `main` / `origin/main` docs-state hash before this update: `2676ea4`.
+- Runtime integration merge: `39fb8cc`; latest pushed `main` / `origin/main` runner-design approval hash before this prototype branch: `4e31189`.
 - Production backup: `/opt/uchicode/app/backups/20260628T131832Z`.
 - VPS закреплён на clean detached `HEAD` `a4b33d6`.
 - Local foundation commits: `a38c34e Add checker data foundation`, `352919f Add checker draft flow`, `7fa498d Consolidate documentation roadmap`, `2760cff Organize documentation structure`.
@@ -45,6 +45,15 @@
 - HomePage и затронутые mobile surfaces прошли UI cleanup; public `/` по-прежнему работает вне `AppLayout`.
 - Production browser QA проверил основные routes, CTA, mobile navigation и light/dark/deep-dark без horizontal overflow и console errors.
 
+## Runner Prototype
+
+- Isolated standalone C++ runner prototype added under `tools/runner_prototype/` on branch `codex/isolated-runner-prototype`.
+- Prototype is Python stdlib only and uses synthetic local snippets; it has no backend API, frontend UI, queue, Docker/VPS or production integration.
+- Prototype tests passed in a disposable non-production Linux container with `g++`; local Windows run is only an unsupported smoke path.
+- No-network proof is not claimed by the Python harness. Dedicated worker VM/container/firewall no-network validation remains a blocker before API-integrated runner or production enablement.
+- Backend checker status enum mismatch remains future cleanup before API-integrated runner work.
+- Production deployed app hash remains `a4b33d6`; `CHECKER_EXECUTION_ENABLED=false`, production task versions and hidden tests are still absent.
+
 ## Course State
 
 - OOP C++ sections 0-10 готовы в текущей course line.
@@ -53,7 +62,7 @@
 
 ## Next Stage
 
-Фазы 0-3 завершены, product foundation задеплоен. Phase 4 runner design review выполнен docs-only: [runner-design.md](../platform/runner-design.md) approved for isolated non-production prototype planning with a dedicated worker VM target. Provisioning/prototype не начаты. До отдельного prototype этапа пользовательский код не запускается. Sections 11/12 не начаты.
+Фазы 0-3 завершены, product foundation задеплоен. Phase 4 runner design review выполнен docs-only: [runner-design.md](../platform/runner-design.md) approved for isolated non-production prototype planning with a dedicated worker VM target. Standalone prototype добавлен в `tools/runner_prototype/`, но production execution и API integration отсутствуют. Следующий gate: dedicated worker VM provisioning/no-network proof and backend status mapping before API-integrated runner. Sections 11/12 не начаты.
 
 ## Read For Details
 
