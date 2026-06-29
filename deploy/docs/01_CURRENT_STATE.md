@@ -50,6 +50,8 @@ verified backup: /opt/uchicode/app/backups/20260628T131832Z
 
 Release `a4b33d6` задеплоен 2026-06-28. VPS закреплён на clean detached `HEAD`; backend, PostgreSQL и Redis healthy, Docker nginx up. `/nginx-health` и `/api/health` прошли, основные product routes вернули ожидаемые ответы.
 
+Read-only post-deploy stabilization check 2026-06-29 confirmed: VPS remains on clean detached `HEAD` `a4b33d6`, containers are up/healthy, health endpoints pass, listed product routes return `200`, `CHECKER_EXECUTION_ENABLED=False`, `CheckerTaskVersion=0`, `TestCase=0`, and checker availability fails closed when no production task version exists.
+
 Проверка фактического состояния VPS:
 
 ```bash
@@ -82,6 +84,19 @@ User browser
   -> backend:8000 inside Docker network
   -> PostgreSQL / Redis inside Docker network
 ```
+
+## GitHub Pages status
+
+GitHub Pages is enabled in GitHub as legacy Pages from branch `dist` and publishes `https://sandroz1.github.io/course/`.
+
+This is not the production deployment:
+
+- production domain `uchicode.ru` points to the VPS above;
+- the repo has no production CNAME for GitHub Pages;
+- GitHub Pages is not a required branch protection/ruleset gate for `main`;
+- production deploys must continue to use the VPS runbooks in this directory.
+
+If the legacy Pages site is no longer useful, disable it manually in GitHub Settings. Do not treat it as a production target.
 
 ## Containers
 

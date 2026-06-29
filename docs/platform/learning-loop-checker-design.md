@@ -1,6 +1,6 @@
 # Learning Loop + C++ Checker MVP
 
-Status: approved technical design. Backend checker data/API foundation and frontend draft saving are implemented on the local checker branch. Product sequencing is defined only in [product-roadmap.md](../product/product-roadmap.md); runner and runtime code execution remain separate future work.
+Status: approved technical design. Backend checker data/API foundation and frontend draft saving are implemented. Product sequencing is defined only in [product-roadmap.md](../product/product-roadmap.md); runner and runtime code execution remain separate future work. Runner isolation details live in [runner-design.md](runner-design.md).
 
 ## 1. Purpose
 
@@ -318,16 +318,16 @@ Do not start with `00-01-minimal-program`: compile success cannot prove the requ
 
 ## 13. Technical rollout and measurement
 
-Completed locally, not pushed/deployed:
+Implemented and deployed in product foundation phase 1:
 
 1. Design and ownership boundaries.
 2. Backend task-version, attempt, submission and test-case foundation.
 3. Availability, owner-only draft/history API and fail-closed submission contract.
 4. Single-file draft UI with guest/auth and save/error states.
 
-Remaining technical order after the product roadmap review/merge/deploy gates:
+Remaining technical order after the runner design/security gate:
 
-1. Provision the separate worker boundary, durable queue and sandbox validation suite.
+1. Review [runner-design.md](runner-design.md), then provision the separate worker boundary, durable queue and sandbox validation suite.
 2. Connect accepted results to `TaskProgress` transactionally.
 3. Enable submissions only for reviewed simple tasks and a small user cohort.
 4. Add sanitized AI error explanation only after deterministic results are stable.

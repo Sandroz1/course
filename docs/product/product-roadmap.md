@@ -8,7 +8,7 @@
 - Фаза 1 завершена и задеплоена: HomePage и затронутые UI surfaces прошли audit, cleanup и browser QA.
 - Фаза 2 завершена и задеплоена: checker foundation и draft flow проверены без исполнения пользовательского кода.
 - Фаза 3 завершена: backup, migrations, build, health checks и production smoke прошли на `a4b33d6`.
-- Следующий этап — отдельная фаза 4: design и provisioning изолированного runner без запуска пользовательского кода до принятия security gate.
+- Фаза 4 начата как design-only этап: runner threat model documented, provisioning/prototype не начаты, пользовательский код не запускается.
 
 ## Phases
 
@@ -103,7 +103,8 @@ Gate: runner isolation, failure handling и production operations провере
 ## Detailed Sources
 
 - Current state: [ai-project-state.md](../state/ai-project-state.md).
-- Checker/API/runner boundaries: [learning-loop-checker-design.md](../platform/learning-loop-checker-design.md).
+- Checker/API boundaries: [learning-loop-checker-design.md](../platform/learning-loop-checker-design.md).
+- Runner threat model: [runner-design.md](../platform/runner-design.md).
 - Frontend architecture and UI: [ARCHITECTURE.md](../architecture/ARCHITECTURE.md), [frontend-ui-standards.md](../frontend/frontend-ui-standards.md).
 - Course plans: [course-content-plan.md](../courses/course-content-plan.md), [base-cpp-course-plan.md](../courses/base-cpp-course-plan.md).
 - Deploy and rollback: [DEPLOY.md](../../DEPLOY.md), [deploy/docs/README.md](../../deploy/docs/README.md).
