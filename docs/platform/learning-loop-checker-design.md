@@ -1,6 +1,6 @@
 # Learning Loop + C++ Checker MVP
 
-Status: approved technical design. Backend checker data/API foundation and frontend draft saving are implemented. Product sequencing is defined only in [product-roadmap.md](../product/product-roadmap.md); runner and runtime code execution remain separate future work. Runner isolation details live in [runner-design.md](runner-design.md).
+Status: approved technical design. Backend checker data/API foundation, service-layer disabled runner boundary and frontend draft saving are implemented. Product sequencing is defined only in [product-roadmap.md](../product/product-roadmap.md); runner and runtime code execution remain separate future work. Runner isolation details live in [runner-design.md](runner-design.md).
 
 ## 1. Purpose
 

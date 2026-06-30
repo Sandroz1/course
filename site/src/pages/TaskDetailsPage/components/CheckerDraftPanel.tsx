@@ -25,9 +25,13 @@ function getSaveErrorMessage(error: unknown) {
   const kind = getCheckerErrorKind(error);
 
   if (kind === "auth_required") return "Войдите снова, чтобы сохранить черновик.";
-  if (kind === "stale_version") return "Версия задачи изменилась. Обновите страницу перед сохранением.";
+  if (kind === "stale_version") {
+    return "Версия задачи изменилась. Обновите страницу перед сохранением.";
+  }
   if (kind === "source_too_large") return "Черновик превышает допустимый размер.";
-  if (kind === "checker_unavailable") return "Сохранение временно недоступно. Код остался в редакторе.";
+  if (kind === "checker_unavailable") {
+    return "Сервис автопроверки недоступен. Черновик остался в редакторе.";
+  }
   return "Не удалось сохранить черновик. Код остался в редакторе.";
 }
 
@@ -37,9 +41,16 @@ function findCurrentAttempt(attempts: CheckerAttempt[], taskVersion: number) {
   );
 }
 
+function formatSourceLimit(bytes?: number) {
+  if (!bytes) return "ограничен лимитом задачи";
+  if (bytes < 1024) return `до ${bytes} байт`;
+  return `до ${Math.floor(bytes / 1024)} КБ`;
+}
+
 export function CheckerDraftPanel({ availability, starterCode, taskId }: CheckerDraftPanelProps) {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const taskVersion = availability.task_version;
+  const sourceLimitLabel = formatSourceLimit(availability.limits?.source_bytes);
   const [sourceCode, setSourceCode] = useState(starterCode);
   const [attempt, setAttempt] = useState<CheckerAttempt | null>(null);
   const [loadState, setLoadState] = useState<DraftLoadState>("loading");
@@ -81,7 +92,7 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
         setSaveMessage(
           kind === "auth_required"
             ? "Войдите снова, чтобы загрузить черновик."
-            : "Не удалось загрузить сохранённый черновик.",
+            : "Не удалось загрузить сохраненный черновик.",
         );
         setLoadState("error");
       });
@@ -107,7 +118,7 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
       setAttempt(savedAttempt);
       setSourceCode(savedAttempt.code_snapshot);
       setSaveState("saved");
-      setSaveMessage("Черновик сохранён.");
+      setSaveMessage("Черновик сохранен.");
     } catch (error) {
       setSaveState("save_error");
       setSaveMessage(getSaveErrorMessage(error));
@@ -117,28 +128,35 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
   function handleSourceChange(value: string) {
     setSourceCode(value);
     setSaveState("editing");
-    setSaveMessage("Есть несохранённые изменения.");
+    setSaveMessage("Есть несохраненные изменения.");
   }
 
   const statusMessage =
     saveMessage ||
     (attempt
-      ? "Сохранённый черновик загружен."
-      : "Черновик ещё не сохранён.");
+      ? "Сохраненный черновик загружен."
+      : "Черновик еще не сохранен.");
 
   return (
     <section className={styles.panel} aria-labelledby="checker-draft-title">
       <div className={styles.header}>
         <div>
+          <p className={styles.eyebrow}>Черновик решения</p>
           <h2 id="checker-draft-title">Моя попытка</h2>
-          <p>Редактируйте решение здесь и сохраняйте его в своём аккаунте.</p>
+          <p>
+            Можно написать решение и сохранить его в аккаунте. Запуск кода появится
+            только после отдельной безопасной интеграции runner.
+          </p>
         </div>
-        <StatusBadge tone="muted">Автопроверка пока недоступна</StatusBadge>
+        <StatusBadge tone="muted">Автопроверка выключена</StatusBadge>
       </div>
 
-      <p className={styles.availabilityNote}>
-        Черновик можно сохранить и продолжить позже. Код на этом этапе не запускается.
-      </p>
+      <div className={styles.checkerNotice}>
+        <strong>Что доступно сейчас</strong>
+        <span>Черновик решения сохраняется на сервере для этой версии задачи.</span>
+        <strong>Что недоступно</strong>
+        <span>Код не запускается, результаты проверки и статусы выполнения не показываются.</span>
+      </div>
 
       {isAuthLoading || loadState === "loading" ? (
         <p className={styles.stateMessage} aria-live="polite">
@@ -160,7 +178,10 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
         </div>
       ) : (
         <div className={styles.editorArea}>
-          <label htmlFor={`checker-draft-${taskId}`}>Код решения</label>
+          <div className={styles.editorHeader}>
+            <label htmlFor={`checker-draft-${taskId}`}>Код решения</label>
+            <span>Размер {sourceLimitLabel}</span>
+          </div>
           <textarea
             id={`checker-draft-${taskId}`}
             className={styles.editor}
@@ -177,6 +198,13 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
               onClick={() => void handleSave()}
             >
               {saveState === "saving" ? "Сохраняем..." : "Сохранить черновик"}
+            </Button>
+            <Button
+              variant="secondary"
+              disabled
+              title="Автопроверка будет подключена после отдельной runner-интеграции."
+            >
+              Проверить решение
             </Button>
             <p
               id={`checker-draft-status-${taskId}`}
