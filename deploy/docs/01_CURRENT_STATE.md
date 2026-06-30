@@ -43,14 +43,14 @@ Cron backup:
 ## Release target
 
 ```text
-production deployed app hash: a4b33d6
-previous deployed hash / rollback target: cc8d75d
-verified backup: /opt/uchicode/app/backups/20260628T131832Z
+production deployed app hash: 7d10f24
+previous deployed hash / rollback target: a4b33d6
+verified backup: /opt/uchicode/app/backups/20260630T233800Z
 ```
 
-Release `a4b33d6` задеплоен 2026-06-28. VPS закреплён на clean detached `HEAD`; backend, PostgreSQL и Redis healthy, Docker nginx up. `/nginx-health` и `/api/health` прошли, основные product routes вернули ожидаемые ответы.
+Release `7d10f24` задеплоен 2026-07-01. VPS закреплён на clean detached `HEAD`; backend, PostgreSQL и Redis healthy, Docker nginx up. `/nginx-health` и `/api/health` прошли, основные product routes вернули ожидаемые ответы.
 
-Read-only post-deploy stabilization check 2026-06-29 confirmed: VPS remains on clean detached `HEAD` `a4b33d6`, containers are up/healthy, health endpoints pass, listed product routes return `200`, `CHECKER_EXECUTION_ENABLED=False`, `CheckerTaskVersion=0`, `TestCase=0`, and checker availability fails closed when no production task version exists.
+Post-deploy check 2026-07-01 confirmed: VPS remains on clean detached `HEAD` `7d10f24`, containers are up/healthy, health endpoints pass, listed product routes return `200`, `CHECKER_EXECUTION_ENABLED=False`, `CheckerTaskVersion=0`, `TestCase=0`, `Submission=0`, migration `checker.0002_normalize_status_names` applied, and checker availability fails closed when no production task version exists.
 
 Проверка фактического состояния VPS:
 

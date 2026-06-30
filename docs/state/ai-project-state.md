@@ -6,10 +6,10 @@
 
 Проверено локально и production read-only 2026-06-29:
 
-- Production deployed app hash: `a4b33d6`; previous deployed hash and rollback target: `cc8d75d`.
-- Runtime integration merge: `39fb8cc`; latest pushed `main` / `origin/main` prototype merge before this docs-only update: `43dc013`.
-- Production backup: `/opt/uchicode/app/backups/20260628T131832Z`.
-- VPS закреплён на clean detached `HEAD` `a4b33d6`.
+- Production deployed app hash: `7d10f24`; previous deployed hash and rollback target: `a4b33d6`.
+- Current deployed runtime merge: `7d10f24 Merge checker disabled runner foundation`; this state update is docs-only and must not be deployed separately.
+- Production backup: `/opt/uchicode/app/backups/20260630T233800Z`.
+- VPS закреплён на clean detached `HEAD` `7d10f24`.
 - Local foundation commits: `a38c34e Add checker data foundation`, `352919f Add checker draft flow`, `7fa498d Consolidate documentation roadmap`, `2760cff Organize documentation structure`.
 - Integration hardening commits: `0a7b12f Harden checker admin foundation`, `c9ebb39 Complete product foundation UI pass`.
 - Этот post-deploy state update является docs-only и не требует повторного production deploy.
@@ -23,8 +23,8 @@
 - `CHECKER_EXECUTION_ENABLED=false`; runner, execution queue и выполнение пользовательского C++ кода отсутствуют.
 - Production checker task versions и hidden tests не добавлены: `CheckerTaskVersion=0`, `TestCase=0`.
 - Без production task version task page не показывает draft/checker UI; checker availability fail-closed.
-- 2026-06-29 post-deploy stabilization check: `/nginx-health`, `/api/health`, listed product routes, desktop/mobile browser QA, light/dark/deep-dark, checker availability and backend/nginx critical log scan passed.
-- Backend/frontend checks, migrations, production health checks и desktop/mobile browser smoke прошли; rollback не потребовался.
+- 2026-07-01 deploy check: `/nginx-health`, `/api/health`, listed product routes, admin redirect, auth register validation, stale `/api/api` route, checker availability, bundle grep and backend/nginx logs passed.
+- Backend/frontend checks, CI, migration `checker.0002_normalize_status_names`, production health checks и HTTP smoke прошли; rollback не потребовался.
 - Подробное production-состояние перед операцией сверять по [deploy/docs/01_CURRENT_STATE.md](../../deploy/docs/01_CURRENT_STATE.md) и фактическому VPS.
 
 ## GitHub Pages
@@ -55,7 +55,7 @@
 - Backend checker status names are normalized to canonical runner design values before API-integrated runner work.
 - Backend runner adapter contract exists as internal DTO/protocol/mapping plus a fail-closed `DisabledRunner` provider used by the checker service layer. No Piston client, real provider, queue or execution integration exists.
 - Frontend checker UI supports the honest disabled/draft state only: authenticated users can save drafts, guests see the login requirement, and no compiling/running/result lifecycle is shown.
-- Production deployed app hash remains `a4b33d6`; `CHECKER_EXECUTION_ENABLED=false`, production task versions and hidden tests are still absent.
+- Production deployed app hash is `7d10f24`; `CHECKER_EXECUTION_ENABLED=false`, production task versions and hidden tests are still absent.
 
 ## Course State
 
