@@ -9,6 +9,7 @@
 - Фаза 2 завершена и задеплоена: checker foundation и draft flow проверены без исполнения пользовательского кода.
 - Фаза 3 завершена: backup, migrations, build, health checks и production smoke прошли на `a4b33d6`.
 - Фаза 4 прошла design review для isolated non-production prototype planning: concrete target is a dedicated non-production worker VM. Standalone prototype добавлен в `tools/runner_prototype/`; worker provisioning checklist добавлен, VM/access не подтверждены, Piston выбран как preferred future runner target, production/API execution не включены.
+- Backend checker now has a service-layer fail-closed `DisabledRunner` boundary for the current no-execution state. It is not a Piston client, queue worker or execution integration.
 
 ## Phases
 
@@ -52,6 +53,7 @@ Gate: backup успешен, VPS tree чист, pull fast-forward, health checks
 - Держать standalone prototype отдельно от backend/API до проверки worker VM isolation и no-network proof.
 - Выполнить [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md) до API-integrated runner work.
 - Рассматривать Piston как preferred future runner service только на dedicated non-production worker VM; не ставить Piston на production VPS и не встраивать его в Django.
+- Keep the backend `DisabledRunner` as the default provider until worker VM validation and a separate API-integrated runner stage are approved.
 - Не запускать пользовательский код в Django container или на production app host.
 
 Gate: isolation/security review принят, standalone prototype проверен в non-production Linux environment, status enum mapping cleanup выполнен, worker provisioning checklist проходит на dedicated VM, Piston target остаётся private/non-production, а API-integrated runner допускается только после dedicated worker VM/no-network proof.

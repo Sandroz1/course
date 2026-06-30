@@ -1,6 +1,6 @@
-"""Backend-internal runner adapter contracts.
+"""Backend-internal runner adapter boundary.
 
-This package intentionally contains no provider implementation. Real execution
-must stay behind the checker execution gate until a reviewed worker integration
-exists.
+This package contains DTO contracts, pure status mapping and a fail-closed
+DisabledRunner provider. Real execution must stay behind the checker execution
+gate until a reviewed worker integration exists.
 """

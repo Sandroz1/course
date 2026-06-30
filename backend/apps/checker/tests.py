@@ -11,9 +11,12 @@ from rest_framework.test import APITestCase
 from apps.progress.models import TaskProgress
 
 from .admin import CheckerTaskVersionAdmin, TaskAttemptAdmin, TestCaseAdmin
+from .exceptions import CheckerUnavailable
 from .models import CheckerTaskVersion, Submission, TaskAttempt, TestCase as CheckerTestCase
 from .runner.contracts import RunnerDispatch, RunnerHealth, RunnerJob, RunnerLimits, RunnerResult, RunnerTestCase
+from .runner.disabled import DisabledRunner, DisabledRunnerUnavailable
 from .runner.mapping import RUNNER_RESULT_TO_SUBMISSION_STATUS, map_runner_status_to_submission_status
+from .services import create_checker_submission
 
 
 User = get_user_model()
@@ -321,6 +324,37 @@ class RunnerAdapterContractTests(DjangoTestCase):
         self.assertNotIn("private stderr", combined_repr)
         self.assertNotIn("private error", combined_repr)
 
+    def test_disabled_runner_reports_fail_closed_health(self):
+        health = DisabledRunner().check_health()
+
+        self.assertFalse(health.available)
+        self.assertEqual(health.reason, "runner_unavailable")
+        self.assertEqual(health.metadata["provider"], "disabled_runner")
+
+    def test_disabled_runner_does_not_dispatch_jobs(self):
+        limits = RunnerLimits(
+            compile_timeout_ms=10_000,
+            run_timeout_ms=2_000,
+            memory_limit_kb=128 * 1024,
+            output_limit_bytes=64 * 1024,
+        )
+        job = RunnerJob(
+            submission_id=UUID("00000000-0000-0000-0000-000000000001"),
+            task_id="00-03-input-age",
+            task_version=1,
+            language="cpp17",
+            comparison_mode="tokens",
+            source_code="int main() { return 0; }",
+            limits=limits,
+            tests=(),
+        )
+        runner = DisabledRunner()
+
+        with self.assertRaises(DisabledRunnerUnavailable):
+            runner.submit(job)
+
+        self.assertIsNone(runner.get_result("job-1"))
+
 
 class CheckerApiTests(APITestCase):
     def setUp(self):
@@ -508,6 +542,20 @@ class CheckerApiTests(APITestCase):
         )
 
         self.assertEqual(response.status_code, status.HTTP_503_SERVICE_UNAVAILABLE)
+        self.assertEqual(Submission.objects.count(), 0)
+        self.assertFalse(TaskProgress.objects.filter(user=self.user, task_id=self.version.task_id).exists())
+
+    def test_submission_service_does_not_create_submission_when_runner_disabled(self):
+        draft_response = self.save_draft()
+        attempt = TaskAttempt.objects.get(pk=draft_response.data["id"])
+
+        with self.assertRaises(CheckerUnavailable):
+            create_checker_submission(
+                attempt=attempt,
+                task_version=self.version,
+                source_code=attempt.code_snapshot,
+            )
+
         self.assertEqual(Submission.objects.count(), 0)
         self.assertFalse(TaskProgress.objects.filter(user=self.user, task_id=self.version.task_id).exists())
 

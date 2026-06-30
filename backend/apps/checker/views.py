@@ -16,7 +16,11 @@ from .serializers import (
     SubmissionSerializer,
     TaskAttemptSerializer,
 )
-from .services import checker_execution_available
+from .services import (
+    checker_execution_available,
+    checker_unavailable_reason,
+    create_checker_submission,
+)
 
 
 class AttemptHistoryPagination(PageNumberPagination):
@@ -73,7 +77,7 @@ class CheckerAvailabilityView(APIView):
             {
                 "task_id": task_version.task_id,
                 "available": execution_available,
-                "reason": None if execution_available else "runner_unavailable",
+                "reason": None if execution_available else checker_unavailable_reason(),
                 "task_version": task_version.task_version,
                 "language": task_version.language,
                 "limits": {
@@ -161,8 +165,12 @@ class SubmissionCreateView(APIView):
         )
         serializer.is_valid(raise_exception=True)
 
-        # No Submission row is created until a reviewed runner integration exists.
-        raise CheckerUnavailable()
+        submission = create_checker_submission(
+            attempt=attempt,
+            task_version=task_version,
+            source_code=serializer.validated_data["source_code"],
+        )
+        return Response(SubmissionSerializer(submission).data, status=status.HTTP_202_ACCEPTED)
 
 
 class SubmissionDetailView(APIView):
