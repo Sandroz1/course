@@ -33,8 +33,10 @@ SafeMetadataValue = str | int | float | bool | None
 SafeMetadata = Mapping[str, SafeMetadataValue]
 
 
-_SENSITIVE_METADATA_KEY = re.compile(
-    r"secret|token|password|passwd|credential|database|postgres|redis|django|openai|deploy|backup|env",
+_SENSITIVE_METADATA_TERM = re.compile(
+    r"source|source_code|stdin|input|expected|expected_output|stdout|stderr|stdio|hidden|test|payload|"
+    r"compiler_output|runtime_output|secret|token|password|passwd|key|credential|env|database|"
+    r"postgres|redis|django|openai|deploy|backup",
     re.IGNORECASE,
 )
 _ABSOLUTE_PATH_VALUE = re.compile(r"^(?:[A-Za-z]:[\\/]|/)")
@@ -58,11 +60,11 @@ def safe_metadata(metadata: SafeMetadata | None) -> SafeMetadata:
 
     cleaned: dict[str, SafeMetadataValue] = {}
     for key, value in metadata.items():
-        if _SENSITIVE_METADATA_KEY.search(key):
+        if _SENSITIVE_METADATA_TERM.search(key):
             raise ValueError("Runner metadata keys must not contain sensitive names.")
         if isinstance(value, str) and _ABSOLUTE_PATH_VALUE.search(value):
             raise ValueError("Runner metadata values must not contain absolute paths.")
-        if isinstance(value, str) and _SENSITIVE_METADATA_KEY.search(value):
+        if isinstance(value, str) and _SENSITIVE_METADATA_TERM.search(value):
             raise ValueError("Runner metadata values must not contain sensitive names.")
         cleaned[str(key)] = value
 

@@ -12,7 +12,7 @@ from apps.progress.models import TaskProgress
 
 from .admin import CheckerTaskVersionAdmin, TaskAttemptAdmin, TestCaseAdmin
 from .models import CheckerTaskVersion, Submission, TaskAttempt, TestCase as CheckerTestCase
-from .runner.contracts import RunnerDispatch, RunnerJob, RunnerLimits, RunnerResult, RunnerTestCase
+from .runner.contracts import RunnerDispatch, RunnerHealth, RunnerJob, RunnerLimits, RunnerResult, RunnerTestCase
 from .runner.mapping import RUNNER_RESULT_TO_SUBMISSION_STATUS, map_runner_status_to_submission_status
 
 
@@ -220,18 +220,68 @@ class RunnerAdapterContractTests(DjangoTestCase):
             }
         )
 
-    def test_runner_metadata_rejects_sensitive_names_and_absolute_paths(self):
-        with self.assertRaises(ValueError):
-            RunnerDispatch(
-                external_job_id="job-1",
-                metadata={"secret_token": "redacted"},
-            )
+    def test_runner_metadata_rejects_sensitive_keys(self):
+        denied_keys = (
+            "source",
+            "source_code",
+            "stdin",
+            "input",
+            "expected",
+            "expected_output",
+            "stdout",
+            "stderr",
+            "stdio",
+            "hidden",
+            "test",
+            "payload",
+            "compiler_output",
+            "runtime_output",
+            "secret_token",
+            "api_key",
+            "database_url",
+            "redis_host",
+            "deploy_path",
+        )
 
-        with self.assertRaises(ValueError):
-            RunnerResult(
-                status="internal_error",
-                metadata={"log_file": "C:\\runner\\job.log"},
-            )
+        for key in denied_keys:
+            with self.subTest(key=key):
+                with self.assertRaises(ValueError):
+                    RunnerDispatch(
+                        external_job_id="job-1",
+                        metadata={key: "redacted"},
+                    )
+
+    def test_runner_metadata_rejects_sensitive_values_and_absolute_paths(self):
+        denied_values = (
+            "captured stdout",
+            "expected output",
+            "hidden test payload",
+            "source code",
+            "postgres connection",
+            "deploy key",
+            "C:\\runner\\job.log",
+            "/runner/job.log",
+        )
+
+        for value in denied_values:
+            with self.subTest(value=value):
+                with self.assertRaises(ValueError):
+                    RunnerResult(
+                        status="internal_error",
+                        metadata={"provider_note": value},
+                    )
+
+    def test_runner_metadata_allows_safe_names_and_values(self):
+        health = RunnerHealth(
+            available=True,
+            metadata={
+                "provider": "prototype",
+                "attempt": 1,
+                "sandbox_ready": True,
+            },
+        )
+
+        self.assertEqual(health.metadata["provider"], "prototype")
 
     def test_runner_contract_repr_excludes_source_stdio_and_test_payloads(self):
         limits = RunnerLimits(
