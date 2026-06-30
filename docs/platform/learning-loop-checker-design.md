@@ -123,7 +123,7 @@ Constraint: unique `(task_id, version)`. Enabled versions are immutable; create 
 - `user`
 - `task_version` (foreign key to `CheckerTaskVersion`)
 - `task_id`, `task_version_number`, `course_slug`, `lesson_slug` snapshots
-- `status`: `draft`, `in_progress`, `passed`, `archived`
+- `status`: `draft`, `in_progress`, `accepted`, `archived`
 - `code_snapshot`
 - `note`
 - `result_summary` (bounded JSON summary of the latest submission)
