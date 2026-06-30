@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from django.contrib.auth import get_user_model
 from django.contrib.admin.sites import AdminSite
 from django.core.cache import cache
@@ -10,6 +12,8 @@ from apps.progress.models import TaskProgress
 
 from .admin import CheckerTaskVersionAdmin, TaskAttemptAdmin, TestCaseAdmin
 from .models import CheckerTaskVersion, Submission, TaskAttempt, TestCase as CheckerTestCase
+from .runner.contracts import RunnerDispatch, RunnerHealth, RunnerJob, RunnerLimits, RunnerResult, RunnerTestCase
+from .runner.mapping import RUNNER_RESULT_TO_SUBMISSION_STATUS, map_runner_status_to_submission_status
 
 
 User = get_user_model()
@@ -169,6 +173,153 @@ class CheckerModelTests(DjangoTestCase):
             set(attempt_admin.get_readonly_fields(request)),
             {field.name for field in TaskAttempt._meta.fields},
         )
+
+
+class RunnerAdapterContractTests(DjangoTestCase):
+    def test_runner_status_mapping_returns_only_canonical_submission_statuses(self):
+        current_statuses = {value for value, _label in Submission.Status.choices}
+        legacy_statuses = {
+            "passed",
+            "failed",
+            "compiler_error",
+            "timeout",
+            "system_error",
+            "cancelled",
+        }
+
+        for runner_status, submission_status in RUNNER_RESULT_TO_SUBMISSION_STATUS.items():
+            self.assertIn(submission_status, current_statuses, runner_status)
+            self.assertNotIn(submission_status, legacy_statuses, runner_status)
+
+    def test_unknown_runner_status_maps_to_internal_error(self):
+        self.assertEqual(
+            map_runner_status_to_submission_status("unexpected_provider_status"),
+            Submission.Status.INTERNAL_ERROR,
+        )
+
+    def test_checker_unavailable_is_not_a_persisted_submission_status(self):
+        current_statuses = {value for value, _label in Submission.Status.choices}
+
+        self.assertNotIn("checker_unavailable", current_statuses)
+
+    def test_legacy_status_names_are_not_current_checker_choices(self):
+        current_statuses = {
+            value
+            for value, _label in (*TaskAttempt.Status.choices, *Submission.Status.choices)
+        }
+
+        self.assertFalse(
+            current_statuses
+            & {
+                "passed",
+                "failed",
+                "compiler_error",
+                "timeout",
+                "system_error",
+                "cancelled",
+            }
+        )
+
+    def test_runner_metadata_rejects_sensitive_keys(self):
+        denied_keys = (
+            "source",
+            "source_code",
+            "stdin",
+            "input",
+            "expected",
+            "expected_output",
+            "stdout",
+            "stderr",
+            "stdio",
+            "hidden",
+            "test",
+            "payload",
+            "compiler_output",
+            "runtime_output",
+            "secret_token",
+            "api_key",
+            "database_url",
+            "redis_host",
+            "deploy_path",
+        )
+
+        for key in denied_keys:
+            with self.subTest(key=key):
+                with self.assertRaises(ValueError):
+                    RunnerDispatch(
+                        external_job_id="job-1",
+                        metadata={key: "redacted"},
+                    )
+
+    def test_runner_metadata_rejects_sensitive_values_and_absolute_paths(self):
+        denied_values = (
+            "captured stdout",
+            "expected output",
+            "hidden test payload",
+            "source code",
+            "postgres connection",
+            "deploy key",
+            "C:\\runner\\job.log",
+            "/runner/job.log",
+        )
+
+        for value in denied_values:
+            with self.subTest(value=value):
+                with self.assertRaises(ValueError):
+                    RunnerResult(
+                        status="internal_error",
+                        metadata={"provider_note": value},
+                    )
+
+    def test_runner_metadata_allows_safe_names_and_values(self):
+        health = RunnerHealth(
+            available=True,
+            metadata={
+                "provider": "prototype",
+                "attempt": 1,
+                "sandbox_ready": True,
+            },
+        )
+
+        self.assertEqual(health.metadata["provider"], "prototype")
+
+    def test_runner_contract_repr_excludes_source_stdio_and_test_payloads(self):
+        limits = RunnerLimits(
+            compile_timeout_ms=10_000,
+            run_timeout_ms=2_000,
+            memory_limit_kb=128 * 1024,
+            output_limit_bytes=64 * 1024,
+        )
+        test_case = RunnerTestCase(
+            input="private input",
+            expected_output="private output",
+            is_hidden=True,
+            position=0,
+        )
+        job = RunnerJob(
+            submission_id=UUID("00000000-0000-0000-0000-000000000001"),
+            task_id="00-03-input-age",
+            task_version=1,
+            language="cpp17",
+            comparison_mode="tokens",
+            source_code="int main() { return 0; }",
+            limits=limits,
+            tests=(test_case,),
+        )
+        result = RunnerResult(
+            status="wrong_answer",
+            stdout="private stdout",
+            stderr="private stderr",
+            error_message="private error",
+        )
+
+        combined_repr = f"{test_case!r} {job!r} {result!r}"
+        self.assertNotIn("private input", combined_repr)
+        self.assertNotIn("private output", combined_repr)
+        self.assertNotIn("int main", combined_repr)
+        self.assertNotIn("private stdout", combined_repr)
+        self.assertNotIn("private stderr", combined_repr)
+        self.assertNotIn("private error", combined_repr)
 
 
 class CheckerApiTests(APITestCase):

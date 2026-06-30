@@ -53,6 +53,7 @@
 - No-network proof is not claimed by the Python harness. Dedicated worker VM/container/firewall no-network validation remains a blocker before API-integrated runner or production enablement.
 - Worker provisioning/security checklist added in [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md); dedicated VM/access are not confirmed yet, and the checklist must pass on a dedicated non-production Linux worker VM before API-integrated runner work.
 - Backend checker status names are normalized to canonical runner design values before API-integrated runner work.
+- Backend runner adapter contract exists as internal DTO/protocol/mapping only; no provider, Piston client, queue or execution integration exists.
 - Production deployed app hash remains `a4b33d6`; `CHECKER_EXECUTION_ENABLED=false`, production task versions and hidden tests are still absent.
 
 ## Course State
@@ -63,7 +64,7 @@
 
 ## Next Stage
 
-Фазы 0-3 завершены, product foundation задеплоен. Phase 4 runner design review выполнен docs-only: [runner-design.md](../platform/runner-design.md) approved for isolated non-production prototype planning with a dedicated worker VM target. Standalone prototype добавлен в `tools/runner_prototype/`, но production execution и API integration отсутствуют. Backend checker statuses нормализованы под canonical runner design names. Следующий gate: provisioning-first подготовка dedicated worker VM, затем выполнение [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md) и no-network/no-secrets proof перед API-integrated runner. Piston является preferred future runner target только после этих gates. Sections 11/12 не начаты.
+Фазы 0-3 завершены, product foundation задеплоен. Phase 4 runner design review выполнен docs-only: [runner-design.md](../platform/runner-design.md) approved for isolated non-production prototype planning with a dedicated worker VM target. Standalone prototype добавлен в `tools/runner_prototype/`, но production execution и API integration отсутствуют. Backend checker statuses нормализованы под canonical runner design names; runner adapter contract добавлен только как internal boundary без provider implementation. Следующий gate: provisioning-first подготовка dedicated worker VM, затем выполнение [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md) и no-network/no-secrets proof перед API-integrated runner. Piston является preferred future runner target только после этих gates. Sections 11/12 не начаты.
 
 ## Read For Details
 
