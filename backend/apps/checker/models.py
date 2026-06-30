@@ -152,7 +152,7 @@ class TaskAttempt(models.Model):
     class Status(models.TextChoices):
         DRAFT = "draft", "Draft"
         IN_PROGRESS = "in_progress", "In progress"
-        PASSED = "passed", "Passed"
+        ACCEPTED = "accepted", "Accepted"
         ARCHIVED = "archived", "Archived"
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
@@ -231,30 +231,28 @@ class Submission(models.Model):
         QUEUED = "queued", "Queued"
         COMPILING = "compiling", "Compiling"
         RUNNING = "running", "Running"
-        PASSED = "passed", "Passed"
-        FAILED = "failed", "Failed"
-        COMPILER_ERROR = "compiler_error", "Compiler error"
+        ACCEPTED = "accepted", "Accepted"
+        WRONG_ANSWER = "wrong_answer", "Wrong answer"
+        COMPILE_ERROR = "compile_error", "Compile error"
         RUNTIME_ERROR = "runtime_error", "Runtime error"
-        TIMEOUT = "timeout", "Timeout"
+        TIME_LIMIT = "time_limit", "Time limit"
         OUTPUT_LIMIT = "output_limit", "Output limit"
-        SYSTEM_ERROR = "system_error", "System error"
-        CANCELLED = "cancelled", "Cancelled"
+        INTERNAL_ERROR = "internal_error", "Internal error"
 
     TERMINAL_STATUSES = frozenset(
         {
-            Status.PASSED,
-            Status.FAILED,
-            Status.COMPILER_ERROR,
+            Status.ACCEPTED,
+            Status.WRONG_ANSWER,
+            Status.COMPILE_ERROR,
             Status.RUNTIME_ERROR,
-            Status.TIMEOUT,
+            Status.TIME_LIMIT,
             Status.OUTPUT_LIMIT,
-            Status.SYSTEM_ERROR,
-            Status.CANCELLED,
+            Status.INTERNAL_ERROR,
         }
     )
     ALLOWED_TRANSITIONS = {
-        Status.QUEUED: {Status.COMPILING, Status.SYSTEM_ERROR, Status.CANCELLED},
-        Status.COMPILING: {Status.RUNNING, Status.COMPILER_ERROR, Status.SYSTEM_ERROR, Status.CANCELLED},
+        Status.QUEUED: {Status.COMPILING, Status.INTERNAL_ERROR},
+        Status.COMPILING: {Status.RUNNING, Status.COMPILE_ERROR, Status.INTERNAL_ERROR},
         Status.RUNNING: TERMINAL_STATUSES,
     }
     IMMUTABLE_FIELDS = ("attempt_id", "language", "source_code")

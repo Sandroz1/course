@@ -120,7 +120,7 @@ class CheckerModelTests(DjangoTestCase):
         submission.save()
         submission.status = Submission.Status.RUNNING
         submission.save()
-        submission.status = Submission.Status.PASSED
+        submission.status = Submission.Status.ACCEPTED
         submission.passed_tests = 1
         submission.total_tests = 1
         submission.save()
@@ -146,7 +146,7 @@ class CheckerModelTests(DjangoTestCase):
             Submission.objects.create(
                 attempt=attempt,
                 source_code=attempt.code_snapshot,
-                status=Submission.Status.PASSED,
+                status=Submission.Status.ACCEPTED,
             )
 
     def test_admin_records_and_locked_definitions_cannot_be_bulk_deleted(self):
@@ -255,7 +255,7 @@ class CheckerApiTests(APITestCase):
             attempt=other_attempt,
             source_code=other_attempt.code_snapshot,
         )
-        other_submission.status = Submission.Status.SYSTEM_ERROR
+        other_submission.status = Submission.Status.INTERNAL_ERROR
         other_submission.save()
         self.authenticate()
 
@@ -275,6 +275,29 @@ class CheckerApiTests(APITestCase):
 
         self.assertEqual(create_response.status_code, status.HTTP_404_NOT_FOUND)
         self.assertEqual(detail_response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_terminal_submission_returns_canonical_status(self):
+        attempt = TaskAttempt.objects.create(
+            user=self.user,
+            checker_task_version=self.version,
+            code_snapshot="int main() { return 0; }",
+        )
+        submission = Submission.objects.create(
+            attempt=attempt,
+            source_code=attempt.code_snapshot,
+        )
+        submission.status = Submission.Status.INTERNAL_ERROR
+        submission.save()
+        self.authenticate()
+
+        response = self.client.get(
+            f"/api/checker/submissions/{submission.id}/",
+            HTTP_HOST="localhost",
+        )
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["status"], "internal_error")
+        self.assertNotEqual(response.data["status"], "system_error")
 
     def test_stale_task_version_returns_409(self):
         self.save_draft()

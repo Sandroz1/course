@@ -54,7 +54,7 @@ Gate: backup успешен, VPS tree чист, pull fast-forward, health checks
 - Рассматривать Piston как preferred future runner service только на dedicated non-production worker VM; не ставить Piston на production VPS и не встраивать его в Django.
 - Не запускать пользовательский код в Django container или на production app host.
 
-Gate: isolation/security review принят, standalone prototype проверен в non-production Linux environment, worker provisioning checklist проходит на dedicated VM, Piston target остаётся private/non-production, а API-integrated runner допускается только после dedicated worker VM/no-network proof и status enum mapping cleanup.
+Gate: isolation/security review принят, standalone prototype проверен в non-production Linux environment, status enum mapping cleanup выполнен, worker provisioning checklist проходит на dedicated VM, Piston target остаётся private/non-production, а API-integrated runner допускается только после dedicated worker VM/no-network proof.
 
 ### Phase 5. Enable checker for simple tasks
 

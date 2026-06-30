@@ -176,7 +176,7 @@ export type CheckerAvailability = {
   public_tests?: CheckerPublicTest[];
 };
 
-export type CheckerAttemptStatus = "draft" | "in_progress" | "passed" | "archived";
+export type CheckerAttemptStatus = "draft" | "in_progress" | "accepted" | "archived";
 
 export type CheckerAttempt = {
   id: string;
@@ -220,14 +220,13 @@ export type CheckerSubmission = {
     | "queued"
     | "compiling"
     | "running"
-    | "passed"
-    | "failed"
-    | "compiler_error"
+    | "accepted"
+    | "wrong_answer"
+    | "compile_error"
     | "runtime_error"
-    | "timeout"
+    | "time_limit"
     | "output_limit"
-    | "system_error"
-    | "cancelled";
+    | "internal_error";
   compiler_output: string;
   runtime_output: string;
   passed_tests: number;

@@ -96,7 +96,7 @@ Rules:
 - Non-terminal states (`queued`, `compiling`, `running`) must not be returned unless a real queue/runner exists.
 - Terminal result fields are immutable after finalization.
 - Runner logs may store sanitized diagnostics only. They must not store hidden input/output or full source in analytics.
-- The current deployed checker foundation still uses historical model names such as `passed`, `failed`, `compiler_error`, `timeout` and `system_error`. Before API-integrated runner work, add a migration or explicit compatibility mapping to the canonical public statuses above. Do not expose two competing status vocabularies in the frontend.
+- The checker foundation normalizes historical model names such as `passed`, `failed`, `compiler_error`, `timeout` and `system_error` to the canonical public statuses above before API-integrated runner work. Do not reintroduce competing status vocabularies in the frontend.
 
 ## Queue And Dispatch Contract
 
