@@ -1,0 +1,4 @@
+interface:
+  display_name: "Uchicode Deploy Safety"
+  short_description: "Run guarded Uchicode deployments"
+  default_prompt: "Use $uchicode-deploy-safety to plan or execute this explicitly requested Uchicode deployment safely."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Uchicode Project Guardrails"
+  short_description: "Apply Uchicode scope and safety rules"
+  default_prompt: "Use $uchicode-project-guardrails to handle this Uchicode repository task safely and within scope."
