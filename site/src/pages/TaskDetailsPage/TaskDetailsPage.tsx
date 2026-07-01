@@ -36,6 +36,7 @@ import {
   taskLevelLabels,
 } from "../../utils/taskDisplay";
 import { CheckerDraftPanel } from "./components/CheckerDraftPanel";
+import { CheckerResultPanel } from "./components/CheckerResultPanel";
 import styles from "./TaskDetailsPage.module.scss";
 
 const DEFAULT_TASK_DESCRIPTION =
@@ -82,8 +83,8 @@ function TaskItemList({ items, ordered = false }: { items: string[]; ordered?: b
 
   return (
     <Tag className={styles.taskList}>
-      {items.map((item) => (
-        <li key={item}>
+      {items.map((item, index) => (
+        <li key={`${index}-${item}`}>
           <span className={styles.taskListText}>{renderTaskInline(item)}</span>
         </li>
       ))}
@@ -163,6 +164,36 @@ function getDisplayFileName(fileName: string) {
   return fileName.split("/").pop() ?? fileName;
 }
 
+function TaskResultChecklist({ items }: { items: string[] }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const hasHiddenItems = items.length > MAX_VISIBLE_RESULT_ITEMS;
+  const visibleItems = isExpanded ? items : items.slice(0, MAX_VISIBLE_RESULT_ITEMS);
+  const hiddenCount = Math.max(items.length - MAX_VISIBLE_RESULT_ITEMS, 0);
+
+  return (
+    <div className={styles.taskFactChecklist}>
+      <ul className={styles.taskFactList}>
+        {visibleItems.map((item, index) => (
+          <li key={`${index}-${item}`}>
+            <span className={styles.taskFactText}>{renderTaskInline(item)}</span>
+          </li>
+        ))}
+      </ul>
+
+      {hasHiddenItems && (
+        <button
+          className={styles.taskFactToggle}
+          type="button"
+          aria-expanded={isExpanded}
+          onClick={() => setIsExpanded((value) => !value)}
+        >
+          {isExpanded ? "Скрыть" : `Показать ещё ${pointCountLabel(hiddenCount).toLowerCase()}`}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function TaskBriefSection({
   description,
   goal,
@@ -177,8 +208,6 @@ function TaskBriefSection({
   practicePath: string;
 }) {
   const resultItems = getResultItems(items, practicePath);
-  const visibleResultItems = resultItems.slice(0, MAX_VISIBLE_RESULT_ITEMS);
-  const hiddenResultItems = resultItems.slice(MAX_VISIBLE_RESULT_ITEMS);
   const shouldShowDescription = shouldShowTaskDescription(description);
 
   return (
@@ -201,27 +230,7 @@ function TaskBriefSection({
             {resultItems.length === 1 ? (
               <span className={styles.taskFactText}>{renderTaskInline(resultItems[0])}</span>
             ) : (
-              <>
-                <ul>
-                  {visibleResultItems.map((item) => (
-                    <li key={item}>
-                      <span className={styles.taskFactText}>{renderTaskInline(item)}</span>
-                    </li>
-                  ))}
-                </ul>
-                {hiddenResultItems.length > 0 && (
-                  <details className={styles.taskFactDetails}>
-                    <summary>Показать ещё {pointCountLabel(hiddenResultItems.length).toLowerCase()}</summary>
-                    <ul>
-                      {hiddenResultItems.map((item) => (
-                        <li key={item}>
-                          <span className={styles.taskFactText}>{renderTaskInline(item)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
-              </>
+              <TaskResultChecklist items={resultItems} />
             )}
           </dd>
         </div>
@@ -582,12 +591,15 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
       </section>
 
       {isCheckerConfigured && checkerAvailability && (
-        <CheckerDraftPanel
-          key={`${task.id}-${checkerAvailability.task_version}`}
-          availability={checkerAvailability}
-          starterCode={task.files[0]?.starterCode ?? ""}
-          taskId={task.id}
-        />
+        <>
+          <CheckerDraftPanel
+            key={`${task.id}-${checkerAvailability.task_version}`}
+            availability={checkerAvailability}
+            starterCode={task.files[0]?.starterCode ?? ""}
+            taskId={task.id}
+          />
+          <CheckerResultPanel submission={null} />
+        </>
       )}
 
       <TaskHelpSection task={task} hasSpecificPlan={hasSpecificPlan} />

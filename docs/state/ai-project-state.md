@@ -56,6 +56,7 @@
 - Backend runner adapter contract exists as internal DTO/protocol/mapping plus a fail-closed `DisabledRunner` provider used by the checker service layer. No Piston client, real provider, queue or execution integration exists.
 - Frontend checker UI supports the honest disabled/draft state only: authenticated users can save drafts, guests see the login requirement, and no compiling/running/result lifecycle is shown.
 - Task page now has a reusable in-browser C++ editor for checker-configured tasks. Users can write code on the site and save drafts; check/submit remains unavailable until worker VM/Piston/API integration is completed.
+- Task page also has a reusable checker result UI foundation for future real submissions. It renders nothing without a real submission and does not add polling, fake results or execution.
 - Checker admin/content readiness is deployed with admin readiness counts and [checker-task-authoring.md](../platform/checker-task-authoring.md). Production task versions and hidden tests are still not seeded.
 - Project-local Codex skills for guardrails, frontend quality, checker/runner and deploy safety are merged into main and documented in [agent-skills.md](../platform/agent-skills.md).
 - Production deployed app hash is `0e8b81a`; `CHECKER_EXECUTION_ENABLED=false`, production task versions and hidden tests are still absent.
@@ -68,7 +69,7 @@
 
 ## Next Stage
 
-Фазы 0-3 завершены, product foundation задеплоен. Phase 4 runner design review выполнен docs-only: [runner-design.md](../platform/runner-design.md) approved for isolated non-production prototype planning with a dedicated worker VM target. Standalone prototype добавлен в `tools/runner_prototype/`, но production execution и API integration отсутствуют. Backend checker statuses нормализованы под canonical runner design names; runner adapter contract and fail-closed `DisabledRunner` service boundary exist only for the current disabled state. Следующий gate: create/validate a dedicated non-production worker VM using [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md), including no-network/no-secrets proof before API-integrated runner. Piston является preferred future runner target только после этих gates. Sections 11/12 не начаты.
+Фазы 0-3 завершены, product foundation задеплоен. Phase 4 runner design review выполнен docs-only: [runner-design.md](../platform/runner-design.md) approved for isolated non-production prototype planning with a dedicated worker VM target. Standalone prototype добавлен в `tools/runner_prototype/`, но production execution и API integration отсутствуют. Backend checker statuses нормализованы под canonical runner design names; runner adapter contract and fail-closed `DisabledRunner` service boundary exist only for the current disabled state. Frontend result UI foundation is hidden until real submission data exists. Следующий gate: create/validate a dedicated non-production worker VM using [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md), including no-network/no-secrets proof before API-integrated runner. Piston является preferred future runner target только после этих gates. Sections 11/12 не начаты.
 
 ## Read For Details
 
