@@ -2,10 +2,10 @@
 
 Status: docs-only provisioning and validation packet. This is the gate before any API-integrated runner, Piston client, queue worker or production checker execution.
 
-Current known state at the time of this packet:
+Current known state at the time of the latest deploy state update:
 
-- `origin/main` includes docs-only state commit `f0984a7`.
-- Production runtime remains `7d10f24`.
+- `origin/main` includes deployed runtime commit `0e8b81a` before the docs-only state update.
+- Production runtime remains `0e8b81a`.
 - `CHECKER_EXECUTION_ENABLED=false`.
 - No dedicated worker VM has been created or validated yet.
 - Piston is a preferred future runner target only; it is not installed.
@@ -72,7 +72,7 @@ git pull --ff-only origin main
 git rev-parse --short HEAD
 ```
 
-At this packet's creation time `f0984a7` is the latest docs-only `origin/main`, and production runtime is `7d10f24`. Future validation must test the latest approved `origin/main` commit available then and record that exact hash in the validation result.
+At the latest deploy state update, production runtime is `0e8b81a`. Future validation must test the latest approved `origin/main` commit available then and record that exact hash in the validation result.
 
 ## 3. Safe Setup Commands
 
