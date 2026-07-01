@@ -1,0 +1,4 @@
+interface:
+  display_name: "Uchicode Checker Safety"
+  short_description: "Protect checker and runner contracts"
+  default_prompt: "Use $uchicode-checker-runner to review or implement this checker/runner task without weakening safety boundaries."

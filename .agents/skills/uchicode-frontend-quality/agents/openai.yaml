@@ -1,0 +1,4 @@
+interface:
+  display_name: "Uchicode Frontend Quality"
+  short_description: "Review Uchicode UI and React quality"
+  default_prompt: "Use $uchicode-frontend-quality to improve this Uchicode frontend surface consistently and accessibly."

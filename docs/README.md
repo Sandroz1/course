@@ -32,6 +32,7 @@
 - Checker/API contracts: [platform/learning-loop-checker-design.md](platform/learning-loop-checker-design.md).
 - Runner design/threat model: [platform/runner-design.md](platform/runner-design.md).
 - Runner worker provisioning/security: [platform/runner-worker-provisioning.md](platform/runner-worker-provisioning.md).
+- Codex agent skills: [platform/agent-skills.md](platform/agent-skills.md).
 - Course content: [courses/theory-content-standards.md](courses/theory-content-standards.md), [courses/course-content-plan.md](courses/course-content-plan.md), [courses/base-cpp-course-plan.md](courses/base-cpp-course-plan.md).
 - Practice starter sources: [../practice/README.md](../practice/README.md).
 - Local setup: [../LOCAL_RUNBOOK.md](../LOCAL_RUNBOOK.md).
