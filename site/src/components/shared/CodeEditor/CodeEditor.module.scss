@@ -1,0 +1,97 @@
+.root {
+  display: grid;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.header label {
+  color: var(--text);
+  font-size: 0.8125rem;
+  font-weight: var(--font-weight-control);
+  line-height: 1.35;
+}
+
+.header span,
+.footer {
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.35;
+}
+
+.help {
+  max-width: 68ch;
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  min-height: 18rem;
+  border: 1px solid var(--code-border);
+  border-radius: 0.75rem;
+  outline: 0;
+  background: var(--code-bg);
+  color: var(--code-text);
+  caret-color: var(--code-text);
+  font-family: Consolas, "Cascadia Code", Monaco, monospace;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  overflow: auto;
+  padding: 0.875rem;
+  resize: vertical;
+  tab-size: 4;
+}
+
+.textarea:focus-visible {
+  border-color: var(--accent-strong);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent);
+}
+
+.textarea:disabled {
+  cursor: wait;
+  opacity: 0.78;
+}
+
+.footer {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.375rem 0.75rem;
+  min-width: 0;
+}
+
+.footer span {
+  min-width: 0;
+}
+
+.overLimit {
+  color: var(--danger);
+  font-weight: var(--font-weight-control);
+}
+
+@media (max-width: 35rem) {
+  .header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .textarea {
+    min-height: 15rem;
+    border-radius: 0.625rem;
+    font-size: 0.8125rem;
+    padding: 0.75rem;
+  }
+}

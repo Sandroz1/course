@@ -43,7 +43,7 @@ The MVP does not include:
 - Task pages are readable by guests. Saving progress requires an authenticated user.
 - Production currently runs Django, PostgreSQL, Redis and Nginx on the app deployment. There is no submission worker or sandbox runner.
 - `practice/` is an internal source for starter material, not a user-facing filesystem contract.
-- The local checker branch adds an editable, authenticated draft for checker-configured tasks. It still has no checker result or runtime execution.
+- Checker-configured task pages use an in-browser C++ draft editor with authenticated save/restore. It still has no checker result, result polling or runtime execution.
 
 ## 5. Source of truth and `task_version`
 

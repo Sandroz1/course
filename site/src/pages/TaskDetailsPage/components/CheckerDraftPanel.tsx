@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { appRoutes } from "../../../app/routes";
 import { Button, LinkButton } from "../../../components/shared/ActionButton/ActionButton";
+import { CodeEditor } from "../../../components/shared/CodeEditor";
 import { StatusBadge } from "../../../components/shared/LearningUi/LearningUi";
 import { useAuth } from "../../../context/AuthContext";
 import {
@@ -12,6 +13,16 @@ import type { CheckerAttempt, CheckerAvailability } from "../../../types/api";
 import { toPath } from "../../../utils/slug";
 import styles from "./CheckerDraftPanel.module.scss";
 
+const DEFAULT_CPP_STARTER = `#include <iostream>
+
+using namespace std;
+
+int main() {
+    // Напишите решение здесь
+    return 0;
+}
+`;
+
 type DraftLoadState = "loading" | "ready" | "error";
 type DraftSaveState = "idle" | "editing" | "saving" | "saved" | "save_error";
 
@@ -20,6 +31,10 @@ type CheckerDraftPanelProps = {
   starterCode: string;
   taskId: string;
 };
+
+function getInitialSource(starterCode: string) {
+  return starterCode.trim() ? starterCode : DEFAULT_CPP_STARTER;
+}
 
 function getSaveErrorMessage(error: unknown) {
   const kind = getCheckerErrorKind(error);
@@ -30,9 +45,21 @@ function getSaveErrorMessage(error: unknown) {
   }
   if (kind === "source_too_large") return "Черновик превышает допустимый размер.";
   if (kind === "checker_unavailable") {
-    return "Сервис автопроверки недоступен. Черновик остался в редакторе.";
+    return "Автопроверка недоступна. Черновик остался в редакторе.";
   }
   return "Не удалось сохранить черновик. Код остался в редакторе.";
+}
+
+function getCheckerNotice(availability: CheckerAvailability) {
+  if (availability.reason === "runner_unavailable") {
+    return "Проверка решений готовится: runner ещё не подключён.";
+  }
+
+  if (availability.reason === "temporarily_disabled") {
+    return "Проверка временно отключена. Черновик можно сохранить и вернуться позже.";
+  }
+
+  return "Проверка решения пока недоступна для этой версии задачи.";
 }
 
 function findCurrentAttempt(attempts: CheckerAttempt[], taskVersion: number) {
@@ -41,25 +68,22 @@ function findCurrentAttempt(attempts: CheckerAttempt[], taskVersion: number) {
   );
 }
 
-function formatSourceLimit(bytes?: number) {
-  if (!bytes) return "ограничен лимитом задачи";
-  if (bytes < 1024) return `до ${bytes} байт`;
-  return `до ${Math.floor(bytes / 1024)} КБ`;
-}
-
 export function CheckerDraftPanel({ availability, starterCode, taskId }: CheckerDraftPanelProps) {
   const { isAuthenticated, isLoading: isAuthLoading } = useAuth();
   const taskVersion = availability.task_version;
-  const sourceLimitLabel = formatSourceLimit(availability.limits?.source_bytes);
-  const [sourceCode, setSourceCode] = useState(starterCode);
+  const initialSource = getInitialSource(starterCode);
+  const [sourceCode, setSourceCode] = useState(initialSource);
+  const [savedSourceCode, setSavedSourceCode] = useState(initialSource);
   const [attempt, setAttempt] = useState<CheckerAttempt | null>(null);
   const [loadState, setLoadState] = useState<DraftLoadState>("loading");
   const [saveState, setSaveState] = useState<DraftSaveState>("idle");
   const [saveMessage, setSaveMessage] = useState("");
   const [reloadKey, setReloadKey] = useState(0);
+  const hasUnsavedChanges = sourceCode !== savedSourceCode;
 
   useEffect(() => {
-    setSourceCode(starterCode);
+    setSourceCode(initialSource);
+    setSavedSourceCode(initialSource);
     setAttempt(null);
     setSaveState("idle");
     setSaveMessage("");
@@ -80,8 +104,11 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
     getCheckerAttempts(taskId, controller.signal)
       .then((page) => {
         const currentAttempt = findCurrentAttempt(page.results, taskVersion);
+        const nextSource = currentAttempt ? currentAttempt.code_snapshot : initialSource;
+
         setAttempt(currentAttempt ?? null);
-        setSourceCode(currentAttempt ? currentAttempt.code_snapshot : starterCode);
+        setSourceCode(nextSource);
+        setSavedSourceCode(nextSource);
         setSaveState(currentAttempt ? "saved" : "idle");
         setLoadState("ready");
       })
@@ -92,13 +119,28 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
         setSaveMessage(
           kind === "auth_required"
             ? "Войдите снова, чтобы загрузить черновик."
-            : "Не удалось загрузить сохраненный черновик.",
+            : "Не удалось загрузить сохранённый черновик.",
         );
         setLoadState("error");
       });
 
     return () => controller.abort();
-  }, [isAuthenticated, isAuthLoading, reloadKey, starterCode, taskId, taskVersion]);
+  }, [initialSource, isAuthenticated, isAuthLoading, reloadKey, taskId, taskVersion]);
+
+  useEffect(() => {
+    if (!hasUnsavedChanges) return undefined;
+
+    function handleBeforeUnload(event: BeforeUnloadEvent) {
+      event.preventDefault();
+      event.returnValue = "";
+    }
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [hasUnsavedChanges]);
 
   if (!taskVersion) return null;
 
@@ -117,8 +159,9 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
       });
       setAttempt(savedAttempt);
       setSourceCode(savedAttempt.code_snapshot);
+      setSavedSourceCode(savedAttempt.code_snapshot);
       setSaveState("saved");
-      setSaveMessage("Черновик сохранен.");
+      setSaveMessage("Черновик сохранён.");
     } catch (error) {
       setSaveState("save_error");
       setSaveMessage(getSaveErrorMessage(error));
@@ -127,15 +170,29 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
 
   function handleSourceChange(value: string) {
     setSourceCode(value);
+
+    if (value === savedSourceCode) {
+      setSaveState(attempt ? "saved" : "idle");
+      setSaveMessage(attempt ? "Сохранённый черновик загружен." : "Черновик ещё не сохранён.");
+      return;
+    }
+
     setSaveState("editing");
-    setSaveMessage("Есть несохраненные изменения.");
+    setSaveMessage("Есть несохранённые изменения.");
   }
 
+  const canSave =
+    isAuthenticated &&
+    loadState === "ready" &&
+    saveState !== "saving" &&
+    (hasUnsavedChanges || !attempt);
   const statusMessage =
     saveMessage ||
     (attempt
-      ? "Сохраненный черновик загружен."
-      : "Черновик еще не сохранен.");
+      ? "Сохранённый черновик загружен."
+      : isAuthenticated
+        ? "Черновик ещё не сохранён."
+        : "Войдите, чтобы сохранить код в аккаунте.");
 
   return (
     <section className={styles.panel} aria-labelledby="checker-draft-title">
@@ -144,31 +201,32 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
           <p className={styles.eyebrow}>Черновик решения</p>
           <h2 id="checker-draft-title">Моя попытка</h2>
           <p>
-            Можно написать решение и сохранить его в аккаунте. Запуск кода появится
-            только после отдельной безопасной интеграции runner.
+            Пишите решение прямо на странице задачи. Сейчас сохраняется только черновик:
+            запуск и проверка кода появятся после отдельной безопасной runner-интеграции.
           </p>
         </div>
-        <StatusBadge tone="muted">Автопроверка выключена</StatusBadge>
+        <StatusBadge tone={availability.available ? "info" : "warning"}>
+          Автопроверка недоступна
+        </StatusBadge>
       </div>
 
       <div className={styles.checkerNotice}>
-        <strong>Что доступно сейчас</strong>
-        <span>Черновик решения сохраняется на сервере для этой версии задачи.</span>
-        <strong>Что недоступно</strong>
-        <span>Код не запускается, результаты проверки и статусы выполнения не показываются.</span>
+        <strong>Редактор</strong>
+        <span>Код можно писать здесь как обычный C++ файл main.cpp.</span>
+        <strong>Сохранение</strong>
+        <span>
+          {isAuthenticated
+            ? "Черновик сохраняется в аккаунте для текущей версии задачи."
+            : "Чтобы сохранить черновик между устройствами и сессиями, войдите в аккаунт."}
+        </span>
+        <strong>Проверка</strong>
+        <span>{getCheckerNotice(availability)}</span>
       </div>
 
       {isAuthLoading || loadState === "loading" ? (
         <p className={styles.stateMessage} aria-live="polite">
-          Подготавливаем черновик...
+          Подготавливаем редактор...
         </p>
-      ) : !isAuthenticated ? (
-        <div className={styles.authNotice}>
-          <p>Сохранение черновика доступно после входа.</p>
-          <LinkButton href={toPath(appRoutes.login)} size="small" variant="secondary">
-            Войти
-          </LinkButton>
-        </div>
       ) : loadState === "error" ? (
         <div className={styles.authNotice}>
           <p aria-live="polite">{saveMessage}</p>
@@ -178,27 +236,31 @@ export function CheckerDraftPanel({ availability, starterCode, taskId }: Checker
         </div>
       ) : (
         <div className={styles.editorArea}>
-          <div className={styles.editorHeader}>
-            <label htmlFor={`checker-draft-${taskId}`}>Код решения</label>
-            <span>Размер {sourceLimitLabel}</span>
-          </div>
-          <textarea
+          <CodeEditor
             id={`checker-draft-${taskId}`}
-            className={styles.editor}
+            label="Код решения"
             value={sourceCode}
-            spellCheck={false}
-            wrap="off"
-            aria-describedby={`checker-draft-status-${taskId}`}
-            onChange={(event) => handleSourceChange(event.target.value)}
+            disabled={saveState === "saving"}
+            describedBy={`checker-draft-status-${taskId}`}
+            helpText="Редактор не запускает код. Используйте его как черновик для одного файла C++."
+            sourceLimitBytes={availability.limits?.source_bytes}
+            onChange={handleSourceChange}
           />
+
           <div className={styles.actions}>
-            <Button
-              variant="primary"
-              disabled={saveState === "saving"}
-              onClick={() => void handleSave()}
-            >
-              {saveState === "saving" ? "Сохраняем..." : "Сохранить черновик"}
-            </Button>
+            {isAuthenticated ? (
+              <Button
+                variant="primary"
+                disabled={!canSave}
+                onClick={() => void handleSave()}
+              >
+                {saveState === "saving" ? "Сохраняем..." : "Сохранить черновик"}
+              </Button>
+            ) : (
+              <LinkButton href={toPath(appRoutes.login)} variant="primary">
+                Войти, чтобы сохранить
+              </LinkButton>
+            )}
             <Button
               variant="secondary"
               disabled
