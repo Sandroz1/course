@@ -104,52 +104,6 @@
   min-width: 0;
 }
 
-.editorHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.75rem;
-  min-width: 0;
-}
-
-.editorHeader label {
-  color: var(--text);
-  font-size: 0.8125rem;
-  font-weight: var(--font-weight-control);
-  line-height: 1.35;
-}
-
-.editorHeader span {
-  color: var(--muted);
-  font-size: 0.75rem;
-  line-height: 1.35;
-}
-
-.editor {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  min-height: 14rem;
-  border: 1px solid var(--code-border);
-  border-radius: 0.625rem;
-  outline: 0;
-  background: var(--code-bg);
-  color: var(--code-text);
-  caret-color: var(--code-text);
-  font-family: Consolas, "Cascadia Code", Monaco, monospace;
-  font-size: 0.875rem;
-  line-height: 1.55;
-  overflow: auto;
-  padding: 0.875rem;
-  resize: vertical;
-  tab-size: 4;
-}
-
-.editor:focus-visible {
-  border-color: var(--accent-strong);
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent);
-}
-
 .actions {
   display: flex;
   align-items: center;
@@ -180,7 +134,6 @@
   }
 
   .header,
-  .editorHeader,
   .authNotice,
   .actions {
     align-items: stretch;
@@ -200,9 +153,4 @@
     width: 100%;
   }
 
-  .editor {
-    min-height: 12rem;
-    font-size: 0.8125rem;
-    padding: 0.75rem;
-  }
 }
