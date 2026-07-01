@@ -1,142 +1,151 @@
-# Runner Worker Provisioning And Security Checklist
+# Runner Worker Provisioning And Validation Packet
 
-Status: required docs-only gate before API-integrated runner work. This document is for provisioning and later validating a dedicated non-production Linux worker VM used to validate the standalone runner prototype in `tools/runner_prototype/`.
+Status: docs-only provisioning and validation packet. This is the gate before any API-integrated runner, Piston client, queue worker or production checker execution.
 
-This checklist does not approve production execution. It does not add a queue, Django endpoint, hidden tests, production task versions or `CHECKER_EXECUTION_ENABLED=true`.
+Current known state at the time of this packet:
 
-## Scope
+- `origin/main` includes docs-only state commit `f0984a7`.
+- Production runtime remains `7d10f24`.
+- `CHECKER_EXECUTION_ENABLED=false`.
+- No dedicated worker VM has been created or validated yet.
+- Piston is a preferred future runner target only; it is not installed.
 
-The worker VM must be:
+This document does not approve production execution. It does not create a VM, install Piston, add a Django endpoint, add a queue, add hidden tests, seed production task versions or enable user C++ execution.
 
-- dedicated to runner prototype validation;
-- Linux-only, Ubuntu 24.04 LTS by default;
-- non-production;
-- separate from the production VPS and Docker host;
-- separate from Django, PostgreSQL, Redis, nginx and backups;
-- reachable only by developers who need to run the prototype;
-- disposable: it can be rebuilt without touching production data.
+## 1. VM Requirements
 
-The worker VM must not contain:
+The worker must be a dedicated non-production Linux VM:
 
-- production `.env` files;
-- database, Redis, deploy, provider or AI credentials;
-- production backups;
-- SSH deploy keys for the production app;
-- access to production private networks;
-- production `CheckerTaskVersion` rows or hidden tests.
+- Ubuntu 24.04 LTS by default.
+- Minimum: 2 vCPU, 2 GB RAM, 30 GB disk.
+- Recommended for future Piston validation: 2 vCPU, 4 GB RAM, 40 GB disk.
+- Not the production VPS.
+- Not the production Docker host.
+- Not attached to the production private network.
+- No production `.env`, deploy keys, DB/Redis credentials, backups, provider tokens or AI credentials.
+- SSH access only for developer/admin operators who run validation.
+- Runner/prototype execution under a non-root user such as `uchicode-runner`.
+- Disposable: if isolation is suspect, rebuild the VM instead of trying to repair it in place.
 
-Resource baseline:
+The worker must not run:
 
-- minimum for prototype validation: 2 vCPU, 2 GB RAM, 30 GB disk;
-- recommended for future Piston validation: 2 vCPU, 4 GB RAM, 40 GB disk.
+- Django backend.
+- PostgreSQL or Redis for production.
+- Host nginx for production.
+- Production Docker Compose.
+- Public Piston API.
+- Public checker execution traffic.
 
-Dedicated VM and access are not yet confirmed. Until they are confirmed, this document is a provisioning-first packet, not evidence that isolation has passed.
+## 2. Provisioning Prerequisites
 
-## Repository Baseline
+Before creating or accessing the VM, record the intended non-sensitive metadata:
 
-`98b3731` is the current approved docs/prototype baseline at the time this checklist was written. Actual VM validation must use the latest approved `origin/main` commit at validation time. Do not treat `98b3731` as a permanent target if a newer reviewed main commit exists.
+```text
+Provider:
+Region:
+VM name:
+OS image:
+vCPU/RAM/disk:
+Operator:
+Purpose: Uchicode non-production runner validation
+```
 
-Validation checkout pattern:
+Do not record provider account secrets, private keys, internal IPs or production network details in this repository.
+
+Provisioning prerequisites:
+
+- A separate non-production VM exists or is approved for creation.
+- It has no production network peering, VPN, security-group route or firewall allow rule to production DB/Redis/private networks.
+- It has no copied production `.env` or backup data.
+- It has an SSH account for operators.
+- It can install only the minimum OS packages required for validation.
+- The validation commit is the latest approved `origin/main` at validation time, not a hard-coded old hash.
+
+Checkout pattern for future validation:
 
 ```bash
+git clone https://github.com/Sandroz1/course.git uchicode-runner-validation
+cd uchicode-runner-validation
 git fetch origin main
 git checkout main
 git pull --ff-only origin main
 git rev-parse --short HEAD
 ```
 
-## Required Packages
+At this packet's creation time `f0984a7` is the latest docs-only `origin/main`, and production runtime is `7d10f24`. Future validation must test the latest approved `origin/main` commit available then and record that exact hash in the validation result.
 
-Minimum packages:
+## 3. Safe Setup Commands
+
+These commands are for the future non-production worker VM only. Do not run them on the production VPS.
+
+Check OS and basic tooling:
 
 ```bash
+cat /etc/os-release
+uname -a
 python3 --version
 g++ --version
 git --version
-```
-
-The prototype itself uses Python stdlib only. Do not add Python package dependencies for this stage.
-
-Recommended OS tools for validation:
-
-```bash
-ip --version
+ip -Version
 ss --version
 timeout --version
 ```
 
-If a command is unavailable, install the smallest OS package that provides it. Do not install app dependencies, database clients or production tooling unless a later reviewed task requires them.
-
-## Preferred Future Runner Target
-
-Piston is the preferred future runner service target for the dedicated non-production worker VM, after this provisioning gate is satisfied.
-
-Piston constraints:
-
-- do not install Piston on the production VPS;
-- do not embed Piston into Django;
-- do not expose the Piston API publicly;
-- do not connect Piston to production DB, Redis, backups, deploy keys or `.env` files;
-- backend integration, when approved later, must call Piston only through a runner adapter/client after validation gates pass.
-
-This document does not install Piston and does not approve a Piston deployment.
-
-## Runner User
-
-Create a non-root runner user for prototype execution. Example name: `uchicode-runner`.
-
-Acceptance checks:
+Create and inspect the non-root runner user:
 
 ```bash
-id
-whoami
-groups
-sudo -l
+sudo adduser --disabled-password --gecos "" uchicode-runner
+id uchicode-runner
+groups uchicode-runner
+sudo -l -U uchicode-runner || true
 ```
 
 Pass criteria:
 
-- the prototype is run as the non-root runner user;
-- the runner user does not have passwordless broad sudo;
-- the runner user is not in `docker`, `sudo`, `adm` or other privileged groups;
-- no Docker socket or host admin socket is mounted into the runner context.
+- `uchicode-runner` exists.
+- It is not root.
+- It is not in `sudo`, `docker`, `adm` or other privileged groups.
+- It does not have broad passwordless sudo.
 
 Fail criteria:
 
-- the prototype requires root;
-- user code runs with root privileges;
-- the worker user can administer production infrastructure.
+- Prototype or future user code must run as root.
+- The runner user can administer production infrastructure.
+- A Docker socket or host admin socket is available to the runner user.
 
-## No Production Env Or Secrets
+## 4. No-Secrets Validation
 
-Do not print secret values. Only check names, paths and presence.
+Do not print secret values. Only print environment variable names and file paths that are safe to disclose.
 
-Run from the runner user shell:
+Run as the future runner user:
 
 ```bash
+whoami
 printenv | cut -d= -f1 | sort | grep -Ei 'secret|token|password|passwd|key|credential|database|postgres|redis|django|openai|deploy|backup' || true
-find "$HOME" -maxdepth 4 -type f \( -name ".env*" -o -iname "*secret*" -o -iname "*token*" -o -iname "*key*" -o -iname "*credential*" \) -print
+find "$HOME" -maxdepth 4 -type f \( -name ".env*" -o -iname "*secret*" -o -iname "*token*" -o -iname "*key*" -o -iname "*credential*" -o -iname "*backup*" \) -print
 test ! -f .env
 test ! -f .env.production
 ```
 
 Pass criteria:
 
-- no production-like secret env variable names are present;
-- no `.env` / `.env.production` files are present in the prototype checkout or runner home;
-- no production deploy keys or backup credentials are present.
+- No production-like secret environment variable names are present.
+- No `.env` or `.env.production` files exist in the runner home or checkout.
+- No production deploy keys, DB/Redis credentials, provider tokens, OpenAI keys or backups are present.
 
 Fail criteria:
 
-- production env files or credentials exist on the worker;
-- prototype execution needs a production secret;
-- logs contain secret values.
+- Any production secret, token, backup, deploy key or credential exists on the worker.
+- Any validation command prints a secret value.
+- Prototype execution requires a production secret.
 
-## No Production DB, Redis Or Private Network Access
+If a suspicious variable name appears, do not print its value. Remove it from the worker and record only the variable name and remediation in the validation result.
 
-The worker VM must have no route to production PostgreSQL, Redis, app containers or private service networks. Proving that credentials are absent is necessary but not sufficient: route, firewall and network access must also be checked where applicable.
+## 5. No DB/Redis/Private-Network Validation
 
-Baseline checks:
+Absence of credentials is not enough. The worker must also lack network path to production DB, Redis and private app networks.
+
+Safe baseline checks:
 
 ```bash
 ip addr
@@ -145,32 +154,40 @@ ss -ltnp
 printenv | cut -d= -f1 | sort | grep -Ei 'postgres|database|redis|django|db_|redis_' || true
 ```
 
-If production private hostnames or IPs are known, verify that TCP access fails without using credentials:
+If production private hostnames or IPs are known to the operator, test reachability without credentials and without writing those details into this document:
 
 ```bash
-timeout 3 bash -lc '</dev/tcp/<production-db-host-or-ip>/5432' && exit 1 || true
-timeout 3 bash -lc '</dev/tcp/<production-redis-host-or-ip>/6379' && exit 1 || true
-timeout 3 bash -lc '</dev/tcp/<production-vps-private-ip>/22' && exit 1 || true
+timeout 3 bash -lc '</dev/tcp/<redacted-production-db-host-or-ip>/5432' && exit 1 || true
+timeout 3 bash -lc '</dev/tcp/<redacted-production-redis-host-or-ip>/6379' && exit 1 || true
+timeout 3 bash -lc '</dev/tcp/<redacted-production-private-host-or-ip>/22' && exit 1 || true
 ```
 
-If production private network details are unavailable or should not be exposed in docs/logs, record the verification as an acceptance gate with a redacted operator note. Do not print private hostnames, credentials or secret values into logs.
+If production network details are unavailable or should not be exposed, record this as an acceptance gate in the validation result:
+
+```text
+Production private network access proof: blocked / not applicable / blocked pending operator proof
+Operator evidence location: redacted, outside repo
+```
 
 Pass criteria:
 
-- there is no VPN, peering, security-group rule or route into production private networks;
-- DB/Redis ports are unreachable from the worker;
-- no production DB/Redis env names exist.
+- No VPN, peering, security-group route or firewall rule connects the worker to production private networks.
+- Production DB/Redis ports are unreachable from the worker.
+- No production DB/Redis environment variable names exist.
 
 Fail criteria:
 
-- worker can reach production DB/Redis/private app network;
-- worker has production credentials even if the network path is blocked.
+- Worker can reach production DB/Redis/private app networks.
+- Worker has production credentials even if the network path is blocked.
+- Operator cannot prove network isolation before API-integrated runner work.
 
-## No-Network Proof For Executed Code
+## 6. No-Network Execution Proof
 
-The current Python prototype does not prove no-network isolation by itself. No-network must be enforced by the worker VM/container/firewall/sandbox layer that will later run compiled user code.
+The standalone Python prototype does not prove no-network isolation. No-network must be proven from the exact sandbox/execution context that will run compiled user code.
 
-Before API-integrated runner work, execute a network probe from the exact sandbox context used for the compiled binary. Example probe:
+Until there is an actual sandbox command, no-network execution proof is a blocker before API-integrated runner work.
+
+Future probe source:
 
 ```bash
 cat > /tmp/uchicode-network-probe.cpp <<'CPP'
@@ -198,67 +215,59 @@ int main() {
 }
 CPP
 g++ -std=c++17 /tmp/uchicode-network-probe.cpp -o /tmp/uchicode-network-probe
-# Run the binary inside the same sandbox/network namespace planned for user code.
 ```
+
+The binary must be executed inside the same sandbox/network namespace intended for user code. A direct host run is not enough.
 
 Pass criteria:
 
-- the probe cannot connect to the public internet;
-- DNS is unavailable or harmlessly blocked inside the sandbox;
-- production private networks are unreachable;
-- the proof command is documented with the exact sandbox invocation.
+- Probe cannot connect to public internet.
+- DNS is unavailable or harmlessly blocked inside the sandbox.
+- Production private networks are unreachable.
+- The exact sandbox invocation is documented in the validation result.
 
 Fail criteria:
 
-- executed code can reach the internet;
-- executed code can reach production private networks;
-- no-network cannot be tested from the actual execution context.
-- no actual sandbox command exists yet; this is a blocker before API-integrated runner work.
+- Executed code can reach the internet.
+- Executed code can reach production private networks.
+- No actual sandbox command exists.
+- The proof is run only on the host, not inside the intended execution context.
 
-## Temp Workspace And Filesystem Rules
+## 7. Prototype Test Validation
 
-Each run must use a fresh disposable workspace and delete it after success, compile failure, runtime error, timeout and output limit.
-
-Validation:
+Run the standalone prototype tests on the non-production worker VM after checkout:
 
 ```bash
-python3 -m unittest tools.runner_prototype.tests.test_runner.RunnerPrototypeTests.test_cleanup_after_success_failure_and_timeout
+python3 -m unittest discover tools/runner_prototype/tests
+python3 tools/runner_prototype/run_cases.py
 ```
 
 Pass criteria:
 
-- no per-run temp directories remain after tests;
-- no production paths are mounted into execution workspaces;
-- logs/results do not expose sensitive absolute paths.
+- Successful compile/run returns `accepted`.
+- Wrong output returns `wrong_answer`.
+- Syntax error returns `compile_error`.
+- Non-zero runtime failure returns `runtime_error`.
+- Infinite loop returns `time_limit`.
+- Excess output returns `output_limit`.
+- Parent secret env is not visible to executed code.
+- Temporary workspaces are cleaned after success, failure and timeout.
 
 Fail criteria:
 
-- failed or timed-out runs leave workspaces behind;
-- user code can write outside its workspace;
-- prototype output leaks sensitive host paths.
+- Any prototype test fails.
+- Any run requires production data or credentials.
+- User code execution is tested on the production app host.
 
-## Process Kill And Resource Limits
+## 8. Resource Limit Validation
 
-The worker gate must demonstrate runtime controls before API integration. Current prototype tests cover:
+Current standalone prototype covers compile timeout, run timeout, Linux process-group kill and stdout/stderr caps. RAM/memory limits must be enforced by the future sandbox or OS configuration; the Python harness alone does not prove memory isolation.
 
-- compile timeout;
-- runtime timeout;
-- Linux process-group kill;
-- stdout/stderr output cap.
-
-RAM/memory limits must be enforced and evidenced by the worker sandbox or OS configuration. The standalone Python prototype does not prove memory isolation by itself.
-
-Validation:
+Run:
 
 ```bash
 python3 -m unittest tools.runner_prototype.tests.test_runner.RunnerPrototypeTests.test_time_limit
 python3 -m unittest tools.runner_prototype.tests.test_runner.RunnerPrototypeTests.test_output_limit
-python3 tools/runner_prototype/run_cases.py
-```
-
-Recommended operator checks:
-
-```bash
 ulimit -a
 ps -fu "$(whoami)"
 df -h
@@ -266,65 +275,118 @@ df -h
 
 Pass criteria:
 
-- infinite loop returns `time_limit`;
-- excessive output returns `output_limit`;
-- output is truncated to the configured cap;
-- no child process remains after timeout;
-- VM disk does not grow after repeated failed runs.
+- Infinite loop terminates as `time_limit`.
+- Excessive stdout/stderr terminates as `output_limit`.
+- Output is truncated to the configured cap.
+- No child process remains after timeout.
+- Disk usage remains stable after repeated failed runs.
+- A future sandbox-level memory/RAM limit is documented before integration.
 
 Fail criteria:
 
-- infinite loop survives after timeout;
-- stdout/stderr can grow without bound;
-- process cleanup requires manual kill.
+- Infinite loop survives after timeout.
+- stdout/stderr can grow without bound.
+- Process cleanup requires manual kill.
+- Memory limit cannot be enforced or evidenced before integration.
 
-## Logging Rules
+## 9. Temp Cleanup Validation
+
+Each run must use a fresh disposable workspace and delete it after success, compile failure, runtime error, timeout and output limit.
+
+Run:
+
+```bash
+python3 -m unittest tools.runner_prototype.tests.test_runner.RunnerPrototypeTests.test_cleanup_after_success_failure_and_timeout
+find /tmp -maxdepth 2 -type d -name '*uchicode*' -print
+```
+
+Pass criteria:
+
+- No per-run temp directories remain after tests.
+- No production paths are mounted into execution workspaces.
+- Logs/results do not expose sensitive absolute paths.
+
+Fail criteria:
+
+- Failed or timed-out runs leave workspaces behind.
+- User code can write outside its workspace.
+- Prototype output leaks sensitive host paths.
+
+## 10. Process Kill Validation
+
+The worker gate must prove that timeout kills the process tree, not only the direct child process.
+
+Run:
+
+```bash
+python3 -m unittest tools.runner_prototype.tests.test_runner.RunnerPrototypeTests.test_time_limit
+pgrep -af uchicode || true
+ps -fu "$(whoami)"
+```
+
+Pass criteria:
+
+- Timeout returns `time_limit`.
+- No child or helper process remains.
+- Cleanup does not require manual intervention.
+
+Fail criteria:
+
+- Any compiled binary survives after timeout.
+- Any orphan process remains.
+- Operator must manually kill processes after validation.
+
+## 11. Logging Rules
 
 Allowed logs:
 
-- synthetic case name;
-- result status;
-- exit code;
-- compile/run duration;
-- timeout/output-limit flags;
-- bounded sanitized stderr/stdout summary for synthetic tests;
-- non-secret environment check result.
+- Synthetic case name.
+- Result status.
+- Exit code.
+- Compile/run duration.
+- Timeout/output-limit flags.
+- Bounded sanitized stderr/stdout summary for synthetic tests.
+- Non-secret environment check result.
+- Non-sensitive VM metadata from the validation result template.
 
 Forbidden logs:
 
-- production secrets or env values;
-- production DB/Redis host credentials;
-- hidden tests;
-- full submitted source in production-like logs;
-- uncapped compiler/runtime output;
-- production backup paths, deploy keys or provider tokens.
+- Production secrets or env values.
+- Production DB/Redis host credentials.
+- Private keys or deploy keys.
+- Hidden test input/output.
+- Full submitted source in production-like logs.
+- Uncapped compiler/runtime output.
+- Production backup contents.
+- Provider tokens.
+- Sensitive absolute paths.
 
-## Health Checks
+If a log contains forbidden data, treat validation as failed, remove the data from the worker/logs where safe, and do not copy it into the repository.
 
-Worker readiness checks:
+## 12. Piston Target Rules
 
-```bash
-python3 --version
-g++ --version
-python3 -m unittest discover tools/runner_prototype/tests
-python3 tools/runner_prototype/run_cases.py
-```
+Piston is the preferred future runner service target after this worker VM gate passes.
 
-Operational checks before later API integration:
+Rules:
 
-- runner process can report ready/unready;
-- failed health makes checker fail closed;
-- disabling execution does not delete drafts or attempts;
-- logs are available without exposing source, hidden tests or secrets.
+- Piston must run only on the dedicated non-production worker VM during validation.
+- Piston must not be installed on the production VPS.
+- Piston must not be embedded into Django.
+- Piston API must not be public.
+- Piston must not connect to production DB, Redis, backups, deploy keys or `.env` files.
+- Backend may later access Piston only through a reviewed runner adapter/client after validation gates pass.
 
-## Rollback And Disable Procedure
+This packet does not install Piston and does not approve API integration.
 
-For prototype:
+## 13. Rollback And Disable Procedure
 
-1. Stop running prototype processes.
+For standalone VM validation:
+
+1. Stop prototype or Piston validation processes.
 2. Delete temporary workspaces if any remain.
 3. Rebuild or delete the non-production worker VM if isolation is suspect.
 4. Keep production unchanged.
+5. Keep `CHECKER_EXECUTION_ENABLED=false`.
 
 For future API-integrated runner:
 
@@ -335,30 +397,107 @@ For future API-integrated runner:
 5. Inspect runner logs outside the app container.
 6. Do not delete production volumes.
 
-## Acceptance Criteria
+## 14. Validation Result Template
+
+Create a future validation report using this template. Do not include secrets, private keys, DB URLs, Redis URLs, provider tokens or private network details.
+
+```text
+# Runner Worker Validation Result
+
+Date:
+Operator:
+Validated commit:
+
+VM:
+  Provider:
+  Region:
+  OS:
+  vCPU/RAM/disk:
+  Runner user:
+
+Package versions:
+  python3:
+  g++:
+  git:
+  kernel:
+
+Production separation:
+  Production runtime remains:
+  CHECKER_EXECUTION_ENABLED remains:
+  Production task versions/hidden tests:
+  API integration started: no
+  Piston installed: no / yes, worker VM only
+
+Commands run:
+  - cat /etc/os-release
+  - python3 -m unittest discover tools/runner_prototype/tests
+  - python3 tools/runner_prototype/run_cases.py
+  - no-secrets name-only env checks
+  - no DB/Redis/private-network checks
+  - no-network execution proof from sandbox context
+  - temp cleanup checks
+  - process kill checks
+  - resource limit checks
+
+Gate results:
+  VM dedicated/non-production:
+  Non-root runner user:
+  No production env/secrets:
+  No DB/Redis/private-network access:
+  No-network proof for executed code:
+  Prototype tests:
+  Temp cleanup:
+  Process kill:
+  Output limit:
+  Time limit:
+  RAM/memory limit evidence:
+  Logging rules:
+
+Blockers:
+  - none / list blockers here
+
+Decision:
+  APPROVED_FOR_API_INTEGRATION_PLANNING / BLOCKED
+```
+
+## 15. Acceptance Criteria
 
 You may proceed to API-integrated runner planning only when all are true:
 
-- dedicated non-production worker VM is selected and documented;
-- latest approved `origin/main` commit is selected for validation and recorded;
-- prototype runs as non-root;
-- no production env, secrets, deploy keys, DB credentials or backups are present;
-- worker cannot reach production DB, Redis or private app networks;
-- executed code no-network proof passes from the actual sandbox context;
-- Piston target, if installed later, is private to the worker VM and not on the production VPS;
-- temp cleanup passes after success, failure and timeout;
-- process kill/time-limit/output-limit tests pass;
-- RAM/memory limit is configured and evidenced by the worker sandbox or OS before integration;
-- logs follow the allowed/forbidden rules;
-- backend status enum mismatch has a concrete cleanup plan before integration;
+- Dedicated non-production worker VM is selected and documented.
+- Latest approved `origin/main` commit is selected for validation and recorded.
+- Prototype runs as non-root.
+- No production env, secrets, deploy keys, DB credentials or backups are present.
+- Worker cannot reach production DB, Redis or private app networks.
+- Executed-code no-network proof passes from the actual sandbox context.
+- Piston target, if installed later, is private to the worker VM and not on the production VPS.
+- Temp cleanup passes after success, failure and timeout.
+- Process kill/time-limit/output-limit tests pass.
+- RAM/memory limit is configured and evidenced by the worker sandbox or OS before integration.
+- Logs follow the allowed/forbidden rules.
 - `CHECKER_EXECUTION_ENABLED` remains false in production.
+- Production task versions and hidden tests remain absent during validation.
 
 Do not proceed when any are true:
 
-- worker is the production VPS or production Docker host;
-- prototype needs root or production credentials;
-- no-network cannot be proven;
-- user code can reach production networks;
-- tests fail or leave orphaned processes/files;
-- production task versions or hidden tests are required for validation;
-- section 11/12 work is being mixed into runner work.
+- Worker is the production VPS or production Docker host.
+- Prototype needs root or production credentials.
+- No-network cannot be proven.
+- User code can reach production networks.
+- Tests fail or leave orphaned processes/files.
+- Production task versions or hidden tests are required for validation.
+- Section 11/12 work is being mixed into runner work.
+
+## 16. Blocked Before API Integration
+
+These remain blocked until this packet is executed successfully on a dedicated worker VM:
+
+- Piston installation.
+- `PistonRunnerClient`.
+- Queue worker.
+- Real execution behind the checker API.
+- Network calls from Django to a runner service.
+- Creating production `CheckerTaskVersion` rows or hidden tests.
+- Enabling `CHECKER_EXECUTION_ENABLED`.
+- Public checker launch.
+- Section 11/12 content work.
