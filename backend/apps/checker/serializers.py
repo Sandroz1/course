@@ -11,6 +11,15 @@ def validate_source_size(source_code: str, task_version: CheckerTaskVersion) -> 
 
 
 class PublicTestCaseSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        if instance.is_hidden:
+            # Defense-in-depth: availability currently filters hidden tests before
+            # serialization, but hidden payloads must remain non-public even if a
+            # future caller passes the wrong queryset.
+            return {}
+
+        return super().to_representation(instance)
+
     class Meta:
         model = TestCase
         fields = ["input", "expected_output", "weight", "explanation", "position"]

@@ -11,6 +11,7 @@
 - Фаза 4 прошла design review для isolated non-production prototype planning: concrete target is a dedicated non-production worker VM. Standalone prototype добавлен в `tools/runner_prototype/`; worker provisioning/validation packet подготовлен, VM/access не подтверждены, validation не начата, Piston выбран как preferred future runner target, production/API execution не включены.
 - Backend checker now has a service-layer fail-closed `DisabledRunner` boundary for the current no-execution state. It is not a Piston client, queue worker or execution integration.
 - Checker-configured task pages now have an in-browser C++ draft editor. This improves the learning loop UX without enabling execution, queueing, result polling or Piston/API integration.
+- Checker admin/content readiness now has admin readiness counts and [checker task authoring](../platform/checker-task-authoring.md) guidance. It does not seed production task versions or hidden tests.
 
 ## Phases
 
@@ -110,6 +111,7 @@ Gate: runner isolation, failure handling и production operations провере
 
 - Current state: [ai-project-state.md](../state/ai-project-state.md).
 - Checker/API boundaries: [learning-loop-checker-design.md](../platform/learning-loop-checker-design.md).
+- Checker task authoring: [checker-task-authoring.md](../platform/checker-task-authoring.md).
 - Runner threat model: [runner-design.md](../platform/runner-design.md).
 - Runner worker provisioning/security: [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md).
 - Frontend architecture and UI: [ARCHITECTURE.md](../architecture/ARCHITECTURE.md), [frontend-ui-standards.md](../frontend/frontend-ui-standards.md).

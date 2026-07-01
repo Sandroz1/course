@@ -10,12 +10,13 @@ from rest_framework.test import APITestCase
 
 from apps.progress.models import TaskProgress
 
-from .admin import CheckerTaskVersionAdmin, TaskAttemptAdmin, TestCaseAdmin
+from .admin import CheckerTaskVersionAdmin, TaskAttemptAdmin, TestCaseAdmin, TestCaseInline
 from .exceptions import CheckerUnavailable
 from .models import CheckerTaskVersion, Submission, TaskAttempt, TestCase as CheckerTestCase
 from .runner.contracts import RunnerDispatch, RunnerHealth, RunnerJob, RunnerLimits, RunnerResult, RunnerTestCase
 from .runner.disabled import DisabledRunner, DisabledRunnerUnavailable
 from .runner.mapping import RUNNER_RESULT_TO_SUBMISSION_STATUS, map_runner_status_to_submission_status
+from .serializers import PublicTestCaseSerializer
 from .services import create_checker_submission
 
 
@@ -176,6 +177,91 @@ class CheckerModelTests(DjangoTestCase):
             set(attempt_admin.get_readonly_fields(request)),
             {field.name for field in TaskAttempt._meta.fields},
         )
+
+    def test_checker_task_version_admin_readiness_counts_tests(self):
+        request = RequestFactory().get("/admin/")
+        request.user = User.objects.create_superuser(
+            username="checker-admin-readiness",
+            password="StrongPass123!",
+        )
+        version_admin = CheckerTaskVersionAdmin(CheckerTaskVersion, AdminSite())
+        draft_version = CheckerTaskVersion.objects.create(
+            task_id="admin-readiness",
+            task_version=1,
+            course_slug="oop-cpp",
+            lesson_slug="basics",
+        )
+
+        self.assertEqual(version_admin.readiness(None), "save before adding tests")
+        self.assertEqual(version_admin.readiness(draft_version), "missing tests")
+        self.assertEqual(version_admin.test_count(draft_version), 0)
+        self.assertEqual(version_admin.public_test_count(draft_version), 0)
+        self.assertEqual(version_admin.hidden_test_count(draft_version), 0)
+
+        CheckerTestCase.objects.create(
+            task_version=draft_version,
+            input="42\n",
+            expected_output="42\n",
+            is_hidden=True,
+            position=0,
+        )
+        self.assertEqual(version_admin.readiness(draft_version), "hidden-only draft")
+        self.assertEqual(version_admin.test_count(draft_version), 1)
+        self.assertEqual(version_admin.public_test_count(draft_version), 0)
+        self.assertEqual(version_admin.hidden_test_count(draft_version), 1)
+
+        CheckerTestCase.objects.create(
+            task_version=draft_version,
+            input="18\n",
+            expected_output="18\n",
+            is_hidden=False,
+            position=1,
+        )
+        self.assertEqual(version_admin.readiness(draft_version), "draft ready")
+        self.assertEqual(version_admin.test_count(draft_version), 2)
+        self.assertEqual(version_admin.public_test_count(draft_version), 1)
+        self.assertEqual(version_admin.hidden_test_count(draft_version), 1)
+
+        draft_version.is_enabled = True
+        draft_version.save()
+        self.assertEqual(version_admin.readiness(draft_version), "enabled")
+
+        queryset_version = version_admin.get_queryset(request).get(pk=draft_version.pk)
+        self.assertEqual(version_admin.test_count(queryset_version), 2)
+        self.assertEqual(version_admin.public_test_count(queryset_version), 1)
+        self.assertEqual(version_admin.hidden_test_count(queryset_version), 1)
+
+    def test_locked_test_case_inline_is_readonly(self):
+        request = RequestFactory().get("/admin/")
+        request.user = User.objects.create_superuser(
+            username="checker-inline-admin",
+            password="StrongPass123!",
+        )
+        site = AdminSite()
+        inline = TestCaseInline(CheckerTaskVersion, site)
+        locked_version = create_task_version(task_id="inline-locked")
+        draft_version = create_task_version(task_id="inline-draft", enable=False)
+
+        self.assertFalse(inline.has_add_permission(request, locked_version))
+        self.assertFalse(inline.has_delete_permission(request, locked_version))
+        self.assertEqual(
+            set(inline.get_readonly_fields(request, locked_version)),
+            {"input", "expected_output", "is_hidden", "weight", "explanation", "position"},
+        )
+        self.assertTrue(inline.has_add_permission(request, draft_version))
+
+    def test_public_test_case_serializer_redacts_hidden_payload_if_called_directly(self):
+        version = create_task_version(task_id="serializer-redaction", hidden_output="secret\n")
+        public_case = version.test_cases.get(is_hidden=False)
+        hidden_case = version.test_cases.get(is_hidden=True)
+
+        public_data = PublicTestCaseSerializer(public_case).data
+        hidden_data = PublicTestCaseSerializer(hidden_case).data
+
+        self.assertEqual(public_data["input"], "18\n")
+        self.assertEqual(public_data["expected_output"], "18\n")
+        self.assertEqual(hidden_data, {})
+        self.assertNotIn("secret", str(hidden_data))
 
 
 class RunnerAdapterContractTests(DjangoTestCase):

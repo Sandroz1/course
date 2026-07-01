@@ -30,6 +30,7 @@
 - UI/HomePage: [frontend/frontend-ui-standards.md](frontend/frontend-ui-standards.md), [product/homepage-landing-plan.md](product/homepage-landing-plan.md).
 - Frontend checks: [frontend/frontend-test-strategy.md](frontend/frontend-test-strategy.md).
 - Checker/API contracts: [platform/learning-loop-checker-design.md](platform/learning-loop-checker-design.md).
+- Checker task authoring: [platform/checker-task-authoring.md](platform/checker-task-authoring.md).
 - Runner design/threat model: [platform/runner-design.md](platform/runner-design.md).
 - Runner worker provisioning/security: [platform/runner-worker-provisioning.md](platform/runner-worker-provisioning.md).
 - Codex agent skills: [platform/agent-skills.md](platform/agent-skills.md).

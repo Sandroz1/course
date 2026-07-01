@@ -56,6 +56,7 @@
 - Backend runner adapter contract exists as internal DTO/protocol/mapping plus a fail-closed `DisabledRunner` provider used by the checker service layer. No Piston client, real provider, queue or execution integration exists.
 - Frontend checker UI supports the honest disabled/draft state only: authenticated users can save drafts, guests see the login requirement, and no compiling/running/result lifecycle is shown.
 - Task page now has a reusable in-browser C++ editor for checker-configured tasks. Users can write code on the site and save drafts; check/submit remains unavailable until worker VM/Piston/API integration is completed.
+- Checker admin/content readiness is prepared with admin readiness counts and [checker-task-authoring.md](../platform/checker-task-authoring.md). Production task versions and hidden tests are still not seeded.
 - Production deployed app hash is `7d10f24`; `CHECKER_EXECUTION_ENABLED=false`, production task versions and hidden tests are still absent.
 
 ## Course State
@@ -73,6 +74,7 @@
 - Documentation map: [README.md](../README.md).
 - Product order and current restrictions: [product-roadmap.md](../product/product-roadmap.md).
 - Checker technical design: [learning-loop-checker-design.md](../platform/learning-loop-checker-design.md).
+- Checker task authoring: [checker-task-authoring.md](../platform/checker-task-authoring.md).
 - Runner threat model: [runner-design.md](../platform/runner-design.md).
 - Runner worker provisioning/security: [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md).
 - UI rules: [frontend-ui-standards.md](../frontend/frontend-ui-standards.md).
