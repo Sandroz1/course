@@ -4,10 +4,10 @@
 
 ## Verified Git Snapshot
 
-Проверено локально и production read-only 2026-06-29:
+Проверено локально и production deploy 2026-07-01:
 
 - Production deployed app hash: `7d10f24`; previous deployed hash and rollback target: `a4b33d6`.
-- Current deployed runtime merge: `7d10f24 Merge checker disabled runner foundation`; this state update is docs-only and must not be deployed separately.
+- Current deployed runtime merge: `7d10f24 Merge checker disabled runner foundation`; latest pushed docs/state commit: `f0984a7`.
 - Production backup: `/opt/uchicode/app/backups/20260630T233800Z`.
 - VPS закреплён на clean detached `HEAD` `7d10f24`.
 - Local foundation commits: `a38c34e Add checker data foundation`, `352919f Add checker draft flow`, `7fa498d Consolidate documentation roadmap`, `2760cff Organize documentation structure`.
@@ -51,7 +51,7 @@
 - Prototype is Python stdlib only and uses synthetic local snippets; it has no backend API, frontend UI, queue, Docker/VPS or production integration.
 - Prototype tests passed in a disposable non-production Linux container with `g++`; local Windows run is only an unsupported smoke path.
 - No-network proof is not claimed by the Python harness. Dedicated worker VM/container/firewall no-network validation remains a blocker before API-integrated runner or production enablement.
-- Worker provisioning/security checklist added in [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md); dedicated VM/access are not confirmed yet, and the checklist must pass on a dedicated non-production Linux worker VM before API-integrated runner work.
+- Worker provisioning/security packet is prepared in [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md); dedicated VM/access are not confirmed yet, validation has not started, and the packet must pass on a dedicated non-production Linux worker VM before API-integrated runner work.
 - Backend checker status names are normalized to canonical runner design values before API-integrated runner work.
 - Backend runner adapter contract exists as internal DTO/protocol/mapping plus a fail-closed `DisabledRunner` provider used by the checker service layer. No Piston client, real provider, queue or execution integration exists.
 - Frontend checker UI supports the honest disabled/draft state only: authenticated users can save drafts, guests see the login requirement, and no compiling/running/result lifecycle is shown.
@@ -65,7 +65,7 @@
 
 ## Next Stage
 
-Фазы 0-3 завершены, product foundation задеплоен. Phase 4 runner design review выполнен docs-only: [runner-design.md](../platform/runner-design.md) approved for isolated non-production prototype planning with a dedicated worker VM target. Standalone prototype добавлен в `tools/runner_prototype/`, но production execution и API integration отсутствуют. Backend checker statuses нормализованы под canonical runner design names; runner adapter contract and fail-closed `DisabledRunner` service boundary exist only for the current disabled state. Следующий gate: provisioning-first подготовка dedicated worker VM, затем выполнение [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md) и no-network/no-secrets proof перед API-integrated runner. Piston является preferred future runner target только после этих gates. Sections 11/12 не начаты.
+Фазы 0-3 завершены, product foundation задеплоен. Phase 4 runner design review выполнен docs-only: [runner-design.md](../platform/runner-design.md) approved for isolated non-production prototype planning with a dedicated worker VM target. Standalone prototype добавлен в `tools/runner_prototype/`, но production execution и API integration отсутствуют. Backend checker statuses нормализованы под canonical runner design names; runner adapter contract and fail-closed `DisabledRunner` service boundary exist only for the current disabled state. Следующий gate: create/validate a dedicated non-production worker VM using [runner-worker-provisioning.md](../platform/runner-worker-provisioning.md), including no-network/no-secrets proof before API-integrated runner. Piston является preferred future runner target только после этих gates. Sections 11/12 не начаты.
 
 ## Read For Details
 
