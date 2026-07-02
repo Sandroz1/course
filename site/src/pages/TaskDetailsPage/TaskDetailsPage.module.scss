@@ -581,7 +581,7 @@
     gap: 0.5rem;
   }
 
-  .taskFacts div {
+  .taskFacts > div {
     border-width: 0 0 0 2px;
     border-color: color-mix(in srgb, var(--accent) 28%, var(--border-subtle) 72%);
     border-radius: 0;

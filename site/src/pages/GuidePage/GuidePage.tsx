@@ -100,7 +100,9 @@ export function GuidePage() {
 
                 <ul className={styles.checkList}>
                   {step.checkpoints.map((item) => (
-                    <li key={item}>{renderText(item)}</li>
+                    <li key={item}>
+                      <span>{renderText(item)}</span>
+                    </li>
                   ))}
                 </ul>
               </div>
