@@ -1,4 +1,4 @@
-import { type KeyboardEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { appRoutes } from "../../app/routes";
 import {
   getCourseSectionBySlug,
@@ -18,7 +18,6 @@ import clsx from "clsx";
 import type { CheckerAvailability, TaskProgressStatus } from "../../types/api";
 import { toPath } from "../../utils/slug";
 import { LinkButton } from "../../components/shared/ActionButton/ActionButton";
-import { CodeBlock } from "../../components/shared/CodeBlock/CodeBlock";
 import {
   BackLink,
   CollapsibleSection,
@@ -35,28 +34,13 @@ import {
   isGenericTaskPlan,
   taskLevelLabels,
 } from "../../utils/taskDisplay";
-import { CheckerDraftPanel } from "./components/CheckerDraftPanel";
+import { TaskCodeWorkspace } from "./components/TaskCodeWorkspace";
 import styles from "./TaskDetailsPage.module.scss";
 
 const DEFAULT_TASK_DESCRIPTION =
   "Прочитайте условие, начните с заготовки ниже и замените TODO своим решением. Сначала добейтесь компиляции, затем проверьте поведение на простых данных.";
 
-const DEFAULT_FILE_DESCRIPTION =
-  "Стартовая заготовка задачи. Найдите TODO и допишите решение.";
 const MAX_VISIBLE_RESULT_ITEMS = 4;
-
-function getNextFileIndex(currentIndex: number, key: string, fileCount: number) {
-  if (key === "Home") return 0;
-  if (key === "End") return fileCount - 1;
-  if (key === "ArrowLeft" || key === "ArrowUp") {
-    return (currentIndex - 1 + fileCount) % fileCount;
-  }
-  if (key === "ArrowRight" || key === "ArrowDown") {
-    return (currentIndex + 1) % fileCount;
-  }
-
-  return currentIndex;
-}
 
 type TaskListSectionProps = {
   title: string;
@@ -82,8 +66,8 @@ function TaskItemList({ items, ordered = false }: { items: string[]; ordered?: b
 
   return (
     <Tag className={styles.taskList}>
-      {items.map((item) => (
-        <li key={item}>
+      {items.map((item, index) => (
+        <li key={`${index}-${item}`}>
           <span className={styles.taskListText}>{renderTaskInline(item)}</span>
         </li>
       ))}
@@ -141,10 +125,6 @@ function shouldShowTaskDescription(description: string) {
   return description.trim() !== DEFAULT_TASK_DESCRIPTION;
 }
 
-function shouldShowFileDescription(description: string) {
-  return description.trim() !== DEFAULT_FILE_DESCRIPTION;
-}
-
 function getResultItems(items: string[], practicePath: string) {
   return items.map((item) => {
     if (item === `Один файл: ${practicePath}`) {
@@ -163,6 +143,36 @@ function getDisplayFileName(fileName: string) {
   return fileName.split("/").pop() ?? fileName;
 }
 
+function TaskResultChecklist({ items }: { items: string[] }) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const hasHiddenItems = items.length > MAX_VISIBLE_RESULT_ITEMS;
+  const visibleItems = isExpanded ? items : items.slice(0, MAX_VISIBLE_RESULT_ITEMS);
+  const hiddenCount = Math.max(items.length - MAX_VISIBLE_RESULT_ITEMS, 0);
+
+  return (
+    <div className={styles.taskFactChecklist}>
+      <ul className={styles.taskFactList}>
+        {visibleItems.map((item, index) => (
+          <li key={`${index}-${item}`}>
+            <span className={styles.taskFactText}>{renderTaskInline(item)}</span>
+          </li>
+        ))}
+      </ul>
+
+      {hasHiddenItems && (
+        <button
+          className={styles.taskFactToggle}
+          type="button"
+          aria-expanded={isExpanded}
+          onClick={() => setIsExpanded((value) => !value)}
+        >
+          {isExpanded ? "Скрыть" : `Показать ещё ${pointCountLabel(hiddenCount).toLowerCase()}`}
+        </button>
+      )}
+    </div>
+  );
+}
+
 function TaskBriefSection({
   description,
   goal,
@@ -177,8 +187,6 @@ function TaskBriefSection({
   practicePath: string;
 }) {
   const resultItems = getResultItems(items, practicePath);
-  const visibleResultItems = resultItems.slice(0, MAX_VISIBLE_RESULT_ITEMS);
-  const hiddenResultItems = resultItems.slice(MAX_VISIBLE_RESULT_ITEMS);
   const shouldShowDescription = shouldShowTaskDescription(description);
 
   return (
@@ -201,27 +209,7 @@ function TaskBriefSection({
             {resultItems.length === 1 ? (
               <span className={styles.taskFactText}>{renderTaskInline(resultItems[0])}</span>
             ) : (
-              <>
-                <ul>
-                  {visibleResultItems.map((item) => (
-                    <li key={item}>
-                      <span className={styles.taskFactText}>{renderTaskInline(item)}</span>
-                    </li>
-                  ))}
-                </ul>
-                {hiddenResultItems.length > 0 && (
-                  <details className={styles.taskFactDetails}>
-                    <summary>Показать ещё {pointCountLabel(hiddenResultItems.length).toLowerCase()}</summary>
-                    <ul>
-                      {hiddenResultItems.map((item) => (
-                        <li key={item}>
-                          <span className={styles.taskFactText}>{renderTaskInline(item)}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </details>
-                )}
-              </>
+              <TaskResultChecklist items={resultItems} />
             )}
           </dd>
         </div>
@@ -282,7 +270,6 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
   const task = getTaskById(taskId);
   const { accessToken, isAuthenticated } = useAuth();
   const authKey = accessToken ?? "";
-  const [activeFileIndex, setActiveFileIndex] = useState(0);
   const [taskStatus, setTaskStatus] = useState<TaskProgressStatus | null>(null);
   const [isProgressLoading, setIsProgressLoading] = useState(false);
   const [isProgressSaving, setIsProgressSaving] = useState(false);
@@ -413,15 +400,6 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
     }
   }
 
-  function handleFileTabKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
-    const nextIndex = getNextFileIndex(index, event.key, task?.files.length ?? 0);
-
-    if (nextIndex === index) return;
-
-    event.preventDefault();
-    setActiveFileIndex(nextIndex);
-  }
-
   if (!task) {
     return (
       <div className="panel">
@@ -432,16 +410,11 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
 
   const theory = getCourseSectionBySlug(task.courseId, task.theorySlug);
   const course = getCourseById(task.courseId);
-  const activeFile = task.files[activeFileIndex];
-  const hasMultipleFiles = task.files.length > 1;
-  const activeFileTabId = `task-file-tab-${task.id}-${activeFileIndex}`;
-  const activeFilePanelId = `task-file-panel-${task.id}-${activeFileIndex}`;
   const effectiveTaskStatus = taskStatus ?? "not_started";
   const displayStatus = getTaskDisplayStatus(
     task,
     new Map([[task.id, effectiveTaskStatus]]),
   );
-  const hasStarterCode = activeFile.starterCode.trim().length > 0;
   const taskStatusBadge = {
     label: getTaskDisplayLabel(displayStatus),
     tone: getTaskDisplayTone(displayStatus),
@@ -459,6 +432,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
   const isCheckerGateLoading =
     isCheckerAvailabilityLoading && nextTaskStatus === "solved";
   const isManualSolveBlocked = isCheckerConfigured && nextTaskStatus === "solved";
+  const hasMultipleTaskFiles = task.files.length > 1;
   const progressActionLabel = isProgressSaving
     ? "Сохраняем..."
     : isCheckerGateLoading
@@ -485,9 +459,11 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
           <MetaItem label="Сложность">
             {taskLevelLabels[task.level]}
           </MetaItem>
-          <MetaItem label="Файлы">
-            {fileCountLabel(task.files.length)}
-          </MetaItem>
+          {hasMultipleTaskFiles && (
+            <MetaItem label="Файлы">
+              {fileCountLabel(task.files.length)}
+            </MetaItem>
+          )}
           <MetaItem label="Статус">
             <StatusBadge tone={taskStatusBadge.tone}>{progressStatusLabel}</StatusBadge>
           </MetaItem>
@@ -524,71 +500,12 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
         practicePath={task.practicePath}
       />
 
-      <section className={clsx("panel", styles.codePanel)}>
-        <div className={styles.codePanelHeader}>
-          <h2>Рабочий файл</h2>
-          <p>Используйте заготовку ниже и замените TODO своим решением.</p>
-        </div>
-
-        {hasMultipleFiles && (
-          <div className={styles.fileList} role="tablist" aria-label="Файлы задачи">
-            {task.files.map((file, index) => (
-              <button
-                key={file.fileName}
-                id={`task-file-tab-${task.id}-${index}`}
-                className={clsx(styles.fileTab, index === activeFileIndex && styles.fileTabActive)}
-                type="button"
-                role="tab"
-                aria-selected={index === activeFileIndex}
-                aria-controls={`task-file-panel-${task.id}-${index}`}
-                tabIndex={index === activeFileIndex ? 0 : -1}
-                onClick={() => setActiveFileIndex(index)}
-                onKeyDown={(event) => handleFileTabKeyDown(event, index)}
-              >
-                {getDisplayFileName(file.fileName)}
-              </button>
-            ))}
-          </div>
-        )}
-
-        <div
-          className={styles.filePanel}
-          id={activeFilePanelId}
-          role={hasMultipleFiles ? "tabpanel" : undefined}
-          aria-labelledby={hasMultipleFiles ? activeFileTabId : undefined}
-        >
-          {hasMultipleFiles && (
-            <div className={styles.filePanelHeader}>
-              <div>
-                <span>Выбранный файл</span>
-                <strong>{getDisplayFileName(activeFile.fileName)}</strong>
-              </div>
-              <span>{activeFileIndex + 1} из {task.files.length}</span>
-            </div>
-          )}
-
-          {hasMultipleFiles && shouldShowFileDescription(activeFile.description) && (
-            <p className={styles.fileDescription}>{renderTaskInline(activeFile.description)}</p>
-          )}
-
-          {hasStarterCode ? (
-            <CodeBlock code={activeFile.starterCode} language="cpp" compact />
-          ) : (
-            <div className={styles.emptyCodeState}>
-              Стартовый код пока не задан. Составьте каркас по условию и списку результата.
-            </div>
-          )}
-        </div>
-      </section>
-
-      {isCheckerConfigured && checkerAvailability && (
-        <CheckerDraftPanel
-          key={`${task.id}-${checkerAvailability.task_version}`}
-          availability={checkerAvailability}
-          starterCode={task.files[0]?.starterCode ?? ""}
-          taskId={task.id}
-        />
-      )}
+      <TaskCodeWorkspace
+        checkerAvailability={checkerAvailability}
+        isCheckerAvailabilityLoading={isCheckerAvailabilityLoading}
+        isCheckerConfigured={isCheckerConfigured}
+        task={task}
+      />
 
       <TaskHelpSection task={task} hasSpecificPlan={hasSpecificPlan} />
 

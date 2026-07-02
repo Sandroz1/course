@@ -43,7 +43,7 @@ The MVP does not include:
 - Task pages are readable by guests. Saving progress requires an authenticated user.
 - Production currently runs Django, PostgreSQL, Redis and Nginx on the app deployment. There is no submission worker or sandbox runner.
 - `practice/` is an internal source for starter material, not a user-facing filesystem contract.
-- Checker-configured task pages use an in-browser C++ draft editor with authenticated save/restore. It still has no checker result, result polling or runtime execution.
+- Task pages use an in-browser C++ workspace independent from checker availability, with local draft persistence for every task. Checker-configured tasks may additionally save authenticated drafts to the backend when a task version exists. The UI still has no result polling, runtime execution or fake local results.
 
 ## 5. Source of truth and `task_version`
 
@@ -137,7 +137,8 @@ MVP constraint: one non-archived attempt per `(user, task_id, task_version_numbe
 - `attempt`
 - `language`
 - `source_code` (immutable snapshot, size-limited)
-- `status`: target public runner vocabulary is `queued`, `compiling`, `running`, `accepted`, `wrong_answer`, `compile_error`, `runtime_error`, `time_limit`, `output_limit`, `internal_error`, `checker_unavailable`
+- `status`: persisted runner vocabulary is `queued`, `compiling`, `running`, `accepted`, `wrong_answer`, `compile_error`, `runtime_error`, `time_limit`, `output_limit`, `internal_error`
+- `checker_unavailable` is an API error/reason for fail-closed execution and must not be persisted as a `Submission.status`.
 - `compiler_output`, `runtime_output` (sanitized and truncated)
 - `passed_tests`, `failed_tests`, `total_tests`
 - `execution_time_ms`, `memory_used_kb`

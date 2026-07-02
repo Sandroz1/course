@@ -87,11 +87,11 @@ runtime_error
 time_limit
 output_limit
 internal_error
-checker_unavailable
 ```
 
 Rules:
 
+- `checker_unavailable` is a fail-closed API error/reason, not a persisted `Submission.status`.
 - While `CHECKER_EXECUTION_ENABLED=false`, `POST submission` returns `503 checker_unavailable` and does not create a `Submission`.
 - Non-terminal states (`queued`, `compiling`, `running`) must not be returned unless a real queue/runner exists.
 - Terminal result fields are immutable after finalization.
@@ -110,7 +110,7 @@ Before implementation, choose and document one queue mechanism. Minimum contract
 - Worker reports terminal states with idempotent updates.
 - Frontend receives results by polling `GET /api/checker/submissions/{submission_id}/`; polling must respect throttles and `Retry-After`.
 - Duplicate worker callbacks cannot create duplicate terminal results.
-- Lost or stale jobs are marked `checker_unavailable` or `internal_error` by a controlled cleanup task.
+- Lost or stale persisted submissions are marked `internal_error` by a controlled cleanup task; runner or queue unavailability before persistence returns `checker_unavailable`.
 - Queue depth and worker availability must be observable before production enablement.
 
 ## Resource Limits
