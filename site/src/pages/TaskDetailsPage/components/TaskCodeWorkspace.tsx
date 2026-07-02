@@ -154,8 +154,8 @@ function getCheckerStatusLabel({
 }) {
   if (isLoading) return "Проверяем статус";
   if (!availability) return "Черновик локально";
-  if (availability.available) return "Черновик доступен";
-  return "Без автопроверки";
+  if (availability.available) return "Черновик в аккаунте";
+  return "Проверка готовится";
 }
 
 function getCheckerNotice({
@@ -170,15 +170,15 @@ function getCheckerNotice({
   }
 
   if (!availability) {
-    return "Автопроверка не подключена для этой задачи или backend временно недоступен. Редактор сохраняет черновик в этом браузере.";
+    return "Автопроверка для этой задачи пока не включена или временно недоступна. Редактор сохраняет черновик в этом браузере.";
   }
 
   if (availability.available) {
-    return "Данные задачи для будущей автопроверки найдены. Запуск кода в интерфейсе пока не включён.";
+    return "Задача готовится к автопроверке. Сейчас можно писать решение и сохранять черновик.";
   }
 
   if (availability.reason === "runner_unavailable") {
-    return "Автопроверка пока недоступна: runner не подключён. Это не мешает писать код и сохранять черновик.";
+    return "Автопроверка пока готовится. Это не мешает писать код и сохранять черновик.";
   }
 
   if (availability.reason === "temporarily_disabled") {
@@ -195,11 +195,11 @@ function getSaveErrorMessage(error: unknown) {
   if (kind === "stale_version") {
     return "Локальный черновик сохранён, но версия задачи изменилась. Обновите страницу перед синхронизацией с аккаунтом.";
   }
-  if (kind === "source_too_large") return "Черновик сохранён локально, но превышает лимит backend-сохранения.";
+  if (kind === "source_too_large") return "Черновик сохранён локально, но слишком большой для синхронизации с аккаунтом.";
   if (kind === "checker_unavailable") {
-    return "Черновик сохранён локально. Backend-автопроверка сейчас недоступна.";
+    return "Черновик сохранён локально. Синхронизация с автопроверкой сейчас недоступна.";
   }
-  return "Черновик сохранён локально, но синхронизация с backend не прошла.";
+  return "Черновик сохранён локально, но синхронизация с аккаунтом не прошла.";
 }
 
 function findCurrentAttempt(
@@ -367,7 +367,7 @@ export function TaskCodeWorkspace({
       setStatusMessage(
         !isAuthenticated
           ? "Черновик сохранён в этом браузере. Войдите в аккаунт, чтобы позже синхронизировать поддерживаемые задачи."
-          : "Черновик сохранён в этом браузере. Backend-сохранение появится после подключения задачи к автопроверке.",
+          : "Черновик сохранён в этом браузере. Сохранение в аккаунт появится после подключения задачи к автопроверке.",
       );
       return;
     }
@@ -418,8 +418,8 @@ export function TaskCodeWorkspace({
         <div>
           <h2 id={`task-workspace-title-${task.id}`}>Рабочий код</h2>
           <p>
-            Пишите решение прямо на странице. Это черновик: код не запускается и не отправляется на проверку,
-            пока runner/Piston integration не будет включена отдельно.
+            Пишите решение прямо на странице. Сейчас это черновик: код сохраняется, но не
+            запускается и не отправляется на проверку.
           </p>
         </div>
         <StatusBadge tone={checkerAvailability?.available ? "info" : "warning"}>
@@ -461,8 +461,8 @@ export function TaskCodeWorkspace({
       >
         <div className={styles.filePanelHeader}>
           <div>
-            <span>Текущий файл</span>
-            <strong>{getDisplayFileName(activeFile.fileName)}</strong>
+            <span>{hasMultipleFiles ? "Текущий файл" : "Решение"}</span>
+            {hasMultipleFiles && <strong>{getDisplayFileName(activeFile.fileName)}</strong>}
           </div>
           {hasMultipleFiles && <span>{activeFileIndex + 1} из {task.files.length}</span>}
         </div>
@@ -473,7 +473,7 @@ export function TaskCodeWorkspace({
 
         <CodeEditor
           id={activeEditorId}
-          label={`Код: ${getDisplayFileName(activeFile.fileName)}`}
+          label={hasMultipleFiles ? `Код: ${getDisplayFileName(activeFile.fileName)}` : "Код решения"}
           value={activeSource}
           disabled={draftState === "saving"}
           describedBy={`task-code-status-${task.id}`}

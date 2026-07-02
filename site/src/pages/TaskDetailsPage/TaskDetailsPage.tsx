@@ -432,6 +432,7 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
   const isCheckerGateLoading =
     isCheckerAvailabilityLoading && nextTaskStatus === "solved";
   const isManualSolveBlocked = isCheckerConfigured && nextTaskStatus === "solved";
+  const hasMultipleTaskFiles = task.files.length > 1;
   const progressActionLabel = isProgressSaving
     ? "Сохраняем..."
     : isCheckerGateLoading
@@ -458,9 +459,11 @@ export function TaskDetailsPage({ taskId }: { taskId: string }) {
           <MetaItem label="Сложность">
             {taskLevelLabels[task.level]}
           </MetaItem>
-          <MetaItem label="Файлы">
-            {fileCountLabel(task.files.length)}
-          </MetaItem>
+          {hasMultipleTaskFiles && (
+            <MetaItem label="Файлы">
+              {fileCountLabel(task.files.length)}
+            </MetaItem>
+          )}
           <MetaItem label="Статус">
             <StatusBadge tone={taskStatusBadge.tone}>{progressStatusLabel}</StatusBadge>
           </MetaItem>

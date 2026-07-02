@@ -1,5 +1,6 @@
-import { type KeyboardEvent } from "react";
+import { type KeyboardEvent, useState } from "react";
 import clsx from "clsx";
+import { CodeBlock } from "../CodeBlock/CodeBlock";
 import styles from "./CodeEditor.module.scss";
 
 const INDENT = "    ";
@@ -54,6 +55,7 @@ export function CodeEditor({
   sourceLimitBytes,
   className,
 }: CodeEditorProps) {
+  const [isPreviewOpen, setIsPreviewOpen] = useState(true);
   const sourceBytes = getUtf8Bytes(value);
   const isOverLimit = sourceLimitBytes !== undefined && sourceBytes > sourceLimitBytes;
 
@@ -110,6 +112,27 @@ export function CodeEditor({
         onChange={(event) => onChange(event.target.value)}
         onKeyDown={handleKeyDown}
       />
+
+      <div className={styles.preview}>
+        <button
+          className={styles.previewToggle}
+          type="button"
+          aria-expanded={isPreviewOpen}
+          aria-controls={`${id}-highlighted-preview`}
+          onClick={() => setIsPreviewOpen((value) => !value)}
+        >
+          {isPreviewOpen ? "Скрыть подсветку" : "Показать подсветку"}
+        </button>
+        {isPreviewOpen && (
+          <div
+            id={`${id}-highlighted-preview`}
+            className={styles.previewBody}
+            aria-label="Подсвеченный просмотр текущего кода"
+          >
+            <CodeBlock code={value || " "} language="cpp" compact />
+          </div>
+        )}
+      </div>
 
       <div className={styles.footer}>
         <span>{getLineCount(value)} строк</span>
