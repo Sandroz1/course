@@ -140,6 +140,19 @@
   line-height: 1.35;
 }
 
+.heroEyebrow {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border: 1px solid var(--accent-border-muted);
+  border-radius: 999px;
+  background: var(--accent-surface);
+  color: var(--accent-strong);
+  font-size: clamp(0.88rem, 1.2vw, 0.95rem);
+  line-height: 1.2;
+  padding: 0.34rem 0.62rem;
+}
+
 .heroText h1 {
   max-width: 20ch;
   margin: 0;

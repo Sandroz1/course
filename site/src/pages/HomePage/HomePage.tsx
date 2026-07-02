@@ -113,7 +113,7 @@ export function HomePage() {
       <main className={styles.main}>
         <section className={styles.hero} aria-labelledby="home-title">
           <div className={styles.heroText}>
-            <p className={styles.eyebrow}>C++ с нуля</p>
+            <p className={clsx(styles.eyebrow, styles.heroEyebrow)}>C++ с нуля</p>
             <h1 id="home-title">Начни C++ с понятного первого шага</h1>
             <p className={styles.lead}>
               Короткое объяснение, пример, типичная ошибка и задача идут по порядку.

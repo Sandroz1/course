@@ -5,7 +5,8 @@ Status: admin/content readiness guide. This document describes how to prepare ch
 ## Current Boundary
 
 - Runtime execution is disabled: `CHECKER_EXECUTION_ENABLED=false`.
-- Piston, worker VM validation, queueing, polling and result UI are not started.
+- Piston, worker VM validation, queueing and polling are not started.
+- Frontend result UI has a hidden foundation only; it renders real submission data when it exists and must not show fake results while execution is disabled.
 - Do not create production task versions or hidden tests until the worker VM/Piston gates pass.
 - Public task content still lives in `site/src/data/tasks.ts` and `site/src/content/course`.
 
